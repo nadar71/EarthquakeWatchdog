@@ -65,9 +65,9 @@ public final class QueryUtils {
                 // get properties obj for current eq
                 JSONObject properties = currentEarthquake.getJSONObject("properties");
 
-                Double mag   = properties.getDouble("mag");
+                double mag   = properties.getDouble("mag");
                 String place = properties.getString("place");
-                Long time    = properties.getLong("time");
+                long time    = properties.getLong("time");
 
                 // tmp earthquake obj for single item
                 Earthquake  tmp = new Earthquake(mag, place, time);

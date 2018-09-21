@@ -58,26 +58,38 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         TextView locationView = (TextView)itemView.findViewById(R.id.locationText);
         locationView.setText(currentEartquakeItem.getLocation());
 
-        /** display date formatted using {@link formatDateFromEpoch} **/
+        /** display date formatted using {@link formatDateFromMsec} **/
         TextView dateView = (TextView)itemView.findViewById(R.id.dateText);
-        dateView.setText(formatDateFromEpoch(currentEartquakeItem.getDate()));
+        dateView.setText(formatDateFromMsec(currentEartquakeItem.getTime()));
+
+        /** display time formatted using {@link formatTimeFromMsec} **/
+        TextView timeView = (TextView)itemView.findViewById(R.id.timeText);
+        timeView.setText(formatTimeFromMsec(currentEartquakeItem.getTime()));
 
         return itemView;
 
     }
 
 
-    public String formatDateFromEpoch(Long dateMillisec){
-        String formattedDate = null;
-
+    public String formatDateFromMsec(long dateMillisec){
         // Date
         Date date = new Date(dateMillisec);
         System.out.println("date : "+date.toString());
 
         // Format Date
         SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM DD, yyyy");
-        String dateToDisplay = dateFormatter.format(date);
-        return dateToDisplay;
+        return dateFormatter.format(date);
+    }
+
+
+    public String formatTimeFromMsec(long dateMillisec){
+        // Time
+        Date time = new Date(dateMillisec);
+        System.out.println("time : "+time.toString());
+
+        // Format Time
+        SimpleDateFormat timeFormatter = new SimpleDateFormat("h:mm a");
+        return timeFormatter.format(time);
     }
 
 }

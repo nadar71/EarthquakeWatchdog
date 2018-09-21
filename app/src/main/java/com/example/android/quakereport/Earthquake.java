@@ -12,13 +12,15 @@ import java.util.Date;
 public class Earthquake {
 
     // eq's magnitude
-    private Double magnitude;
+    private double magnitude;
 
     // eq location
     private String location;
 
-    // eq date of occurence
-    private Long date;
+    // eq date and time of occurence
+    private long timeInMillisec;
+
+
 
 
     /**
@@ -26,12 +28,13 @@ public class Earthquake {
      *
      * @param magnitude
      * @param location
-     * @param date
+     * @param timeInMillisec
      */
-    public Earthquake(Double magnitude, String location, Long date) {
+    public Earthquake(double magnitude, String location, long timeInMillisec) {
         this.magnitude = magnitude;
         this.location = location;
-        this.date = date;
+        this.timeInMillisec = timeInMillisec;
+
 
     }
 
@@ -53,9 +56,7 @@ public class Earthquake {
     /*
     Return date
      */
-    public Long getDate() {
-        return date;
-    }
+    public long getTime() { return timeInMillisec; }
 
 
 }
