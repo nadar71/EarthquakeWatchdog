@@ -4,26 +4,22 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
+    android:fontFamily="sans-serif-medium"
     android:padding="16dp">
 
     <TextView
         android:id="@+id/magnitudeText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/magnitude_circle"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
         android:text="0.0" />
 
 
     <!-- Location group -->
-<!--
-    <TextView
-        android:id="@+id/locationText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="location" />
--->
-
     <TextView
         android:id="@+id/primaryLocationText"
         android:layout_width="0dp"
