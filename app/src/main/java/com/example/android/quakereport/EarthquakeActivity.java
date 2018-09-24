@@ -30,19 +30,7 @@ public class EarthquakeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
-
-        // Create a fake list of Earthquake objects.
-        /*
-        ArrayList<Earthquake> earthquakes = new ArrayList<Earthquake>();
-        earthquakes.add(new Earthquake("7.2","San Francisco", "Feb 2,2016"));
-        earthquakes.add(new Earthquake("6.1","London"        ,"Feb 2,2016"));
-        earthquakes.add(new Earthquake("3.9","Tokyo"         ,"Feb 2,2016"));
-        earthquakes.add(new Earthquake("5.4","Mexico City"   ,"Feb 2,2016"));
-        earthquakes.add(new Earthquake("2.8","Moscow"        ,"Feb 2,2016"));
-        earthquakes.add(new Earthquake("4.9","Rio de Janeiro","Feb 2,2016"));
-        earthquakes.add(new Earthquake("1.6","Paris"         ,"Feb 2,2016"));
-        */
-
+        
 
         // Get the data from a static json string in {@link QueryUtils}
         ArrayList<Earthquake> earthquakes = QueryUtils.extractEarthquakes();

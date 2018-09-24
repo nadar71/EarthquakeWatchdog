@@ -75,11 +75,12 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         /** display locations formatted using {@link extractLocations} **/
         extractLocations(currentEartquakeItem.getLocation());
 
-        TextView primaryLocationView = (TextView)itemView.findViewById(R.id.primaryLocationText);
-        primaryLocationView.setText(locationOffset);
-
         TextView locationOffsetView = (TextView)itemView.findViewById(R.id.locationOffsetText);
-        locationOffsetView.setText(primaryLocation);
+        locationOffsetView.setText(locationOffset);
+
+        TextView primaryLocationView = (TextView)itemView.findViewById(R.id.primaryLocationText);
+        primaryLocationView.setText(primaryLocation );
+
 
 
         /** display date formatted using {@link formatDateFromMsec} **/
