@@ -13,13 +13,34 @@
         android:layout_weight="1"
         android:text="0.0" />
 
+
+    <!-- Location group -->
+<!--
     <TextView
         android:id="@+id/locationText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="location" />
+-->
 
+    <TextView
+        android:id="@+id/primaryLocationText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Rumoi, Japan" />
+
+
+    <TextView
+        android:id="@+id/locationOffsetText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="74km NW of" />
+
+
+    <!-- Date and time group -->
     <TextView
         android:id="@+id/dateText"
         android:layout_width="0dp"

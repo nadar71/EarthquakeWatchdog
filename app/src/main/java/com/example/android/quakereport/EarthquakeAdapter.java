@@ -21,6 +21,10 @@ import java.util.ArrayList;
 
 public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
+    private String primaryLocation;
+    private String locationOffset = "Near by";
+
+
     /**
      * Main constructor
      * @param context
@@ -55,8 +59,19 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         TextView magnitudeView = (TextView)itemView.findViewById(R.id.magnitudeText);
         magnitudeView.setText(Double.toString(currentEartquakeItem.getMagnitude()));
 
+        /** display locations formatted using {@link extractLocations} **/
+        /*
         TextView locationView = (TextView)itemView.findViewById(R.id.locationText);
         locationView.setText(currentEartquakeItem.getLocation());
+        */
+        extractLocations(currentEartquakeItem.getLocation());
+
+        TextView primaryLocationView = (TextView)itemView.findViewById(R.id.primaryLocationText);
+        primaryLocationView.setText(locationOffset);
+
+        TextView locationOffsetView = (TextView)itemView.findViewById(R.id.locationOffsetText);
+        locationOffsetView.setText(primaryLocation);
+
 
         /** display date formatted using {@link formatDateFromMsec} **/
         TextView dateView = (TextView)itemView.findViewById(R.id.dateText);
@@ -71,6 +86,11 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
     }
 
 
+    /**
+     * Format date in a specific way and millisec  format
+     * @param dateMillisec
+     * @return
+     */
     public String formatDateFromMsec(long dateMillisec){
         // Date
         Date date = new Date(dateMillisec);
@@ -82,6 +102,11 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
     }
 
 
+    /**
+     * Format time in a specific way and millisec  format
+     * @param dateMillisec
+     * @return
+     */
     public String formatTimeFromMsec(long dateMillisec){
         // Time
         Date time = new Date(dateMillisec);
@@ -92,4 +117,20 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         return timeFormatter.format(time);
     }
 
+    /**
+     * Split string  location into  offsetLocation and primaryLocation
+     * @param location
+     */
+    public void extractLocations(String location){
+        // Check if location contains string "of".
+        // In case yes, store the substring before "of" in offsetLocation, and the part after in primaryLocation
+        // On the contrary, put location in primaryLocation
+        if (location.contains("of")) {
+            String[] splitResult = location.split("of");
+            locationOffset  = splitResult[0];
+            primaryLocation = splitResult[1];
+        } else {
+            primaryLocation = location;
+        }
+    }
 }
