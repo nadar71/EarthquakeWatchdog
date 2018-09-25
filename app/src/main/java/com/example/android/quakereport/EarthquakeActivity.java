@@ -15,8 +15,13 @@
  */
 package com.example.android.quakereport;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -30,10 +35,10 @@ public class EarthquakeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
-        
+
 
         // Get the data from a static json string in {@link QueryUtils}
-        ArrayList<Earthquake> earthquakes = QueryUtils.extractEarthquakes();
+        final ArrayList<Earthquake> earthquakes = QueryUtils.extractEarthquakes();
 
 
         // Find a reference to the {@link ListView} in the layout : using listView because it has only tens of
@@ -46,5 +51,26 @@ public class EarthquakeActivity extends AppCompatActivity {
         // Set the adapter on the {@link ListView}
         // so the list can be populated in the user interface
         earthquakeListView.setAdapter(adapter);
+
+        earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // get url data
+                // 1st method : don't like it
+                /*
+                Earthquake earthquake = earthquakes.get(position);
+                String url = earthquake.getUrl();
+                */
+                // 2nd method : better
+                Earthquake earthquake = earthquakes.get(position);
+
+                String url = earthquake.getUrl();
+                Log.i("setOnItemClickListener", "onItemClick: "+url);
+                // Open the related url page of the eq clicked
+                Uri webpage = Uri.parse(url);
+                Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
+                startActivity(Intent.createChooser(webIntent, "Open details"));
+            }
+        });
     }
 }

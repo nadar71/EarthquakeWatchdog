@@ -68,9 +68,10 @@ public final class QueryUtils {
                 double mag   = properties.getDouble("mag");
                 String place = properties.getString("place");
                 long time    = properties.getLong("time");
+                String url   = properties.getString("url");
 
                 // tmp earthquake obj for single item
-                Earthquake  tmp = new Earthquake(mag, place, time);
+                Earthquake  tmp = new Earthquake(mag, place, time, url);
 
                 // add to list of all earthquakes
                 earthquakes.add(tmp);

@@ -184,4 +184,6 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
 
 
+
+
 }

@@ -20,6 +20,9 @@ public class Earthquake {
     // eq date and time of occurence
     private long timeInMillisec;
 
+    // eq url page for details
+    private String url;
+
 
 
 
@@ -30,12 +33,11 @@ public class Earthquake {
      * @param location
      * @param timeInMillisec
      */
-    public Earthquake(double magnitude, String location, long timeInMillisec) {
+    public Earthquake(double magnitude, String location, long timeInMillisec, String url) {
         this.magnitude = magnitude;
         this.location = location;
         this.timeInMillisec = timeInMillisec;
-
-
+        this.url = url;
     }
 
 
@@ -58,5 +60,9 @@ public class Earthquake {
      */
     public long getTime() { return timeInMillisec; }
 
+    /*
+    Return date
+     */
+    public String getUrl() { return url; }
 
 }
