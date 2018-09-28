@@ -17,6 +17,7 @@ package com.example.android.quakereport;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -24,12 +25,20 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import java.net.URL;
 import java.util.ArrayList;
 
 public class EarthquakeActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
+    private ArrayList<Earthquake> earthquakes;
+
+    /** URL to query the USGS dataset for earthquake information */
+    private static final String USGS_REQUEST_URL =
+            "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&minmag=6&limit=10";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,10 +46,15 @@ public class EarthquakeActivity extends AppCompatActivity {
         setContentView(R.layout.earthquake_activity);
 
 
-        // Get the data from a static json string in {@link QueryUtils}
-        final ArrayList<Earthquake> earthquakes = QueryUtils.extractEarthquakes();
+        AsyncTask<String, Void, ArrayList<Earthquake>> task = new EarthquakeFetchDataAsyncTask(this).execute(USGS_REQUEST_URL);
+
+    }
 
 
+    /**
+     * Used for create/update UI when data will be available
+     */
+    protected void updateListView(){
         // Find a reference to the {@link ListView} in the layout : using listView because it has only tens of
         // entry, otherwise RecycleView would be better
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
@@ -72,5 +86,20 @@ public class EarthquakeActivity extends AppCompatActivity {
                 startActivity(Intent.createChooser(webIntent, "Open details"));
             }
         });
+    }
+
+
+
+    /**
+     * Used by {@link EarthquakeFetchDataAsyncTask  } onPostExecutemethod to populate the ArrayList fetched
+     * @param earthquakes
+     */
+    protected void setEartquakesList(ArrayList<Earthquake> earthquakes){
+        if (  (earthquakes != null) && (earthquakes.isEmpty() == false)  ){
+            this.earthquakes = earthquakes;
+        }else{
+            Log.i(LOG_TAG, "The earthquake list is empty. Check the request. ");
+            Toast.makeText(this, "The earthquake list is empty. Check the request. ", Toast.LENGTH_SHORT).show();
+        }
     }
 }
