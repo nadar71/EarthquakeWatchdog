@@ -1,7 +1,8 @@
-package com.example.android.quakereport;
-
-import android.os.AsyncTask;
+import android.content.AsyncTaskLoader;
+import android.content.Context;
 import android.util.Log;
+
+import com.example.android.quakereport.Earthquake;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,58 +17,56 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Class for loading async eq data through loader
+ */
 
-public class EarthquakeFetchDataAsyncTask extends AsyncTask<String, Void, ArrayList<Earthquake>> {
+public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
 
     // log tag definition
-    private static final String LOG_TAG = EarthquakeFetchDataAsyncTask.class.getName();
-    private EarthquakeActivity earthquakeActivity;
+    private static final String LOG_TAG = EarthquakeAsyncLoader.class.getName();
+
+    // query url
+    private String queryUrl;
+
+    // tmp list for getting the internediate result in extractFeatureFromJson
     private ArrayList<Earthquake> earthquakes = null;
 
-
     /**
-     * Constructor to get the invoking activity reference
-     * @param activity
+     * Loader constructor, pass the
+     * @param context  : context of the activity
+     * @param url  : url to be queried
      */
-    public EarthquakeFetchDataAsyncTask(EarthquakeActivity activity){
-        this.earthquakeActivity = activity;
-        Log.i(LOG_TAG, "MainActivity reference set.");
+    public EarthquakeAsyncLoader(Context context, String url){
+        super(context);
+        queryUrl =url;
     }
 
     @Override
-    protected ArrayList<Earthquake> doInBackground(String... urls) {
-        // Create URL object
-        String requestedUrl = urls[0];
-        URL url = createUrl(requestedUrl);
+    protected void onStartLoading() {
+        forceLoad();
+    }
 
-        // Perform HTTP request to the URL and receive a JSON response back
-        String jsonResponse = "";
-        try {
-            jsonResponse = makeHttpRequest(url);
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "IO Problem in jsonResponse.", e);
+
+    /**
+     * Background thread
+     * @return
+     */
+    @Override
+    public List<Earthquake> loadInBackground() {
+        if(queryUrl == null){
+            return null;
         }
-
-        Log.i(LOG_TAG, "doInBackground: calling extractFeatureFromJson");
-        // Extract relevant fields from the JSON response and create an {@link Event} object
-        earthquakes = extractFeatureFromJson(jsonResponse);
-
-        // Return the {@link Event} object as the result fo the {@link TsunamiAsyncTask}
-        return earthquakes;
-
+        return extractFeatureFromJson(queryUrl);
     }
 
-    /**
-     * Return the list of eartquakes fetched
-     */
-    @Override
-    protected void onPostExecute(ArrayList<Earthquake> earthquakes) {
-        earthquakeActivity.setEartquakesList(earthquakes);
-        Log.i(LOG_TAG+".onPostExecute", "setEartquakesList called.");
-        earthquakeActivity.updateListView();
-        Log.i(LOG_TAG+".onPostExecute", "updateListView.");
-    }
+
+
+
+    //** METHODS USED INSIDE LOADER CALLBACK for retrieving data from RESTFull service
+    // TODO : PUT IT IN A separate CLASS
 
     /**
      * Returns new URL object from the given string URL.
@@ -143,6 +142,8 @@ public class EarthquakeFetchDataAsyncTask extends AsyncTask<String, Void, ArrayL
     /**
      * Return an {@link Earthquake} object by parsing out information
      * about the first earthquake from the input earthquakeJSON string.
+     *
+     * Return the list of earthquake retrieved from remote
      */
     private ArrayList<Earthquake> extractFeatureFromJson(String earthquakeJSON) {
         // Create an empty ArrayList that we can start adding earthquakes to
@@ -155,7 +156,7 @@ public class EarthquakeFetchDataAsyncTask extends AsyncTask<String, Void, ArrayL
 
             // build up a list of Earthquake objects with the corresponding data.
             JSONObject jsonObject = new JSONObject(earthquakeJSON);
-            JSONArray  features  = jsonObject.getJSONArray("features");
+            JSONArray features  = jsonObject.getJSONArray("features");
 
             for(int i=0;i<features.length();i++){
                 // get current earthquake record
@@ -202,9 +203,3 @@ public class EarthquakeFetchDataAsyncTask extends AsyncTask<String, Void, ArrayL
         return responseCode;
     }
 }
-
-
-
-
-
-
