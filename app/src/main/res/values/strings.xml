@@ -15,4 +15,6 @@
 -->
 <resources>
     <string name="app_name">Quake Report</string>
+    <!-- Text to display in the list when there are no earthquakes [CHAR LIMIT=NONE] -->
+    <string name="no_earthquakes">No earthquakes found.</string>
 </resources>
