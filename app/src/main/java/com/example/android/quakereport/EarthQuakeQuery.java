@@ -37,6 +37,15 @@ public class EarthQuakeQuery {
      */
     public ArrayList<Earthquake> fetchEarthquakeData(String requestedUrl){
 
+        //decomment  simulate network latency for debugging
+        /*
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        */
+
         URL url = createUrl(requestedUrl);
 
         if (url==null) {
