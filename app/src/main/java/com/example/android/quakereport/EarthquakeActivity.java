@@ -3,13 +3,17 @@ package com.example.android.quakereport;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -25,6 +29,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.prefs.PreferenceChangeEvent;
 
 public class EarthquakeActivity extends AppCompatActivity  implements LoaderCallbacks<List<Earthquake>> {
 
@@ -42,7 +47,9 @@ public class EarthquakeActivity extends AppCompatActivity  implements LoaderCall
 
     /** URL to query the USGS dataset for earthquake information */
     private static final String USGS_REQUEST_URL =
-            "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&minmag=6&limit=10";
+            "https://earthquake.usgs.gov/fdsnws/event/1/query";
+            // "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&minmag=6&limit=10"; // debug
+
 
     // Constant  id for loader which retrieve data from remote source (not necessary there is only it!)
     private static final int EARTHQUAKE_LOADER_ID = 1;
@@ -120,8 +127,10 @@ public class EarthquakeActivity extends AppCompatActivity  implements LoaderCall
     @Override
     public Loader<List<Earthquake>> onCreateLoader(int id, Bundle args) {
         Log.i(LOG_TAG, "onCreateLoader: Create a new Loader");
+        String urlReq = composeQueryUrl();
+        Log.i(LOG_TAG, "onCreateLoader: urlReq : "+urlReq);
         // create a new loader for the url
-        return new EarthquakeAsyncLoader(this, USGS_REQUEST_URL );
+        return new EarthquakeAsyncLoader(this, urlReq );
     }
 
 
@@ -171,6 +180,56 @@ public class EarthquakeActivity extends AppCompatActivity  implements LoaderCall
             Toast.makeText(this, "The earthquake list is empty. Check the request. ", Toast.LENGTH_LONG).show();
             return false;
         }
+    }
+
+
+    /**
+     * Compose a query url starting from preferences parameters
+     * @return
+     */
+    public String composeQueryUrl(){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        // recover min magnitude value from prefs or set a default from string value
+        String minMagnitude = sharedPreferences.getString(
+                getString(R.string.settings_min_magnitude_key),
+                getString(R.string.settings_min_magnitude_default));
+
+
+        // recover preferred order by param from prefs or set a default from string value
+        String orderBy = sharedPreferences.getString(
+                getString(R.string.settings_order_by_key),
+                getString(R.string.settings_order_by_default));
+
+
+
+        Uri rootUri = Uri.parse(USGS_REQUEST_URL);
+        Uri.Builder builder = rootUri.buildUpon();
+
+        builder.appendQueryParameter("format","geojson");
+        builder.appendQueryParameter("limit","10");
+        builder.appendQueryParameter("minmag",minMagnitude);
+        builder.appendQueryParameter("orderby",orderBy);
+
+        return  builder.toString();
+    }
+
+
+    // ==============================================================================[ MENU STUFF ]
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(this, SettingSimpleActivity.class);
+            startActivity(settingsIntent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 
