@@ -1,4 +1,4 @@
-package com.example.android.quakereport;
+package com.indiewalk.watchdog.earthquake;
 
 import android.content.SharedPreferences;
 import android.preference.ListPreference;
@@ -9,7 +9,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 // import android.support.v7.preference.PreferenceFragmentCompat;
 import android.os.Bundle;
-import android.util.Log;
+
+import com.example.android.quakereport.R;
 
 public class SettingSimpleActivity extends AppCompatActivity {
 

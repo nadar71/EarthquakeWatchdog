@@ -11,7 +11,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".EarthquakeActivity">
+        <activity android:name="com.indiewalk.watchdog.earthquake.EarthquakeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,12 +20,12 @@
         </activity>
 
         <activity
-            android:name=".SettingSimpleActivity"
+            android:name="com.indiewalk.watchdog.earthquake.SettingSimpleActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".EarthquakeActivity">
+            android:parentActivityName="com.indiewalk.watchdog.earthquake.EarthquakeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.android.quakereport.EarthquakeActivity" />
+                android:value="com.example.android.quakereport.com.indiewalk.watchdog.earthquake.EarthquakeActivity" />
         </activity>
 
     </application>

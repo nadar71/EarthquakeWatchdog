@@ -1,5 +1,5 @@
 
-package com.example.android.quakereport;
+package com.indiewalk.watchdog.earthquake;
 
 import android.content.Context;
 import android.content.Intent;
@@ -25,11 +25,10 @@ import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Loader;
 
-import java.net.URL;
+import com.example.android.quakereport.R;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.prefs.PreferenceChangeEvent;
 
 public class EarthquakeActivity extends AppCompatActivity  implements LoaderCallbacks<List<Earthquake>> {
 

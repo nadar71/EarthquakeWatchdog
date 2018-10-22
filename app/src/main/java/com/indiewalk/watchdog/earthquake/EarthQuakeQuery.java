@@ -1,4 +1,4 @@
-package com.example.android.quakereport;
+package com.indiewalk.watchdog.earthquake;
 
 import android.util.Log;
 
