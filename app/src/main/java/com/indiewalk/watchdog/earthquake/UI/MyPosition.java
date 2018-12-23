@@ -1,16 +1,18 @@
 package com.indiewalk.watchdog.earthquake.UI;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
 import com.indiewalk.watchdog.earthquake.R;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -19,21 +21,109 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MyPosition extends AppCompatActivity implements OnMapReadyCallback {
 
-    private GoogleMap mMap;
+    // GoogleMap ref
+    private GoogleMap mMap = null;
 
     // Marker for my positiondefined globally : only must exist at a time
     Marker myPositionMarker;
 
+    // vars for set user current location
+    private static final String STATE_IN_PERMISSION = "inPermission";
+    private static final int REQUEST_PERMS          = 1337;
+    private boolean isInPermission                  = false;
+    private LocationManager locMgr                  = null;
+    private boolean needsInit                       = false;
+    private Criteria crit                           = new Criteria();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_position);
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        // avoid to to request permission again on config change
+        if (savedInstanceState == null) {
+            needsInit=true;
+        }
+        else {
+            isInPermission = savedInstanceState.getBoolean(STATE_IN_PERMISSION, false);
+        }
+
+        // showmap
+        setupLayoutMap(canGetLocation());
+
     }
+
+
+    /**
+     * Save in Bundle boolean flag result about requesting location permission
+     * @param outState
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean(STATE_IN_PERMISSION, isInPermission);
+    }
+
+
+    /**
+     * Callback on request permission result got
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions,
+                                           int[] grantResults) {
+        isInPermission = false;
+
+        if (requestCode == REQUEST_PERMS) {
+            if (canGetLocation()) {
+                setupLayoutMap(true);
+            }
+            else {
+                finish(); // denied permission, so we're done // TODO : change in a dialog about doing it manually
+            }
+        }
+    }
+
+
+    /**
+     * Show map and current user position, if any
+     * @param canGetLocation
+     */
+    private void setupLayoutMap(boolean canGetLocation) {
+        if (canGetLocation) {
+            // if (readyToGo()) {
+                setContentView(R.layout.activity_my_position);
+
+                // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+                SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.map);
+                mapFragment.getMapAsync(this);
+            // }
+        }
+        else if (!isInPermission) {
+            isInPermission=true;
+
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_PERMS);
+        }
+    }
+
+
+    /**
+     * Set the permissions
+     * @return
+     */
+    private boolean canGetLocation() {
+        return(ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED);
+    }
+
+
 
 
     /**
@@ -45,9 +135,10 @@ public class MyPosition extends AppCompatActivity implements OnMapReadyCallback 
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+    @SuppressLint("MissingPermission")
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        final GoogleMap mMap = googleMap;
+    public void onMapReady(final GoogleMap googleMap) {
+        this.mMap = googleMap;
 
 
         /*
@@ -58,22 +149,14 @@ public class MyPosition extends AppCompatActivity implements OnMapReadyCallback 
         */
 
 
-
-        // show user position through geolocalization and fly to it
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mMap.setMyLocationEnabled(true); // false to disable
+        // set user locations
+        mMap.setMyLocationEnabled(true);
+        locMgr=(LocationManager)getSystemService(LOCATION_SERVICE);
+        crit.setAccuracy(Criteria.ACCURACY_FINE);
 
 
 
+        // set position by long press
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
