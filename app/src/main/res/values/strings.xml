@@ -38,22 +38,18 @@
     <string name="settings_order_by_key" translatable="false">order_by</string>
     <string name="settings_order_by_default" translatable="false">@string/settings_order_by_magnitude_value</string>
 
-        <!-- Label for order-by magnitude option [CHAR LIMIT=20] -->
-        <string name="settings_order_by_magnitude_label">Magnitude</string>
-        <string name="settings_order_by_magnitude_value" translatable="false">magnitude</string>
+    <!-- Label for order-by magnitude option [CHAR LIMIT=20] -->
+    <string name="settings_order_by_magnitude_label">Magnitude</string>
+    <string name="settings_order_by_magnitude_value" translatable="false">magnitude</string>
 
-        <!-- Label for order-by most recent option [CHAR LIMIT=20] -->
-        <string name="settings_order_by_most_recent_label">Most Recent</string>
-        <string name="settings_order_by_most_recent_value" translatable="false">time</string>
+    <!-- Label for order-by most recent option [CHAR LIMIT=20] -->
+    <string name="settings_order_by_most_recent_label">Most Recent</string>
+    <string name="settings_order_by_most_recent_value" translatable="false">time</string>
+    <string name="my_position_ic_title">My Position</string>
 
-
-
-
-
-
-
-
-
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_my_position">Map</string>
 
 
 </resources>

@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake;
+package com.indiewalk.watchdog.earthquake.UI;
 
 import android.app.Activity;
 import android.graphics.drawable.GradientDrawable;
@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.android.quakereport.R;
+import com.indiewalk.watchdog.earthquake.data.Earthquake;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;

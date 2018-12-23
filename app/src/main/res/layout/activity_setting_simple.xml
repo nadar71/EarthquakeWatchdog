@@ -5,18 +5,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.android.quakereport.com.indiewalk.watchdog.earthquake.SettingSimpleActivity">
+    tools:context="com.indiewalk.watchdog.earthquake.UI.SettingSimpleActivity">
 
 
     <fragment
         android:id="@+id/settingsFrag"
-        android:name="com.indiewalk.watchdog.earthquake.SettingSimpleActivity$EarthquakePreferenceFragment"
+        android:name="com.indiewalk.watchdog.earthquake.UI.SettingSimpleActivity$EarthquakePreferenceFragment"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="com.example.android.quakereport.com.indiewalk.watchdog.earthquake.SettingSimpleActivity"
-        tools:layout="@layout/earthquake_activity">
+        tools:layout="@layout/main_activity">
 
     </fragment>
 

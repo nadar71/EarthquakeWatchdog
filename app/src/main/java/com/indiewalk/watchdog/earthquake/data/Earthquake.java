@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake;
+package com.indiewalk.watchdog.earthquake.data;
 
 import java.util.Date;
 

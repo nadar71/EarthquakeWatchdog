@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake;
+package com.indiewalk.watchdog.earthquake.UI;
 
 import android.content.SharedPreferences;
 import android.preference.ListPreference;

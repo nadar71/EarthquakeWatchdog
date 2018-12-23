@@ -1,5 +1,5 @@
 
-package com.indiewalk.watchdog.earthquake;
+package com.indiewalk.watchdog.earthquake.UI;
 
 import android.content.Context;
 import android.content.Intent;
@@ -25,14 +25,16 @@ import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Loader;
 
-import com.example.android.quakereport.R;
+import com.indiewalk.watchdog.earthquake.R;
+import com.indiewalk.watchdog.earthquake.net.EarthquakeAsyncLoader;
+import com.indiewalk.watchdog.earthquake.data.Earthquake;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class EarthquakeActivity extends AppCompatActivity  implements LoaderCallbacks<List<Earthquake>> {
+public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<List<Earthquake>> {
 
-    public static final String LOG_TAG = EarthquakeActivity.class.getName();
+    public static final String LOG_TAG = MainActivity.class.getName();
     private List<Earthquake> earthquakes;
 
     //Progress bar
@@ -56,7 +58,7 @@ public class EarthquakeActivity extends AppCompatActivity  implements LoaderCall
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.earthquake_activity);
+        setContentView(R.layout.main_activity);
 
         // Find a reference to the {@link ListView} in the layout : using listView because it has only tens of
         // entry, otherwise RecycleView would be better
@@ -213,7 +215,9 @@ public class EarthquakeActivity extends AppCompatActivity  implements LoaderCall
     }
 
 
-    // ==============================================================================[ MENU STUFF ]
+    // ---------------------------------------------------------------------------------------------
+    //                                          MENU STUFF
+    // ---------------------------------------------------------------------------------------------
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -223,10 +227,17 @@ public class EarthquakeActivity extends AppCompatActivity  implements LoaderCall
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            Intent settingsIntent = new Intent(this, SettingSimpleActivity.class);
-            startActivity(settingsIntent);
-            return true;
+        switch(id){
+            case R.id.action_settings:
+                Intent settingsIntent = new Intent(this, SettingSimpleActivity.class);
+                startActivity(settingsIntent);
+                return true;
+            case R.id.set_myposition_action:
+                Intent setMapIntent = new Intent(this, MyPosition.class);
+                startActivity(setMapIntent);
+                return true;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

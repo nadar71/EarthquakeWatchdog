@@ -1,6 +1,8 @@
-package com.indiewalk.watchdog.earthquake;
+package com.indiewalk.watchdog.earthquake.net;
 
 import android.util.Log;
+
+import com.indiewalk.watchdog.earthquake.data.Earthquake;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -1,8 +1,10 @@
-package com.indiewalk.watchdog.earthquake;
+package com.indiewalk.watchdog.earthquake.net;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.util.Log;
+
+import com.indiewalk.watchdog.earthquake.data.Earthquake;
 
 import java.util.ArrayList;
 import java.util.List;
