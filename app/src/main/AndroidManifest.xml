@@ -73,7 +73,7 @@
         <!-- -->
 
         <activity
-            android:name="com.indiewalk.watchdog.earthquake.UI.MyPosition"
+            android:name="com.indiewalk.watchdog.earthquake.UI.MyPositionActivity"
             android:label="@string/title_activity_my_position"></activity>
     </application>
 

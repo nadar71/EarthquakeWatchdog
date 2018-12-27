@@ -10,7 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 // import android.support.v7.preference.PreferenceFragmentCompat;
 import android.os.Bundle;
 
-import com.example.android.quakereport.R;
+import com.indiewalk.watchdog.earthquake.R;
 
 public class SettingSimpleActivity extends AppCompatActivity {
 

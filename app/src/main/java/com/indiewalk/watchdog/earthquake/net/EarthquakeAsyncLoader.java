@@ -5,6 +5,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
+import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,9 @@ import java.util.List;
  */
 
 public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
+
+    // db instance reference
+    EarthquakeDatabase eqDb;
 
     // log tag definition
     private static final String LOG_TAG = EarthquakeAsyncLoader.class.getName();
@@ -27,11 +31,14 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
     /**
      * Loader constructor, pass the
      * @param context  : context of the activity
-     * @param url  : url to be queried for
+     * @param url      : url to be queried for
      */
     public EarthquakeAsyncLoader(Context context, String url){
         super(context);
         queryUrl =url;
+
+        // init db instance to save data
+        eqDb = EarthquakeDatabase.getDbInstance(context.getApplicationContext());
     }
 
     @Override
@@ -50,9 +57,17 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
         if(queryUrl == null){
             return null;
         }
-        // create instance of request and collect the result
+        // create instance of request and collect the result in ArrayList<Earthquake>
         earthquakes = new EarthQuakeQuery().fetchEarthquakeData(queryUrl);
         Log.i(LOG_TAG, "loadInBackground: loadInBackground ended, returning data requested.");
+
+
+        // save it in db for later use
+        for(Earthquake earthquake : earthquakes){
+            eqDb.earthquakeDbDao().insertEarthquake(earthquake);
+        }
+
+        // return to main activity for list view
         return earthquakes;
     }
 

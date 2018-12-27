@@ -1,5 +1,10 @@
 package com.indiewalk.watchdog.earthquake.data;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
+
+
 import java.util.Date;
 
 /**
@@ -9,7 +14,13 @@ import java.util.Date;
  * - location
  * - date
  */
+@Entity(tableName = "EARTHQUAKE_LIST")
 public class Earthquake {
+
+
+
+    @PrimaryKey(autoGenerate = true)
+    private int id;
 
     // eq's magnitude
     private double magnitude;
@@ -27,12 +38,14 @@ public class Earthquake {
 
 
     /**
-     * Constructor
-     *
+     * ---------------------------------------------------------------------------------------------
+     * Create a new plain Earthquake
+     * ---------------------------------------------------------------------------------------------
      * @param magnitude
      * @param location
      * @param timeInMillisec
      */
+    @Ignore
     public Earthquake(double magnitude, String location, long timeInMillisec, String url) {
         this.magnitude = magnitude;
         this.location = location;
@@ -40,29 +53,64 @@ public class Earthquake {
         this.url = url;
     }
 
-
-    /*
-    Return magnitude
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Create a new plain Earthquake for db insert
+     * ---------------------------------------------------------------------------------------------
+     * @param id
+     * @param magnitude
+     * @param location
+     * @param timeInMillisec
+     * @param url
      */
+    public Earthquake(int id, double magnitude, String location, long timeInMillisec, String url) {
+        this.id = id;
+        this.magnitude = magnitude;
+        this.location = location;
+        this.timeInMillisec = timeInMillisec;
+        this.url = url;
+    }
+
+
+    // Getter and setter
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public Double getMagnitude() {
         return magnitude;
     }
 
-    /*
-    Return location
-     */
+    public void setMagnitude(double magnitude) {
+        this.magnitude = magnitude;
+    }
+
     public String getLocation() {
         return location;
     }
 
-    /*
-    Return date
-     */
-    public long getTime() { return timeInMillisec; }
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
-    /*
-    Return date
-     */
-    public String getUrl() { return url; }
+    public long getTimeInMillisec() {
+        return timeInMillisec;
+    }
 
+    public void setTimeInMillisec(long timeInMillisec) {
+        this.timeInMillisec = timeInMillisec;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

@@ -233,7 +233,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                 startActivity(settingsIntent);
                 return true;
             case R.id.set_myposition_action:
-                Intent setMapIntent = new Intent(this, MyPosition.class);
+                Intent setMapIntent = new Intent(this, MyPositionActivity.class);
                 startActivity(setMapIntent);
                 return true;
             default:

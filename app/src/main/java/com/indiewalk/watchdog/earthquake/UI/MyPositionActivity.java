@@ -4,11 +4,13 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
+import android.location.Location;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
@@ -19,13 +21,18 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MyPosition extends AppCompatActivity implements OnMapReadyCallback {
+public class MyPositionActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    private static final String TAG = MyPositionActivity.class.getSimpleName();
 
     // GoogleMap ref
     private GoogleMap mMap = null;
 
-    // Marker for my positiondefined globally : only must exist at a time
-    Marker myPositionMarker;
+    // Marker for my position defined manually : only must exist at a time
+    Marker myManualPositionMarker;
+
+    // Marker for my current position by gps
+    Marker myCurrentPositionMarker;
 
     // vars for set user current location
     private static final String STATE_IN_PERMISSION = "inPermission";
@@ -35,15 +42,17 @@ public class MyPosition extends AppCompatActivity implements OnMapReadyCallback 
     private boolean needsInit                       = false;
     private Criteria crit                           = new Criteria();
 
+    // store current user location coordinates
+    Location myLocation;
+    double   myLat, myLong;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // avoid to to request permission again on config change
-        if (savedInstanceState == null) {
-            needsInit=true;
-        }
-        else {
+        if (savedInstanceState != null) {
             isInPermission = savedInstanceState.getBoolean(STATE_IN_PERMISSION, false);
         }
 
@@ -151,9 +160,26 @@ public class MyPosition extends AppCompatActivity implements OnMapReadyCallback 
 
         // set user locations
         mMap.setMyLocationEnabled(true);
-        locMgr=(LocationManager)getSystemService(LOCATION_SERVICE);
+        locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
         crit.setAccuracy(Criteria.ACCURACY_FINE);
 
+
+        // get my current location coordinates
+        myLocation = locMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        if (myLocation != null) {
+            myLat = myLocation.getLatitude();
+            myLong = myLocation.getLongitude();
+
+            // set marker at my current position
+            myCurrentPositionMarker = mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(myLat, myLong))
+                .title("My Current GPS position")
+                .snippet("Snippet")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_home_blue_24dp)));
+            Toast.makeText(this, "Marker set on :" + myLat + " " + myLong, Toast.LENGTH_SHORT).show();
+
+        }
 
 
         // set position by long press
@@ -162,10 +188,10 @@ public class MyPosition extends AppCompatActivity implements OnMapReadyCallback 
             public void onMapLongClick(LatLng latLng) {
 
                 // First check if myMarker is null
-                if (myPositionMarker == null) {
+                if (myManualPositionMarker == null) {
 
                     // Marker was not set yet. Add marker:
-                    myPositionMarker = mMap.addMarker(new MarkerOptions()
+                    myManualPositionMarker = mMap.addMarker(new MarkerOptions()
                             .position(latLng)
                             .title("My positions")
                             .snippet("Your marker snippet"));
@@ -173,13 +199,11 @@ public class MyPosition extends AppCompatActivity implements OnMapReadyCallback 
                 } else {
 
                     // Marker already exists, just update it's position
-                    myPositionMarker.setPosition(latLng);
+                    myManualPositionMarker.setPosition(latLng);
 
                 }
 
-                myPositionMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-
-
+                myManualPositionMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
             }
         });
     }

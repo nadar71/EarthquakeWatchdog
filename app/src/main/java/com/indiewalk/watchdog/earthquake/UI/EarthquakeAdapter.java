@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.example.android.quakereport.R;
+import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 
 import java.text.DecimalFormat;
@@ -87,11 +87,11 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
         /** display date formatted using {@link formatDateFromMsec} **/
         TextView dateView = (TextView)itemView.findViewById(R.id.dateText);
-        dateView.setText(formatDateFromMsec(currentEartquakeItem.getTime()));
+        dateView.setText(formatDateFromMsec(currentEartquakeItem.getTimeInMillisec()));
 
         /** display time formatted using {@link formatTimeFromMsec} **/
         TextView timeView = (TextView)itemView.findViewById(R.id.timeText);
-        timeView.setText(formatTimeFromMsec(currentEartquakeItem.getTime()));
+        timeView.setText(formatTimeFromMsec(currentEartquakeItem.getTimeInMillisec()));
 
         return itemView;
 
