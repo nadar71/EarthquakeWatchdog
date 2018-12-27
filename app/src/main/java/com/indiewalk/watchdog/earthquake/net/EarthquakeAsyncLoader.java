@@ -62,6 +62,9 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
         Log.i(LOG_TAG, "loadInBackground: loadInBackground ended, returning data requested.");
 
 
+        // delete previous results in db, only newest are valid
+        eqDb.earthquakeDbDao().dropEarthquakeListTable();
+
         // save it in db for later use
         for(Earthquake earthquake : earthquakes){
             eqDb.earthquakeDbDao().insertEarthquake(earthquake);

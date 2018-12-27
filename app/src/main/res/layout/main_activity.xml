@@ -11,8 +11,8 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@null"
-        android:dividerHeight="0dp"/>
+        android:divider="@color/textColorEarthquakeDetails"
+        android:dividerHeight="1dp"/>
 
     <!-- Empty view is only visible when the list has no items. -->
     <TextView

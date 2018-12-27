@@ -35,6 +35,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<List<Earthquake>> {
 
     public static final String LOG_TAG = MainActivity.class.getName();
+
+    ListView earthquakeListView;
     private List<Earthquake> earthquakes;
 
     //Progress bar
@@ -62,22 +64,13 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
         // Find a reference to the {@link ListView} in the layout : using listView because it has only tens of
         // entry, otherwise RecycleView would be better
-        ListView earthquakeListView = (ListView) findViewById(R.id.list);
+        earthquakeListView = (ListView) findViewById(R.id.list);
 
         // Create a new {@link EarthquakeAdapter} of {@link Earthquakes} objects
         adapter = new EarthquakeAdapter(this, new ArrayList<Earthquake>());
 
         // Set the adapter on the {@link ListView} so the list can be populated in the user interface
         earthquakeListView.setAdapter(adapter);
-
-
-        // set progress bar
-        loadingInProgress = findViewById(R.id.loading_spinner);
-
-        // set Empty View in case of List empty
-        emptyListText = findViewById(R.id.empty_view);
-        earthquakeListView.setEmptyView(emptyListText);
-        emptyListText.setText(R.string.searching);
 
 
 
@@ -98,8 +91,26 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             }
         });
 
+        // Call loader for retrivieving data
+        retrieveRemoteData();
 
 
+    }
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Retrieve Remote Data.
+     * Check internet connectin availability first
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void retrieveRemoteData() {
+        // set progress bar
+        loadingInProgress = findViewById(R.id.loading_spinner);
+
+        // set Empty View in case of List empty
+        emptyListText = findViewById(R.id.empty_view);
+        earthquakeListView.setEmptyView(emptyListText);
+        emptyListText.setText(R.string.searching);
 
         // check connection
         // reference to connection manager
@@ -120,9 +131,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             emptyListText.setText(R.string.no_internet_connection);
 
         }
-
     }
-
 
 
     @Override
@@ -235,6 +244,9 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             case R.id.set_myposition_action:
                 Intent setMapIntent = new Intent(this, MyPositionActivity.class);
                 startActivity(setMapIntent);
+                return true;
+            case R.id.refresh_action:
+                retrieveRemoteData();
                 return true;
             default:
                 break;

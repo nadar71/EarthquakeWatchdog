@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!--                order by preferences value keys-values array                             -->
     <string-array name="settings_order_by_labels">
         <item>@string/settings_order_by_magnitude_label</item>
         <item>@string/settings_order_by_most_recent_label</item>
@@ -9,6 +10,17 @@
     <string-array name="settings_order_by_values">
         <item>@string/settings_order_by_magnitude_value</item>
         <item>@string/settings_order_by_most_recent_value</item>
+    </string-array>
+
+    <!--                distance unit preferences value keys-values array                        -->
+    <string-array name="settings_distance_unit_labels">
+        <item>@string/settings_km_distance_unit_label</item>
+        <item>@string/settings_mi_distance_unit_label</item>
+    </string-array>
+
+    <string-array name="settings_distance_unit_values">
+        <item>@string/settings_km_distance_unit_value</item>
+        <item>@string/settings_mi_distance_unit_value</item>
     </string-array>
 
 </resources>

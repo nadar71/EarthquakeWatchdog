@@ -12,6 +12,14 @@
         android:title="@string/settings_order_by_label" />
 
 
+    <ListPreference
+        android:defaultValue="@string/settings_km_distance_unit_value"
+        android:entries="@array/settings_distance_unit_labels"
+        android:entryValues="@array/settings_distance_unit_values"
+        android:key="@string/settings_distance_unit_by_key"
+        android:title="@string/settings_distance_unit_label" />
+
+
     <EditTextPreference
         android:defaultValue="@string/settings_min_magnitude_default"
         android:inputType="numberDecimal"

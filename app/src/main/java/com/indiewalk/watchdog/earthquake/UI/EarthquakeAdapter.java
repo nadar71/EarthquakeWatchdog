@@ -56,7 +56,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
         // inflate the item layout if not null
         if (itemView == null){
-            itemView = LayoutInflater.from(getContext()).inflate(R.layout.list_item,parent,false);
+            itemView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_ii,parent,false);
         }
 
         // get the item in the current position

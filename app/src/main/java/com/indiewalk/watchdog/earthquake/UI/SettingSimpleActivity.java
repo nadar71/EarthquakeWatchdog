@@ -36,6 +36,9 @@ public class SettingSimpleActivity extends AppCompatActivity {
 
             Preference orderBy = findPreference(getString(R.string.settings_order_by_key));
             bindPreferenceSummaryToValue(orderBy);
+
+            Preference distanceUnit = findPreference(getString(R.string.settings_distance_unit_by_key));
+            bindPreferenceSummaryToValue(distanceUnit);
         }
 
 

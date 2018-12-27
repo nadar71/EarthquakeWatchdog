@@ -11,7 +11,7 @@
     android:paddingStart="16dp">
 
     <TextView
-        android:id="@+id/magnitudeText"
+        android:id="@+id/magnitudeText_"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_gravity="center_vertical"
@@ -34,7 +34,7 @@
         >
 
         <TextView
-            android:id="@+id/locationOffsetText"
+            android:id="@+id/locationOffsetText_"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
@@ -46,7 +46,7 @@
             android:text="74km NW of" />
 
         <TextView
-            android:id="@+id/primaryLocationText"
+            android:id="@+id/primaryLocationText_"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
@@ -68,7 +68,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/dateText"
+            android:id="@+id/dateText_"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
@@ -77,7 +77,7 @@
             android:text="Feb 2, 15" />
 
         <TextView
-            android:id="@+id/timeText"
+            android:id="@+id/timeText_"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="end"

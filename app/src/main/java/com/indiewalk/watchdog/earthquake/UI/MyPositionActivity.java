@@ -20,6 +20,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.indiewalk.watchdog.earthquake.data.Earthquake;
+import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MyPositionActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -27,6 +32,13 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
 
     // GoogleMap ref
     private GoogleMap mMap = null;
+
+    // List of all the earthquake in db
+    // TODO: retrieve them more efficiently with livedata & c.
+    List<Earthquake> earthquakes;
+
+    // Db reference
+    EarthquakeDatabase eqDb;
 
     // Marker for my position defined manually : only must exist at a time
     Marker myManualPositionMarker;
@@ -51,6 +63,9 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // get db instance
+        eqDb = EarthquakeDatabase.getDbInstance(getApplicationContext());
+
         // avoid to to request permission again on config change
         if (savedInstanceState != null) {
             isInPermission = savedInstanceState.getBoolean(STATE_IN_PERMISSION, false);
@@ -58,6 +73,9 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
 
         // showmap
         setupLayoutMap(canGetLocation());
+
+        // retrieve eq currently in db
+        earthquakes = eqDb.earthquakeDbDao().loadAllEarthquakeRetrieved();
 
     }
 
@@ -162,6 +180,16 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
         mMap.setMyLocationEnabled(true);
         locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
         crit.setAccuracy(Criteria.ACCURACY_FINE);
+
+
+        // set the current eq coordinates, based on temporal filter
+        /*
+        for(Earthquake ){
+
+        }
+        */
+
+
 
 
         // get my current location coordinates
