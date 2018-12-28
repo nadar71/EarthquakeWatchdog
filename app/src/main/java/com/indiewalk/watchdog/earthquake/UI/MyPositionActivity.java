@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
+import com.indiewalk.watchdog.earthquake.util.AppExecutors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +38,9 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
     // List of all the earthquake in db
     // TODO: retrieve them more efficiently with livedata & c.
     List<Earthquake> earthquakes;
+
+    // Markers associated with earthquake on map
+    List<Marker> earthquakesMarkers;
 
     // Db reference
     EarthquakeDatabase eqDb;
@@ -66,16 +71,22 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
         // get db instance
         eqDb = EarthquakeDatabase.getDbInstance(getApplicationContext());
 
-        // avoid to to request permission again on config change
+        // avoid to request permission again on config change
         if (savedInstanceState != null) {
             isInPermission = savedInstanceState.getBoolean(STATE_IN_PERMISSION, false);
         }
 
-        // showmap
+        // showmapwith permission asking
         setupLayoutMap(canGetLocation());
 
-        // retrieve eq currently in db
-        earthquakes = eqDb.earthquakeDbDao().loadAllEarthquakeRetrieved();
+        // retrieve eq currently in db, in different thread
+        // TODO: using livedata ?!?
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                earthquakes = eqDb.earthquakeDbDao().loadAllEarthquakeRetrieved();
+            }
+        });
 
     }
 
@@ -183,11 +194,21 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
 
 
         // set the current eq coordinates, based on temporal filter
-        /*
-        for(Earthquake ){
+        for(Earthquake earthquake : earthquakes){
+            /*
+            earthquakesMarkers.add(
+                    mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(earthquake.getLatitude(), earthquake.getLongitude()))
+                            .title("Location : " + earthquake.getLocation())
+                            .snippet("Magnitude : " + earthquake.getMagnitude())
+                            // .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_home_blue_24dp)))
 
+                    ));
+
+            */
+            Log.d(TAG, "onMapReady: latitude : "+earthquake.getLatitude()+" logitude : "+ earthquake.getLongitude());
         }
-        */
+
 
 
 

@@ -11,7 +11,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 
-@Database(entities = {Earthquake.class}, version = 2, exportSchema = false)
+@Database(entities = {Earthquake.class}, version = 3, exportSchema = false)
 @TypeConverters(DateConverter.class)
 public abstract class EarthquakeDatabase extends RoomDatabase {
     private static final String TAG = EarthquakeDatabase.class.getSimpleName();
@@ -21,12 +21,22 @@ public abstract class EarthquakeDatabase extends RoomDatabase {
     private static EarthquakeDatabase eqDbInstance ;
 
 
+    static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE EARTHQUAKE_LIST "+"ADD COLUMN longitude REAL NOT NULL DEFAULT 0.0");
+            database.execSQL("ALTER TABLE EARTHQUAKE_LIST "+"ADD COLUMN latitude  REAL NOT NULL DEFAULT 0.0");
+            database.execSQL("ALTER TABLE EARTHQUAKE_LIST "+"ADD COLUMN depth     REAL NOT NULL DEFAULT 0.0");
+        }
+    };
+
     public static EarthquakeDatabase getDbInstance(Context context){
         if(eqDbInstance == null){
             synchronized (LOCK){
                 Log.d(TAG, "Creating App db singleton instance...");
                 eqDbInstance = Room.databaseBuilder(context.getApplicationContext(), EarthquakeDatabase.class,EarthquakeDatabase.DBNAME)
                         //.allowMainThreadQueries() // TODO : temporary for debugging, delete this
+                        .addMigrations(MIGRATION_2_3)
                         .build();
             }
 

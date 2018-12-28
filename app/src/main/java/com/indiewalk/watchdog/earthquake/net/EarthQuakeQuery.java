@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class EarthQuakeQuery {
 
     // log tag definition
-    private static final String LOG_TAG = EarthQuakeQuery.class.getName();
+    private static final String TAG = EarthQuakeQuery.class.getName();
     // tmp data structure for returning results
     private ArrayList<Earthquake> earthquakes = null;
 
@@ -51,7 +51,7 @@ public class EarthQuakeQuery {
         URL url = createUrl(requestedUrl);
 
         if (url==null) {
-            Log.e(LOG_TAG, "Empty url ");
+            Log.e(TAG, "Empty url ");
             return null;
         }
 
@@ -60,10 +60,10 @@ public class EarthQuakeQuery {
         try {
             jsonResponse = makeHttpRequest(url);
         } catch (IOException e) {
-            Log.e(LOG_TAG, "IO Problem in jsonResponse.", e);
+            Log.e(TAG, "IO Problem in jsonResponse.", e);
         }
 
-        Log.i(LOG_TAG, "fetchEarthquakeData: calling extractFeatureFromJson");
+        Log.i(TAG, "fetchEarthquakeData: calling extractFeatureFromJson");
         // Extract relevant fields from the JSON response and create an {@link Event} object
         if ( (jsonResponse != null) && (!jsonResponse.isEmpty()) && (jsonResponse != "")   ) {
             earthquakes = extractFeatureFromJson(jsonResponse);
@@ -81,7 +81,7 @@ public class EarthQuakeQuery {
         try {
             url = new URL(stringUrl);
         } catch (MalformedURLException e) {
-            Log.e(LOG_TAG, "Error with creating URL", e);
+            Log.e(TAG, "Error with creating URL", e);
             return null;
         }
         return url;
@@ -95,13 +95,13 @@ public class EarthQuakeQuery {
         HttpURLConnection urlConnection = null;
         InputStream inputStream = null;
         try {
-            Log.i(LOG_TAG, "makeHttpRequest: open remote connection.");
+            Log.i(TAG, "makeHttpRequest: open remote connection.");
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.setReadTimeout(10000 /* milliseconds */);
             urlConnection.setConnectTimeout(15000 /* milliseconds */);
             // check http response before doing anything
-            Log.i(LOG_TAG, "makeHttpRequest: check response code");
+            Log.i(TAG, "makeHttpRequest: check response code");
             int responseCode = checkHttpResponse(urlConnection);
             if (responseCode==200) {
                 urlConnection.connect();
@@ -109,13 +109,13 @@ public class EarthQuakeQuery {
                 inputStream = urlConnection.getInputStream();
                 // convert input stream to json
                 jsonResponse = readFromStream(inputStream);
-                Log.e(LOG_TAG, "Json Response : "+jsonResponse);
+                Log.e(TAG, "Json Response : "+jsonResponse);
             }else{
-                Log.e(LOG_TAG, "Response code not 200 : "+responseCode);
+                Log.e(TAG, "Response code not 200 : "+responseCode);
                 jsonResponse = "";
             }
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Problem making the HTTP request.", e);
+            Log.e(TAG, "Problem making the HTTP request.", e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -167,31 +167,48 @@ public class EarthQuakeQuery {
 
             // build up a list of Earthquake objects (from json "features" array) with the corresponding data.
             JSONObject jsonObject = new JSONObject(earthquakeJSON);
-            JSONArray features    = jsonObject.getJSONArray("features");
 
+            JSONArray features    = jsonObject.getJSONArray("features");
             for(int i=0;i<features.length();i++){
                 // get current earthquake record
                 JSONObject currentEarthquake = features.getJSONObject(i);
+
                 // get properties obj for current equake object
                 JSONObject properties = currentEarthquake.getJSONObject("properties");
 
                 double mag   = properties.getDouble("mag");
                 String place = properties.getString("place");
-                long time    = properties.getLong("time");
+                long   time  = properties.getLong("time");
                 String url   = properties.getString("url");
 
+                // get geometry obj for current equake object
+                JSONObject geometry = currentEarthquake.getJSONObject("geometry");
+
+                // get coordinates array from geometry obj for current equake object
+                JSONArray coordinates = geometry.getJSONArray("coordinates");
+
+                double longitude   = coordinates.getDouble(0);
+                double latitude    = coordinates.getDouble(1);
+                double depth       = coordinates.getDouble(2);
+
+
                 // tmp earthquake obj for single item
-                Earthquake  tmp = new Earthquake(mag, place, time, url);
+                Log.d(TAG, "extractFeatureFromJson: longitude : "+longitude+" latitude : "+latitude+" depth : "+depth);
+                Earthquake  tmp = new Earthquake(mag, place, time, url, longitude, latitude, depth);
 
                 // add to list of all earthquakes
                 earthquakes.add(tmp);
+
             }
+
+
+
 
         } catch (JSONException e) {
             // If an error is thrown when executing any of the above statements in the "try" block,
             // catch the exception here, so the app doesn't crash. Print a log message
             // with the message from the exception.
-            Log.e(LOG_TAG, "Problem parsing the earthquake JSON results", e);
+            Log.e(TAG, "Problem parsing the earthquake JSON results", e);
         }
 
         // Return the list of earthquakes
@@ -209,7 +226,7 @@ public class EarthQuakeQuery {
         try {
             responseCode = urlConnection.getResponseCode();
         }catch(IOException e){
-            Log.e(LOG_TAG+".checkHttpResponse", "Problem getting HTTP response.", e);
+            Log.e(TAG +".checkHttpResponse", "Problem getting HTTP response.", e);
         }
         return responseCode;
     }

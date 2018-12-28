@@ -34,6 +34,14 @@ public class Earthquake {
     // eq url page for details
     private String url;
 
+    // longitude
+    private double longitude;
+
+    // latitude
+    private double latitude;
+
+    // depth
+    private double depth;
 
 
 
@@ -44,14 +52,22 @@ public class Earthquake {
      * @param magnitude
      * @param location
      * @param timeInMillisec
+     * @param url
+     * @param longitude
+     * @param latitude
+     * @param depth
      */
     @Ignore
-    public Earthquake(double magnitude, String location, long timeInMillisec, String url) {
+    public Earthquake(double magnitude, String location, long timeInMillisec, String url, double longitude, double latitude, double depth) {
         this.magnitude = magnitude;
         this.location = location;
         this.timeInMillisec = timeInMillisec;
         this.url = url;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.depth = depth;
     }
+
 
     /**
      * ---------------------------------------------------------------------------------------------
@@ -62,13 +78,19 @@ public class Earthquake {
      * @param location
      * @param timeInMillisec
      * @param url
+     * @param longitude
+     * @param latitude
+     * @param depth
      */
-    public Earthquake(int id, double magnitude, String location, long timeInMillisec, String url) {
+    public Earthquake(int id, double magnitude, String location, long timeInMillisec, String url, double longitude, double latitude, double depth) {
         this.id = id;
         this.magnitude = magnitude;
         this.location = location;
         this.timeInMillisec = timeInMillisec;
         this.url = url;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.depth = depth;
     }
 
 
@@ -81,6 +103,7 @@ public class Earthquake {
         this.id = id;
     }
 
+
     public Double getMagnitude() {
         return magnitude;
     }
@@ -88,6 +111,7 @@ public class Earthquake {
     public void setMagnitude(double magnitude) {
         this.magnitude = magnitude;
     }
+
 
     public String getLocation() {
         return location;
@@ -97,6 +121,7 @@ public class Earthquake {
         this.location = location;
     }
 
+
     public long getTimeInMillisec() {
         return timeInMillisec;
     }
@@ -105,12 +130,39 @@ public class Earthquake {
         this.timeInMillisec = timeInMillisec;
     }
 
+
     public String getUrl() {
         return url;
     }
 
-
     public void setUrl(String url) {
         this.url = url;
+    }
+
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+
+    public double getDepth() {
+        return depth;
+    }
+
+    public void setDepth(double depth) {
+        this.depth = depth;
     }
 }
