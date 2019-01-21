@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/overridePosition_cb"
+        android:checkable="true"
+        android:title="Override position manually" />
+    <item
+        android:id="@+id/showMarkers_cb"
+        android:checkable="true"
+        android:title="Hide Earthquakes markers"
+        app:showAsAction="never"></item>
+
+
+</menu>

@@ -20,8 +20,10 @@ import java.util.Date;
 import java.util.ArrayList;
 
 /**
- * {@link EarthquakeAdapter} It's an {@link ArrayAdapter} which can provide a list of object {@link Earthquake}
- * based from a data source
+ * ---------------------------------------------------------------------------------------------
+ * {@link EarthquakeAdapter} It's an {@link ArrayAdapter} which can provide a list of
+ * object {@link Earthquake} based from a data source
+ * ---------------------------------------------------------------------------------------------
  */
 
 public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
@@ -33,9 +35,11 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Main constructor
      * @param context
      * @param earthquakes
+     * ---------------------------------------------------------------------------------------------
      */
     public EarthquakeAdapter(Activity context, ArrayList<Earthquake> earthquakes){
         super(context,0,earthquakes);  // * 2nd param to 0 because NOT populating simple TextView
@@ -44,11 +48,13 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Provides a view for an AdapterView
      * @param position    : position in the list of the item
      * @param convertView : the recycle view item to be populated
      * @param parent      : parent ViewGroup used for inflation of this view
      * @return
+     * ---------------------------------------------------------------------------------------------
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent){
@@ -99,9 +105,11 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Format date in a specific way and millisec  format
      * @param dateMillisec
      * @return
+     * ---------------------------------------------------------------------------------------------
      */
     public String formatDateFromMsec(long dateMillisec){
         // Date
@@ -115,9 +123,11 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Format time in a specific way and millisec  format
      * @param dateMillisec
      * @return
+     * ---------------------------------------------------------------------------------------------
      */
     public String formatTimeFromMsec(long dateMillisec){
         // Time
@@ -130,8 +140,10 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
     }
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Split string  location into  offsetLocation and primaryLocation
      * @param location
+     * ---------------------------------------------------------------------------------------------
      */
     public void extractLocations(String location){
         // Check if location contains string "of".
@@ -148,9 +160,11 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
     }
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Convert magnitude to format 0.0 and in string type
      * @param mag
      * @return
+     * ---------------------------------------------------------------------------------------------
      */
     public String formatMagnitude(double mag){
         DecimalFormat formatter = new DecimalFormat("0.0");
@@ -159,9 +173,11 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Return specific color value for specific magnitude values
      * @param magnitude
      * @return
+     * ---------------------------------------------------------------------------------------------
      */
     public int getMagnitudeColor(double magnitude){
         int mag = (int) magnitude;

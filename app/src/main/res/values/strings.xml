@@ -19,6 +19,7 @@
     <!-- - - - - - - - - - - Strings For Title  - - - -  - - - - - - - - - - - - - - - - - - - - -->
     <string name="my_position_ic_title">My Position</string>
     <string name="refresh_ic_title">Refresh</string>
+    <string name="spinner_title">Map type</string>
 
     <!-- Text to display in the list when there are no earthquakes -->
     <string name="no_earthquakes">No earthquakes found.</string>

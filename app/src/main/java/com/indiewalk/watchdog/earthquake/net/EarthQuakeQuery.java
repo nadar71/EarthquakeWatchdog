@@ -19,8 +19,10 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 /**
+ * ---------------------------------------------------------------------------------------------
  * Class which do all the stuff for remote request to RESTFul service
  * USED INSIDE LOADER CALLBACK
+ * ---------------------------------------------------------------------------------------------
  */
 
 public class EarthQuakeQuery {
@@ -32,10 +34,12 @@ public class EarthQuakeQuery {
 
 
     /**
-     * Fetch data from remote seervice.
+     * ---------------------------------------------------------------------------------------------
+     * Fetch data from remote service.
      * Use createUrl, makeHttpRequest, extractFeatureFromJson
      * @param requestedUrl
      * @return ArrayList<Earthquake>
+     * ---------------------------------------------------------------------------------------------
      */
     public ArrayList<Earthquake> fetchEarthquakeData(String requestedUrl){
 
@@ -74,7 +78,9 @@ public class EarthQuakeQuery {
     }
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Returns new URL object from the given string URL.
+     * ---------------------------------------------------------------------------------------------
      */
     private URL createUrl(String stringUrl) {
         URL url = null;
@@ -88,7 +94,9 @@ public class EarthQuakeQuery {
     }
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Make an HTTP request to the given URL and return a String as the response.
+     * ---------------------------------------------------------------------------------------------
      */
     private String makeHttpRequest(URL url) throws IOException {
         String jsonResponse = "";
@@ -129,8 +137,10 @@ public class EarthQuakeQuery {
     }
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Convert the {@link InputStream} into a String which contains the
      * whole JSON response from the server.
+     * ---------------------------------------------------------------------------------------------
      */
     private String readFromStream(InputStream inputStream) throws IOException {
         StringBuilder output = new StringBuilder();
@@ -153,10 +163,12 @@ public class EarthQuakeQuery {
 
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Return a ArrayList of  {@link Earthquake} objects by parsing out information
      * about the first earthquake from the input earthquakeJSON string.
      *
      * Return the list of earthquake retrieved from remote
+     * ---------------------------------------------------------------------------------------------
      */
     private ArrayList<Earthquake> extractFeatureFromJson(String earthquakeJSON) {
         // Create an empty ArrayList that we can start adding earthquakes to
@@ -217,9 +229,11 @@ public class EarthQuakeQuery {
 
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Return http response code
      * @param urlConnection
      * @return
+     * ---------------------------------------------------------------------------------------------
      */
     private int checkHttpResponse(HttpURLConnection urlConnection){
         int responseCode = 0;

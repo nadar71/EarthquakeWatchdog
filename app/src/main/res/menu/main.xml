@@ -20,7 +20,7 @@
 
     <item
         android:id="@+id/refresh_action"
-        android:icon="@drawable/ic_refresh_black_24dp"
+        android:icon="@drawable/ic_refresh_white_24dp"
         android:title="@string/my_position_ic_title"
         app:showAsAction="always" />
 

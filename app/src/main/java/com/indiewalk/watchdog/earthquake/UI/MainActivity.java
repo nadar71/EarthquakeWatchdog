@@ -29,6 +29,7 @@ import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.net.EarthquakeAsyncLoader;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     // ListView Adapter
     private EarthquakeAdapter adapter;
 
-    /** URL to query the USGS dataset for earthquake information */
+    // URL to query the USGS dataset for earthquake information 
     private static final String USGS_REQUEST_URL =
             "https://earthquake.usgs.gov/fdsnws/event/1/query";
             // "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&minmag=6&limit=10"; // debug
@@ -61,6 +62,10 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
+        // TODO : ASK FOR GEOLOCALIZATION PERMISSION
+            // TODO : IF OK  : COMPUTE THE DISTANCE FROM EQ
+            // TODO : IF NOT : COMPUTE DISTANCE FROM DEFAULT : the default is that from emulator, check with 8.0 avd
 
         // Find a reference to the {@link ListView} in the layout : using listView because it has only tens of
         // entry, otherwise RecycleView would be better

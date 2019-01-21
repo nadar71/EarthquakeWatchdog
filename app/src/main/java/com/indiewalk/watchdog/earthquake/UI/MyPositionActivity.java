@@ -2,6 +2,7 @@ package com.indiewalk.watchdog.earthquake.UI;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -11,6 +12,11 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -40,9 +46,10 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
     List<Earthquake> earthquakes;
 
     // Markers associated with earthquake on map
-    List<Marker> earthquakesMarkers;
+    List<Marker> earthquakesMarkersList;
 
     // Db reference
+    // TODO : create and interface with repository
     EarthquakeDatabase eqDb;
 
     // Marker for my position defined manually : only must exist at a time
@@ -53,7 +60,7 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
 
     // vars for set user current location
     private static final String STATE_IN_PERMISSION = "inPermission";
-    private static final int REQUEST_PERMS          = 1337;
+    private static final int REQUEST_PERMS          = 1337;   // random number
     private boolean isInPermission                  = false;
     private LocationManager locMgr                  = null;
     private boolean needsInit                       = false;
@@ -191,21 +198,22 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
         mMap.setMyLocationEnabled(true);
         locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
         crit.setAccuracy(Criteria.ACCURACY_FINE);
+        // TODO : SAVE IT IN SHAREDPREFERENCES
 
 
         // set the current eq coordinates, based on temporal filter
+        earthquakesMarkersList = new ArrayList<Marker>();
         for(Earthquake earthquake : earthquakes){
-            /*
-            earthquakesMarkers.add(
-                    mMap.addMarker(new MarkerOptions()
+
+            earthquakesMarkersList.add(mMap.addMarker(new MarkerOptions()
                             .position(new LatLng(earthquake.getLatitude(), earthquake.getLongitude()))
                             .title("Location : " + earthquake.getLocation())
                             .snippet("Magnitude : " + earthquake.getMagnitude())
-                            // .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_home_blue_24dp)))
+                    // .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_home_blue_24dp)))
 
-                    ));
+            ));
 
-            */
+
             Log.d(TAG, "onMapReady: latitude : "+earthquake.getLatitude()+" logitude : "+ earthquake.getLongitude());
         }
 
@@ -216,8 +224,9 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
         // get my current location coordinates
         myLocation = locMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
+        // TODO : MAKE THIS WORKS!
         if (myLocation != null) {
-            myLat = myLocation.getLatitude();
+            myLat  = myLocation.getLatitude();
             myLong = myLocation.getLongitude();
 
             // set marker at my current position
@@ -231,6 +240,7 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
         }
 
 
+        // TODO : SAVE IT IN SHAREDPREFERENCES
         // set position by long press
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
@@ -255,5 +265,56 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
                 myManualPositionMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
             }
         });
+
+
     }
+
+
+    // ---------------------------------------------------------------------------------------------
+    //                                          MENU STUFF
+    // ---------------------------------------------------------------------------------------------
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.map_action, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch(id){
+            case R.id.overridePosition_cb:
+                if (item.isChecked()) {
+                    item.setChecked(false);
+                    Log.d(TAG, "onOptionsItemSelected: was Checked !!");
+                    // TODO : SHOW DILOG FRAGMENT WITH ISTRUCTION
+                } else {
+                    item.setChecked(true);
+                    Log.d(TAG, "onOptionsItemSelected: was unchecked !!");
+                    // TODO : GO TO CURRENT POSITION
+
+                }
+                return true;
+
+            case R.id.showMarkers_cb:
+                if (item.isChecked()) {
+                    item.setChecked(false);
+                    for (Marker earthquakesMarker : earthquakesMarkersList) {
+                        earthquakesMarker.setVisible(true);
+                    }
+                } else {
+                    item.setChecked(true);
+                    for (Marker earthquakesMarker : earthquakesMarkersList) {
+                        earthquakesMarker.setVisible(false);
+                    }
+                }
+                return true;
+
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
 }

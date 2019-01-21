@@ -11,9 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class for loading async eq data through loader
+ * -------------------------------------------------------------------------------------------------
+ * Class for loading async equake data using loader
+ * -------------------------------------------------------------------------------------------------
  */
-
 public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
 
     // db instance reference
@@ -29,9 +30,11 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
     private ArrayList<Earthquake> earthquakes = null;
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Loader constructor, pass the
      * @param context  : context of the activity
      * @param url      : url to be queried for
+     * ---------------------------------------------------------------------------------------------
      */
     public EarthquakeAsyncLoader(Context context, String url){
         super(context);
@@ -49,8 +52,10 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
 
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Background thread
      * @return
+     * ---------------------------------------------------------------------------------------------
      */
     @Override
     public List<Earthquake> loadInBackground() {
