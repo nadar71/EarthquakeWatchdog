@@ -34,6 +34,11 @@ import com.indiewalk.watchdog.earthquake.util.AppExecutors;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * -------------------------------------------------------------------------------------------------
+ * Activity which show earthquakes positions, as well user's one.
+ * -------------------------------------------------------------------------------------------------
+ */
 public class MyPositionActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final String TAG = MyPositionActivity.class.getSimpleName();
@@ -99,8 +104,10 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
 
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Save in Bundle boolean flag result about requesting location permission
      * @param outState
+     * ---------------------------------------------------------------------------------------------
      */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -111,10 +118,12 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
 
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Callback on request permission result got
      * @param requestCode
      * @param permissions
      * @param grantResults
+     * ---------------------------------------------------------------------------------------------
      */
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -134,19 +143,20 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
 
 
     /**
-     * Show map and current user position, if any
+     * ---------------------------------------------------------------------------------------------
+     * Show map; request permissions if needed
      * @param canGetLocation
+     * ---------------------------------------------------------------------------------------------
      */
     private void setupLayoutMap(boolean canGetLocation) {
         if (canGetLocation) {
-            // if (readyToGo()) {
                 setContentView(R.layout.activity_my_position);
 
                 // Obtain the SupportMapFragment and get notified when the map is ready to be used.
                 SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.map);
+
                 mapFragment.getMapAsync(this);
-            // }
         }
         else if (!isInPermission) {
             isInPermission=true;
@@ -159,8 +169,10 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
 
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Set the permissions
      * @return
+     * ---------------------------------------------------------------------------------------------
      */
     private boolean canGetLocation() {
         return(ContextCompat.checkSelfPermission(this,
@@ -172,6 +184,7 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
 
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
@@ -179,6 +192,7 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
+     * ---------------------------------------------------------------------------------------------
      */
     @SuppressLint("MissingPermission")
     @Override
@@ -216,8 +230,6 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
 
             Log.d(TAG, "onMapReady: latitude : "+earthquake.getLatitude()+" logitude : "+ earthquake.getLongitude());
         }
-
-
 
 
 

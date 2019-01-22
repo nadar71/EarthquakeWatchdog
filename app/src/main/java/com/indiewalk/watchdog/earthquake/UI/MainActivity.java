@@ -138,7 +138,14 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         }
     }
 
-
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Create loader
+     * @param id
+     * @param args
+     * @return
+     * ---------------------------------------------------------------------------------------------
+     */
     @Override
     public Loader<List<Earthquake>> onCreateLoader(int id, Bundle args) {
         Log.i(LOG_TAG, "onCreateLoader: Create a new Loader");
@@ -149,6 +156,13 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     }
 
 
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Loader finished
+     * @param loader
+     * @param earthquakesReturnedByLoader
+     * ---------------------------------------------------------------------------------------------
+     */
     @Override
     public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> earthquakesReturnedByLoader) {
         Log.i(LOG_TAG, "onLoadFinished: Loader return back with data");
@@ -172,6 +186,12 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
     }
 
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Loader reset
+     * @param loader
+     * ---------------------------------------------------------------------------------------------
+     */
     @Override
     public void onLoaderReset(@NonNull Loader loader) {
         Log.i(LOG_TAG, "onLoaderReset: Reset Loader previous data");
@@ -182,9 +202,11 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Used by onLoadFinished to populate the ArrayList fetched
      * @param earthquakes
      * @return true/false
+     * ---------------------------------------------------------------------------------------------
      */
     protected boolean setEartquakesList(List<Earthquake> earthquakes){
         if (  (earthquakes != null) && (earthquakes.isEmpty() == false)  ){
@@ -199,8 +221,10 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Compose a query url starting from preferences parameters
      * @return
+     * ---------------------------------------------------------------------------------------------
      */
     public String composeQueryUrl(){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
