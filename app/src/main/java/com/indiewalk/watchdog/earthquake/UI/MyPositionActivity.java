@@ -7,6 +7,8 @@ import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -19,6 +21,11 @@ import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
 import com.indiewalk.watchdog.earthquake.R;
@@ -27,6 +34,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
 import com.indiewalk.watchdog.earthquake.util.AppExecutors;
@@ -39,12 +48,19 @@ import java.util.List;
  * Activity which show earthquakes positions, as well user's one.
  * -------------------------------------------------------------------------------------------------
  */
-public class MyPositionActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MyPositionActivity extends AppCompatActivity
+        implements OnMapReadyCallback,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener{
 
     private static final String TAG = MyPositionActivity.class.getSimpleName();
 
-    // GoogleMap ref
-    private GoogleMap mMap = null;
+    // Map references
+    private   GoogleMap mMap = null;
+    protected GoogleApiClient mGoogleApiClient;
+    // My last location
+    Location mLastLocation;
 
     // List of all the earthquake in db
     // TODO: retrieve them more efficiently with livedata & c.
@@ -103,6 +119,16 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
     }
 
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        //stop location updates when Activity is no longer active
+        if (mGoogleApiClient != null) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
+    }
+
     /**
      * ---------------------------------------------------------------------------------------------
      * Save in Bundle boolean flag result about requesting location permission
@@ -157,10 +183,11 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
                         .findFragmentById(R.id.map);
 
                 mapFragment.getMapAsync(this);
+
         }
         else if (!isInPermission) {
             isInPermission=true;
-
+            // request the permissions
             ActivityCompat.requestPermissions(this,
                     new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_PERMS);
@@ -170,7 +197,20 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Set the permissions
+     * Connection with location service
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Check if permissions are already granted
      * @return
      * ---------------------------------------------------------------------------------------------
      */
@@ -199,42 +239,34 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
     public void onMapReady(final GoogleMap googleMap) {
         this.mMap = googleMap;
 
-
-        /*
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        */
-
-
         // set user locations
         mMap.setMyLocationEnabled(true);
         locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
         crit.setAccuracy(Criteria.ACCURACY_FINE);
         // TODO : SAVE IT IN SHAREDPREFERENCES
 
-
-        // set the current eq coordinates, based on temporal filter
+        // set equakes markers on map
         earthquakesMarkersList = new ArrayList<Marker>();
-        for(Earthquake earthquake : earthquakes){
 
+        for(Earthquake earthquake : earthquakes){
             earthquakesMarkersList.add(mMap.addMarker(new MarkerOptions()
                             .position(new LatLng(earthquake.getLatitude(), earthquake.getLongitude()))
                             .title("Location : " + earthquake.getLocation())
                             .snippet("Magnitude : " + earthquake.getMagnitude())
                     // .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_home_blue_24dp)))
-
             ));
-
 
             Log.d(TAG, "onMapReady: latitude : "+earthquake.getLatitude()+" logitude : "+ earthquake.getLongitude());
         }
 
+        // set a connection with google maps api
+        buildGoogleApiClient();
 
 
+        /*
         // get my current location coordinates
         myLocation = locMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
 
         // TODO : MAKE THIS WORKS!
         if (myLocation != null) {
@@ -248,36 +280,71 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
                 .snippet("Snippet")
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_home_blue_24dp)));
             Toast.makeText(this, "Marker set on :" + myLat + " " + myLong, Toast.LENGTH_SHORT).show();
-
         }
-
+        */
 
         // TODO : SAVE IT IN SHAREDPREFERENCES
         // set position by long press
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
-
                 // First check if myMarker is null
                 if (myManualPositionMarker == null) {
-
                     // Marker was not set yet. Add marker:
                     myManualPositionMarker = mMap.addMarker(new MarkerOptions()
                             .position(latLng)
                             .title("My positions")
                             .snippet("Your marker snippet"));
-
                 } else {
-
                     // Marker already exists, just update it's position
                     myManualPositionMarker.setPosition(latLng);
-
                 }
 
                 myManualPositionMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
             }
         });
 
+
+    }
+
+
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+
+        Log.d(TAG, "onConnected: Connection with map service DONE");
+        if (mLastLocation != null) {
+            myLat  = mLastLocation.getLatitude();
+            myLong = mLastLocation.getLongitude();
+            Log.d(TAG, "onConnected: mycoord, lat : "+myLat+" long : "+myLong);
+
+            LatLng loc = new LatLng(myLat, myLong);
+            mMap.addMarker(new MarkerOptions()
+                    .position(loc)
+                    .title("New Marker")
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_home_blue_24dp)));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
+        }
+
+    }
+
+
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
 
     }
 
@@ -327,6 +394,7 @@ public class MyPositionActivity extends AppCompatActivity implements OnMapReadyC
         }
         return super.onOptionsItemSelected(item);
     }
+
 
 
 }
