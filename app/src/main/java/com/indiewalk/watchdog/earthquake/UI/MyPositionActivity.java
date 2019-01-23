@@ -197,7 +197,8 @@ public class MyPositionActivity extends AppCompatActivity
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Connection with location service
+     * Client for connection with LocationServices API client
+     * Uses enableAutoManage to automatically when to connect/suspend the client
      * ---------------------------------------------------------------------------------------------
      */
     private void buildGoogleApiClient() {
@@ -308,14 +309,15 @@ public class MyPositionActivity extends AppCompatActivity
     }
 
 
-
     @SuppressLint("MissingPermission")
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        Log.i(TAG, "onConnected: Connection DONE");
+
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
 
-        Log.d(TAG, "onConnected: Connection with map service DONE");
+
         if (mLastLocation != null) {
             myLat  = mLastLocation.getLatitude();
             myLong = mLastLocation.getLongitude();
@@ -335,11 +337,12 @@ public class MyPositionActivity extends AppCompatActivity
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Log.i(TAG, "onConnected: Connection SUSPENDED");
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.i(TAG, "onConnected: Connection SUSPENDED");
 
     }
 
