@@ -50,4 +50,8 @@
     <color name="textColorEarthquakeDetails">#B4BAC0</color>
     <!-- Text color for the primary location of the earthquake in the list item -->
     <color name="textColorEarthquakeLocation">#2B3D4D</color>
+
+
+    <!-- Marker color for user position -->
+    <color name="marker_color">#1C1BFF</color>
 </resources>

@@ -108,7 +108,7 @@ public class MyPositionActivity extends AppCompatActivity
         setupLayoutMap(canGetLocation());
 
         // retrieve eq currently in db, in different thread
-        // TODO: using livedata ?!?
+        // TODOo: using livedata ?!?
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
@@ -162,7 +162,8 @@ public class MyPositionActivity extends AppCompatActivity
                 setupLayoutMap(true);
             }
             else {
-                finish(); // denied permission, so we're done // TODO : change in a dialog about doing it manually
+                finish(); // denied permission, so we're done
+                // TODOo : change in a dialog about doing it manually
             }
         }
     }
@@ -244,7 +245,7 @@ public class MyPositionActivity extends AppCompatActivity
         mMap.setMyLocationEnabled(true);
         locMgr = (LocationManager) getSystemService(LOCATION_SERVICE);
         crit.setAccuracy(Criteria.ACCURACY_FINE);
-        // TODO : SAVE IT IN SHAREDPREFERENCES
+        // TODOo : SAVE IT IN SHAREDPREFERENCES
 
         // set equakes markers on map
         earthquakesMarkersList = new ArrayList<Marker>();
@@ -269,7 +270,7 @@ public class MyPositionActivity extends AppCompatActivity
         myLocation = locMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
 
-        // TODO : MAKE THIS WORKS!
+        // TODOo : MAKE THIS WORKS!
         if (myLocation != null) {
             myLat  = myLocation.getLatitude();
             myLong = myLocation.getLongitude();
@@ -284,7 +285,7 @@ public class MyPositionActivity extends AppCompatActivity
         }
         */
 
-        // TODO : SAVE IT IN SHAREDPREFERENCES
+        // TODOo : SAVE IT IN SHAREDPREFERENCES
         // set position by long press
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
@@ -369,11 +370,11 @@ public class MyPositionActivity extends AppCompatActivity
                 if (item.isChecked()) {
                     item.setChecked(false);
                     Log.d(TAG, "onOptionsItemSelected: was Checked !!");
-                    // TODO : SHOW DILOG FRAGMENT WITH ISTRUCTION
+                    // TODOo : SHOW DIALOG FRAGMENT WITH ISTRUCTION
                 } else {
                     item.setChecked(true);
                     Log.d(TAG, "onOptionsItemSelected: was unchecked !!");
-                    // TODO : GO TO CURRENT POSITION
+                    // TODOo : GO TO CURRENT POSITION
 
                 }
                 return true;
