@@ -3,6 +3,7 @@ package com.indiewalk.watchdog.earthquake.UI;
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -10,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Build;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -61,7 +63,6 @@ public class MapsActivity extends AppCompatActivity
 
     private static final String TAG = MapsActivity.class.getSimpleName();
 
-
     Context context = MapsActivity.this;
 
     // Map references
@@ -88,6 +89,7 @@ public class MapsActivity extends AppCompatActivity
     // Db reference
     // TODO : create and interface with repository
     EarthquakeDatabase eqDb;
+
 
 
     /**
@@ -117,7 +119,6 @@ public class MapsActivity extends AppCompatActivity
 
         // retrieve position and show it on map
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
 
@@ -209,7 +210,9 @@ public class MapsActivity extends AppCompatActivity
                 }
 
                 //Place device current location marker
-                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                double userLat = location.getLatitude();
+                double userLng = location.getLongitude();
+                LatLng latLng = new LatLng(userLat, userLng);
 
                 // convert user position icon to bitmap
                 BitmapDescriptor locationMarkerIcon = getBitmapFromVector(context, R.drawable.ic_home_blue_24dp,
@@ -217,13 +220,19 @@ public class MapsActivity extends AppCompatActivity
 
                 myCurrentPositionMarker = mGoogleMap.addMarker(new MarkerOptions()
                                             .position(latLng)
-                                            .title("Your Current Position : lat : "+location.getLatitude()+" long : "+location.getLongitude())
+                                            .title("Your Current Position : lat : " + userLat + " long : " + userLng)
                                             .icon(locationMarkerIcon));
 
                 //move map camera
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 1));
 
+
                 // save coordinates in shared preferences
+                SharedPreferences locationPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+                SharedPreferences.Editor editor = locationPreferences.edit();
+                editor.putString(getString(R.string.device_lat), Double.toString(userLat));
+                editor.putString(getString(R.string.device_lng), Double.toString(userLng));
+                editor.apply();
 
             }
         }

@@ -25,17 +25,30 @@ import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Loader;
 
+import com.facebook.flipper.android.AndroidFlipperClient;
+import com.facebook.flipper.android.utils.FlipperUtils;
+import com.facebook.flipper.core.FlipperClient;
+import com.facebook.flipper.plugins.inspector.DescriptorMapping;
+import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
+import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
+import com.facebook.soloader.SoLoader;
 import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.net.EarthquakeAsyncLoader;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+// ** for DEBUG reason
+import com.indiewalk.watchdog.earthquake.BuildConfig;
+
+
 public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<List<Earthquake>> {
 
-    public static final String LOG_TAG = MainActivity.class.getName();
+    public static final String TAG = MainActivity.class.getName();
+
+    private static final double DEFAULT_LAT = 37.4219999;
+    private static final double DEFAULT_LNG = -122.0862515;
 
     ListView earthquakeListView;
     private List<Earthquake> earthquakes;
@@ -58,10 +71,22 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     // Constant  id for loader which retrieve data from remote source (not necessary there is only it!)
     private static final int EARTHQUAKE_LOADER_ID = 1;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
+        // Using flipper for debugging share preferences file
+        SoLoader.init(this, false);
+        if (BuildConfig.DEBUG && FlipperUtils.shouldEnableFlipper(this)) {
+            final FlipperClient client = AndroidFlipperClient.getInstance(this);
+            client.addPlugin(new InspectorFlipperPlugin(getApplicationContext(), DescriptorMapping.withDefaults()));
+            client.addPlugin(new SharedPreferencesFlipperPlugin(getApplicationContext(), "my_shared_preference_file"));
+            client.start();
+        }
+
 
         // TODO : ASK FOR GEOLOCALIZATION PERMISSION
             // TODO : IF OK  : COMPUTE THE DISTANCE FROM EQ
@@ -96,11 +121,59 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             }
         });
 
-        // Call loader for retrivieving data
+        // Call loader for retrieving data
         retrieveRemoteData();
 
 
     }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Check if device location is stored by previous accessing in-map section, and in case retrieve
+     * coordinates
+     * ---------------------------------------------------------------------------------------------
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // check location coordinates
+        checkLocationCoords();
+
+
+    }
+
+
+    /**
+     * Check location coordinates from shared preferences.
+     * If not set, put defaut value
+     */
+    private void checkLocationCoords() {
+        // init shared preferences
+        // locationPreferences = this.getSharedPreferences(getString(R.string.location_coord),Context.MODE_PRIVATE);
+        SharedPreferences locationPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String lat_s = locationPreferences.getString(getString(R.string.device_lat),Double.toString(DEFAULT_LAT));
+        String lng_s = locationPreferences.getString(getString(R.string.device_lng),Double.toString(DEFAULT_LNG));
+
+
+        // set default coord if there are no one
+        SharedPreferences.Editor editor = locationPreferences.edit();
+        if (lat_s.isEmpty() == true) {
+            editor.putString(getString(R.string.device_lat), Double.toString(DEFAULT_LAT));
+            editor.apply();
+        }
+        if (lng_s.isEmpty() == true) {
+            editor.putString(getString(R.string.device_lng), Double.toString(DEFAULT_LNG));
+            editor.apply();
+        }
+
+        Toast.makeText(this, "Current Location : lat : " + lat_s + " long : " + lng_s, Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "onResume: Current Location : lat : " + lat_s + " long : " + lng_s);
+    }
+
+    
 
     /**
      * ---------------------------------------------------------------------------------------------
@@ -148,9 +221,9 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
      */
     @Override
     public Loader<List<Earthquake>> onCreateLoader(int id, Bundle args) {
-        Log.i(LOG_TAG, "onCreateLoader: Create a new Loader");
+        Log.i(TAG, "onCreateLoader: Create a new Loader");
         String urlReq = composeQueryUrl();
-        Log.i(LOG_TAG, "onCreateLoader: urlReq : "+urlReq);
+        Log.i(TAG, "onCreateLoader: urlReq : "+urlReq);
         // create a new loader for the url
         return new EarthquakeAsyncLoader(this, urlReq );
     }
@@ -165,7 +238,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
      */
     @Override
     public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> earthquakesReturnedByLoader) {
-        Log.i(LOG_TAG, "onLoadFinished: Loader return back with data");
+        Log.i(TAG, "onLoadFinished: Loader return back with data");
 
         // hide progress bar
         loadingInProgress.setVisibility(View.GONE);
@@ -180,7 +253,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         if (setEartquakesList(earthquakesReturnedByLoader)==true) {
             adapter.addAll(earthquakes);
         } else {
-            Log.i(LOG_TAG, "Problem with earthquake list, is empty. Check the request. ");
+            Log.i(TAG, "Problem with earthquake list, is empty. Check the request. ");
         }
 
 
@@ -194,7 +267,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
      */
     @Override
     public void onLoaderReset(@NonNull Loader loader) {
-        Log.i(LOG_TAG, "onLoaderReset: Reset Loader previous data");
+        Log.i(TAG, "onLoaderReset: Reset Loader previous data");
         // reset loader to clean up previous data
         adapter.clear();
     }
@@ -213,7 +286,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             this.earthquakes = earthquakes;
             return true;
         }else{
-            Log.i(LOG_TAG, "The earthquake list is empty. Check the request. ");
+            Log.i(TAG, "The earthquake list is empty. Check the request. ");
             Toast.makeText(this, "The earthquake list is empty. Check the request. ", Toast.LENGTH_LONG).show();
             return false;
         }

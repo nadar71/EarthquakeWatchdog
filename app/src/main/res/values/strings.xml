@@ -20,6 +20,7 @@
     <string name="my_position_ic_title">My Position</string>
     <string name="refresh_ic_title">Refresh</string>
     <string name="spinner_title">Map type</string>
+    <string name="title_activity_my_position">Map</string>
 
     <!-- Text to display in the list when there are no earthquakes -->
     <string name="no_earthquakes">No earthquakes found.</string>
@@ -29,7 +30,8 @@
     <string name="title_activity_settings">Settings</string>
 
 
-    <!-- Strings related to Settings Simple -->
+
+    <!-- - - - - - - - - - - Strings For Settings  - - - -  - - - - - - - - - - - - - - - - - - - - -->
     <!-- Settings menu item -->
     <string name="settings_menu_item">Settings</string>
     <!-- Settings activity title -->
@@ -69,8 +71,19 @@
         <string name="settings_mi_distance_unit_label">Mi</string>
         <string name="settings_mi_distance_unit_value" translatable="false">mi</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_my_position">Map</string>
+
+    <!-- - - - - - - - - - Strings For SharedPreference - - - - - - - - - - - - - - - - - - - - -->
+    <string name="location_coord">sharedPref</string>
+    <string name="device_lat">device_lat</string>
+    <string name="device_lng">device_lng</string>
+
+
+
+
+    <!-- <string name="hello_blank_fragment">Hello blank fragment</string> -->
+
+
+
+
 
 </resources>
