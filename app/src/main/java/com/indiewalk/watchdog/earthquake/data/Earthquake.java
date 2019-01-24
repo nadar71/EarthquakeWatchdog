@@ -43,6 +43,8 @@ public class Earthquake {
     // depth
     private double depth;
 
+    //equake distance from user
+    private int userDistance;
 
 
     /**
@@ -56,16 +58,19 @@ public class Earthquake {
      * @param longitude
      * @param latitude
      * @param depth
+     * @param userDistance
      */
     @Ignore
-    public Earthquake(double magnitude, String location, long timeInMillisec, String url, double longitude, double latitude, double depth) {
-        this.magnitude = magnitude;
-        this.location = location;
+    public Earthquake(double magnitude, String location, long timeInMillisec, String url,
+                      double longitude, double latitude, double depth, int userDistance) {
+        this.magnitude      = magnitude;
+        this.location       = location;
         this.timeInMillisec = timeInMillisec;
-        this.url = url;
-        this.longitude = longitude;
-        this.latitude = latitude;
-        this.depth = depth;
+        this.url            = url;
+        this.longitude      = longitude;
+        this.latitude       = latitude;
+        this.depth          = depth;
+        this.userDistance   = userDistance;
     }
 
 
@@ -81,16 +86,19 @@ public class Earthquake {
      * @param longitude
      * @param latitude
      * @param depth
+     * @param userDistance
      */
-    public Earthquake(int id, double magnitude, String location, long timeInMillisec, String url, double longitude, double latitude, double depth) {
-        this.id = id;
-        this.magnitude = magnitude;
-        this.location = location;
+    public Earthquake(int id, double magnitude, String location, long timeInMillisec, String url,
+                      double longitude, double latitude, double depth, int userDistance) {
+        this.id             = id;
+        this.magnitude      = magnitude;
+        this.location       = location;
         this.timeInMillisec = timeInMillisec;
-        this.url = url;
-        this.longitude = longitude;
-        this.latitude = latitude;
-        this.depth = depth;
+        this.url            = url;
+        this.longitude      = longitude;
+        this.latitude       = latitude;
+        this.depth          = depth;
+        this.userDistance   = userDistance;
     }
 
 
@@ -165,4 +173,14 @@ public class Earthquake {
     public void setDepth(double depth) {
         this.depth = depth;
     }
+
+
+    public int getUserDistance() {
+        return userDistance;
+    }
+
+    public void setUserDistance(int userDistance) {
+        this.userDistance = userDistance;
+    }
+
 }

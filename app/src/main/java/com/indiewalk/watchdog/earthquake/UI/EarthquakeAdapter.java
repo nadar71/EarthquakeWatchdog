@@ -1,7 +1,10 @@
 package com.indiewalk.watchdog.earthquake.UI;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,10 +15,9 @@ import android.widget.TextView;
 
 import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
+import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 //import java.time.format.DateTimeFormatter; only for api 26, using Date class before java 8 for retrocompat
 import java.util.ArrayList;
 
@@ -28,10 +30,18 @@ import java.util.ArrayList;
 
 public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
+    private final  static String TAG = EarthquakeAdapter.class.getSimpleName();
+
+    private Context context;
+
     private String primaryLocation;
+
     private String locationOffset = "Near the";
+
     private double magnitude;
-    private int magnitudeColor;
+    private int    magnitudeColor;
+
+    private String dist_unit;
 
 
     /**
@@ -43,6 +53,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
      */
     public EarthquakeAdapter(Activity context, ArrayList<Earthquake> earthquakes){
         super(context,0,earthquakes);  // * 2nd param to 0 because NOT populating simple TextView
+        this.context = context;
 
     }
 
@@ -60,6 +71,9 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
     public View getView(int position, View convertView, ViewGroup parent){
         View itemView = convertView;
 
+        // set preferred distance unit
+        checkPreferences();
+
         // inflate the item layout if not null
         if (itemView == null){
             itemView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_ii,parent,false);
@@ -75,12 +89,10 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
         // set proper color for magnitude
         GradientDrawable magnitudeCircle = (GradientDrawable) magnitudeView.getBackground();
-        // get and set the proper color for the proper magnitude value
         magnitudeColor = getMagnitudeColor(magnitude);
         magnitudeCircle.setColor(magnitudeColor);
 
-
-        /** display locations formatted using {@link extractLocations} **/
+        // display locations formatted using {@link extractLocations}
         extractLocations(currentEartquakeItem.getLocation());
 
         TextView locationOffsetView = (TextView)itemView.findViewById(R.id.locationOffsetText);
@@ -89,15 +101,17 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         TextView primaryLocationView = (TextView)itemView.findViewById(R.id.primaryLocationText);
         primaryLocationView.setText(primaryLocation );
 
-
-
-        /** display date formatted using {@link formatDateFromMsec} **/
+        // display date formatted using {@link formatDateFromMsec}
         TextView dateView = (TextView)itemView.findViewById(R.id.dateText);
-        dateView.setText(formatDateFromMsec(currentEartquakeItem.getTimeInMillisec()));
+        dateView.setText(MyUtil.formatDateFromMsec(currentEartquakeItem.getTimeInMillisec()));
 
-        /** display time formatted using {@link formatTimeFromMsec} **/
+        // display time formatted using {@link formatTimeFromMsec}
         TextView timeView = (TextView)itemView.findViewById(R.id.timeText);
-        timeView.setText(formatTimeFromMsec(currentEartquakeItem.getTimeInMillisec()));
+        timeView.setText(MyUtil.formatTimeFromMsec(currentEartquakeItem.getTimeInMillisec()));
+
+        // display eq distance from user location or custom location
+        TextView distanceFromUser = (TextView)itemView.findViewById(R.id.distanceFromMe_tv);
+        distanceFromUser.setText(distWithUnit(currentEartquakeItem.getUserDistance()));
 
         return itemView;
 
@@ -106,38 +120,37 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Format date in a specific way and millisec  format
-     * @param dateMillisec
+     * Return  distance with unit as String
+     * @param dist
      * @return
      * ---------------------------------------------------------------------------------------------
      */
-    public String formatDateFromMsec(long dateMillisec){
-        // Date
-        Date date = new Date(dateMillisec);
-        System.out.println("date : "+date.toString());
-
-        // Format Date
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM DD, yyyy");
-        return dateFormatter.format(date);
+    private String distWithUnit(int dist){
+         return dist+ " " +context.getString(R.string.settings_mi_distance_unit_value);
     }
+
 
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Format time in a specific way and millisec  format
-     * @param dateMillisec
-     * @return
+     * Check for distance unit preference
      * ---------------------------------------------------------------------------------------------
      */
-    public String formatTimeFromMsec(long dateMillisec){
-        // Time
-        Date time = new Date(dateMillisec);
-        System.out.println("time : "+time.toString());
+    private void checkPreferences() {
+        // init shared preferences
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
 
-        // Format Time
-        SimpleDateFormat timeFormatter = new SimpleDateFormat("h:mm a");
-        return timeFormatter.format(time);
+        // set distance unit choosen
+        dist_unit = sharedPreferences.getString(context.getString(R.string.device_lat),
+                Double.toString(R.string.settings_distance_unit_by_default));
+
+        Log.i(TAG, "EarthquakeAdapter : dist unit : "+ dist_unit);
+
     }
+
+
+
+
 
     /**
      * ---------------------------------------------------------------------------------------------
@@ -149,15 +162,67 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         // Check if location contains string "of".
         // In case yes, store the substring before "of" in offsetLocation, and the part after in primaryLocation
         // On the contrary, put location in primaryLocation
-        if (location.contains("of")) {
+        if (location.contains("of")) {  // case of e.g. "85km SSW of xxxx"
             String[] splitResult = location.split("of");
-            locationOffset  = splitResult[0] + "of";
+            locationOffset  = splitResult[0]+ "of";
+            // convert place distance to desidered distance unit
+            locationOffset = convertPlaceDist(locationOffset);
+
             primaryLocation = splitResult[1];
         } else {
             locationOffset = "Near the";
             primaryLocation = location;
         }
     }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Convert place distance to desidered distance unit
+     * @param loc
+     * @return
+     * ---------------------------------------------------------------------------------------------
+     */
+    public String convertPlaceDist(String loc) {
+        // convert distance in distance unit as preference
+        String distance = MyUtil.returnDigit(loc);
+        int   dist_i = -1;
+        float dist_f = -1;
+
+        // check the case the distance is as int or as float
+        try {
+            dist_i = Integer.parseInt(distance);
+        }catch (NumberFormatException e) {
+            try {
+                dist_f = Float.parseFloat(distance);
+            } catch (NumberFormatException f) {
+                dist_i = 0;
+            }
+        }
+
+        if (dist_i > 0 ){
+            dist_i = (int) MyUtil.fromKmToMiles((double) dist_i);
+        }
+
+        if (dist_f > 0 ){
+            dist_i = (int) MyUtil.fromKmToMiles((double) dist_f);
+        }
+
+        // get rid of the original distance unit
+        loc  = MyUtil.returnChar(loc)
+                .replaceAll("Km","")
+                .replaceAll("KM","")
+                .replaceAll("Mi","")
+                .replaceAll("MI","");
+
+        // add the preferred distance unit
+        distance = distWithUnit(dist_i);
+
+        return distance + loc;
+    }
+
+
+
 
     /**
      * ---------------------------------------------------------------------------------------------

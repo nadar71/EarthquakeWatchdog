@@ -206,7 +206,7 @@ public class EarthQuakeQuery {
 
                 // tmp earthquake obj for single item
                 Log.d(TAG, "extractFeatureFromJson: longitude : "+longitude+" latitude : "+latitude+" depth : "+depth);
-                Earthquake  tmp = new Earthquake(mag, place, time, url, longitude, latitude, depth);
+                Earthquake  tmp = new Earthquake(mag, place, time, url, longitude, latitude, depth,0);
 
                 // add to list of all earthquakes
                 earthquakes.add(tmp);

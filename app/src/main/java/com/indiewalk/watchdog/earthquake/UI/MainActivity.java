@@ -47,8 +47,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
     public static final String TAG = MainActivity.class.getName();
 
-    private static final double DEFAULT_LAT = 37.4219999;
-    private static final double DEFAULT_LNG = -122.0862515;
+    public static final double DEFAULT_LAT = 37.4219999;
+    public static final double DEFAULT_LNG = -122.0862515;
 
     ListView earthquakeListView;
     private List<Earthquake> earthquakes;
@@ -71,12 +71,17 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     // Constant  id for loader which retrieve data from remote source (not necessary there is only it!)
     private static final int EARTHQUAKE_LOADER_ID = 1;
 
+    // Preferences value
+    String minMagnitude, orderBy,lat_s, lng_s;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
+        Log.i(TAG, "onCreate");
 
         // Using flipper for debugging share preferences file
         SoLoader.init(this, false);
@@ -121,6 +126,9 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             }
         });
 
+        // check preferences for changes
+        checkPreferences();
+
         // Call loader for retrieving data
         retrieveRemoteData();
 
@@ -138,8 +146,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     protected void onResume() {
         super.onResume();
 
-        // check location coordinates
-        checkLocationCoords();
+        // check preferences for changes
+        checkPreferences();
 
 
     }
@@ -149,17 +157,16 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
      * Check location coordinates from shared preferences.
      * If not set, put defaut value
      */
-    private void checkLocationCoords() {
+    private void checkPreferences() {
         // init shared preferences
-        // locationPreferences = this.getSharedPreferences(getString(R.string.location_coord),Context.MODE_PRIVATE);
-        SharedPreferences locationPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        String lat_s = locationPreferences.getString(getString(R.string.device_lat),Double.toString(DEFAULT_LAT));
-        String lng_s = locationPreferences.getString(getString(R.string.device_lng),Double.toString(DEFAULT_LNG));
+        lat_s = sharedPreferences.getString(getString(R.string.device_lat),Double.toString(DEFAULT_LAT));
+        lng_s = sharedPreferences.getString(getString(R.string.device_lng),Double.toString(DEFAULT_LNG));
 
 
         // set default coord if there are no one
-        SharedPreferences.Editor editor = locationPreferences.edit();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         if (lat_s.isEmpty() == true) {
             editor.putString(getString(R.string.device_lat), Double.toString(DEFAULT_LAT));
             editor.apply();
@@ -171,6 +178,18 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
         Toast.makeText(this, "Current Location : lat : " + lat_s + " long : " + lng_s, Toast.LENGTH_SHORT).show();
         Log.i(TAG, "onResume: Current Location : lat : " + lat_s + " long : " + lng_s);
+
+
+        // recover min magnitude value from prefs or set a default from string value
+        minMagnitude = sharedPreferences.getString(
+                getString(R.string.settings_min_magnitude_key),
+                getString(R.string.settings_min_magnitude_default));
+
+
+        // recover preferred order by param from prefs or set a default from string value
+        orderBy = sharedPreferences.getString(
+                getString(R.string.settings_order_by_key),
+                getString(R.string.settings_order_by_default));
     }
 
     
@@ -182,6 +201,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
      * ---------------------------------------------------------------------------------------------
      */
     private void retrieveRemoteData() {
+        Log.i(TAG, "retrieveRemoteData: Requesting fresh data.");
         // set progress bar
         loadingInProgress = findViewById(R.id.loading_spinner);
 
@@ -246,7 +266,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         // Set empty state text to display "No earthquakes found."
         emptyListText.setText(R.string.no_earthquakes);
 
-        // clear the adapater of previous data
+        // clear the adapter of previous data
         adapter.clear();
 
         // update UI when loader finishes its job
@@ -294,26 +314,26 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
 
     /**
+     * Set user's for each equake
+     * @param earthquakes
+     */
+    private void setDistanceFromUser(List<Earthquake> earthquakes){
+        // check that location coords are set
+        checkPreferences();
+
+
+
+
+
+    }
+
+    /**
      * ---------------------------------------------------------------------------------------------
      * Compose a query url starting from preferences parameters
      * @return
      * ---------------------------------------------------------------------------------------------
      */
     public String composeQueryUrl(){
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        // recover min magnitude value from prefs or set a default from string value
-        String minMagnitude = sharedPreferences.getString(
-                getString(R.string.settings_min_magnitude_key),
-                getString(R.string.settings_min_magnitude_default));
-
-
-        // recover preferred order by param from prefs or set a default from string value
-        String orderBy = sharedPreferences.getString(
-                getString(R.string.settings_order_by_key),
-                getString(R.string.settings_order_by_default));
-
-
-
         Uri rootUri = Uri.parse(USGS_REQUEST_URL);
         Uri.Builder builder = rootUri.buildUpon();
 
