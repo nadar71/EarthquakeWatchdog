@@ -132,7 +132,7 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
         lng_s = sharedPreferences.getString(context.getString(R.string.device_lng),Double.toString(MainActivity.DEFAULT_LNG));
 
         // set distance unit choosen
-        dist_unit = sharedPreferences.getString(context.getString(R.string.device_lat),
+        dist_unit = sharedPreferences.getString(context.getString(R.string.settings_distance_unit_by_key),
                     Double.toString(R.string.settings_distance_unit_by_default));
 
 

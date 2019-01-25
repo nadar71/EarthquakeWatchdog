@@ -55,6 +55,8 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         super(context,0,earthquakes);  // * 2nd param to 0 because NOT populating simple TextView
         this.context = context;
 
+        // set preferred distance unit
+        checkPreferences();
     }
 
 
@@ -70,9 +72,6 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent){
         View itemView = convertView;
-
-        // set preferred distance unit
-        checkPreferences();
 
         // inflate the item layout if not null
         if (itemView == null){
@@ -111,22 +110,10 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
         // display eq distance from user location or custom location
         TextView distanceFromUser = (TextView)itemView.findViewById(R.id.distanceFromMe_tv);
-        distanceFromUser.setText(distWithUnit(currentEartquakeItem.getUserDistance()));
+        distanceFromUser.setText(currentEartquakeItem.getUserDistance()+ " " + dist_unit);
 
         return itemView;
 
-    }
-
-
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Return  distance with unit as String
-     * @param dist
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
-    private String distWithUnit(int dist){
-         return dist+ " " +context.getString(R.string.settings_mi_distance_unit_value);
     }
 
 
@@ -141,7 +128,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
 
         // set distance unit choosen
-        dist_unit = sharedPreferences.getString(context.getString(R.string.device_lat),
+        dist_unit = sharedPreferences.getString(context.getString(R.string.settings_distance_unit_by_key),
                 Double.toString(R.string.settings_distance_unit_by_default));
 
         Log.i(TAG, "EarthquakeAdapter : dist unit : "+ dist_unit);
@@ -211,14 +198,16 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         // get rid of the original distance unit
         loc  = MyUtil.returnChar(loc)
                 .replaceAll("Km","")
+                .replaceAll("km","")
                 .replaceAll("KM","")
                 .replaceAll("Mi","")
+                .replaceAll("mi","")
                 .replaceAll("MI","");
 
         // add the preferred distance unit
-        distance = distWithUnit(dist_i);
+        //distance = distWithUnit(dist_i);
 
-        return distance + loc;
+        return distance + " " + dist_unit + loc;
     }
 
 

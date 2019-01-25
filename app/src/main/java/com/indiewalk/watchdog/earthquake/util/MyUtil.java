@@ -44,8 +44,8 @@ public class MyUtil {
      * @return
      */
     public static double fromKmToMiles(double km){
-        double kmInMile = 0.621371192;
-        return km/kmInMile;
+        double MileInkm = 0.621371192;
+        return km * MileInkm;
     }
 
 
