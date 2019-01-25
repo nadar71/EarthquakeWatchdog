@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -193,12 +194,60 @@ public class MapsActivity extends AppCompatActivity
             mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
             mGoogleMap.setMyLocationEnabled(true);
         }
+
+
+        // zoom on a particular equake if request came from main activity
+        zoomOnEquake();
+
     }
 
 
     /**
      * ---------------------------------------------------------------------------------------------
-     *
+     * Check if there is already a user location set from previous access to avoid late while
+     * the gps is connecting
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void checkPrevious(){
+        // init shared preferences
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String lat_s = sharedPreferences.getString(getString(R.string.device_lat),
+                Double.toString(MainActivity.DEFAULT_LAT));
+        String lng_s = sharedPreferences.getString(getString(R.string.device_lng),
+                Double.toString(MainActivity.DEFAULT_LNG));
+
+        if ( (!lat_s.equals(MainActivity.DEFAULT_LAT)) && (!lng_s.equals(MainActivity.DEFAULT_LNG)) ) {
+
+    }
+
+    }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Zoom on an equake
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void zoomOnEquake() {
+
+        Intent mainIntent = getIntent();
+        String flag         = mainIntent.getStringExtra("ShowEquake");
+        if (flag != null) {
+            double equake_lat_d = Double.parseDouble(mainIntent.getStringExtra("equake_lat"));
+            double equake_lng_d = Double.parseDouble(mainIntent.getStringExtra("equake_lng"));
+            LatLng latLng = new LatLng(equake_lat_d, equake_lng_d);
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 3));
+        }
+
+    }
+
+
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Set user locations coordinates
      * ---------------------------------------------------------------------------------------------
      */
     LocationCallback mLocationCallback = new LocationCallback() {
@@ -233,7 +282,7 @@ public class MapsActivity extends AppCompatActivity
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 1));
 
 
-                // save coordinates in shared preferences
+                // save user location's coordinates in shared preferences
                 SharedPreferences locationPreferences = PreferenceManager.getDefaultSharedPreferences(context);
                 SharedPreferences.Editor editor = locationPreferences.edit();
                 editor.putString(getString(R.string.device_lat), Double.toString(userLat));

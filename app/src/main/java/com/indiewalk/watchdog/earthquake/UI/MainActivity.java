@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
      * ---------------------------------------------------------------------------------------------
      */
     private void showActionDialog(int position) {
+        final Context context = MainActivity.this;
         final int pos = position;
         CharSequence[] items = {"Show on Map", "Details", "Feel it?"};
 
@@ -162,7 +163,10 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
                         if(item==0){       // Show on Map
                             Earthquake earthquake = earthquakes.get(pos);
-                            Intent showEqOnMap = new Intent(MainActivity.this, MapsActivity.class);
+                            Intent showEqOnMap = new Intent(context, MapsActivity.class);
+                            showEqOnMap.putExtra("ShowEquake","true");
+                            showEqOnMap.putExtra("equake_lat",Double.toString(earthquake.getLatitude()));
+                            showEqOnMap.putExtra("equake_lng",Double.toString(earthquake.getLongitude()));
                             startActivity(showEqOnMap);
                         }
                         else if(item==1){  // USGS site Details
