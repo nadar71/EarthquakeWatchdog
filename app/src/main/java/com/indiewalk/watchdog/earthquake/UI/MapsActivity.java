@@ -1,6 +1,7 @@
 package com.indiewalk.watchdog.earthquake.UI;
 
 import android.Manifest;
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -90,6 +91,10 @@ public class MapsActivity extends AppCompatActivity
     // TODO : create and interface with repository
     EarthquakeDatabase eqDb;
 
+    // Maps type list
+    private static final CharSequence[] MAP_TYPE_ITEMS =
+            {"Road Map", "Hybrid", "Satellite", "Terrain"};
+
 
 
     /**
@@ -116,6 +121,7 @@ public class MapsActivity extends AppCompatActivity
         });
 
         getSupportActionBar().setTitle("Map Location Activity");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // retrieve position and show it on map
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -359,6 +365,56 @@ public class MapsActivity extends AppCompatActivity
 
 
 
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Choose the map type
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void showMapTypeSelectorDialog() {
+        // Prepare the dialog by setting up a Builder.
+        final String fDialogTitle = "Select Map Type";
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(fDialogTitle);
+
+        // Find the current map type to pre-check the item representing the current state.
+        int checkItem = mGoogleMap.getMapType() - 1;
+
+        // Add an OnClickListener to the dialog, so that the selection will be handled.
+        builder.setSingleChoiceItems(
+                MAP_TYPE_ITEMS,
+                checkItem,
+                new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int item) {
+                        // Locally create a finalised object.
+
+                        // Perform an action depending on which item was selected.
+                        switch (item) {
+                            case 1:
+                                mGoogleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                                break;
+                            case 2:
+                                mGoogleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+                                break;
+                            case 3:
+                                mGoogleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                                break;
+                            default:
+                                mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                        }
+                        dialog.dismiss();
+                    }
+                }
+        );
+
+        // Build the dialog and show it.
+        AlertDialog fMapTypeDialog = builder.create();
+        fMapTypeDialog.setCanceledOnTouchOutside(true);
+        fMapTypeDialog.show();
+    }
+
+
+
     // ---------------------------------------------------------------------------------------------
     //                                          MENU STUFF
     // ---------------------------------------------------------------------------------------------
@@ -399,11 +455,26 @@ public class MapsActivity extends AppCompatActivity
                 }
                 return true;
 
+            case R.id.chooseMapType_d:
+                showMapTypeSelectorDialog();
+                return true;
+
+
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+
             default:
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+
+
+
+
 
 
 

@@ -10,7 +10,11 @@
         android:id="@+id/showMarkers_cb"
         android:checkable="true"
         android:title="Hide Earthquakes markers"
-        app:showAsAction="never"></item>
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/chooseMapType_d"
+        android:title="Map Type"
+        app:showAsAction="never"/>
 
 
 </menu>

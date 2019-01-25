@@ -78,7 +78,8 @@
 
         <activity
             android:name="com.indiewalk.watchdog.earthquake.UI.MapsActivity"
-            android:label="@string/title_activity_my_position"></activity>
+            android:label="@string/title_activity_my_position">
+        </activity>
 
     </application>
 
