@@ -65,11 +65,11 @@
 
         <!-- Label for order-by magnitude option [CHAR LIMIT=20] -->
         <string name="settings_km_distance_unit_label">Km</string>
-        <string name="settings_km_distance_unit_value" translatable="false">Km</string>
+        <string name="settings_km_distance_unit_value" translatable="false">km</string>
 
         <!-- Label for order-by most recent option [CHAR LIMIT=20] -->
         <string name="settings_mi_distance_unit_label">Mi</string>
-        <string name="settings_mi_distance_unit_value" translatable="false">Mi</string>
+        <string name="settings_mi_distance_unit_value" translatable="false">mi</string>
 
 
     <!-- - - - - - - - - - Strings For SharedPreference - - - - - - - - - - - - - - - - - - - - -->
