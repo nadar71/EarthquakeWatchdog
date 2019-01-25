@@ -2,6 +2,7 @@
 package com.indiewalk.watchdog.earthquake.UI;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Loader;
+import android.app.AlertDialog;
 
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.android.utils.FlipperUtils;
@@ -36,8 +38,10 @@ import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.net.EarthquakeAsyncLoader;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 
+
 import java.util.ArrayList;
 import java.util.List;
+
 
 // ** for DEBUG reason
 import com.indiewalk.watchdog.earthquake.BuildConfig;
@@ -109,11 +113,14 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
 
 
+
         // Click on item
         earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                showActionDialog(position);
+                /*
                 // get url data
                 Earthquake earthquake = earthquakes.get(position);
                 String url = earthquake.getUrl();
@@ -123,6 +130,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                 Uri webpage = Uri.parse(url);
                 Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
                 startActivity(Intent.createChooser(webIntent, "Open details"));
+                */
             }
         });
 
@@ -134,6 +142,50 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
 
     }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Show Select action alert dialog
+     * @param position
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void showActionDialog(int position) {
+        final int pos = position;
+        CharSequence[] items = {"Show on Map", "Details", "Feel it?"};
+
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle("Action")
+                .setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int item) {
+
+                        if(item==0){       // Show on Map
+                            Earthquake earthquake = earthquakes.get(pos);
+                            Intent showEqOnMap = new Intent(MainActivity.this, MapsActivity.class);
+                            startActivity(showEqOnMap);
+                        }
+                        else if(item==1){  // USGS site Details
+                            Earthquake earthquake = earthquakes.get(pos);
+                            String url = earthquake.getUrl();
+                            Log.i("setOnItemClickListener", "onItemClick: "+url);
+
+                            // Open the related url page of the eq clicked
+                            Uri webpage = Uri.parse(url);
+                            Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
+                            startActivity(Intent.createChooser(webIntent, "Open details"));
+
+                        }
+                        else if(item==2){  // Feel it?
+                        }
+                    }
+                })
+                .show();
+
+    }
+
+
+
 
 
     /**
