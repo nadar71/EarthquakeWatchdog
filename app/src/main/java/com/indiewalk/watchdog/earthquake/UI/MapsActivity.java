@@ -2,6 +2,7 @@ package com.indiewalk.watchdog.earthquake.UI;
 
 import android.Manifest;
 import android.app.ActionBar;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -79,7 +80,7 @@ public class MapsActivity extends AppCompatActivity
     FusedLocationProviderClient mFusedLocationClient;
 
     // Marker for my current position by gps
-    Marker              myCurrentPositionMarker;
+    Marker              myCurrentPositionMarker = null;
 
     // List of all the earthquake in db
     // TODO: retrieve them more efficiently with livedata & c.
@@ -95,6 +96,9 @@ public class MapsActivity extends AppCompatActivity
     // Maps type list
     private static final CharSequence[] MAP_TYPE_ITEMS =
             {"Road Map", "Hybrid", "Satellite", "Terrain"};
+
+    // searching location progress dialog
+    ProgressDialog dialog;
 
 
 
@@ -128,6 +132,11 @@ public class MapsActivity extends AppCompatActivity
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
+
+        // Start your GPS Reading progress bar
+        dialog = new ProgressDialog(this);
+        dialog.setMessage("Please wait!");
+        dialog.show();
 
     }
 
@@ -173,6 +182,8 @@ public class MapsActivity extends AppCompatActivity
         }
 
 
+
+
         // set device location request params
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(120000); // two minute interval
@@ -185,6 +196,9 @@ public class MapsActivity extends AppCompatActivity
                 //Location Permission already granted
                 mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
                 mGoogleMap.setMyLocationEnabled(true);
+
+                // set user marker in case of previous coordinates not default
+                checkPrevious();
             } else {
                 //Request Location Permission
                 checkLocationPermission();
@@ -193,11 +207,14 @@ public class MapsActivity extends AppCompatActivity
         else {
             mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
             mGoogleMap.setMyLocationEnabled(true);
-        }
 
+            // set user marker in case of previous coordinates not default
+            checkPrevious();
+        }
 
         // zoom on a particular equake if request came from main activity
         zoomOnEquake();
+
 
     }
 
@@ -217,9 +234,11 @@ public class MapsActivity extends AppCompatActivity
         String lng_s = sharedPreferences.getString(getString(R.string.device_lng),
                 Double.toString(MainActivity.DEFAULT_LNG));
 
+        // if there is already user location different from default location
         if ( (!lat_s.equals(MainActivity.DEFAULT_LAT)) && (!lng_s.equals(MainActivity.DEFAULT_LNG)) ) {
-
-    }
+            // position the user location's marker
+            userLocationMarker(Double.parseDouble(lat_s), Double.parseDouble(lng_s));
+        }
 
     }
 
@@ -237,7 +256,7 @@ public class MapsActivity extends AppCompatActivity
             double equake_lat_d = Double.parseDouble(mainIntent.getStringExtra("equake_lat"));
             double equake_lng_d = Double.parseDouble(mainIntent.getStringExtra("equake_lng"));
             LatLng latLng = new LatLng(equake_lat_d, equake_lng_d);
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 3));
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 5));
         }
 
     }
@@ -260,26 +279,14 @@ public class MapsActivity extends AppCompatActivity
                 Location location = locationList.get(locationList.size() - 1);
                 Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
                 mLastLocation = location;
-                if (myCurrentPositionMarker != null) {
-                    myCurrentPositionMarker.remove();
-                }
 
                 //Place device current location marker
                 double userLat = location.getLatitude();
                 double userLng = location.getLongitude();
-                LatLng latLng = new LatLng(userLat, userLng);
 
-                // convert user position icon to bitmap
-                BitmapDescriptor locationMarkerIcon = getBitmapFromVector(context, R.drawable.ic_home_blue_24dp,
-                        ContextCompat.getColor(context, R.color.marker_color));
 
-                myCurrentPositionMarker = mGoogleMap.addMarker(new MarkerOptions()
-                                            .position(latLng)
-                                            .title("Your Current Position : lat : " + userLat + " long : " + userLng)
-                                            .icon(locationMarkerIcon));
-
-                //move map camera
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 1));
+                // position the user location's marker
+                userLocationMarker(userLat, userLng);
 
 
                 // save user location's coordinates in shared preferences
@@ -289,11 +296,46 @@ public class MapsActivity extends AppCompatActivity
                 editor.putString(getString(R.string.device_lng), Double.toString(userLng));
                 editor.apply();
 
+                // stop progress bar
+                dialog.dismiss();
+
             }
         }
+
+
     };
 
 
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Position User location marker
+     * @param userLat
+     * @param userLng
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void userLocationMarker(double userLat, double userLng) {
+
+        LatLng latLng = new LatLng(userLat, userLng);
+
+        // reset previous
+        if (myCurrentPositionMarker != null) {
+            myCurrentPositionMarker.remove();
+        }
+
+        // convert user position icon to bitmap
+        BitmapDescriptor locationMarkerIcon = getBitmapFromVector(context, R.drawable.ic_home_blue_24dp,
+                ContextCompat.getColor(context, R.color.marker_color));
+
+        myCurrentPositionMarker = mGoogleMap.addMarker(new MarkerOptions()
+                                    .position(latLng)
+                                    .title("Your Current Position : lat : " + userLat + " long : " + userLng)
+                                    .icon(locationMarkerIcon));
+
+        //move map camera
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 1));
+    }
 
 
     /**
@@ -331,7 +373,7 @@ public class MapsActivity extends AppCompatActivity
 
     /**
      * ---------------------------------------------------------------------------------------------
-     *
+     * Ask for user location permissions
      * ---------------------------------------------------------------------------------------------
      */
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
