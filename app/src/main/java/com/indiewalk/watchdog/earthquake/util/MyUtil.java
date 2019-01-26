@@ -1,5 +1,19 @@
 package com.indiewalk.watchdog.earthquake.util;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.util.Log;
+
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -102,6 +116,38 @@ public class MyUtil {
      */
     public static String returnChar(String s){
         return s.replaceAll("[0-9]+", "");
+    }
+
+
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Converting vector icon to bitmap one, to get used as marker icon (allow bitmap only)
+     * @param context
+     * @param vectorResourceId
+     * @param tintColor
+     * @return
+     * ---------------------------------------------------------------------------------------------
+     */
+    public static BitmapDescriptor getBitmapFromVector(@NonNull Context context,
+                                                       @DrawableRes int vectorResourceId,
+                                                       @ColorInt int tintColor) {
+
+        Drawable vectorDrawable = ResourcesCompat.getDrawable(
+                context.getResources(), vectorResourceId, null);
+
+        if (vectorDrawable == null) {
+            return BitmapDescriptorFactory.defaultMarker();
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(),
+                vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        DrawableCompat.setTint(vectorDrawable, tintColor);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
 }

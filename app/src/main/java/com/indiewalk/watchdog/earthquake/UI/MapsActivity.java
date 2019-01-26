@@ -48,6 +48,7 @@ import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
 import com.indiewalk.watchdog.earthquake.util.AppExecutors;
+import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
 
 import android.app.AlertDialog;
@@ -299,6 +300,9 @@ public class MapsActivity extends AppCompatActivity
                 // stop progress bar
                 dialog.dismiss();
 
+                // zoom on a particular equake if request came from main activity
+                zoomOnEquake();
+
             }
         }
 
@@ -325,7 +329,7 @@ public class MapsActivity extends AppCompatActivity
         }
 
         // convert user position icon to bitmap
-        BitmapDescriptor locationMarkerIcon = getBitmapFromVector(context, R.drawable.ic_home_blue_24dp,
+        BitmapDescriptor locationMarkerIcon = MyUtil.getBitmapFromVector(context, R.drawable.ic_home_blue_24dp,
                 ContextCompat.getColor(context, R.color.marker_color));
 
         myCurrentPositionMarker = mGoogleMap.addMarker(new MarkerOptions()
@@ -338,35 +342,7 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Converting vector icon to bitmap one, to get used as marker icon (allow bitmap only)
-     * @param context
-     * @param vectorResourceId
-     * @param tintColor
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
-    public static BitmapDescriptor getBitmapFromVector(@NonNull Context context,
-                                                       @DrawableRes int vectorResourceId,
-                                                       @ColorInt int tintColor) {
 
-        Drawable vectorDrawable = ResourcesCompat.getDrawable(
-                context.getResources(), vectorResourceId, null);
-
-        if (vectorDrawable == null) {
-            Log.e(TAG, "Requested vector resource was not found");
-            return BitmapDescriptorFactory.defaultMarker();
-        }
-
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(),
-                vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        DrawableCompat.setTint(vectorDrawable, tintColor);
-        vectorDrawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bitmap);
-    }
 
 
 

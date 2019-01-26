@@ -181,6 +181,14 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
                         }
                         else if(item==2){  // Feel it?
+                            Earthquake earthquake = earthquakes.get(pos);
+                            String url = earthquake.getUrl() + "/tellus";
+                            Log.i("setOnItemClickListener", "onItemClick: "+url);
+
+                            // Open the related url page of the eq clicked
+                            Uri webpage = Uri.parse(url);
+                            Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
+                            startActivity(Intent.createChooser(webIntent, "Feel it? Tell us"));
                         }
                     }
                 })
