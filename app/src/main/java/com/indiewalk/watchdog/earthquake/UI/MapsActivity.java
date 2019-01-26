@@ -13,6 +13,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Build;
+import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.ColorInt;
@@ -41,6 +42,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -100,6 +102,9 @@ public class MapsActivity extends AppCompatActivity
 
     // searching location progress dialog
     ProgressDialog dialog;
+
+
+    Handler m_handler;
 
 
 
@@ -256,8 +261,11 @@ public class MapsActivity extends AppCompatActivity
         if (flag != null) {
             double equake_lat_d = Double.parseDouble(mainIntent.getStringExtra("equake_lat"));
             double equake_lng_d = Double.parseDouble(mainIntent.getStringExtra("equake_lng"));
-            LatLng latLng = new LatLng(equake_lat_d, equake_lng_d);
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 5));
+            // LatLng latLng = new LatLng(equake_lat_d, equake_lng_d);
+            // mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 5));
+            // animateTo(equake_lat_d, equake_lng_d, 5, 5, 30, 300);
+            animateCameraTo(equake_lat_d, equake_lng_d);
+
         }
 
     }
@@ -343,6 +351,46 @@ public class MapsActivity extends AppCompatActivity
 
 
 
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Animating camera to a target point
+     * @param lat
+     * @param lon
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void animateCameraTo(double lat, double lon){
+        final CameraPosition target =
+                new CameraPosition.Builder().target(new LatLng(lat, lon))
+                        .zoom(6f)
+                        .bearing(0)
+                        .tilt(25)
+                        .build();
+
+        /*
+        m_handler = new Handler();
+        m_handler.postDelayed(new Runnable(){ // delay to allow load tiles
+            @Override
+            public void run() {
+        */
+
+            mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(target),
+                    new GoogleMap.CancelableCallback() {
+                @Override
+                public void onFinish() {
+                    // Toast.makeText(getBaseContext(), "Animation to target complete",
+                    // Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onCancel() {
+                    // Toast.makeText(getBaseContext(), "Animation to target canceled",
+                    // Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        // }},500);
+
+    }
 
 
 
