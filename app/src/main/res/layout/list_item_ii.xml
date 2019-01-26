@@ -77,7 +77,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:text="from me."
+        android:text="from you."
         android:textColor="@color/textColorEarthquakeLocation"
         app:layout_constraintBottom_toTopOf="@+id/distanceFromMe_tv"
         app:layout_constraintEnd_toEndOf="parent"

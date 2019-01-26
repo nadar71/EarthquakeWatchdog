@@ -80,7 +80,7 @@ public class MapsActivity extends AppCompatActivity
     // Device location req references
     LocationRequest     mLocationRequest;
     Location            mLastLocation;
-    FusedLocationProviderClient mFusedLocationClient;
+    FusedLocationProviderClient mFusedLocationClient = null;
 
     // Marker for my current position by gps
     Marker              myCurrentPositionMarker = null;
@@ -103,8 +103,16 @@ public class MapsActivity extends AppCompatActivity
     // searching location progress dialog
     ProgressDialog dialog;
 
+    // SharedPrefences ref actvity global
+    SharedPreferences sharedPreferences;
 
-    Handler m_handler;
+    // Manual Localization flag
+    boolean manualLocIsOn = false;
+
+    // Manual localization menu item ref
+    MenuItem locCheckbox;
+
+    // Handler m_handler;
 
 
 
@@ -131,19 +139,45 @@ public class MapsActivity extends AppCompatActivity
             }
         });
 
+        // init shared preferences
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         getSupportActionBar().setTitle("Map Location Activity");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // retrieve position and show it on map
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+
+        // Show on map
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
+
+
+        // check if there was a previous user location manual setted
+        checkManualLocation();
+
+        if ( manualLocIsOn == false) {
+            // localize user
+            localizeUser();
+        }
+
+
+
+    }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Launch User localization
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void localizeUser() {
+        // retrieve position and show it on map
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Start your GPS Reading progress bar
         dialog = new ProgressDialog(this);
         dialog.setMessage("Please wait!");
         dialog.show();
-
     }
 
 
@@ -196,26 +230,41 @@ public class MapsActivity extends AppCompatActivity
         mLocationRequest.setFastestInterval(120000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                //Location Permission already granted
+        // localize user only if manual localization is not set
+        if ( manualLocIsOn == false) {
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    //Location Permission already granted
+                    mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+                    mGoogleMap.setMyLocationEnabled(true);
+
+                    // set user marker in case of previous coordinates not default
+                    checkPrevious();
+                } else {
+                    //Request Location Permission
+                    checkLocationPermission();
+                }
+            } else {
                 mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
                 mGoogleMap.setMyLocationEnabled(true);
 
                 // set user marker in case of previous coordinates not default
                 checkPrevious();
-            } else {
-                //Request Location Permission
-                checkLocationPermission();
             }
-        }
-        else {
-            mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-            mGoogleMap.setMyLocationEnabled(true);
+        } else {
+            // get previous set position
+            String lat_s = sharedPreferences.getString(getString(R.string.device_lat),Double.toString(MainActivity.DEFAULT_LAT));
+            String lng_s = sharedPreferences.getString(getString(R.string.device_lng),Double.toString(MainActivity.DEFAULT_LNG));
 
-            // set user marker in case of previous coordinates not default
-            checkPrevious();
+            LatLng latLng = new LatLng(Double.parseDouble(lat_s),Double.parseDouble(lng_s));
+
+            // set marker
+            myCurrentPositionMarker = mGoogleMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .title("My custom position")
+                    .snippet("Test"));
+            myCurrentPositionMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
         }
 
         // zoom on a particular equake if request came from main activity
@@ -233,7 +282,7 @@ public class MapsActivity extends AppCompatActivity
      */
     private void checkPrevious(){
         // init shared preferences
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        // SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         String lat_s = sharedPreferences.getString(getString(R.string.device_lat),
                 Double.toString(MainActivity.DEFAULT_LAT));
@@ -244,6 +293,28 @@ public class MapsActivity extends AppCompatActivity
         if ( (!lat_s.equals(MainActivity.DEFAULT_LAT)) && (!lng_s.equals(MainActivity.DEFAULT_LNG)) ) {
             // position the user location's marker
             userLocationMarker(Double.parseDouble(lat_s), Double.parseDouble(lng_s));
+        }
+
+    }
+
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Check if there a location manually set
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void checkManualLocation(){
+
+        String manualLocFlag =  sharedPreferences.getString(getString(R.string.manual_Localization_On),
+                "false");
+
+        // if there is already user location different from default location
+        if (manualLocFlag.equals("true") ) {
+            manualLocIsOn = true;
+
+        } else {
+            manualLocIsOn = false;
         }
 
     }
@@ -402,37 +473,40 @@ public class MapsActivity extends AppCompatActivity
      */
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private void checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
 
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+        if ( manualLocIsOn == false) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
 
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-                new AlertDialog.Builder(this)
-                        .setTitle("Location Permission Needed")
-                        .setMessage("This app needs the Location permission, please accept to use location functionality")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //Prompt the user once explanation has been shown
-                                ActivityCompat.requestPermissions(MapsActivity.this,
-                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                        MY_PERMISSIONS_REQUEST_LOCATION );
-                            }
-                        })
-                        .create()
-                        .show();
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                    // Show an explanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+                    new AlertDialog.Builder(this)
+                            .setTitle("Location Permission Needed")
+                            .setMessage("This app needs the Location permission, please accept to use location functionality")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    //Prompt the user once explanation has been shown
+                                    ActivityCompat.requestPermissions(MapsActivity.this,
+                                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                            MY_PERMISSIONS_REQUEST_LOCATION);
+                                }
+                            })
+                            .create()
+                            .show();
 
 
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION );
+                } else {
+                    // No explanation needed, we can request the permission.
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            MY_PERMISSIONS_REQUEST_LOCATION);
+                }
             }
         }
     }
@@ -529,6 +603,100 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Set user costum location manually by long pressing
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void setManualLocalization(){
+
+        //stop location updates, doing manually
+        if (mFusedLocationClient != null) {
+            mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+        }
+
+        // set position by long press
+        mGoogleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                // First check if myMarker is null
+                if (myCurrentPositionMarker == null) {
+                    // Marker was not set yet. Add marker:
+                    myCurrentPositionMarker = mGoogleMap.addMarker(new MarkerOptions()
+                            .position(latLng)
+                            .title("My positions")
+                            .snippet("Your marker snippet"));
+                } else {
+                    // Marker already exists, just update it's position
+                    myCurrentPositionMarker.setPosition(latLng);
+                }
+
+                myCurrentPositionMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+
+                // set flag for manual_Localization_On
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(getString(R.string.manual_Localization_On), "true");
+                editor.apply();
+
+
+                editor.putString(getString(R.string.device_lat),Double.toString(latLng.latitude));
+                editor.apply();
+
+                editor.putString(getString(R.string.device_lng),Double.toString(latLng.longitude));
+                editor.apply();
+
+                manualLocIsOn = true;
+            }
+        });
+
+    }
+
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Unset user manual location
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void unSetManualLocalization(){
+
+        // set flag for manual_Localization_On off
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(getString(R.string.manual_Localization_On), "false");
+        editor.apply();
+
+        manualLocIsOn = false;
+
+        // try to set user localization by gps
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Start your GPS Reading progress bar
+        dialog = new ProgressDialog(this);
+        dialog.setMessage("Please wait!");
+        dialog.show();
+
+    }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Show alert with instruction for manual localization
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void manualLocalizationAlert(){
+        new AlertDialog.Builder(this)
+                .setTitle("Set Your Location Manually")
+                .setMessage("To set/override your position manually, long press on a map point. ")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        setManualLocalization();
+                    }
+                })
+                .create()
+                .show();
+
+    }
 
     // ---------------------------------------------------------------------------------------------
     //                                          MENU STUFF
@@ -536,8 +704,19 @@ public class MapsActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.map_action, menu);
+        locCheckbox = menu.findItem(R.id.overridePosition_cb);
+
+        // in case of previous manual loc setting, check and open menu
+        if ( manualLocIsOn == false) {
+            // set checkbox manual loc set checked
+            locCheckbox.setChecked(true);
+
+            // show menu
+            MapsActivity.this.openOptionsMenu();
+        }
+
         return true;
-    }
+    }   
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -546,13 +725,14 @@ public class MapsActivity extends AppCompatActivity
             case R.id.overridePosition_cb:
                 if (item.isChecked()) {
                     item.setChecked(false);
-                    Log.d(TAG, "onOptionsItemSelected: was Checked !!");
+                    unSetManualLocalization();
+                    Log.d(TAG, "onOptionsItemSelected: was unChecked !!");
                     // TODOo : SHOW DIALOG FRAGMENT WITH ISTRUCTION
                 } else {
                     item.setChecked(true);
-                    Log.d(TAG, "onOptionsItemSelected: was unchecked !!");
+                    manualLocalizationAlert();
+                    Log.d(TAG, "onOptionsItemSelected: was Checked !!");
                     // TODOo : GO TO CURRENT POSITION
-
                 }
                 return true;
 
