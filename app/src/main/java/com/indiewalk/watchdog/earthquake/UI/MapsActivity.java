@@ -686,6 +686,7 @@ public class MapsActivity extends AppCompatActivity
 
         manualLocIsOn = false;
 
+        /*
         // try to set user localization by gps
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -693,6 +694,10 @@ public class MapsActivity extends AppCompatActivity
         dialog = new ProgressDialog(this);
         dialog.setMessage("Please wait!");
         dialog.show();
+        */
+
+        // restart activity
+        restartActivity();
 
     }
 
@@ -717,6 +722,19 @@ public class MapsActivity extends AppCompatActivity
 
     }
 
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Restart current activity
+     * ---------------------------------------------------------------------------------------------
+     */
+    public void restartActivity(){
+        Intent mIntent = getIntent();
+        finish();
+        startActivity(mIntent);
+    }
+
+
     // ---------------------------------------------------------------------------------------------
     //                                          MENU STUFF
     // ---------------------------------------------------------------------------------------------
@@ -730,8 +748,6 @@ public class MapsActivity extends AppCompatActivity
             // set checkbox manual loc set checked
             locCheckbox.setChecked(true);
 
-            // show menu
-            MapsActivity.this.openOptionsMenu();
         }
 
         return true;
