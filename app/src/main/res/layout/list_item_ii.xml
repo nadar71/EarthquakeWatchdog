@@ -14,7 +14,6 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
         android:background="@drawable/magnitude_circle"
         android:gravity="center"
         android:text="0.0"
@@ -33,77 +32,67 @@
         android:text="Feb 2, 15"
         android:textColor="@color/textColorEarthquakeLocation"
         android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@+id/magnitudeText"
         app:layout_constraintStart_toEndOf="@+id/magnitudeText"
-        app:layout_constraintTop_toBottomOf="@+id/magnitudeText" />
+        tools:layout_editor_absoluteY="0dp" />
 
     <TextView
         android:id="@+id/timeText"
         android:layout_width="55dp"
-        android:layout_height="18dp"
+        android:layout_height="16dp"
         android:layout_gravity="end"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
         android:text="3:15 PM"
         android:textColor="@color/textColorEarthquakeLocation"
         android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@+id/dateText"
-        app:layout_constraintStart_toEndOf="@+id/dateText"
-        app:layout_constraintTop_toBottomOf="@+id/dateText"
-        app:layout_constraintVertical_bias="0.47" />
+        app:layout_constraintBaseline_toBaselineOf="@+id/dateText"
+        app:layout_constraintStart_toEndOf="@+id/dateText" />
 
     <TextView
         android:id="@+id/distanceFromMe_tv"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
+        android:layout_height="17dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:text="100km"
         android:textColor="@color/textColorEarthquakeLocation"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/timeText"
         app:layout_constraintEnd_toStartOf="@+id/distanceFromMeLabel_tv"
-        app:layout_constraintHorizontal_bias="0.955"
-        app:layout_constraintStart_toEndOf="@+id/timeText"
-        app:layout_constraintTop_toBottomOf="@+id/timeText"
-        app:layout_constraintVertical_bias="0.577" />
+        app:layout_constraintTop_toBottomOf="@+id/magnitudeText" />
 
     <TextView
         android:id="@+id/distanceFromMeLabel_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:text="from you."
+        android:layout_width="126dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="from you bbbbbbbb."
         android:textColor="@color/textColorEarthquakeLocation"
-        app:layout_constraintBottom_toTopOf="@+id/distanceFromMe_tv"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/distanceFromMe_tv" />
+        android:textSize="12sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/distanceFromMe_tv"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/locationOffsetText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="4dp"
         android:ellipsize="end"
         android:fontFamily="sans-serif-medium"
         android:maxLines="1"
         android:text="74km NW    of"
-        android:textAllCaps="true"
         android:textColor="@color/textColorEarthquakeLocation"
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="@+id/dateText"
-        app:layout_constraintTop_toBottomOf="@+id/magnitudeText" />
+        app:layout_constraintTop_toBottomOf="@+id/dateText" />
 
     <TextView
         android:id="@+id/primaryLocationText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
         android:ellipsize="end"
         android:maxLines="2"
         android:text="Rumoi, Japan"

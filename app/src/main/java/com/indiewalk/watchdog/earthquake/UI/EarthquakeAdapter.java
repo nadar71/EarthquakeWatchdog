@@ -206,8 +206,8 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
         // add the preferred distance unit
         //distance = distWithUnit(dist_i);
-
-        return distance + " " + dist_unit + loc;
+        String finalString = distance + " " + dist_unit + loc;
+        return finalString;
     }
 
 

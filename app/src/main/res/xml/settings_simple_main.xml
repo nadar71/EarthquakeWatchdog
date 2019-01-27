@@ -19,13 +19,20 @@
         android:key="@string/settings_distance_unit_by_key"
         android:title="@string/settings_distance_unit_label" />
 
-
+    <ListPreference
+        android:defaultValue="@string/settings_min_magnitude_default"
+        android:entries="@array/settings_min_magnitude_labels"
+        android:entryValues="@array/settings_min_magnitude_values"
+        android:key="@string/settings_min_magnitude_key"
+        android:title="@string/settings_min_magnitude_label" />
+<!--
     <EditTextPreference
         android:defaultValue="@string/settings_min_magnitude_default"
         android:inputType="numberDecimal"
         android:key="@string/settings_min_magnitude_key"
         android:selectAllOnFocus="true"
         android:title="@string/settings_min_magnitude_label" />
+-->
 
 
 </PreferenceScreen>

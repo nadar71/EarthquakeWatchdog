@@ -215,7 +215,19 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         super.onResume();
 
         // hide navbar
-        MyUtil.hideNavBar(this);
+        /*
+        if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+            this.getWindow().getDecorView().setSystemUiVisibility(
+                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            // View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|
+                            // View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|
+                            // View.SYSTEM_UI_FLAG_FULLSCREEN|
+                            // View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                            );
+        }
+        */
+
 
         // check preferences for changes
         checkPreferences();
@@ -384,16 +396,14 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
 
     /**
-     * Set user's for each equake
+     * ---------------------------------------------------------------------------------------------
+     * Set user's distance for each equake
      * @param earthquakes
+     * ---------------------------------------------------------------------------------------------
      */
     private void setDistanceFromUser(List<Earthquake> earthquakes){
         // check that location coords are set
         checkPreferences();
-
-
-
-
 
     }
 
@@ -408,7 +418,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         Uri.Builder builder = rootUri.buildUpon();
 
         builder.appendQueryParameter("format","geojson");
-        builder.appendQueryParameter("limit","10");
+        builder.appendQueryParameter("limit","30");
         builder.appendQueryParameter("minmag",minMagnitude);
         builder.appendQueryParameter("orderby",orderBy);
 

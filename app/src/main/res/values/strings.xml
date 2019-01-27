@@ -43,7 +43,28 @@
     <!-- - - - - - - - - - - Strings For Minimum Magnitude Preference  - - - - - - - - - - - - - -->
     <string name="settings_min_magnitude_label">Minimum Magnitude</string>
     <string name="settings_min_magnitude_key" translatable="false">min_magnitude</string>
-    <string name="settings_min_magnitude_default" translatable="false">6</string>
+    <string name="settings_min_magnitude_default" translatable="false">@string/settings_6_0_distance_unit_value</string>
+
+    <string name="settings_1_0_distance_unit_label">1.0+</string>
+    <string name="settings_2_0_distance_unit_label">2.0+</string>
+    <string name="settings_3_0_distance_unit_label">3.0+</string>
+    <string name="settings_4_0_distance_unit_label">4.0+</string>
+    <string name="settings_4_5_distance_unit_label">4.5+</string>
+    <string name="settings_5_0_distance_unit_label">5.0+</string>
+    <string name="settings_5_5_distance_unit_label">5.5+</string>
+    <string name="settings_6_0_distance_unit_label">6.0+</string>
+    <string name="settings_6_5_distance_unit_label">6.5+</string>
+
+
+    <string name="settings_1_0_distance_unit_value">1.0</string>
+    <string name="settings_2_0_distance_unit_value">2.0</string>
+    <string name="settings_3_0_distance_unit_value">3.0</string>
+    <string name="settings_4_0_distance_unit_value">4.0</string>
+    <string name="settings_4_5_distance_unit_value">4.5</string>
+    <string name="settings_5_0_distance_unit_value">5.0</string>
+    <string name="settings_5_5_distance_unit_value">5.5</string>
+    <string name="settings_6_0_distance_unit_value">6.0</string>
+    <string name="settings_6_5_distance_unit_value">6.5</string>
 
 
     <!-- - - - - - - - Strings For Order-By Preference [CHAR LIMIT=30] - - - - - - - - - - - - - -->
@@ -62,9 +83,10 @@
 
 
     <!-- - - - - - - - Strings For Distance measure unit - - - - - - - - - - - - - -->
-    <string name="settings_distance_unit_label">Distance unit</string>
-    <string name="settings_distance_unit_by_key" translatable="false">distance unit</string>
-    <string name="settings_distance_unit_by_default" translatable="false">@string/settings_km_distance_unit_value</string>
+    <string name="settings_distance_unit_label">                          Distance unit</string>
+    <string name="settings_distance_unit_by_key" translatable="false">    distance unit</string>
+    <string name="settings_distance_unit_by_default" translatable="false">
+        @string/settings_km_distance_unit_value</string>
 
         <!-- Label for order-by magnitude option [CHAR LIMIT=20] -->
         <string name="settings_km_distance_unit_label">Km</string>
@@ -76,10 +98,13 @@
 
 
     <!-- - - - - - - - - - Strings For SharedPreference - - - - - - - - - - - - - - - - - - - - -->
-    <string name="location_coord">sharedPref</string>
-    <string name="device_lat">device_lat</string>
-    <string name="device_lng">device_lng</string>
-    <string name="manual_Localization_On">manual_Localization_On</string>
+    <string name="location_coord">         sharedPref</string>
+    <string name="device_lat">             device_lat</string>
+    <string name="device_lng">             device_lng</string>
+    <string name="manual_Localization_On"> manual_Localization_On</string>
+
+
+    <!-- - - - - - - - - - Strings For Min Magnitude - - - - - - - - - - - - - - - - - - - - - - -->
 
 
 

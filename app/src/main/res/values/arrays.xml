@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--                order by preferences value keys-values array                             -->
+    <!-- - - - - - - - order by preferences value keys-values array - - - - - - - - - - - - - - -->
     <string-array name="settings_order_by_labels">
         <item>@string/settings_order_by_magnitude_label</item>
         <item>@string/settings_order_by_most_recent_label</item>
@@ -12,7 +12,7 @@
         <item>@string/settings_order_by_most_recent_value</item>
     </string-array>
 
-    <!--                distance unit preferences value keys-values array                        -->
+    <!-- - - - - - - - distance unit preferences value keys-values array - - - - - - - - - - - - -->
     <string-array name="settings_distance_unit_labels">
         <item>@string/settings_km_distance_unit_label</item>
         <item>@string/settings_mi_distance_unit_label</item>
@@ -22,5 +22,32 @@
         <item>@string/settings_km_distance_unit_value</item>
         <item>@string/settings_mi_distance_unit_value</item>
     </string-array>
+
+
+    <!-- - - - - - - min magnitude preferences value keys-values array - - - - - - - - - - - - -->
+    <string-array name="settings_min_magnitude_labels">
+        <item>@string/settings_1_0_distance_unit_label</item>
+        <item>@string/settings_2_0_distance_unit_label</item>
+        <item>@string/settings_3_0_distance_unit_label</item>
+        <item>@string/settings_4_0_distance_unit_label</item>
+        <item>@string/settings_4_5_distance_unit_label</item>
+        <item>@string/settings_5_0_distance_unit_label</item>
+        <item>@string/settings_5_5_distance_unit_label</item>
+        <item>@string/settings_6_0_distance_unit_label</item>
+        <item>@string/settings_6_5_distance_unit_label</item>
+    </string-array>
+
+    <string-array name="settings_min_magnitude_values">
+        <item>@string/settings_1_0_distance_unit_value</item>
+        <item>@string/settings_2_0_distance_unit_value</item>
+        <item>@string/settings_3_0_distance_unit_value</item>
+        <item>@string/settings_4_0_distance_unit_value</item>
+        <item>@string/settings_4_5_distance_unit_value</item>
+        <item>@string/settings_5_0_distance_unit_value</item>
+        <item>@string/settings_5_5_distance_unit_value</item>
+        <item>@string/settings_6_0_distance_unit_value</item>
+        <item>@string/settings_6_5_distance_unit_value</item>
+    </string-array>
+
 
 </resources>

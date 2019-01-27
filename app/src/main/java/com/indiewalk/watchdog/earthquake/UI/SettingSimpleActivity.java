@@ -31,15 +31,16 @@ public class SettingSimpleActivity extends AppCompatActivity {
             // show and keep update the preferences
             addPreferencesFromResource(R.xml.settings_simple_main);
 
-            // bind prefs on changes
-            Preference minMagnitude = findPreference(getString(R.string.settings_min_magnitude_key));
-            bindPreferenceSummaryToValue(minMagnitude);
-
             Preference orderBy = findPreference(getString(R.string.settings_order_by_key));
             bindPreferenceSummaryToValue(orderBy);
 
             Preference distanceUnit = findPreference(getString(R.string.settings_distance_unit_by_key));
             bindPreferenceSummaryToValue(distanceUnit);
+
+            // bind prefs on changes
+            Preference minMagnitude = findPreference(getString(R.string.settings_min_magnitude_key));
+            bindPreferenceSummaryToValue(minMagnitude);
+
         }
 
 
