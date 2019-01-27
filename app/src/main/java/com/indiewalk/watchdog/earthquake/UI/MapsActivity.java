@@ -620,6 +620,8 @@ public class MapsActivity extends AppCompatActivity
         mGoogleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
+
+                /*
                 // First check if myMarker is null
                 if (myCurrentPositionMarker == null) {
                     // Marker was not set yet. Add marker:
@@ -631,6 +633,17 @@ public class MapsActivity extends AppCompatActivity
                     // Marker already exists, just update it's position
                     myCurrentPositionMarker.setPosition(latLng);
                 }
+                */
+
+                // reset manual position marker
+                if (myCurrentPositionMarker != null) {
+                    myCurrentPositionMarker.remove();
+                }
+
+                myCurrentPositionMarker = mGoogleMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title("My positions")
+                        .snippet("Your marker snippet"));
 
                 myCurrentPositionMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
 
@@ -660,6 +673,11 @@ public class MapsActivity extends AppCompatActivity
      * ---------------------------------------------------------------------------------------------
      */
     private void unSetManualLocalization(){
+
+        // reset manual position marker
+        if (myCurrentPositionMarker != null) {
+            myCurrentPositionMarker.remove();
+        }
 
         // set flag for manual_Localization_On off
         SharedPreferences.Editor editor = sharedPreferences.edit();
