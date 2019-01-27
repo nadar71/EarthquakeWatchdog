@@ -253,6 +253,7 @@ public class MapsActivity extends AppCompatActivity
                 checkPrevious();
             }
         } else {
+
             // get previous set position
             String lat_s = sharedPreferences.getString(getString(R.string.device_lat),Double.toString(MainActivity.DEFAULT_LAT));
             String lng_s = sharedPreferences.getString(getString(R.string.device_lng),Double.toString(MainActivity.DEFAULT_LNG));
@@ -707,7 +708,7 @@ public class MapsActivity extends AppCompatActivity
         locCheckbox = menu.findItem(R.id.overridePosition_cb);
 
         // in case of previous manual loc setting, check and open menu
-        if ( manualLocIsOn == false) {
+        if ( manualLocIsOn == true) {
             // set checkbox manual loc set checked
             locCheckbox.setChecked(true);
 
@@ -716,7 +717,7 @@ public class MapsActivity extends AppCompatActivity
         }
 
         return true;
-    }   
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
