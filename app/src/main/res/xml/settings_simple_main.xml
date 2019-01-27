@@ -13,7 +13,7 @@
 
 
     <ListPreference
-        android:defaultValue="@string/settings_km_distance_unit_value"
+        android:defaultValue="@string/settings_distance_unit_by_default"
         android:entries="@array/settings_distance_unit_labels"
         android:entryValues="@array/settings_distance_unit_values"
         android:key="@string/settings_distance_unit_by_key"

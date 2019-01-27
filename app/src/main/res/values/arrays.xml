@@ -26,27 +26,27 @@
 
     <!-- - - - - - - min magnitude preferences value keys-values array - - - - - - - - - - - - -->
     <string-array name="settings_min_magnitude_labels">
-        <item>@string/settings_1_0_distance_unit_label</item>
-        <item>@string/settings_2_0_distance_unit_label</item>
-        <item>@string/settings_3_0_distance_unit_label</item>
-        <item>@string/settings_4_0_distance_unit_label</item>
-        <item>@string/settings_4_5_distance_unit_label</item>
-        <item>@string/settings_5_0_distance_unit_label</item>
-        <item>@string/settings_5_5_distance_unit_label</item>
-        <item>@string/settings_6_0_distance_unit_label</item>
-        <item>@string/settings_6_5_distance_unit_label</item>
+        <item>@string/settings_1_0_min_magnitude_label</item>
+        <item>@string/settings_2_0_min_magnitude_label</item>
+        <item>@string/settings_3_0_min_magnitude_label</item>
+        <item>@string/settings_4_0_min_magnitude_label</item>
+        <item>@string/settings_4_5_min_magnitude_label</item>
+        <item>@string/settings_5_0_min_magnitude_label</item>
+        <item>@string/settings_5_5_min_magnitude_label</item>
+        <item>@string/settings_6_0_min_magnitude_label</item>
+        <item>@string/settings_6_5_min_magnitude_label</item>
     </string-array>
 
     <string-array name="settings_min_magnitude_values">
-        <item>@string/settings_1_0_distance_unit_value</item>
-        <item>@string/settings_2_0_distance_unit_value</item>
-        <item>@string/settings_3_0_distance_unit_value</item>
-        <item>@string/settings_4_0_distance_unit_value</item>
-        <item>@string/settings_4_5_distance_unit_value</item>
-        <item>@string/settings_5_0_distance_unit_value</item>
-        <item>@string/settings_5_5_distance_unit_value</item>
-        <item>@string/settings_6_0_distance_unit_value</item>
-        <item>@string/settings_6_5_distance_unit_value</item>
+        <item>@string/settings_1_0_min_magnitude_value</item>
+        <item>@string/settings_2_0_min_magnitude_value</item>
+        <item>@string/settings_3_0_min_magnitude_value</item>
+        <item>@string/settings_4_0_min_magnitude_value</item>
+        <item>@string/settings_4_5_min_magnitude_value</item>
+        <item>@string/settings_5_0_min_magnitude_value</item>
+        <item>@string/settings_5_5_min_magnitude_value</item>
+        <item>@string/settings_6_0_min_magnitude_value</item>
+        <item>@string/settings_6_5_min_magnitude_value</item>
     </string-array>
 
 

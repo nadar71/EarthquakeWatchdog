@@ -28,13 +28,7 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Loader;
 import android.app.AlertDialog;
 
-import com.facebook.flipper.android.AndroidFlipperClient;
-import com.facebook.flipper.android.utils.FlipperUtils;
-import com.facebook.flipper.core.FlipperClient;
-import com.facebook.flipper.plugins.inspector.DescriptorMapping;
-import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
-import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
-import com.facebook.soloader.SoLoader;
+
 import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.net.EarthquakeAsyncLoader;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
@@ -88,15 +82,6 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         setContentView(R.layout.main_activity);
 
 
-
-        // Using flipper for debugging share preferences file
-        SoLoader.init(this, false);
-        if (BuildConfig.DEBUG && FlipperUtils.shouldEnableFlipper(this)) {
-            final FlipperClient client = AndroidFlipperClient.getInstance(this);
-            client.addPlugin(new InspectorFlipperPlugin(getApplicationContext(), DescriptorMapping.withDefaults()));
-            client.addPlugin(new SharedPreferencesFlipperPlugin(getApplicationContext(), "my_shared_preference_file"));
-            client.start();
-        }
 
 
 

@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 // import android.support.v7.preference.PreferenceFragmentCompat;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
@@ -31,14 +32,14 @@ public class SettingSimpleActivity extends AppCompatActivity {
             // show and keep update the preferences
             addPreferencesFromResource(R.xml.settings_simple_main);
 
+            // bind prefs on changes
             Preference orderBy = findPreference(getString(R.string.settings_order_by_key));
             bindPreferenceSummaryToValue(orderBy);
 
             Preference distanceUnit = findPreference(getString(R.string.settings_distance_unit_by_key));
             bindPreferenceSummaryToValue(distanceUnit);
 
-            // bind prefs on changes
-            Preference minMagnitude = findPreference(getString(R.string.settings_min_magnitude_key));
+            Preference minMagnitude = findPreference(getString(R.string.settings_min_magnitude_key)); // min_magnitude
             bindPreferenceSummaryToValue(minMagnitude);
 
         }
@@ -56,7 +57,7 @@ public class SettingSimpleActivity extends AppCompatActivity {
             // get new value to use for replacing old
             String sPreference = sharedPreferences.getString(preference.getKey(),"");
 
-            // callback invokation on preference param
+            // callback invocation on preference param
             onPreferenceChange(preference,sPreference);
 
 
