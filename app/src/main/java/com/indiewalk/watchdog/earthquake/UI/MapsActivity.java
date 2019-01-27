@@ -25,6 +25,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -142,23 +143,29 @@ public class MapsActivity extends AppCompatActivity
         // init shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        getSupportActionBar().setTitle("Map Location Activity");
+        // back btn
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
 
         // Show on map
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(this);
 
-
         // check if there was a previous user location manual setted
         checkManualLocation();
 
         if ( manualLocIsOn == false) {
+            // standard title
+            getSupportActionBar().setTitle(getString(R.string.title_activity_maps_standard));
+
             // localize user
             localizeUser();
+            
+        } else {
+            // manual loc on title
+            getSupportActionBar().setTitle(Html.fromHtml("<font color='#66ff66'>"+
+                    getString(R.string.title_activity_maps_manual_localization_on) +"</font>"));
         }
+
 
 
 
@@ -660,6 +667,10 @@ public class MapsActivity extends AppCompatActivity
                 editor.apply();
 
                 manualLocIsOn = true;
+
+                // change title
+                getSupportActionBar().setTitle(Html.fromHtml("<font color='#66ff66'>"+
+                        getString(R.string.title_activity_maps_manual_localization_on) +"</font>"));
             }
         });
 
@@ -695,6 +706,9 @@ public class MapsActivity extends AppCompatActivity
         dialog.setMessage("Please wait!");
         dialog.show();
         */
+
+        // change title
+        getSupportActionBar().setTitle("");
 
         // restart activity
         restartActivity();

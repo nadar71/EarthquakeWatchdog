@@ -5,7 +5,8 @@
     <item
         android:id="@+id/overridePosition_cb"
         android:checkable="true"
-        android:title="Override position manually" />
+        android:title="Use manual localization" />
+
     <item
         android:id="@+id/showMarkers_cb"
         android:checkable="true"
