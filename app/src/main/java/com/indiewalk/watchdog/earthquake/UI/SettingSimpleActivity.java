@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.indiewalk.watchdog.earthquake.R;
+import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
 public class SettingSimpleActivity extends AppCompatActivity {
 
@@ -20,6 +21,7 @@ public class SettingSimpleActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_simple);
+
     }
 
     public static class EarthquakePreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener{

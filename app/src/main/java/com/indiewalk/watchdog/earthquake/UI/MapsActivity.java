@@ -128,6 +128,9 @@ public class MapsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        // hide navbar
+        MyUtil.hideNavBar(this);
+
         // get db instance
         eqDb = EarthquakeDatabase.getDbInstance(getApplicationContext());
 
@@ -159,7 +162,7 @@ public class MapsActivity extends AppCompatActivity
 
             // localize user
             localizeUser();
-            
+
         } else {
             // manual loc on title
             getSupportActionBar().setTitle(Html.fromHtml("<font color='#66ff66'>"+
@@ -186,6 +189,7 @@ public class MapsActivity extends AppCompatActivity
         dialog.setMessage("Please wait!");
         dialog.show();
     }
+
 
 
     /**

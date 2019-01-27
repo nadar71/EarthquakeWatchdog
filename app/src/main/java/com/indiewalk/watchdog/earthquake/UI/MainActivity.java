@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -45,6 +46,7 @@ import java.util.List;
 
 // ** for DEBUG reason
 import com.indiewalk.watchdog.earthquake.BuildConfig;
+import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
 
 public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<List<Earthquake>> {
@@ -85,7 +87,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-        Log.i(TAG, "onCreate");
+
 
         // Using flipper for debugging share preferences file
         SoLoader.init(this, false);
@@ -95,6 +97,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             client.addPlugin(new SharedPreferencesFlipperPlugin(getApplicationContext(), "my_shared_preference_file"));
             client.start();
         }
+
+
 
 
         // TODO : ASK FOR GEOLOCALIZATION PERMISSION
@@ -210,9 +214,11 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     protected void onResume() {
         super.onResume();
 
+        // hide navbar
+        MyUtil.hideNavBar(this);
+
         // check preferences for changes
         checkPreferences();
-
 
     }
 
