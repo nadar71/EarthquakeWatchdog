@@ -17,8 +17,10 @@ import android.view.View;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Calendar;
 
 public class MyUtil {
 
@@ -158,7 +160,7 @@ public class MyUtil {
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Hide nav bar
+     * Hide nav bar total
      * @param activity
      * ---------------------------------------------------------------------------------------------
      */
@@ -169,9 +171,25 @@ public class MyUtil {
                             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            //| View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
 
     }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Return Past date by daysOffset
+     * ---------------------------------------------------------------------------------------------
+     */
+    public static String oldDate(int daysOffset){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd ");
+        Calendar calReturn = Calendar.getInstance();
+        calReturn.add(Calendar.DATE, -daysOffset);
+        String oldDate = dateFormat.format(calReturn.getTime());
+        return oldDate;
+    }
+
+
 }

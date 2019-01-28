@@ -257,6 +257,11 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         orderBy = sharedPreferences.getString(
                 getString(R.string.settings_order_by_key),
                 getString(R.string.settings_order_by_default));
+
+        // TODO : delete when all is done through repository
+        if (orderBy.isEmpty() || orderBy == null) {
+            orderBy = getString(R.string.settings_order_by_default);
+        }
     }
 
     
@@ -323,6 +328,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
      * @param earthquakesReturnedByLoader
      * ---------------------------------------------------------------------------------------------
      */
+    // TODO : use livedata/viewmodel for this: loader don't need to return the equake list structure
+    // it has been already stored in db; must only return
     @Override
     public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> earthquakesReturnedByLoader) {
         Log.i(TAG, "onLoadFinished: Loader return back with data");
@@ -333,16 +340,21 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         // Set empty state text to display "No earthquakes found."
         emptyListText.setText(R.string.no_earthquakes);
 
+   //---- adapter update
         // clear the adapter of previous data
         adapter.clear();
 
-        // update UI when loader finishes its job
-        if (setEartquakesList(earthquakesReturnedByLoader)==true) {
+        // update UI when loader finished
+        // TODO : use livedata/viewmodel for this
+        // TODO
+        if (setEartquakesList(earthquakesReturnedByLoader) == true) {
+
             adapter.addAll(earthquakes);
         } else {
             Log.i(TAG, "Problem with earthquake list, is empty. Check the request. ");
         }
 
+    //----
 
     }
 
@@ -368,6 +380,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
      * @return true/false
      * ---------------------------------------------------------------------------------------------
      */
+    // TODO : load from db
     protected boolean setEartquakesList(List<Earthquake> earthquakes){
         if (  (earthquakes != null) && (earthquakes.isEmpty() == false)  ){
             this.earthquakes = earthquakes;
@@ -404,8 +417,11 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
         builder.appendQueryParameter("format","geojson");
         builder.appendQueryParameter("limit","30");
-        builder.appendQueryParameter("minmag",minMagnitude);
-        builder.appendQueryParameter("orderby",orderBy);
+        // calculate 30-days ago date and set as start date
+        // String aMonthAgo = MyUtil.oldDate(30).toString();
+        // builder.appendQueryParameter("starttime",aMonthAgo);
+        builder.appendQueryParameter("minmag",minMagnitude); // TODO : delete
+        builder.appendQueryParameter("orderby",orderBy);     // TODO : delete
 
         return  builder.toString();
     }

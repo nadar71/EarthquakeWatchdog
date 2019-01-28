@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.UI.MainActivity;
@@ -76,14 +75,15 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
         }
 
         // setup preferences
-        checkPreferences();
+        // checkPreferences();
 
         // create instance of request and collect the result in ArrayList<Earthquake>
         earthquakes = new EarthQuakeQuery().fetchEarthquakeData(queryUrl);
         Log.i(TAG, "loadInBackground: loadInBackground ended, returning data requested.");
 
+
         // update with distance from user, distance unit each earthquake
-        customForUserEqInfo(earthquakes);
+        setUserPreferences(earthquakes);
 
         // delete previous results in db, only newest are valid
         eqDb.earthquakeDbDao().dropEarthquakeListTable();
@@ -93,7 +93,13 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
             eqDb.earthquakeDbDao().insertEarthquake(earthquake);
         }
 
+
+        // TODO : check if there are specific visualization preferences for showing equakes
+        // TODO : do not forget to clear the  list before retrieving data
+
+
         // return to main activity for list view
+        // TODO : return true
         return earthquakes;
     }
 
@@ -102,10 +108,11 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
     /**
      * ---------------------------------------------------------------------------------------------
      * Check location coordinates from shared preferences.
-     * If not set, put defaut value
+     * If not set, put default value
      * Check for distance unit preference too
      * ---------------------------------------------------------------------------------------------
      */
+    // TODO : delete
     private void checkPreferences() {
         // init shared preferences
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
@@ -135,18 +142,46 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
         dist_unit = sharedPreferences.getString(context.getString(R.string.settings_distance_unit_by_key),
                     Double.toString(R.string.settings_distance_unit_by_default));
 
-
-        Log.i(TAG, "EarthquakeAsyncLoader : Current Location : lat : " + lat_s + " long : " + lng_s + " dist unit : "+ dist_unit);
-
     }
 
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Upgrade each equakes info with custom distance form user, distance unit preferred
+     * Update each equakes info with custom distance from user if any.
+     * Update with distance unit preferred.
      * ---------------------------------------------------------------------------------------------
      */
-     private void customForUserEqInfo(ArrayList<Earthquake> earthquakes){
+     private void setUserPreferences(ArrayList<Earthquake> earthquakes){
+
+         // Check location coordinates from shared preferences.If not set, put default value
+
+         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+
+         //get preferences for check
+         lat_s = sharedPreferences.getString(context.getString(R.string.device_lat),Double.toString(MainActivity.DEFAULT_LAT));
+         lng_s = sharedPreferences.getString(context.getString(R.string.device_lng),Double.toString(MainActivity.DEFAULT_LNG));
+
+
+         // set default coord if there are no one
+         SharedPreferences.Editor editor = sharedPreferences.edit();
+         if (lat_s.isEmpty() == true) {
+             editor.putString(context.getString(R.string.device_lat), Double.toString(MainActivity.DEFAULT_LAT));
+             editor.apply();
+         }
+
+         if (lng_s.isEmpty() == true) {
+             editor.putString(context.getString(R.string.device_lng), Double.toString(MainActivity.DEFAULT_LNG));
+             editor.apply();
+         }
+
+         // get user lat, lng
+         lat_s = sharedPreferences.getString(context.getString(R.string.device_lat),Double.toString(MainActivity.DEFAULT_LAT));
+         lng_s = sharedPreferences.getString(context.getString(R.string.device_lng),Double.toString(MainActivity.DEFAULT_LNG));
+
+         // get distance unit choosen
+         dist_unit = sharedPreferences.getString(context.getString(R.string.settings_distance_unit_by_key),
+                 Double.toString(R.string.settings_distance_unit_by_default));
+
 
          for(Earthquake eq : earthquakes){
              double userLat = Double.valueOf(lat_s);
@@ -158,7 +193,7 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
                  distance = (int) MyUtil.fromKmToMiles(distance);
              }
 
-             Log.i(TAG, "customForUserEqInfo: eq distance from user : "+distance);
+             Log.i(TAG, "setUserPreferences: eq distance from user : "+distance);
              // set in equake
              eq.setUserDistance(distance);
          }
