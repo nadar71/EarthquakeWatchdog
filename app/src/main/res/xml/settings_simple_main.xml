@@ -25,6 +25,14 @@
         android:entryValues="@array/settings_min_magnitude_values"
         android:key="@string/settings_min_magnitude_key"
         android:title="@string/settings_min_magnitude_label" />
+
+
+    <ListPreference
+        android:defaultValue="@string/settings_max_equakes_default"
+        android:entries="@array/settings_max_earthquakes_labels"
+        android:entryValues="@array/settings_max_earthquakes_values"
+        android:key="@string/settings_max_equakes_key"
+        android:title="@string/settings_max_equakes_label" />
 <!--
     <EditTextPreference
         android:defaultValue="@string/settings_min_magnitude_default"

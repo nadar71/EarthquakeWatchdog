@@ -39,8 +39,11 @@ public class SettingSimpleActivity extends AppCompatActivity {
             Preference distanceUnit = findPreference(getString(R.string.settings_distance_unit_by_key));
             bindPreferenceSummaryToValue(distanceUnit);
 
-            Preference minMagnitude = findPreference(getString(R.string.settings_min_magnitude_key)); // min_magnitude
+            Preference minMagnitude = findPreference(getString(R.string.settings_min_magnitude_key));
             bindPreferenceSummaryToValue(minMagnitude);
+
+            Preference maxEquakesNum = findPreference(getString(R.string.settings_max_equakes_key));
+            bindPreferenceSummaryToValue(maxEquakesNum);
 
         }
 

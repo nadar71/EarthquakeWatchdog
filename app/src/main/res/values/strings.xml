@@ -49,7 +49,7 @@
     <string name="settings_order_by_default" translatable="false">@string/settings_order_by_magnitude_value</string>
 
         <!-- Label for order-by magnitude option [CHAR LIMIT=20] -->
-        <string name="settings_order_by_magnitude_label">Magnitude</string>
+        <string name="settings_order_by_magnitude_label">Magnitude (from higher one)</string>
         <string name="settings_order_by_magnitude_value" translatable="false">magnitude</string>
 
         <!-- Label for order-by most recent option [CHAR LIMIT=20] -->
@@ -68,8 +68,8 @@
 
 
     <!-- - - - - - - - Strings For Distance measure unit - - - - - - - - - - - - - -->
-    <string name="settings_distance_unit_label">                          Distance unit</string>
-    <string name="settings_distance_unit_by_key" translatable="false">    distance unit</string>
+    <string name="settings_distance_unit_label">Distance unit</string>
+    <string name="settings_distance_unit_by_key" translatable="false">distance unit</string>
     <string name="settings_distance_unit_by_default" translatable="false">
         @string/settings_km_distance_unit_value</string>
 
@@ -108,6 +108,22 @@
     <string name="settings_5_5_min_magnitude_value" translatable="false">5.5</string>
     <string name="settings_6_0_min_magnitude_value" translatable="false">6.0</string>
     <string name="settings_6_5_min_magnitude_value" translatable="false">6.5</string>
+
+
+    <!-- - - - - - - - - - - Strings For how many equakes load  Preference  - - - - - - - - - - - - - -->
+    <string name="settings_max_equakes_label">How many Earthquakes display :</string>
+    <string name="settings_max_equakes_key" translatable="false">equakes_num</string>
+    <string name="settings_max_equakes_default" translatable="false">@string/settings_max_30_equakes_value</string>
+
+    <string name="settings_max_30_equakes_num_label" >30</string>
+    <string name="settings_max_60_equakes_num_label" >60</string>
+    <string name="settings_max_90_equakes_num_label" >90</string>
+    <string name="settings_max_120_equakes_num_label">120</string>
+
+    <string name="settings_max_30_equakes_value"  translatable="false">30</string>
+    <string name="settings_max_60_equakes_value"  translatable="false">60</string>
+    <string name="settings_max_90_equakes_value"  translatable="false">90</string>
+    <string name="settings_max_120_equakes_value" translatable="false">120</string>
 
 
     <!-- - - - - - - - - - Strings For SharedPreference - - - - - - - - - - - - - - - - - - - - -->

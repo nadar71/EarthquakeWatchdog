@@ -54,4 +54,21 @@
     </string-array>
 
 
+    <!-- - - - - num max earthquakes to display preferences value keys-values array- - - - - - - -->
+    <string-array name="settings_max_earthquakes_labels">
+        <item>@string/settings_max_30_equakes_num_label</item>
+        <item>@string/settings_max_60_equakes_num_label</item>
+        <item>@string/settings_max_90_equakes_num_label</item>
+        <item>@string/settings_max_120_equakes_num_label</item>
+    </string-array>
+
+    <string-array name="settings_max_earthquakes_values">
+        <item>@string/settings_max_30_equakes_value</item>
+        <item>@string/settings_max_60_equakes_value</item>
+        <item>@string/settings_max_90_equakes_value</item>
+        <item>@string/settings_max_120_equakes_value</item>
+
+    </string-array>
+
+
 </resources>

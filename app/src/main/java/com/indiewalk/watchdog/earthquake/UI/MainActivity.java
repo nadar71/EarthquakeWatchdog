@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     private static final int EARTHQUAKE_LOADER_ID = 1;
 
     // Preferences value
-    String minMagnitude, orderBy,lat_s, lng_s;
+    String minMagnitude, orderBy,lat_s, lng_s, numEquakes;
 
     // Db reference
     // TODO : debug, use livedata/viewmodel/repository
@@ -245,6 +245,11 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                 getString(R.string.settings_order_by_key),
                 getString(R.string.settings_order_by_default));
 
+        // recover preferred equakes num to display
+        numEquakes = sharedPreferences.getString(
+                getString(R.string.settings_max_equakes_key),
+                getString(R.string.settings_max_equakes_default));
+
         // TODO : delete when all is done through repository
         if (orderBy.isEmpty() || orderBy == null) {
             orderBy = getString(R.string.settings_order_by_default);
@@ -328,10 +333,9 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         emptyListText.setText(R.string.no_earthquakes);
 
 
-
         // --> update UI when loader finished
         if (setEartquakesList(earthquakesReturnedByLoader) == true) {
-            // updateList();
+            updateList();
         } else {
             Log.i(TAG, "Problem with earthquake list, is empty. Check the request. ");
         }
@@ -406,7 +410,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     protected boolean setEartquakesList(List<Earthquake> earthquakes){
         if (  (earthquakes != null) && (earthquakes.isEmpty() == false)  ){
             // this.earthquakes = earthquakes;
-            updateList();
+            // updateList();
             return true;
         }else{
             Log.i(TAG, "The earthquake list is empty. Check the request. ");
@@ -428,7 +432,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         Uri.Builder builder = rootUri.buildUpon();
 
         builder.appendQueryParameter("format","geojson");
-        builder.appendQueryParameter("limit","30");
+        builder.appendQueryParameter("limit",numEquakes);
         // calculate 30-days ago date and set as start date
         // String aMonthAgo = MyUtil.oldDate(30).toString();
         // builder.appendQueryParameter("starttime",aMonthAgo);
