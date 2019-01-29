@@ -2,6 +2,7 @@ package com.indiewalk.watchdog.earthquake.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -189,6 +190,17 @@ public class MyUtil {
         calReturn.add(Calendar.DATE, -daysOffset);
         String oldDate = dateFormat.format(calReturn.getTime());
         return oldDate;
+    }
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Restart current activity
+     * ---------------------------------------------------------------------------------------------
+     */
+    public static void restartActivity(Activity activity){
+        Intent mIntent = activity.getIntent();
+        activity.finish();
+        activity.startActivity(mIntent);
     }
 
 

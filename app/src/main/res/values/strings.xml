@@ -13,7 +13,7 @@
      limitations under the License.
 -->
 <resources>
-    <string name="app_name">Quake Report</string>
+    <string name="app_name">EarthQuake Watchdog</string>
     <string name="searching">Retrieving earthquakes data...</string>
 
     <!-- - - - - - - - - - - Strings For Title  - - - -  - - - - - - - - - - - - - - - - - - - - -->
@@ -31,14 +31,19 @@
     <string name="title_activity_maps_standard">Earthquakes Watchdog</string>
     <string name="title_activity_maps_manual_localization_on">Manual Localization On</string>
 
+    <!-- Spinner dialog stuff  -->
+    <string name="dialog_check_box_label">Save</string>
 
 
 
-    <!-- - - - - - - - - - - Strings For Settings  - - - -  - - - - - - - - - - - - - - - - - - - - -->
-    <!-- Settings menu item -->
-    <string name="settings_menu_item">Settings</string>
+
+    <!-- - - - - - - - - - - Strings For Settings Menu - - - -  - - - - - - - - - - - - - - - - - - - - -->
     <!-- Settings activity title -->
     <string name="settings_title">Earthquake Settings</string>
+    <!-- Settings menu item -->
+    <string name="settings_menu_item">Settings</string>
+    <string name="settings_menu_item_quick">Quick</string>
+    <string name="settings_menu_item_general">General settings</string>
 
 
 
@@ -127,10 +132,10 @@
 
 
     <!-- - - - - - - - - - Strings For SharedPreference - - - - - - - - - - - - - - - - - - - - -->
-    <string name="location_coord">         sharedPref</string>
-    <string name="device_lat">             device_lat</string>
-    <string name="device_lng">             device_lng</string>
-    <string name="manual_Localization_On"> manual_Localization_On</string>
+    <string name="location_coord">sharedPref</string>
+    <string name="device_lat">device_lat</string>
+    <string name="device_lng">device_lng</string>
+    <string name="manual_Localization_On">manual_Localization_On</string>
 
 
 

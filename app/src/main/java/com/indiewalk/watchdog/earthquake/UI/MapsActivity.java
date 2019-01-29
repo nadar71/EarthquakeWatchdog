@@ -702,7 +702,7 @@ public class MapsActivity extends AppCompatActivity
         getSupportActionBar().setTitle("");
 
         // restart activity
-        restartActivity();
+        MyUtil.restartActivity(MapsActivity.this);
 
     }
 
@@ -728,16 +728,7 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Restart current activity
-     * ---------------------------------------------------------------------------------------------
-     */
-    public void restartActivity(){
-        Intent mIntent = getIntent();
-        finish();
-        startActivity(mIntent);
-    }
+
 
 
     // ---------------------------------------------------------------------------------------------

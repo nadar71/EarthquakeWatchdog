@@ -17,8 +17,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 // Loader lib stuff
@@ -32,14 +35,15 @@ import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
 import com.indiewalk.watchdog.earthquake.net.EarthquakeAsyncLoader;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
+import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
 // ** for DEBUG reason
-import com.indiewalk.watchdog.earthquake.util.AppExecutors;
 
 
 public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<List<Earthquake>> {
@@ -356,6 +360,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         // clear the adapter of previous data
         adapter.clear();
 
+        checkPreferences();
+
         // set equakes list showing based on user preferences
         if (orderBy.equals(getString(R.string.settings_order_by_magnitude_value))){
             earthquakes = eqDb.earthquakeDbDao().loadAll_orderby_mag();
@@ -461,6 +467,11 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         int id = item.getItemId();
         switch(id){
             case R.id.action_settings:
+                return true;
+            case R.id.quick_settings:
+                showDialog();
+                return true;
+            case R.id.general_settings:
                 Intent settingsIntent = new Intent(this, SettingSimpleActivity.class);
                 startActivity(settingsIntent);
                 return true;
@@ -476,6 +487,103 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Dialog with spinner for quick settings
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void showDialog(){
+        android.support.v7.app.AlertDialog.Builder  builder =
+                new android.support.v7.app.AlertDialog.Builder(MainActivity.this);
+        View view = getLayoutInflater().inflate(R.layout.quick_settings_dialog, null);
+        CheckBox saveFlag = (CheckBox)findViewById(R.id.dialog_checkBox);
+        builder.setTitle("Quick settings");
+
+        // order by
+        final Spinner spinner_order_by = (Spinner) view.findViewById(R.id.order_by_spinner);
+        List<String> order_list  = new ArrayList<>(); // add header
+        order_list.add("Choose");
+        order_list.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_order_by_values)));
+
+        ArrayAdapter<String> adapter_01 = new ArrayAdapter<String>(MainActivity.this,
+                android.R.layout.simple_spinner_item,
+                order_list);
+        adapter_01.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        spinner_order_by.setAdapter(adapter_01);
+
+
+        // min magnitude
+        final Spinner spinner_min_magnitude = (Spinner) view.findViewById(R.id.min_magnitude_spinner);
+        List<String> magn_list  = new ArrayList<>(); // add header
+        magn_list.add("Choose");
+        magn_list.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_min_magnitude_values)));
+
+        ArrayAdapter<String> adapter_02 = new ArrayAdapter<String>(MainActivity.this,
+                android.R.layout.simple_spinner_item,
+                magn_list);
+        adapter_02.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        spinner_min_magnitude.setAdapter(adapter_02);
+
+
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                boolean restartActivity = false;
+                boolean updateList      = false;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                // check choices
+                String spinner_order_by_choice = spinner_order_by.getSelectedItem().toString();
+                String spinner_min_magn_choice = spinner_min_magnitude.getSelectedItem().toString();
+
+                if(!spinner_order_by_choice.equalsIgnoreCase("Choose")){
+                    editor.putString(getString(R.string.settings_order_by_key),
+                            spinner_order_by_choice );
+                    editor.apply();
+                    updateList = true;
+                }
+
+                if(!spinner_min_magn_choice.equalsIgnoreCase("Choose")) {
+                    editor.putString(getString(R.string.settings_min_magnitude_key),
+                            spinner_min_magn_choice );
+                    editor.apply();
+                    restartActivity = true;
+                }
+
+                Log.i(TAG, "onClick: ");
+                // process choices
+
+                if (restartActivity == false){
+                    if (updateList == true) {
+                        dialog.dismiss();
+                        updateList();
+                    }
+                } else if (restartActivity == true){
+                    // restart activity
+                    dialog.dismiss();
+                    MyUtil.restartActivity(MainActivity.this);
+                }
+
+
+
+            }
+        });
+
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.setView(view);
+        android.support.v7.app.AlertDialog dialog = builder.create();
+        dialog.show();
+
     }
 
 
