@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -30,6 +29,7 @@ import android.app.AlertDialog;
 
 
 import com.indiewalk.watchdog.earthquake.R;
+import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
 import com.indiewalk.watchdog.earthquake.net.EarthquakeAsyncLoader;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 
@@ -39,8 +39,7 @@ import java.util.List;
 
 
 // ** for DEBUG reason
-import com.indiewalk.watchdog.earthquake.BuildConfig;
-import com.indiewalk.watchdog.earthquake.util.MyUtil;
+import com.indiewalk.watchdog.earthquake.util.AppExecutors;
 
 
 public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<List<Earthquake>> {
@@ -74,6 +73,12 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     // Preferences value
     String minMagnitude, orderBy,lat_s, lng_s;
 
+    // Db reference
+    // TODO : debug, use livedata/viewmodel/repository
+    EarthquakeDatabase eqDb;
+
+    // SharePreferences ref
+    SharedPreferences sharedPreferences;
 
 
     @Override
@@ -81,14 +86,12 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
+        // get db instance
+        // TODO : debug, use livedata/viewmodel/repository
+        eqDb = EarthquakeDatabase.getDbInstance(getApplicationContext());
 
-
-
-
-
-        // TODO : ASK FOR GEOLOCALIZATION PERMISSION
-            // TODO : IF OK  : COMPUTE THE DISTANCE FROM EQ
-            // TODO : IF NOT : COMPUTE DISTANCE FROM DEFAULT : the default is that from emulator, check with 8.0 avd
+        // init shared preferences
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         // Find a reference to the {@link ListView} in the layout : using listView because it has only tens of
         // entry, otherwise RecycleView would be better
@@ -198,22 +201,6 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     @Override
     protected void onResume() {
         super.onResume();
-
-        // hide navbar
-        /*
-        if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-            this.getWindow().getDecorView().setSystemUiVisibility(
-                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            // View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|
-                            // View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|
-                            // View.SYSTEM_UI_FLAG_FULLSCREEN|
-                            // View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                            );
-        }
-        */
-
-
         // check preferences for changes
         checkPreferences();
 
@@ -221,12 +208,12 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
 
     /**
-     * Check location coordinates from shared preferences.
+     * ---------------------------------------------------------------------------------------------
+     * Set and check location coordinates from shared preferences.
      * If not set, put defaut value
+     * ---------------------------------------------------------------------------------------------
      */
     private void checkPreferences() {
-        // init shared preferences
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         lat_s = sharedPreferences.getString(getString(R.string.device_lat),Double.toString(DEFAULT_LAT));
         lng_s = sharedPreferences.getString(getString(R.string.device_lng),Double.toString(DEFAULT_LNG));
@@ -340,23 +327,58 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         // Set empty state text to display "No earthquakes found."
         emptyListText.setText(R.string.no_earthquakes);
 
-   //---- adapter update
-        // clear the adapter of previous data
-        adapter.clear();
 
-        // update UI when loader finished
-        // TODO : use livedata/viewmodel for this
-        // TODO
+
+        // --> update UI when loader finished
         if (setEartquakesList(earthquakesReturnedByLoader) == true) {
-
-            adapter.addAll(earthquakes);
+            // updateList();
         } else {
             Log.i(TAG, "Problem with earthquake list, is empty. Check the request. ");
         }
 
-    //----
 
     }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Update the adapter/equakes list regarding the user preferences
+     * ---------------------------------------------------------------------------------------------
+     */
+
+    // TODO : for debug, use livedata/viewmodel/repository
+    private void updateList() {
+        Log.i(TAG, "updateList Executing ");
+        // clear the adapter of previous data
+        adapter.clear();
+
+        // set equakes list showing based on user preferences
+        if (orderBy.equals(getString(R.string.settings_order_by_magnitude_value))){
+            earthquakes = eqDb.earthquakeDbDao().loadAll_orderby_mag();
+            // add to adapter
+            adapter.addAll(earthquakes);
+
+        } else if (orderBy.equals(getString(R.string.settings_order_by_most_recent_value))){
+            earthquakes = eqDb.earthquakeDbDao().loadAll_orderby_most_recent();
+            // add to adapter
+            adapter.addAll(earthquakes);
+
+        }  else if (orderBy.equals(getString(R.string.settings_order_by_nearest_value))){
+            earthquakes = eqDb.earthquakeDbDao().loadAll_orderby_nearest();
+            // add to adapter
+            adapter.addAll(earthquakes);
+
+        }  else if (orderBy.equals(getString(R.string.settings_order_by_farthest_value))){
+            earthquakes = eqDb.earthquakeDbDao().loadAll_orderby_farthest();
+            // add to adapter
+            adapter.addAll(earthquakes);
+
+        }
+
+    }
+
+
+
 
     /**
      * ---------------------------------------------------------------------------------------------
@@ -383,27 +405,17 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     // TODO : load from db
     protected boolean setEartquakesList(List<Earthquake> earthquakes){
         if (  (earthquakes != null) && (earthquakes.isEmpty() == false)  ){
-            this.earthquakes = earthquakes;
+            // this.earthquakes = earthquakes;
+            updateList();
             return true;
         }else{
             Log.i(TAG, "The earthquake list is empty. Check the request. ");
             Toast.makeText(this, "The earthquake list is empty. Check the request. ", Toast.LENGTH_LONG).show();
             return false;
         }
-    }
-
-
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Set user's distance for each equake
-     * @param earthquakes
-     * ---------------------------------------------------------------------------------------------
-     */
-    private void setDistanceFromUser(List<Earthquake> earthquakes){
-        // check that location coords are set
-        checkPreferences();
 
     }
+
 
     /**
      * ---------------------------------------------------------------------------------------------
@@ -420,8 +432,12 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         // calculate 30-days ago date and set as start date
         // String aMonthAgo = MyUtil.oldDate(30).toString();
         // builder.appendQueryParameter("starttime",aMonthAgo);
+
         builder.appendQueryParameter("minmag",minMagnitude); // TODO : delete
-        builder.appendQueryParameter("orderby",orderBy);     // TODO : delete
+        if (!orderBy.equals(getString(R.string.settings_order_by_nearest_value))
+                && !orderBy.equals(getString(R.string.settings_order_by_farthest_value)) ){
+            builder.appendQueryParameter("orderby", orderBy);     // TODO : delete
+        }
 
         return  builder.toString();
     }

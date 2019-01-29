@@ -15,9 +15,28 @@ public interface EarthquakeDbDao {
     //----------------------------------------------------------------------------------------------
     //  QUERY
     //----------------------------------------------------------------------------------------------
-    // retrieve all the
+    // retrieve all the eqs
+    @Query("SELECT * FROM EARTHQUAKE_LIST ")
+    List<Earthquake> loadAll();
+
+    // retrieve all the eqs order by magnitude
     @Query("SELECT * FROM EARTHQUAKE_LIST ORDER BY magnitude")
-    List<Earthquake> loadAllEarthquakeRetrieved();
+    List<Earthquake> loadAll_orderby_mag();
+
+    // retrieve all the eqs order by most recent (time desc)
+    @Query("SELECT * FROM EARTHQUAKE_LIST ORDER BY timeInMillisec desc")
+    List<Earthquake> loadAll_orderby_most_recent();
+
+    // retrieve all the eqs order by nearest to user
+    @Query("SELECT * FROM EARTHQUAKE_LIST ORDER BY userDistance asc")
+    List<Earthquake> loadAll_orderby_nearest();
+
+    // retrieve all the eqs order by farthest to user
+    @Query("SELECT * FROM EARTHQUAKE_LIST ORDER BY userDistance desc")
+    List<Earthquake> loadAll_orderby_farthest();
+
+
+
 
 
     //----------------------------------------------------------------------------------------------

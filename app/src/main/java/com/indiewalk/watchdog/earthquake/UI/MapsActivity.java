@@ -1,35 +1,24 @@
 package com.indiewalk.watchdog.earthquake.UI;
 
 import android.Manifest;
-import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Build;
-import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.support.annotation.ColorInt;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -128,28 +117,16 @@ public class MapsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        // hide navbar
-        /*
-        if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-            this.getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-                            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                            View.SYSTEM_UI_FLAG_FULLSCREEN |
-                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            );
-        }
-        */
 
         // get db instance
         eqDb = EarthquakeDatabase.getDbInstance(getApplicationContext());
 
         // retrieve eq currently in db, in different thread
-        // TODO: using livedata ?!?
+        // TODO: implements livedata/viewmodel/repository
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                earthquakes = eqDb.earthquakeDbDao().loadAllEarthquakeRetrieved();
+                earthquakes = eqDb.earthquakeDbDao().loadAll();
             }
         });
 

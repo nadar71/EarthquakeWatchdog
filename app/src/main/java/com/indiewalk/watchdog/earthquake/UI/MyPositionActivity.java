@@ -2,7 +2,6 @@ package com.indiewalk.watchdog.earthquake.UI;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -16,10 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -112,7 +107,7 @@ public class MyPositionActivity extends AppCompatActivity
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                earthquakes = eqDb.earthquakeDbDao().loadAllEarthquakeRetrieved();
+                earthquakes = eqDb.earthquakeDbDao().loadAll();
             }
         });
 

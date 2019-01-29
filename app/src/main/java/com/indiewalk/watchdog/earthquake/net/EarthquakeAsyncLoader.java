@@ -104,47 +104,6 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
     }
 
 
-
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Check location coordinates from shared preferences.
-     * If not set, put default value
-     * Check for distance unit preference too
-     * ---------------------------------------------------------------------------------------------
-     */
-    // TODO : delete
-    private void checkPreferences() {
-        // init shared preferences
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
-
-        //get preferences for check
-        lat_s = sharedPreferences.getString(context.getString(R.string.device_lat),Double.toString(MainActivity.DEFAULT_LAT));
-        lng_s = sharedPreferences.getString(context.getString(R.string.device_lng),Double.toString(MainActivity.DEFAULT_LNG));
-
-
-        // set default coord if there are no one
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        if (lat_s.isEmpty() == true) {
-            editor.putString(context.getString(R.string.device_lat), Double.toString(MainActivity.DEFAULT_LAT));
-            editor.apply();
-        }
-
-        if (lng_s.isEmpty() == true) {
-            editor.putString(context.getString(R.string.device_lng), Double.toString(MainActivity.DEFAULT_LNG));
-            editor.apply();
-        }
-
-        // set user lat, lng
-        lat_s = sharedPreferences.getString(context.getString(R.string.device_lat),Double.toString(MainActivity.DEFAULT_LAT));
-        lng_s = sharedPreferences.getString(context.getString(R.string.device_lng),Double.toString(MainActivity.DEFAULT_LNG));
-
-        // set distance unit choosen
-        dist_unit = sharedPreferences.getString(context.getString(R.string.settings_distance_unit_by_key),
-                    Double.toString(R.string.settings_distance_unit_by_default));
-
-    }
-
-
     /**
      * ---------------------------------------------------------------------------------------------
      * Update each equakes info with custom distance from user if any.

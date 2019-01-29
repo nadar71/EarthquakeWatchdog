@@ -1,5 +1,6 @@
 package com.indiewalk.watchdog.earthquake.data;
 
+import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
@@ -29,6 +30,7 @@ public class Earthquake {
     private String location;
 
     // eq date and time of occurence
+    // @ColumnInfo(name = "time_ms")
     private long timeInMillisec;
 
     // eq url page for details
