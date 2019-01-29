@@ -102,7 +102,8 @@ public class MapsActivity extends AppCompatActivity
     // Manual localization menu item ref
     MenuItem locCheckbox;
 
-    // Handler m_handler;
+    // User location coords
+    String lat_s, lng_s;
 
 
 
@@ -250,11 +251,13 @@ public class MapsActivity extends AppCompatActivity
                 // set user marker in case of previous coordinates not default
                 checkPrevious();
             }
+
+        // in case on manual localization on
         } else {
 
             // get previous set position
-            String lat_s = sharedPreferences.getString(getString(R.string.device_lat),Double.toString(MainActivity.DEFAULT_LAT));
-            String lng_s = sharedPreferences.getString(getString(R.string.device_lng),Double.toString(MainActivity.DEFAULT_LNG));
+            lat_s = sharedPreferences.getString(getString(R.string.device_lat),Double.toString(MainActivity.DEFAULT_LAT));
+            lng_s = sharedPreferences.getString(getString(R.string.device_lng),Double.toString(MainActivity.DEFAULT_LNG));
 
             LatLng latLng = new LatLng(Double.parseDouble(lat_s),Double.parseDouble(lng_s));
 
@@ -264,6 +267,12 @@ public class MapsActivity extends AppCompatActivity
                     .title("My custom position")
                     .snippet("Test"));
             myCurrentPositionMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+
+            // allow to change location
+            manualLocalizationAlert();
+
+            // fly to the new location
+            animateCameraTo(Double.parseDouble(lat_s), Double.parseDouble(lng_s),3f);
         }
 
         // zoom on a particular equake if request came from main activity
@@ -283,9 +292,9 @@ public class MapsActivity extends AppCompatActivity
         // init shared preferences
         // SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        String lat_s = sharedPreferences.getString(getString(R.string.device_lat),
+        lat_s = sharedPreferences.getString(getString(R.string.device_lat),
                 Double.toString(MainActivity.DEFAULT_LAT));
-        String lng_s = sharedPreferences.getString(getString(R.string.device_lng),
+        lng_s = sharedPreferences.getString(getString(R.string.device_lng),
                 Double.toString(MainActivity.DEFAULT_LNG));
 
         // if there is already user location different from default location
@@ -311,7 +320,6 @@ public class MapsActivity extends AppCompatActivity
         // if there is already user location different from default location
         if (manualLocFlag.equals("true") ) {
             manualLocIsOn = true;
-
         } else {
             manualLocIsOn = false;
         }
@@ -334,7 +342,7 @@ public class MapsActivity extends AppCompatActivity
             // LatLng latLng = new LatLng(equake_lat_d, equake_lng_d);
             // mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 5));
             // animateTo(equake_lat_d, equake_lng_d, 5, 5, 30, 300);
-            animateCameraTo(equake_lat_d, equake_lng_d);
+            animateCameraTo(equake_lat_d, equake_lng_d, 6f);
 
         }
 
@@ -428,10 +436,10 @@ public class MapsActivity extends AppCompatActivity
      * @param lon
      * ---------------------------------------------------------------------------------------------
      */
-    private void animateCameraTo(double lat, double lon){
+    private void animateCameraTo(double lat, double lon, float z){
         final CameraPosition target =
                 new CameraPosition.Builder().target(new LatLng(lat, lon))
-                        .zoom(6f)
+                        .zoom(z)
                         .bearing(0)
                         .tilt(25)
                         .build();
@@ -538,6 +546,9 @@ public class MapsActivity extends AppCompatActivity
                     }
 
                 } else {
+
+                    // stop progress bar
+                    dialog.dismiss();
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
@@ -714,7 +725,7 @@ public class MapsActivity extends AppCompatActivity
      */
     private void manualLocalizationAlert(){
         new AlertDialog.Builder(this)
-                .setTitle("Set Your Location Manually")
+                .setTitle("Manual Location setting active")
                 .setMessage("To set/override your position manually, long press on a map point. ")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
@@ -758,12 +769,10 @@ public class MapsActivity extends AppCompatActivity
                     item.setChecked(false);
                     unSetManualLocalization();
                     Log.d(TAG, "onOptionsItemSelected: was unChecked !!");
-                    // TODOo : SHOW DIALOG FRAGMENT WITH ISTRUCTION
+
                 } else {
                     item.setChecked(true);
                     manualLocalizationAlert();
-                    Log.d(TAG, "onOptionsItemSelected: was Checked !!");
-                    // TODOo : GO TO CURRENT POSITION
                 }
                 return true;
 
