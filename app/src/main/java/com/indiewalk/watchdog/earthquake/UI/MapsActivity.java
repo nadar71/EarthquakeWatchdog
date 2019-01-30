@@ -21,6 +21,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -105,6 +108,8 @@ public class MapsActivity extends AppCompatActivity
     // User location coords
     String lat_s, lng_s;
 
+    // admob banner ref
+    private AdView mAdView;
 
 
     /**
@@ -118,6 +123,25 @@ public class MapsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+
+        // -----------------------------------------------------------------------------------------
+        // Init admob
+        // Sample AdMob banner ID:         ca-app-pub-3940256099942544~3347511713
+        // THIS APP REAL AdMob banner ID:  ca-app-pub-8846176967909254~9979565057
+        // -----------------------------------------------------------------------------------------
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+
+        // load ads banner
+        mAdView = findViewById(R.id.adView);
+
+        // Create an ad request. Check your logcat output for the hashed device ID to
+        // get test ads on a physical device. e.g.
+        // "Use AdRequest.Builder.addTestDevice("ABCDEF012345") to get test ads on this device."
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .addTestDevice("7DC1A1E8AEAD7908E42271D4B68FB270")
+                .build();
+        mAdView.loadAd(adRequest);
 
         // get db instance
         eqDb = EarthquakeDatabase.getDbInstance(getApplicationContext());
@@ -156,9 +180,6 @@ public class MapsActivity extends AppCompatActivity
             getSupportActionBar().setTitle(Html.fromHtml("<font color='#66ff66'>"+
                     getString(R.string.title_activity_maps_manual_localization_on) +"</font>"));
         }
-
-
-
 
     }
 

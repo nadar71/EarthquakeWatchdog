@@ -31,6 +31,9 @@ import android.content.Loader;
 import android.app.AlertDialog;
 
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
 import com.indiewalk.watchdog.earthquake.net.EarthquakeAsyncLoader;
@@ -84,11 +87,36 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     // SharePreferences ref
     SharedPreferences sharedPreferences;
 
+    // admob banner ref
+    private AdView mAdView;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
+        // -----------------------------------------------------------------------------------------
+        // Init admob
+        // Sample AdMob banner ID:         ca-app-pub-3940256099942544~3347511713
+        // THIS APP REAL AdMob banner ID:  ca-app-pub-8846176967909254~9979565057
+        // -----------------------------------------------------------------------------------------
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+
+        // load ads banner
+        mAdView = findViewById(R.id.adView);
+
+        // Create an ad request. Check your logcat output for the hashed device ID to
+        // get test ads on a physical device. e.g.
+        // "Use AdRequest.Builder.addTestDevice("ABCDEF012345") to get test ads on this device."
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .addTestDevice("7DC1A1E8AEAD7908E42271D4B68FB270")
+                .build();
+        mAdView.loadAd(adRequest);
+
 
         // get db instance
         // TODO : debug, use livedata/viewmodel/repository

@@ -39,6 +39,13 @@ dependencies {
     implementation "android.arch.persistence.room:runtime:1.1.1"
     annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
 
+    // Firebase
+    implementation 'com.google.firebase:firebase-ads:17.1.1'
+
+    // GDPR
+    implementation 'com.google.android.ads.consent:consent-library:1.0.6'
+
+
 
 
 }
