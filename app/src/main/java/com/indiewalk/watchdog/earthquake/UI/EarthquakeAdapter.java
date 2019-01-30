@@ -88,7 +88,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
         // set proper color for magnitude
         GradientDrawable magnitudeCircle = (GradientDrawable) magnitudeView.getBackground();
-        magnitudeColor = getMagnitudeColor(magnitude);
+        magnitudeColor = MyUtil.getMagnitudeColor(magnitude,context);
         magnitudeCircle.setColor(magnitudeColor);
 
         // display locations formatted using {@link extractLocations}
@@ -226,33 +226,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Return specific color value for specific magnitude values
-     * @param magnitude
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
-    public int getMagnitudeColor(double magnitude){
-        int mag = (int) magnitude;
-        Log.i("getMagnitudeColor", "Color: "+mag);
-        switch(mag){
-            case 1 :
-            case 0 :
-                return ContextCompat.getColor(getContext(),R.color.magnitude1);
-            case 2 : return ContextCompat.getColor(getContext(),R.color.magnitude2);
-            case 3 : return ContextCompat.getColor(getContext(),R.color.magnitude3);
-            case 4 : return ContextCompat.getColor(getContext(),R.color.magnitude4);
-            case 5 : return ContextCompat.getColor(getContext(),R.color.magnitude5);
-            case 6 : return ContextCompat.getColor(getContext(),R.color.magnitude6);
-            case 7 : return ContextCompat.getColor(getContext(),R.color.magnitude7);
-            case 8 : return ContextCompat.getColor(getContext(),R.color.magnitude8);
-            case 9 : return ContextCompat.getColor(getContext(),R.color.magnitude9);
-            case 10 : return ContextCompat.getColor(getContext(),R.color.magnitude10plus);
-            default : break;
-        }
-        return -1;
-    }
+
 
 
 

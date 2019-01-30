@@ -250,7 +250,7 @@ public class MyPositionActivity extends AppCompatActivity
                             .position(new LatLng(earthquake.getLatitude(), earthquake.getLongitude()))
                             .title("Location : " + earthquake.getLocation())
                             .snippet("Magnitude : " + earthquake.getMagnitude())
-                    // .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_home_blue_24dp)))
+                    // .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_home_white_24dp)))
             ));
 
             Log.d(TAG, "onMapReady: latitude : "+earthquake.getLatitude()+" logitude : "+ earthquake.getLongitude());
@@ -275,7 +275,7 @@ public class MyPositionActivity extends AppCompatActivity
                 .position(new LatLng(myLat, myLong))
                 .title("My Current GPS position")
                 .snippet("Snippet")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_home_blue_24dp)));
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_home_white_24dp)));
             Toast.makeText(this, "Marker set on :" + myLat + " " + myLong, Toast.LENGTH_SHORT).show();
         }
         */
@@ -323,7 +323,7 @@ public class MyPositionActivity extends AppCompatActivity
             mMap.addMarker(new MarkerOptions()
                     .position(loc)
                     .title("New Marker")
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_home_blue_24dp)));
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_home_white_24dp)));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(loc));
         }
 

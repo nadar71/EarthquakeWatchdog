@@ -137,6 +137,11 @@
     <string name="device_lng">device_lng</string>
     <string name="manual_Localization_On">manual_Localization_On</string>
 
+    <!-- - - - - - - - - - - - -  Manual localization flag Preference  - - - - - - - - - - - - - -->
+    <string name="manual_localization_label">Use manual localization (no gps)</string>
+    <string name="manual_Localization_key">false</string>
+
+
 
 
 

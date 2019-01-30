@@ -33,14 +33,24 @@
         android:entryValues="@array/settings_max_earthquakes_values"
         android:key="@string/settings_max_equakes_key"
         android:title="@string/settings_max_equakes_label" />
+
 <!--
-    <EditTextPreference
-        android:defaultValue="@string/settings_min_magnitude_default"
-        android:inputType="numberDecimal"
-        android:key="@string/settings_min_magnitude_key"
-        android:selectAllOnFocus="true"
-        android:title="@string/settings_min_magnitude_label" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/manual_Localization_key"
+        android:title="@string/manual_localization_label" />
 -->
+
+
+
+    <!--
+        <EditTextPreference
+            android:defaultValue="@string/settings_min_magnitude_default"
+            android:inputType="numberDecimal"
+            android:key="@string/settings_min_magnitude_key"
+            android:selectAllOnFocus="true"
+            android:title="@string/settings_min_magnitude_label" />
+    -->
 
 
 </PreferenceScreen>

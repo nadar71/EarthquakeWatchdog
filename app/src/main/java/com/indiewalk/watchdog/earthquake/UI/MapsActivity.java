@@ -211,13 +211,20 @@ public class MapsActivity extends AppCompatActivity
         earthquakesMarkersList = new ArrayList<Marker>();
 
         for(Earthquake earthquake : earthquakes) {
+            // convert eq position icon to bitmap
+            BitmapDescriptor eqMarkerIcon = MyUtil.getBitmapFromVector(context, R.drawable.ic_earthquake_pointer,
+                    MyUtil.getMagnitudeColor(earthquake.getMagnitude(),context));
+
             earthquakesMarkersList.add(mGoogleMap.addMarker(new MarkerOptions()
                             .position(new LatLng(earthquake.getLatitude(), earthquake.getLongitude()))
                             .title("Location : " + earthquake.getLocation())
                             .snippet("Magnitude : " + earthquake.getMagnitude())
+                            .icon(eqMarkerIcon)
             ));
 
-            Log.d(TAG, "onMapReady: latitude : " + earthquake.getLatitude() + " logitude : " + earthquake.getLongitude());
+
+
+            Log.d(TAG, "onMapReady: latitude : " + earthquake.getLatitude() + " longitude : " + earthquake.getLongitude());
         }
 
 
@@ -342,7 +349,7 @@ public class MapsActivity extends AppCompatActivity
             // LatLng latLng = new LatLng(equake_lat_d, equake_lng_d);
             // mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 5));
             // animateTo(equake_lat_d, equake_lng_d, 5, 5, 30, 300);
-            animateCameraTo(equake_lat_d, equake_lng_d, 6f);
+            animateCameraTo(equake_lat_d, equake_lng_d, 8f);
 
         }
 
@@ -415,7 +422,7 @@ public class MapsActivity extends AppCompatActivity
         }
 
         // convert user position icon to bitmap
-        BitmapDescriptor locationMarkerIcon = MyUtil.getBitmapFromVector(context, R.drawable.ic_home_blue_24dp,
+        BitmapDescriptor locationMarkerIcon = MyUtil.getBitmapFromVector(context, R.drawable.ic_home_white_24dp,
                 ContextCompat.getColor(context, R.color.marker_color));
 
         myCurrentPositionMarker = mGoogleMap.addMarker(new MarkerOptions()

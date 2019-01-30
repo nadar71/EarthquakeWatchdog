@@ -44,6 +44,10 @@ public class SettingSimpleActivity extends AppCompatActivity {
 
             Preference maxEquakesNum = findPreference(getString(R.string.settings_max_equakes_key));
             bindPreferenceSummaryToValue(maxEquakesNum);
+/*
+            Preference manualLoc = findPreference(getString(R.string.manual_Localization_key));
+            bindPreferenceSummaryToValue(manualLoc);
+*/
 
         }
 

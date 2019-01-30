@@ -10,6 +10,7 @@ import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.Log;
@@ -17,6 +18,7 @@ import android.view.View;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.indiewalk.watchdog.earthquake.R;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -201,6 +203,35 @@ public class MyUtil {
         Intent mIntent = activity.getIntent();
         activity.finish();
         activity.startActivity(mIntent);
+    }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Return specific color value for specific magnitude values
+     * @param magnitude
+     * @return
+     * ---------------------------------------------------------------------------------------------
+     */
+    public static int getMagnitudeColor(double magnitude, Context context){
+        int mag = (int) magnitude;
+        Log.i("getMagnitudeColor", "Color: "+mag);
+        switch(mag){
+            case 1 :
+            case 0 :
+                return ContextCompat.getColor(context,R.color.magnitude1);
+            case 2 : return ContextCompat.getColor(context,R.color.magnitude2);
+            case 3 : return ContextCompat.getColor(context,R.color.magnitude3);
+            case 4 : return ContextCompat.getColor(context,R.color.magnitude4);
+            case 5 : return ContextCompat.getColor(context,R.color.magnitude5);
+            case 6 : return ContextCompat.getColor(context,R.color.magnitude6);
+            case 7 : return ContextCompat.getColor(context,R.color.magnitude7);
+            case 8 : return ContextCompat.getColor(context,R.color.magnitude8);
+            case 9 : return ContextCompat.getColor(context,R.color.magnitude9);
+            case 10 : return ContextCompat.getColor(context,R.color.magnitude10plus);
+            default : break;
+        }
+        return -1;
     }
 
 
