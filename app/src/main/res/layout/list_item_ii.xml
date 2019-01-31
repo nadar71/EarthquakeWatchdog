@@ -14,7 +14,7 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:background="@drawable/magnitude_circle"
+        android:background="@drawable/ic_earthquake_pointer"
         android:gravity="center"
         android:text="0.0"
         android:textColor="@android:color/white"

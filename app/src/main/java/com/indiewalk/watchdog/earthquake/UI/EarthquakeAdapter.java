@@ -3,7 +3,9 @@ package com.indiewalk.watchdog.earthquake.UI;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -13,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
@@ -86,10 +89,16 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         magnitude = currentEartquakeItem.getMagnitude();
         magnitudeView.setText(formatMagnitude(magnitude));
 
+
         // set proper color for magnitude
+        /*
         GradientDrawable magnitudeCircle = (GradientDrawable) magnitudeView.getBackground();
         magnitudeColor = MyUtil.getMagnitudeColor(magnitude,context);
         magnitudeCircle.setColor(magnitudeColor);
+        */
+
+        // set proper image color for magnitude
+        magnitudeView.setBackground(MyUtil.getMagnitudeImg(magnitude, context));
 
         // display locations formatted using {@link extractLocations}
         extractLocations(currentEartquakeItem.getLocation());

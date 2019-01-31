@@ -235,4 +235,35 @@ public class MyUtil {
     }
 
 
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Return specific vector image for specific magnitude values
+     * @param magnitude
+     * @return
+     * ---------------------------------------------------------------------------------------------
+     */
+    public static Drawable getMagnitudeImg(double magnitude, Context context){
+        int mag = (int) magnitude;
+        Log.i("getMagnitudeColor", "Color: "+mag);
+        switch(mag){
+            case 1 :
+            case 0 :
+                return ContextCompat.getDrawable(context,R.drawable.ic_earthquake_pointer_1);
+            case 2 :  return ContextCompat.getDrawable(context,R.drawable.ic_earthquake_pointer_2);
+            case 3 :  return ContextCompat.getDrawable(context,R.drawable.ic_earthquake_pointer_3);
+            case 4 :  return ContextCompat.getDrawable(context,R.drawable.ic_earthquake_pointer_4);
+            case 5 :  return ContextCompat.getDrawable(context,R.drawable.ic_earthquake_pointer_5);
+            case 6 :  return ContextCompat.getDrawable(context,R.drawable.ic_earthquake_pointer_6);
+            case 7 :  return ContextCompat.getDrawable(context,R.drawable.ic_earthquake_pointer_7);
+            case 8 :  return ContextCompat.getDrawable(context,R.drawable.ic_earthquake_pointer_8);
+            case 9 :  return ContextCompat.getDrawable(context,R.drawable.ic_earthquake_pointer_9);
+            case 10 : return ContextCompat.getDrawable(context,R.drawable.ic_earthquake_pointer_10);
+            default : break;
+        }
+        return ContextCompat.getDrawable(context,R.drawable.ic_earthquake_pointer);
+    }
+
+
+
 }
