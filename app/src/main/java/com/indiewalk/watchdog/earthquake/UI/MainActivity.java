@@ -287,7 +287,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             editor.apply();
         }
 
-        Toast.makeText(this, "Current Location : lat : " + lat_s + " long : " + lng_s, Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, "Current Location : lat : " + lat_s + " long : " + lng_s, Toast.LENGTH_SHORT).show();
         Log.i(TAG, "onResume: Current Location : lat : " + lat_s + " long : " + lng_s);
 
 
@@ -553,6 +553,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                 new android.support.v7.app.AlertDialog.Builder(MainActivity.this);
         View view = getLayoutInflater().inflate(R.layout.quick_settings_dialog, null);
         CheckBox saveFlag = (CheckBox)findViewById(R.id.dialog_checkBox);
+        //TODO : update with choice to save or not list when passing to acc
+        saveFlag.setVisibility(View.INVISIBLE);
         builder.setTitle("Quick settings");
 
         // order by
@@ -584,8 +586,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                boolean restartActivity = false;
-                boolean updateList      = false;
+                boolean restartActivity = false;   // need to restart the activity
+                boolean updateList      = false;   // need to sort  the list without restarting activity
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
                 // check choices

@@ -21,6 +21,10 @@ import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.ayoubfletcher.consentsdk.ConsentSDK;
@@ -52,6 +56,7 @@ import com.indiewalk.watchdog.earthquake.util.MyUtil;
 import android.app.AlertDialog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -333,8 +338,7 @@ public class MapsActivity extends AppCompatActivity
      * NB : use only after localization permissions are granted
      * ---------------------------------------------------------------------------------------------
      */
-    public void showGpsRequestAlert()
-    {
+    public void showGpsRequestAlert() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) return;
 
@@ -362,6 +366,68 @@ public class MapsActivity extends AppCompatActivity
             alertDialog.show();
         }
     }
+
+
+
+    /*
+    public void suggestManualLocalization() {
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+            alertDialog.setTitle(getString(R.string.sugges_manual_loc_title))
+                    .setCancelable(false)
+                    .setMessage(getString(R.string.sugges_manual_loc_text))
+                    .setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+            alertDialog.show();
+    }
+    */
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Suggest manual localization in case localization permission are not allowed
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void suggestManualLocalization(){
+        // check if I can show the dialog
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String allowShow = sharedPreferences.getString(getString(R.string.settings_dontshow_me_again), "false");
+
+        if (allowShow.equals("true") ) {
+            return;
+        }
+
+        // show dialog
+        android.support.v7.app.AlertDialog.Builder  builder =
+                new android.support.v7.app.AlertDialog.Builder(MapsActivity.this);
+        View view = getLayoutInflater().inflate(R.layout.suggest_manual_loc_dialog, null);
+        final CheckBox dontaskagainFlag = (CheckBox) view.findViewById(R.id.dont_ask);
+
+        builder.setTitle(getString(R.string.sugges_manual_loc_title))
+                   .setCancelable(false)
+                   .setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (dontaskagainFlag.isChecked()) {
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString(getString(R.string.settings_dontshow_me_again),
+                                        "true" );
+                                editor.apply();
+                            }
+                            dialog.cancel();
+                        }
+                    });
+
+        builder.setView(view);
+        android.support.v7.app.AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
+
 
     /**
      * ---------------------------------------------------------------------------------------------
@@ -624,6 +690,9 @@ public class MapsActivity extends AppCompatActivity
 
                         mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
                         mGoogleMap.setMyLocationEnabled(true);
+
+                        // request gps if is off
+                        showGpsRequestAlert();
                     }
 
                 } else {
@@ -633,7 +702,10 @@ public class MapsActivity extends AppCompatActivity
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Localization permission denied", Toast.LENGTH_LONG).show();
+
+                    // Suggest manual localization
+                    suggestManualLocalization();
                 }
                 return;
             }
@@ -806,7 +878,7 @@ public class MapsActivity extends AppCompatActivity
      */
     private void manualLocalizationAlert(){
         new AlertDialog.Builder(this)
-                .setTitle("Manual Location setting active (NOT use GPS)")
+                .setTitle("Manual Location setting active (Not using gps)")
                 .setMessage("To set/override your position manually, long press on a map point. ")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override

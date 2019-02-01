@@ -1,17 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2016 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?>
 
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-          http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
 <resources>
     <string name="app_name">EarthQuake Watchdog</string>
     <string name="searching">Retrieving earthquakes data...</string>
@@ -21,6 +9,11 @@
     <string name="refresh_ic_title">Refresh</string>
     <string name="spinner_title">Map type</string>
     <string name="title_activity_my_position">Map</string>
+    <string name="sugges_manual_loc_title">In case you prefer manual localization with NO gps.</string>
+    <string name="sugges_manual_loc_text">In settings,  above on the right, check \'Use manual localization\'
+        and follow instructions.\nIt uses no localization service nor gps.</string>
+    <string name="save_label">Save</string>
+    <string name="dont_ask_more">Don\'t show me again</string>
 
     <!-- Text to display in the list when there are no earthquakes -->
     <string name="no_earthquakes">No earthquakes found.</string>
@@ -46,8 +39,9 @@
     <string name="settings_menu_item_general">General settings</string>
 
 
-
-
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - -  - - - - - -  - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - PREFERENCES  - - - - - - -  - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - -  - - - - - -  - - - - - - - - - - - - - -->
     <!-- - - - - - - - Strings For Order-By Preference [CHAR LIMIT=30] - - - - - - - - - - - - - -->
     <string name="settings_order_by_label">Order By</string>
     <string name="settings_order_by_key" translatable="false">order_by</string>
@@ -140,6 +134,11 @@
     <!-- - - - - - - - - - - - -  Manual localization flag Preference  - - - - - - - - - - - - - -->
     <string name="manual_localization_label">Use manual localization (no gps)</string>
     <string name="manual_Localization_key">false</string>
+
+
+    <!-- - - - - - - - don't show me again Manual loc suggestion preference  - - - - - - - - - - -->
+    <string name="settings_dontshow_me_again">false</string>
+
 
 
 

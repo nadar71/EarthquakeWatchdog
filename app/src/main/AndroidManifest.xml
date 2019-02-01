@@ -24,7 +24,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        >
 
         <!-- ADMOB -->
         <!-- Sample AdMob App ID:        ca-app-pub-3940256099942544~3347511713 -->
@@ -34,7 +35,9 @@
             android:value="ca-app-pub-3940256099942544~3347511713" />
 
 
-        <activity android:name="com.indiewalk.watchdog.earthquake.UI.MainActivity">
+        <activity
+            android:name="com.indiewalk.watchdog.earthquake.UI.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -44,7 +47,8 @@
         <activity
             android:name="com.indiewalk.watchdog.earthquake.UI.SettingSimpleActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName="com.indiewalk.watchdog.earthquake.UI.MainActivity">
+            android:parentActivityName="com.indiewalk.watchdog.earthquake.UI.MainActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.indiewalk.watchdog.earthquake.UI.MainActivity" />
@@ -87,7 +91,8 @@
 
         <activity
             android:name="com.indiewalk.watchdog.earthquake.UI.MapsActivity"
-            android:label="@string/title_activity_my_position">
+            android:label="@string/title_activity_my_position"
+            android:screenOrientation="portrait">
         </activity>
 
     </application>
