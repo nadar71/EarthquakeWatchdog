@@ -8,9 +8,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -274,9 +276,15 @@ public class MapsActivity extends AppCompatActivity
 
                     // set user marker in case of previous coordinates not default
                     checkPrevious();
+
+                    // ask for gps if not enabled
+                    showGpsRequestAlert();
                 } else {
                     //Request Location Permission
                     checkLocationPermission();
+
+                    // ask for gps if not enabled
+                    showGpsRequestAlert();
                 }
             } else {
                 mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
@@ -284,6 +292,9 @@ public class MapsActivity extends AppCompatActivity
 
                 // set user marker in case of previous coordinates not default
                 checkPrevious();
+
+                // ask for gps if not enabled
+                showGpsRequestAlert();
             }
 
         // in case on manual localization on
@@ -298,7 +309,7 @@ public class MapsActivity extends AppCompatActivity
             // set marker
             myCurrentPositionMarker = mGoogleMap.addMarker(new MarkerOptions()
                     .position(latLng)
-                    .title("My custom position")
+                    .title("Manual custom position")
                     .snippet("Test"));
             myCurrentPositionMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
 
@@ -315,6 +326,42 @@ public class MapsActivity extends AppCompatActivity
 
     }
 
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Ask for activating gps if not active.
+     * NB : use only after localization permissions are granted
+     * ---------------------------------------------------------------------------------------------
+     */
+    public void showGpsRequestAlert()
+    {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) return;
+
+        LocationManager locationManager;
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE );
+
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+            alertDialog.setTitle("GPS setting!")
+                       .setCancelable(false)
+                       .setMessage("GPS is not enabled, Do you want to go to settings menu? ")
+                       .setPositiveButton("Setting", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    context.startActivity(intent);
+                }
+            });
+            alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            alertDialog.show();
+        }
+    }
 
     /**
      * ---------------------------------------------------------------------------------------------
@@ -759,7 +806,7 @@ public class MapsActivity extends AppCompatActivity
      */
     private void manualLocalizationAlert(){
         new AlertDialog.Builder(this)
-                .setTitle("Manual Location setting active")
+                .setTitle("Manual Location setting active (NOT use GPS)")
                 .setMessage("To set/override your position manually, long press on a map point. ")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
