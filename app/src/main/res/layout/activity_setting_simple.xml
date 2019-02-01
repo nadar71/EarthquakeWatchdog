@@ -8,21 +8,54 @@
     tools:context="com.indiewalk.watchdog.earthquake.UI.SettingSimpleActivity">
 
 
-    <fragment
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/settingsFrag"
         android:name="com.indiewalk.watchdog.earthquake.UI.SettingSimpleActivity$EarthquakePreferenceFragment"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="com.example.android.quakereport.com.indiewalk.watchdog.earthquake.SettingSimpleActivity"
-        tools:layout="@layout/main_activity">
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/gdpr_withdraw_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:context="com.example.android.quakereport.com.indiewalk.watchdog.earthquake.SettingSimpleActivity">
+        <!-- tools:layout="@layout/main_activity" -->
+
 
     </fragment>
 
 
+
+
+
     <!-- Sample AdMob banner ID       : ca-app-pub-3940256099942544/6300978111 -->
     <!-- THIS APP REAL AdMob banner ID: ca-app-pub-8846176967909254/3114773807 -->
+    <Button
+        android:id="@+id/gdpr_withdraw_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginBottom="8dp"
+        android:text="GDPR Consent Withdraw"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/adView"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/faq_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginRight="32dp"
+        android:text="FAQ"
+        app:layout_constraintBottom_toTopOf="@+id/gdpr_withdraw_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gdpr_withdraw_btn"
+        app:layout_constraintVertical_bias="0.538" />
+
     <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
         android:id="@+id/adView"
         android:layout_width="match_parent"

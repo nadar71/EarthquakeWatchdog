@@ -39,11 +39,18 @@ dependencies {
     implementation "android.arch.persistence.room:runtime:1.1.1"
     annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
 
-    // Firebase
+    //  Ads through Firebase
     implementation 'com.google.firebase:firebase-ads:17.1.1'
 
+    // Ads through  Playservices : it gives me problem....
+    // implementation 'com.google.android.gms:play-services-ads:17.1.1'
+
     // GDPR
-    implementation 'com.google.android.ads.consent:consent-library:1.0.6'
+    // implementation 'com.google.android.ads.consent:consent-library:1.0.6'
+
+    // GDPR consent library
+    implementation 'com.github.ayoubfletcher.GDPR-Admob-Android:consentsdk:0.1.7'
+
 
 
 

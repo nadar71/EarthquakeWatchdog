@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.ayoubfletcher.consentsdk.ConsentSDK;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -134,6 +135,7 @@ public class MapsActivity extends AppCompatActivity
         // load ads banner
         mAdView = findViewById(R.id.adView);
 
+        /*
         // Create an ad request. Check your logcat output for the hashed device ID to
         // get test ads on a physical device. e.g.
         // "Use AdRequest.Builder.addTestDevice("ABCDEF012345") to get test ads on this device."
@@ -142,6 +144,10 @@ public class MapsActivity extends AppCompatActivity
                 .addTestDevice("7DC1A1E8AEAD7908E42271D4B68FB270")
                 .build();
         mAdView.loadAd(adRequest);
+        */
+
+        // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
+        mAdView.loadAd(ConsentSDK.getAdRequest(MapsActivity.this));
 
         // get db instance
         eqDb = EarthquakeDatabase.getDbInstance(getApplicationContext());

@@ -1,5 +1,6 @@
 package com.indiewalk.watchdog.earthquake.UI;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -10,7 +11,11 @@ import android.support.v7.app.AppCompatActivity;
 // import android.support.v7.preference.PreferenceFragmentCompat;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
+import com.ayoubfletcher.consentsdk.ConsentSDK;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -24,12 +29,20 @@ public class SettingSimpleActivity extends AppCompatActivity {
     // admob banner ref
     private AdView mAdView;
 
+    // View ref
+    private Button gdprConsentBtn, faqBtn;
+
+    private ConsentSDK consentSDK = null;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_simple);
+
+        gdprConsentBtn = findViewById(R.id.gdpr_withdraw_btn);
+        faqBtn         = findViewById(R.id.faq_btn);
 
         // -----------------------------------------------------------------------------------------
         // Init admob
@@ -41,6 +54,7 @@ public class SettingSimpleActivity extends AppCompatActivity {
         // load ads banner
         mAdView = findViewById(R.id.adView);
 
+        /*
         // Create an ad request. Check your logcat output for the hashed device ID to
         // get test ads on a physical device. e.g.
         // "Use AdRequest.Builder.addTestDevice("ABCDEF012345") to get test ads on this device."
@@ -49,6 +63,63 @@ public class SettingSimpleActivity extends AppCompatActivity {
                 .addTestDevice("7DC1A1E8AEAD7908E42271D4B68FB270")
                 .build();
         mAdView.loadAd(adRequest);
+        */
+
+        // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
+        mAdView.loadAd(ConsentSDK.getAdRequest(SettingSimpleActivity.this));
+
+
+
+        // Initialize ConsentSDK
+        initConsentSDK(SettingSimpleActivity.this);
+
+
+        // Checking the status of the user
+        if(ConsentSDK.isUserLocationWithinEea(this)) {
+            gdprConsentBtn.setVisibility(View.VISIBLE);
+
+            String choice = ConsentSDK.isConsentPersonalized(this)? "Personalize": "Non-Personalize";
+            gdprConsentBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Check Consent SDK
+                    // Request the consent without callback
+                    // consentSDK.requestConsent(null);
+                    //To get the result of the consent
+                    consentSDK.requestConsent(new ConsentSDK.ConsentStatusCallback() {
+                        @Override
+                        public void onResult(boolean isRequestLocationInEeaOrUnknown, int isConsentPersonalized) {
+                            String choice = "";
+                            switch (isConsentPersonalized) {
+                                case 0:
+                                    choice = "Non-Personalize";
+                                    break;
+                                case 1:
+                                    choice = "Personalized";
+                                    break;
+                                case -1:
+                                    choice = "Error occurred";
+                            }
+
+                        }
+                    });
+                }
+            });
+        } else {
+            gdprConsentBtn.setVisibility(View.INVISIBLE);
+        }
+
+
+        // Faq button
+        faqBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+
+
     }
 
     public static class EarthquakePreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener{
@@ -75,6 +146,9 @@ public class SettingSimpleActivity extends AppCompatActivity {
             Preference manualLoc = findPreference(getString(R.string.manual_Localization_key));
             bindPreferenceSummaryToValue(manualLoc);
 */
+
+
+
 
         }
 
@@ -116,5 +190,29 @@ public class SettingSimpleActivity extends AppCompatActivity {
             }
             return true;
         }
+
+    } // Fragment
+
+
+
+    /**
+     * -----------------------------------------------------------------------------------------
+     * Initialize consent
+     * @param context
+     * -----------------------------------------------------------------------------------------
+     */
+    private void initConsentSDK(Context context) {
+        // Initialize ConsentSDK
+        consentSDK = new ConsentSDK.Builder(context)
+                .addTestDeviceId("7DC1A1E8AEAD7908E42271D4B68FB270") // Add your test device id "Remove addTestDeviceId on production!"
+                .addCustomLogTag("gdpr_TAG") // Add custom tag default: ID_LOG
+                .addPrivacyPolicy("http://www.indie-walkabout.eu/privacy-policy-app") // Add your privacy policy url
+                .addPublisherId("pub-8846176967909254") // Add your admob publisher id
+                .build();
     }
+
+
+
+
+
 }
