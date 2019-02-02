@@ -1,6 +1,7 @@
 package com.indiewalk.watchdog.earthquake.UI;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -114,7 +115,8 @@ public class SettingSimpleActivity extends AppCompatActivity {
         faqBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent showEqOnMap = new Intent(SettingSimpleActivity.this, FaqActivity.class);
+                startActivity(showEqOnMap);
             }
         });
 

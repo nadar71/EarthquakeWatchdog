@@ -24,8 +24,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        >
+        android:theme="@style/AppTheme">
 
         <!-- ADMOB -->
         <!-- Sample AdMob App ID:        ca-app-pub-3940256099942544~3347511713 -->
@@ -34,9 +33,8 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713" />
 
-
         <activity
-            android:name="com.indiewalk.watchdog.earthquake.UI.MainActivity"
+            android:name=".UI.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,9 +43,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.indiewalk.watchdog.earthquake.UI.SettingSimpleActivity"
+            android:name=".UI.SettingSimpleActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName="com.indiewalk.watchdog.earthquake.UI.MainActivity"
+            android:parentActivityName=".UI.MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -73,28 +71,28 @@
              You can define the keys for the debug and release targets in src/debug/ and src/release/. 
         -->
 
+
         <!--
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
         -->
 
-        <!-- -->
+
+        <!--  -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/google_maps_key" />
-        <!-- -->
+        <!--  -->
 
         <activity
-            android:name="com.indiewalk.watchdog.earthquake.unused.MyPositionActivity"
-            android:label="@string/title_activity_my_position"></activity>
-
+            android:name=".unused.MyPositionActivity"
+            android:label="@string/title_activity_my_position" />
         <activity
-            android:name="com.indiewalk.watchdog.earthquake.UI.MapsActivity"
+            android:name=".UI.MapsActivity"
             android:label="@string/title_activity_my_position"
-            android:screenOrientation="portrait">
-        </activity>
-
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".UI.FaqActivity"></activity>
     </application>
 
 </manifest>

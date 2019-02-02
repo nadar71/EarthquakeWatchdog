@@ -445,7 +445,8 @@ public class MapsActivity extends AppCompatActivity
                 Double.toString(MainActivity.DEFAULT_LNG));
 
         // if there is already user location different from default location
-        if ( (!lat_s.equals(MainActivity.DEFAULT_LAT)) && (!lng_s.equals(MainActivity.DEFAULT_LNG)) ) {
+        if ( (!lat_s.equals(Double.toString(MainActivity.DEFAULT_LAT))) &&
+                (!lng_s.equals(Double.toString(MainActivity.DEFAULT_LNG))) ) {
             // position the user location's marker
             userLocationMarker(Double.parseDouble(lat_s), Double.parseDouble(lng_s));
         }

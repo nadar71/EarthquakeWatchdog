@@ -52,7 +52,4 @@ dependencies {
     implementation 'com.github.ayoubfletcher.GDPR-Admob-Android:consentsdk:0.1.7'
 
 
-
-
-
 }

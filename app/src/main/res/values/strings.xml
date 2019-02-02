@@ -4,7 +4,7 @@
     <string name="app_name">EarthQuake Watchdog</string>
     <string name="searching">Retrieving earthquakes data...</string>
 
-    <!-- - - - - - - - - - - Strings For Title  - - - -  - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - Strings For Title and other text - - - - - - - - - - - - - - - - - -->
     <string name="my_position_ic_title">My Position</string>
     <string name="refresh_ic_title">Refresh</string>
     <string name="spinner_title">Map type</string>
@@ -14,6 +14,40 @@
         and follow instructions.\nIt uses no localization service nor gps.</string>
     <string name="save_label">Save</string>
     <string name="dont_ask_more">Don\'t show me again</string>
+    <!-- distance type -->
+    <string name="distance_from_default_location">from default location</string>
+    <string name="distance_from_user_location">from you</string>
+
+    <string name="title_activity_faq">Faq &amp; Disclaimer</string>
+
+    <string name="faq_text">
+
+        <b>FAQ &amp; DISCLAIMER</b>\n
+        This app downloads and shows data about earthquakes (till the last 120 earthquakes happened) taken from
+        <a href='https://earthquake.usgs.gov/earthquakes/'> USGS.gov </a> online service.
+        It is not in any way related to USGS nor it is an app from them.\n\n
+
+        It has only informative purposes, the datas about earthquakes are not in real time
+        (check <a href='https://earthquake.usgs.gov/earthquakes/'> USGS.gov site </a> for details)
+        So it has not intent to be a real time earthquake alert app,
+        not use it as a saving-life app, I\'m not responsible of every improper use of this app.\n\n
+
+        In map it asks for user location permissions only for calculating distance of
+        earthquake from user, and the users coordinates are stored for this purpose only.
+        If permissions for localization are negated, it allows anyway manual positioning
+        by long pressing on map, without using gps nor any other localization system,
+        check in map settings.\n
+        If permissions are not allowed nor a manual localization is done, it uses
+        the default location (Google location) and calculate earthquake distance from there.
+        \n\n
+
+        Hope you\'ll enjoy my app and find it useful, check out my other app and games on my site\n
+        <a href='http://www.indie-walkabout.eu'>http://www.indie-walkabout.eu</a>.\n
+
+        For suggestions, info or bugs please contact me at \n
+        <a href='mailto:indie.walkabout.1971@gmail.com'>indie.walkabout.1971@gmail.com</a>\n
+
+    </string>
 
     <!-- Text to display in the list when there are no earthquakes -->
     <string name="no_earthquakes">No earthquakes found.</string>
@@ -26,8 +60,6 @@
 
     <!-- Spinner dialog stuff  -->
     <string name="dialog_check_box_label">Save</string>
-
-
 
 
     <!-- - - - - - - - - - - Strings For Settings Menu - - - -  - - - - - - - - - - - - - - - - - - - - -->
@@ -47,23 +79,22 @@
     <string name="settings_order_by_key" translatable="false">order_by</string>
     <string name="settings_order_by_default" translatable="false">@string/settings_order_by_magnitude_value</string>
 
-        <!-- Label for order-by magnitude option [CHAR LIMIT=20] -->
-        <string name="settings_order_by_magnitude_label">Magnitude (from higher one)</string>
-        <string name="settings_order_by_magnitude_value" translatable="false">magnitude</string>
+    <!-- Label for order-by magnitude option [CHAR LIMIT=20] -->
+    <string name="settings_order_by_magnitude_label">Magnitude (from higher one)</string>
+    <string name="settings_order_by_magnitude_value" translatable="false">magnitude</string>
 
-        <!-- Label for order-by most recent option [CHAR LIMIT=20] -->
-        <string name="settings_order_by_most_recent_label">Most Recent</string>
-        <string name="settings_order_by_most_recent_value" translatable="false">time</string>
+    <!-- Label for order-by most recent option [CHAR LIMIT=20] -->
+    <string name="settings_order_by_most_recent_label">Most Recent</string>
+    <string name="settings_order_by_most_recent_value" translatable="false">time</string>
 
 
-        <!-- Label for order-by nearest to you  [CHAR LIMIT=20] -->
-        <string name="settings_order_by_nearest_label">Nearest to you</string>
-        <string name="settings_order_by_nearest_value" translatable="false">nearest</string>
+    <!-- Label for order-by nearest to you  [CHAR LIMIT=20] -->
+    <string name="settings_order_by_nearest_label">Nearest to you</string>
+    <string name="settings_order_by_nearest_value" translatable="false">nearest</string>
 
-        <!-- Label for order-by nearest to you  [CHAR LIMIT=20] -->
-        <string name="settings_order_by_farthest_label">Farthest to you</string>
-        <string name="settings_order_by_farthest_value" translatable="false">farthest</string>
-
+    <!-- Label for order-by nearest to you  [CHAR LIMIT=20] -->
+    <string name="settings_order_by_farthest_label">Farthest to you</string>
+    <string name="settings_order_by_farthest_value" translatable="false">farthest</string>
 
 
     <!-- - - - - - - - Strings For Distance measure unit - - - - - - - - - - - - - -->
@@ -72,14 +103,13 @@
     <string name="settings_distance_unit_by_default" translatable="false">
         @string/settings_km_distance_unit_value</string>
 
-        <!-- Label for order-by magnitude option [CHAR LIMIT=20] -->
-        <string name="settings_km_distance_unit_label">Km</string>
-        <string name="settings_km_distance_unit_value" translatable="false">km</string>
+    <!-- Label for order-by magnitude option [CHAR LIMIT=20] -->
+    <string name="settings_km_distance_unit_label">Km</string>
+    <string name="settings_km_distance_unit_value" translatable="false">km</string>
 
-        <!-- Label for order-by most recent option [CHAR LIMIT=20] -->
-        <string name="settings_mi_distance_unit_label">Mi</string>
-        <string name="settings_mi_distance_unit_value" translatable="false">mi</string>
-
+    <!-- Label for order-by most recent option [CHAR LIMIT=20] -->
+    <string name="settings_mi_distance_unit_label">Mi</string>
+    <string name="settings_mi_distance_unit_value" translatable="false">mi</string>
 
 
     <!-- - - - - - - - - - - Strings For Minimum Magnitude Preference  - - - - - - - - - - - - - -->
@@ -114,14 +144,14 @@
     <string name="settings_max_equakes_key" translatable="false">equakes_num</string>
     <string name="settings_max_equakes_default" translatable="false">@string/settings_max_30_equakes_value</string>
 
-    <string name="settings_max_30_equakes_num_label" >30</string>
-    <string name="settings_max_60_equakes_num_label" >60</string>
-    <string name="settings_max_90_equakes_num_label" >90</string>
+    <string name="settings_max_30_equakes_num_label">30</string>
+    <string name="settings_max_60_equakes_num_label">60</string>
+    <string name="settings_max_90_equakes_num_label">90</string>
     <string name="settings_max_120_equakes_num_label">120</string>
 
-    <string name="settings_max_30_equakes_value"  translatable="false">30</string>
-    <string name="settings_max_60_equakes_value"  translatable="false">60</string>
-    <string name="settings_max_90_equakes_value"  translatable="false">90</string>
+    <string name="settings_max_30_equakes_value" translatable="false">30</string>
+    <string name="settings_max_60_equakes_value" translatable="false">60</string>
+    <string name="settings_max_90_equakes_value" translatable="false">90</string>
     <string name="settings_max_120_equakes_value" translatable="false">120</string>
 
 
@@ -138,11 +168,6 @@
 
     <!-- - - - - - - - don't show me again Manual loc suggestion preference  - - - - - - - - - - -->
     <string name="settings_dontshow_me_again">false</string>
-
-
-
-
-
 
 
 </resources>

@@ -119,7 +119,18 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
         // display eq distance from user location or custom location
         TextView distanceFromUser = (TextView)itemView.findViewById(R.id.distanceFromMe_tv);
-        distanceFromUser.setText(currentEartquakeItem.getUserDistance()+ " " + dist_unit);
+
+
+        // set distance label based on user location type
+        TextView distanceFromUser_label = (TextView)itemView.findViewById(R.id.distanceFromMeLabel_tv);
+        if (checkPreferences() == true) { // custom location
+            distanceFromUser.setText("            "+currentEartquakeItem.getUserDistance()+ " " + dist_unit);
+            distanceFromUser_label.setText(context.getString(R.string.distance_from_user_location));
+        } else {
+            distanceFromUser.setText(currentEartquakeItem.getUserDistance()+ " " + dist_unit);
+            distanceFromUser_label.setText(context.getString(R.string.distance_from_default_location));
+        }
+
 
         return itemView;
 
@@ -129,10 +140,10 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Check for distance unit preference
+     * Check for distance unit preference, and if a user location is different from the default one
      * ---------------------------------------------------------------------------------------------
      */
-    private void checkPreferences() {
+    private boolean checkPreferences() {
         // init shared preferences
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
 
@@ -141,6 +152,19 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
                 Double.toString(R.string.settings_distance_unit_by_default));
 
         Log.i(TAG, "EarthquakeAdapter : dist unit : "+ dist_unit);
+
+        String lat_s = sharedPreferences.getString(context.getString(R.string.device_lat),
+                Double.toString(MainActivity.DEFAULT_LAT));
+        String lng_s = sharedPreferences.getString(context.getString(R.string.device_lng),
+                Double.toString(MainActivity.DEFAULT_LNG));
+
+        // if there is user location different from default location
+        if ( (!lat_s.equals(Double.toString(MainActivity.DEFAULT_LAT))) &&
+                (!lng_s.equals(Double.toString(MainActivity.DEFAULT_LNG))) ) {
+            return true; // custom location
+        } else {
+            return false; // default location, Google inc. Mountain view
+        }
 
     }
 
