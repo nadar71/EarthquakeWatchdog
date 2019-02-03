@@ -23,13 +23,6 @@ public class FaqActivity extends AppCompatActivity {
         setContentView(R.layout.activity_faq);
 
 
-        // -----------------------------------------------------------------------------------------
-        // Init admob
-        // Sample AdMob app ID:         ca-app-pub-3940256099942544~3347511713
-        // THIS APP REAL AdMob app ID:  ca-app-pub-8846176967909254~9979565057
-        // -----------------------------------------------------------------------------------------
-        // MobileAds.initialize(this, "ca-app-pub-8846176967909254~9979565057");
-
         // load ads banner
         mAdView = findViewById(R.id.adView);
 

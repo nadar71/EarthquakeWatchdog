@@ -17,6 +17,7 @@ import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -167,14 +168,24 @@ public class ConsentSDK {
         settings.edit().putBoolean(user_status, status).apply();
     }
 
+    // -----------------------------------------------------------------------------------------
+    // Init admob
+    // Sample AdMob app ID:         ca-app-pub-3940256099942544~3347511713
+    // THIS APP REAL AdMob app ID:  ca-app-pub-8846176967909254~9979565057
+    // -----------------------------------------------------------------------------------------
     // Get AdRequest
     public static AdRequest getAdRequest(Context context) {
         if(isConsentPersonalized(context)) {
-            AdRequest adRequest = new AdRequest.Builder().build();
+            MobileAds.initialize(context, "ca-app-pub-8846176967909254~9979565057");
+            AdRequest adRequest = new AdRequest.Builder()
+                    .addTestDevice("7DC1A1E8AEAD7908E42271D4B68FB270")
+                    .build();
             return adRequest;
         } else {
+            MobileAds.initialize(context, "ca-app-pub-8846176967909254~9979565057");
             AdRequest adRequest =  new AdRequest.Builder()
                     .addNetworkExtrasBundle(AdMobAdapter.class, getNonPersonalizedAdsBundle())
+                    .addTestDevice("7DC1A1E8AEAD7908E42271D4B68FB270")
                     .build();
             return adRequest;
         }

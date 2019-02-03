@@ -33,20 +33,16 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-8846176967909254~9979565057" />
 
+
+
         <activity
-            android:name=".UI.SplashActivity"
+            android:name=".UI.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".UI.MainActivity"
-            android:parentActivityName=".UI.SplashActivity"
-            android:screenOrientation="portrait">
         </activity>
 
         <activity
@@ -103,6 +99,11 @@
         <activity
             android:name=".unused.MyPositionActivity"
             android:label="@string/title_activity_my_position" />
+
+        <activity
+            android:name=".unused.SplashActivity"
+            android:screenOrientation="portrait">
+        </activity>
 
     </application>
 

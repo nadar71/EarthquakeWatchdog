@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.UI;
+package com.indiewalk.watchdog.earthquake.unused;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.indiewalk.watchdog.earthquake.R;
+import com.indiewalk.watchdog.earthquake.UI.MainActivity;
 import com.indiewalk.watchdog.earthquake.util.ConsentSDK;
 
 public class SplashActivity extends AppCompatActivity {

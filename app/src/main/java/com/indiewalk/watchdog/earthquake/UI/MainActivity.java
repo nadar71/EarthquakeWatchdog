@@ -101,27 +101,27 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-        // -----------------------------------------------------------------------------------------
-        // Init admob
-        // Sample AdMob app ID:         ca-app-pub-3940256099942544~3347511713
-        // THIS APP REAL AdMob app ID:  ca-app-pub-8846176967909254~9979565057
-        // -----------------------------------------------------------------------------------------
-        // MobileAds.initialize(this, "ca-app-pub-8846176967909254~9979565057");
-
-        /*
-        // load ads banner
-        mAdView = findViewById(R.id.adView);
-
-
-        // Create an ad request. Check your logcat output for the hashed device ID to
-        // get test ads on a physical device. e.g.
-        // "Use AdRequest.Builder.addTestDevice("ABCDEF012345") to get test ads on this device."
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                .addTestDevice("7DC1A1E8AEAD7908E42271D4B68FB270")
+        // Initialize ConsentSDK
+        ConsentSDK consentSDK = new ConsentSDK.Builder(this)
+                .addTestDeviceId("7DC1A1E8AEAD7908E42271D4B68FB270") // redminote 5 // Add your test device id "Remove addTestDeviceId on production!"
+                // .addTestDeviceId("9978A5F791A259430A0156313ED9C6A2")
+                .addCustomLogTag("gdpr_TAG") // Add custom tag default: ID_LOG
+                .addPrivacyPolicy("http://www.indie-walkabout.eu/privacy-policy-app") // Add your privacy policy url
+                .addPublisherId("pub-8846176967909254") // Add your admob publisher id
                 .build();
-        mAdView.loadAd(adRequest);
-        */
+
+
+        // To check the consent and load ads
+        consentSDK.checkConsent(new ConsentSDK.ConsentCallback() {
+            @Override
+            public void onResult(boolean isRequestLocationInEeaOrUnknown) {
+                Log.i("gdpr_TAG", "onResult: isRequestLocationInEeaOrUnknown : "+isRequestLocationInEeaOrUnknown);
+                // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
+                mAdView.loadAd(ConsentSDK.getAdRequest(MainActivity.this));
+            }
+        });
+
+
 
         mAdView = findViewById(R.id.adView);
 
@@ -133,14 +133,14 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             @Override
             public void onAdLoaded() {
                 // Code to be executed when an ad finishes loading.
-                // Toast.makeText(MainActivity.this, "Adloaded ok", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Adloaded ok", Toast.LENGTH_SHORT).show();
                 // mAdView.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onAdFailedToLoad(int errorCode) {
                 // Code to be executed when an ad request fails.
-                // Toast.makeText(MainActivity.this, "Adloaded FAILED TO LOAD "+errorCode, Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "Adloaded FAILED TO LOAD "+errorCode, Toast.LENGTH_LONG).show();
                 // Log.i(TAG, "onAdFailedToLoad: ConsentSDK.getAdRequest(MainActivity.this) : "
                 //        +ConsentSDK.getAdRequest(MainActivity.this));
                 // mAdView.setVisibility(View.INVISIBLE);
