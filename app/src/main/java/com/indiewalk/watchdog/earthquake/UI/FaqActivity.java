@@ -6,11 +6,11 @@ import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.ayoubfletcher.consentsdk.ConsentSDK;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.maps.model.Marker;
 import com.indiewalk.watchdog.earthquake.R;
+import com.indiewalk.watchdog.earthquake.util.ConsentSDK;
 
 public class FaqActivity extends AppCompatActivity {
 
@@ -25,10 +25,10 @@ public class FaqActivity extends AppCompatActivity {
 
         // -----------------------------------------------------------------------------------------
         // Init admob
-        // Sample AdMob banner ID:         ca-app-pub-3940256099942544~3347511713
-        // THIS APP REAL AdMob banner ID:  ca-app-pub-8846176967909254~9979565057
+        // Sample AdMob app ID:         ca-app-pub-3940256099942544~3347511713
+        // THIS APP REAL AdMob app ID:  ca-app-pub-8846176967909254~9979565057
         // -----------------------------------------------------------------------------------------
-        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+        // MobileAds.initialize(this, "ca-app-pub-8846176967909254~9979565057");
 
         // load ads banner
         mAdView = findViewById(R.id.adView);
@@ -39,7 +39,7 @@ public class FaqActivity extends AppCompatActivity {
         // back btn
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        getSupportActionBar().setTitle(getString(R.string.title_activity_faq));
+        getSupportActionBar().setTitle(getString(R.string.faq_btn_title));
 
     }
 

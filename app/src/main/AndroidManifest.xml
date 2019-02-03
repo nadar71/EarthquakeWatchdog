@@ -31,10 +31,10 @@
         <!-- THIS APP REAL AdMob App ID: ca-app-pub-8846176967909254~9979565057 -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+            android:value="ca-app-pub-8846176967909254~9979565057" />
 
         <activity
-            android:name=".UI.MainActivity"
+            android:name=".UI.SplashActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,6 +42,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".UI.MainActivity"
+            android:parentActivityName=".UI.SplashActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
         <activity
             android:name=".UI.SettingSimpleActivity"
             android:label="@string/title_activity_settings"
@@ -85,14 +92,18 @@
             android:value="@string/google_maps_key" />
         <!--  -->
 
-        <activity
-            android:name=".unused.MyPositionActivity"
-            android:label="@string/title_activity_my_position" />
+
+
         <activity
             android:name=".UI.MapsActivity"
             android:label="@string/title_activity_my_position"
             android:screenOrientation="portrait"></activity>
         <activity android:name=".UI.FaqActivity"></activity>
+
+        <activity
+            android:name=".unused.MyPositionActivity"
+            android:label="@string/title_activity_my_position" />
+
     </application>
 
 </manifest>

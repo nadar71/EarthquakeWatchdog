@@ -31,7 +31,8 @@ import android.content.Loader;
 import android.app.AlertDialog;
 
 
-import com.ayoubfletcher.consentsdk.ConsentSDK;
+import com.google.ads.mediation.admob.AdMobAdapter;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -39,6 +40,7 @@ import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
 import com.indiewalk.watchdog.earthquake.net.EarthquakeAsyncLoader;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
+import com.indiewalk.watchdog.earthquake.util.ConsentSDK;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
 
@@ -101,15 +103,16 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
         // -----------------------------------------------------------------------------------------
         // Init admob
-        // Sample AdMob banner ID:         ca-app-pub-3940256099942544~3347511713
-        // THIS APP REAL AdMob banner ID:  ca-app-pub-8846176967909254~9979565057
+        // Sample AdMob app ID:         ca-app-pub-3940256099942544~3347511713
+        // THIS APP REAL AdMob app ID:  ca-app-pub-8846176967909254~9979565057
         // -----------------------------------------------------------------------------------------
-        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+        // MobileAds.initialize(this, "ca-app-pub-8846176967909254~9979565057");
 
+        /*
         // load ads banner
         mAdView = findViewById(R.id.adView);
 
-        /*
+
         // Create an ad request. Check your logcat output for the hashed device ID to
         // get test ads on a physical device. e.g.
         // "Use AdRequest.Builder.addTestDevice("ABCDEF012345") to get test ads on this device."
@@ -120,27 +123,47 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         mAdView.loadAd(adRequest);
         */
 
-
-        // Initialize ConsentSDK
-        ConsentSDK consentSDK = new ConsentSDK.Builder(this)
-                .addTestDeviceId("7DC1A1E8AEAD7908E42271D4B68FB270") // redminote 5 // Add your test device id "Remove addTestDeviceId on production!"
-                // .addTestDeviceId("9978A5F791A259430A0156313ED9C6A2")
-                .addCustomLogTag("gdpr_TAG") // Add custom tag default: ID_LOG
-                .addPrivacyPolicy("http://www.indie-walkabout.eu/privacy-policy-app") // Add your privacy policy url
-                .addPublisherId("pub-8846176967909254") // Add your admob publisher id
-                .build();
-
-        // To check the consent and load ads
-        consentSDK.checkConsent(new ConsentSDK.ConsentCallback() {
-            @Override
-            public void onResult(boolean isRequestLocationInEeaOrUnknown) {
-                Log.i("gdpr_TAG", "onResult: isRequestLocationInEeaOrUnknown : "+isRequestLocationInEeaOrUnknown);
-
-            }
-        });
+        mAdView = findViewById(R.id.adView);
 
         // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
         mAdView.loadAd(ConsentSDK.getAdRequest(MainActivity.this));
+
+
+        mAdView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                // Code to be executed when an ad finishes loading.
+                // Toast.makeText(MainActivity.this, "Adloaded ok", Toast.LENGTH_SHORT).show();
+                // mAdView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+                // Code to be executed when an ad request fails.
+                // Toast.makeText(MainActivity.this, "Adloaded FAILED TO LOAD "+errorCode, Toast.LENGTH_LONG).show();
+                // Log.i(TAG, "onAdFailedToLoad: ConsentSDK.getAdRequest(MainActivity.this) : "
+                //        +ConsentSDK.getAdRequest(MainActivity.this));
+                // mAdView.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onAdOpened() {
+                // Code to be executed when an ad opens an overlay that
+                // covers the screen.
+            }
+
+            @Override
+            public void onAdLeftApplication() {
+                // Code to be executed when the user has left the app.
+            }
+
+            @Override
+            public void onAdClosed() {
+                // Code to be executed when when the user is about to return
+                // to the app after tapping on an ad.
+            }
+        });
+
 
 
         // get db instance
@@ -552,9 +575,11 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         android.support.v7.app.AlertDialog.Builder  builder =
                 new android.support.v7.app.AlertDialog.Builder(MainActivity.this);
         View view = getLayoutInflater().inflate(R.layout.quick_settings_dialog, null);
+        /*
         CheckBox saveFlag = (CheckBox)findViewById(R.id.dialog_checkBox);
         //TODO : update with choice to save or not list when passing to acc
         saveFlag.setVisibility(View.INVISIBLE);
+        */
         builder.setTitle("Quick settings");
 
         // order by

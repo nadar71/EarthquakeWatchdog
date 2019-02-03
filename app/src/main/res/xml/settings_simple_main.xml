@@ -3,6 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="@string/settings_title">
 
+    <PreferenceCategory
+        android:title="@string/category_settings_title">
 
     <ListPreference
         android:defaultValue="@string/settings_order_by_default"
@@ -33,14 +35,27 @@
         android:entryValues="@array/settings_max_earthquakes_values"
         android:key="@string/settings_max_equakes_key"
         android:title="@string/settings_max_equakes_label" />
+    </PreferenceCategory>
 
-<!--
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="@string/manual_Localization_key"
-        android:title="@string/manual_localization_label" />
--->
+    <PreferenceCategory
+        android:title="@string/category_help_title">
+        <Preference
+            android:key="@string/gdpr_btn_key"
+            android:summary="@string/gdpr_btn_summary"
+            android:title="@string/gdpr_btn_title" />
 
+
+        <Preference
+            android:key="@string/faq_btn_key"
+            android:summary="@string/faq_btn_summary"
+            android:title="@string/faq_btn_title" />
+    </PreferenceCategory>
+    <!--
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/manual_Localization_key"
+            android:title="@string/manual_localization_label" />
+    -->
 
 
     <!--

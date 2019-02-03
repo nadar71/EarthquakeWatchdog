@@ -58,6 +58,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <!--
         <CheckBox
             android:id="@+id/dialog_checkBox"
             android:layout_width="wrap_content"
@@ -68,6 +69,7 @@
             android:layout_marginBottom="8dp"
             android:padding="8dp"
             android:text="@string/dialog_check_box_label" />
+            -->
 
 
     </LinearLayout>

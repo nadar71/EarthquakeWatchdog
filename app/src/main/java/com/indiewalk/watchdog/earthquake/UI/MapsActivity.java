@@ -27,7 +27,6 @@ import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.ayoubfletcher.consentsdk.ConsentSDK;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -50,6 +49,7 @@ import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
 import com.indiewalk.watchdog.earthquake.util.AppExecutors;
+import com.indiewalk.watchdog.earthquake.util.ConsentSDK;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
 
@@ -134,24 +134,13 @@ public class MapsActivity extends AppCompatActivity
 
         // -----------------------------------------------------------------------------------------
         // Init admob
-        // Sample AdMob banner ID:         ca-app-pub-3940256099942544~3347511713
-        // THIS APP REAL AdMob banner ID:  ca-app-pub-8846176967909254~9979565057
+        // Sample AdMob app ID:         ca-app-pub-3940256099942544~3347511713
+        // THIS APP REAL AdMob app ID:  ca-app-pub-8846176967909254~9979565057
         // -----------------------------------------------------------------------------------------
-        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+        // MobileAds.initialize(this, "ca-app-pub-8846176967909254~9979565057");
 
         // load ads banner
         mAdView = findViewById(R.id.adView);
-
-        /*
-        // Create an ad request. Check your logcat output for the hashed device ID to
-        // get test ads on a physical device. e.g.
-        // "Use AdRequest.Builder.addTestDevice("ABCDEF012345") to get test ads on this device."
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                .addTestDevice("7DC1A1E8AEAD7908E42271D4B68FB270")
-                .build();
-        mAdView.loadAd(adRequest);
-        */
 
         // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
         mAdView.loadAd(ConsentSDK.getAdRequest(MapsActivity.this));

@@ -122,11 +122,12 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
 
         // set distance label based on user location type
+        boolean check = checkPreferences();
         TextView distanceFromUser_label = (TextView)itemView.findViewById(R.id.distanceFromMeLabel_tv);
-        if (checkPreferences() == true) { // custom location
+        if (check == true) { // custom location
             distanceFromUser.setText("            "+currentEartquakeItem.getUserDistance()+ " " + dist_unit);
             distanceFromUser_label.setText(context.getString(R.string.distance_from_user_location));
-        } else {
+        } else if (check == false){
             distanceFromUser.setText(currentEartquakeItem.getUserDistance()+ " " + dist_unit);
             distanceFromUser_label.setText(context.getString(R.string.distance_from_default_location));
         }
@@ -149,7 +150,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
         // set distance unit choosen
         dist_unit = sharedPreferences.getString(context.getString(R.string.settings_distance_unit_by_key),
-                Double.toString(R.string.settings_distance_unit_by_default));
+                context.getString(R.string.settings_distance_unit_by_default));
 
         Log.i(TAG, "EarthquakeAdapter : dist unit : "+ dist_unit);
 
