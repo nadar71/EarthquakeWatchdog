@@ -84,8 +84,9 @@ public class MyUtil {
         System.out.println("date : "+date.toString());
 
         // Format Date
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM DD, yyyy");
-        return dateFormatter.format(date);
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM dd, yyyy");
+        String dateFormatted = dateFormatter.format(date);
+        return dateFormatted;
     }
 
 

@@ -111,6 +111,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
         // display date formatted using {@link formatDateFromMsec}
         TextView dateView = (TextView)itemView.findViewById(R.id.dateText);
+
         dateView.setText(MyUtil.formatDateFromMsec(currentEartquakeItem.getTimeInMillisec()));
 
         // display time formatted using {@link formatTimeFromMsec}
