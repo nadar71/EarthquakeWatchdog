@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -19,12 +21,15 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
@@ -237,6 +242,36 @@ public class MapsActivity extends AppCompatActivity
                             .icon(eqMarkerIcon)
             ));
 
+            mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+                @Override
+                public View getInfoWindow(Marker arg0) {
+                    return null;
+                }
+
+                @Override
+                public View getInfoContents(Marker marker) {
+
+                    LinearLayout info = new LinearLayout(context);
+                    info.setOrientation(LinearLayout.VERTICAL);
+
+                    TextView title = new TextView(context);
+                    title.setTextColor(Color.BLACK);
+                    title.setGravity(Gravity.CENTER);
+                    title.setTypeface(null, Typeface.BOLD);
+                    title.setText(marker.getTitle());
+
+                    TextView snippet = new TextView(context);
+                    snippet.setTextColor(Color.GRAY);
+                    snippet.setText(marker.getSnippet());
+
+                    info.addView(title);
+                    info.addView(snippet);
+
+                    return info;
+                }
+            });
+
 
 
             Log.d(TAG, "onMapReady: latitude : " + earthquake.getLatitude() + " longitude : " + earthquake.getLongitude());
@@ -295,8 +330,8 @@ public class MapsActivity extends AppCompatActivity
             // set marker
             myCurrentPositionMarker = mGoogleMap.addMarker(new MarkerOptions()
                     .position(latLng)
-                    .title("Manual custom position")
-                    .snippet("Test"));
+                    .title("Your Manual position")
+                    .snippet("Latitude : " + lat_s + "\n" + "Longitude : " + lng_s));
             myCurrentPositionMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
 
             // allow to change location
@@ -549,7 +584,7 @@ public class MapsActivity extends AppCompatActivity
 
         myCurrentPositionMarker = mGoogleMap.addMarker(new MarkerOptions()
                                     .position(latLng)
-                                    .title("Your Current Position : lat : " + userLat + " long : " + userLng)
+                                    .title("Your Current Position : latitude : " + userLat + " longitude : " + userLng)
                                     .icon(locationMarkerIcon));
 
         //move map camera
@@ -786,8 +821,10 @@ public class MapsActivity extends AppCompatActivity
 
                 myCurrentPositionMarker = mGoogleMap.addMarker(new MarkerOptions()
                         .position(latLng)
-                        .title("My positions")
-                        .snippet("Your marker snippet"));
+                        .title("Your Manual position")
+                        .snippet("Latitude : " + latLng.latitude + "\n" + "Longitude : " + latLng.longitude));
+
+
 
                 myCurrentPositionMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
 

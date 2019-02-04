@@ -133,17 +133,13 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             @Override
             public void onAdLoaded() {
                 // Code to be executed when an ad finishes loading.
-                Toast.makeText(MainActivity.this, "Adloaded ok", Toast.LENGTH_SHORT).show();
-                // mAdView.setVisibility(View.VISIBLE);
+                // Toast.makeText(MainActivity.this, "Adloaded ok", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onAdFailedToLoad(int errorCode) {
                 // Code to be executed when an ad request fails.
-                Toast.makeText(MainActivity.this, "Adloaded FAILED TO LOAD "+errorCode, Toast.LENGTH_LONG).show();
-                // Log.i(TAG, "onAdFailedToLoad: ConsentSDK.getAdRequest(MainActivity.this) : "
-                //        +ConsentSDK.getAdRequest(MainActivity.this));
-                // mAdView.setVisibility(View.INVISIBLE);
+                // Toast.makeText(MainActivity.this, "Adloaded FAILED TO LOAD "+errorCode, Toast.LENGTH_LONG).show();
             }
 
             @Override
