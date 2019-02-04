@@ -43,7 +43,7 @@
             android:layout_marginTop="32dp"
             android:layout_marginRight="8dp"
             android:layout_marginBottom="8dp"
-            android:text="@string/settings_order_by_magnitude_label"
+            android:text="@string/settings_min_magnitude_label"
             android:textStyle="bold" />
 
         <Spinner
