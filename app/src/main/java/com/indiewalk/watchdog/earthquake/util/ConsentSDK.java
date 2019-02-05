@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 
@@ -18,6 +19,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.indiewalk.watchdog.earthquake.R;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -168,21 +170,18 @@ public class ConsentSDK {
         settings.edit().putBoolean(user_status, status).apply();
     }
 
-    // -----------------------------------------------------------------------------------------
-    // Init admob
-    // Sample AdMob app ID:         ca-app-pub-3940256099942544~3347511713
-    // THIS APP REAL AdMob app ID:  ca-app-pub-8846176967909254~9979565057
-    // -----------------------------------------------------------------------------------------
-    // Get AdRequest
+
+    // Get AdRequest, use App ID
+    // TODO : delete test device before publishing
     public static AdRequest getAdRequest(Context context) {
         if(isConsentPersonalized(context)) {
-            MobileAds.initialize(context, "ca-app-pub-8846176967909254~9979565057");
+            MobileAds.initialize(context, context.getString(R.string.admob_key_app_id));
             AdRequest adRequest = new AdRequest.Builder()
                     .addTestDevice("7DC1A1E8AEAD7908E42271D4B68FB270")
                     .build();
             return adRequest;
         } else {
-            MobileAds.initialize(context, "ca-app-pub-8846176967909254~9979565057");
+            MobileAds.initialize(context, context.getString(R.string.admob_key_app_id));
             AdRequest adRequest =  new AdRequest.Builder()
                     .addNetworkExtrasBundle(AdMobAdapter.class, getNonPersonalizedAdsBundle())
                     .addTestDevice("7DC1A1E8AEAD7908E42271D4B68FB270")
@@ -190,6 +189,9 @@ public class ConsentSDK {
             return adRequest;
         }
     }
+
+
+
 
     // Get Non Personalized Ads Bundle
     private static Bundle getNonPersonalizedAdsBundle() {

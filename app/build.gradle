@@ -48,8 +48,7 @@ dependencies {
     // GDPR
     implementation 'com.google.android.ads.consent:consent-library:1.0.6'
 
-    // GDPR consent library
-    // implementation 'com.github.ayoubfletcher.GDPR-Admob-Android:consentsdk:0.1.7'
+
 
 
 }

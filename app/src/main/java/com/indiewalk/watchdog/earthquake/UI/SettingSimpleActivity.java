@@ -196,6 +196,7 @@ public class SettingSimpleActivity extends AppCompatActivity {
                     .build();
         }
 
+
     } // Fragment
 
 
