@@ -19,6 +19,10 @@
 
     Once you have your key (it starts with "AIza"), replace the "google_maps_key"
     string in this file.
+
+    NB : the real google_maps_key is substitute here for cvs with : PUT_YOUR_GOOGLE_MAP_API_KEY_HERE
     -->
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBbJhV6jFWyeRYFFQ1xoerwHuqhtbw_ADE</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">PUT_YOUR_GOOGLE_MAP_API_KEY_HERE</string>
+
+
 </resources>

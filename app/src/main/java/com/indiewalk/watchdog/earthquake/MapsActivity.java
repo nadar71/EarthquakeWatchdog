@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.UI;
+package com.indiewalk.watchdog.earthquake;
 
 import android.Manifest;
 import android.app.ProgressDialog;
@@ -25,16 +25,12 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -50,7 +46,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.indiewalk.watchdog.earthquake.R;
+import com.indiewalk.watchdog.earthquake.UI.MainActivity;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
 import com.indiewalk.watchdog.earthquake.util.AppExecutors;
@@ -61,7 +57,6 @@ import com.indiewalk.watchdog.earthquake.util.MyUtil;
 import android.app.AlertDialog;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 

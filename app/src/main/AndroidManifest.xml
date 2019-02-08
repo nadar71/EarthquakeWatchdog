@@ -89,7 +89,7 @@
 
 
         <activity
-            android:name=".UI.MapsActivity"
+            android:name=".MapsActivity"
             android:label="@string/title_activity_my_position"
             android:screenOrientation="portrait"></activity>
         <activity android:name=".UI.FaqActivity"></activity>

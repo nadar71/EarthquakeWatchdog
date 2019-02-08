@@ -49,8 +49,6 @@ public class SettingSimpleActivity extends AppCompatActivity {
 
         private ConsentSDK consentSDK = null;
 
-        // View ref
-        // private Button gdprConsentBtn, faqBtn;
 
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,7 +58,8 @@ public class SettingSimpleActivity extends AppCompatActivity {
             addPreferencesFromResource(R.xml.settings_simple_main);
 
             // get preference Screen reference
-            PreferenceScreen preferenceScreen = getPreferenceManager().createPreferenceScreen(getActivity());
+            PreferenceScreen preferenceScreen = getPreferenceManager()
+                    .createPreferenceScreen(getActivity());
 
             // bind prefs on changes
             Preference orderBy = findPreference(getString(R.string.settings_order_by_key));
