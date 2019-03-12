@@ -39,7 +39,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
     private String primaryLocation;
 
-    private String locationOffset = "Near the";
+    private String locationOffset ;
 
     private double magnitude;
     private int    magnitudeColor;
@@ -57,6 +57,8 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
     public EarthquakeAdapter(Activity context, ArrayList<Earthquake> earthquakes){
         super(context,0,earthquakes);  // * 2nd param to 0 because NOT populating simple TextView
         this.context = context;
+
+        locationOffset = context.getResources().getString(R.string.locationOffset_label);
 
         // set preferred distance unit
         checkPreferences();
@@ -192,7 +194,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
             primaryLocation = splitResult[1];
         } else {
-            locationOffset = "Near the";
+            locationOffset = context.getResources().getString(R.string.locationOffset_label);
             primaryLocation = location;
         }
     }

@@ -892,8 +892,8 @@ public class MapsActivity extends AppCompatActivity
      */
     private void manualLocalizationAlert(){
         new AlertDialog.Builder(this)
-                .setTitle("Manual Location setting active (Not using gps)")
-                .setMessage("To set/override your position manually, long press on a map point. ")
+                .setTitle(this.getResources().getString(R.string.dialog_manual_loc_title))
+                .setMessage(this.getResources().getString(R.string.dialog_manual_loc_msg))
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {

@@ -14,6 +14,14 @@
         and follow instructions.\nIt uses no localization service nor gps.</string>
     <string name="save_label">Save</string>
     <string name="dont_ask_more">Don\'t show me again</string>
+    <string name="locationOffset_label">Near the</string>
+    <string name="earthquake_markers_label">Hide Earthquakes markers</string>
+    <string name="dialog_manual_loc_title">Manual Location setting active (Not using gps)</string>
+    <string name="dialog_manual_loc_msg">To set/override your position manually, long press on a map point.</string>
+
+
+
+
     <!-- distance type -->
     <string name="distance_from_default_location">from default location</string>
     <string name="distance_from_user_location">from you</string>
@@ -27,7 +35,7 @@
     <!-- Error message when there is no internet connectivity  -->
     <string name="no_internet_connection">No internet connection.</string>
     <string name="title_activity_settings">Settings</string>
-    <string name="title_activity_maps_standard">Earthquakes Watchdog</string>
+    <string name="title_activity_maps_standard" translatable="false">Earthquakes Watchdog</string>
     <string name="title_activity_maps_manual_localization_on">Manual Localization On</string>
 
     <!-- Spinner dialog stuff  -->
@@ -39,7 +47,7 @@
     <string name="settings_title">Earthquake Settings</string>
     <!-- Settings menu item -->
     <string name="settings_menu_item">Settings</string>
-    <string name="settings_menu_item_quick">Quick</string>
+    <string name="settings_menu_item_quick">Quick Settings</string>
     <string name="settings_menu_item_general">General settings</string>
 
 

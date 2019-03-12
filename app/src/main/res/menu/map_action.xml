@@ -10,11 +10,11 @@
     <item
         android:id="@+id/showMarkers_cb"
         android:checkable="true"
-        android:title="Hide Earthquakes markers"
+        android:title="@string/earthquake_markers_label"
         app:showAsAction="never"/>
     <item
         android:id="@+id/chooseMapType_d"
-        android:title="Map Type"
+        android:title="@string/spinner_title"
         app:showAsAction="never"/>
 
 
