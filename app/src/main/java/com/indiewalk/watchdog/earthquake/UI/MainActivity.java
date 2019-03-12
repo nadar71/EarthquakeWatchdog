@@ -575,7 +575,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         */
         builder.setTitle("Quick settings");
 
-        // order by
+        // sponner order by choice : spinner_order_by
         final Spinner spinner_order_by = (Spinner) view.findViewById(R.id.order_by_spinner);
         List<String> order_list  = new ArrayList<>(); // add header
         order_list.add("Choose");
@@ -588,7 +588,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         spinner_order_by.setAdapter(adapter_01);
 
 
-        // min magnitude
+        // spinner choose min magnitude : spinner_min_magnitude
         final Spinner spinner_min_magnitude = (Spinner) view.findViewById(R.id.min_magnitude_spinner);
         List<String> magn_list  = new ArrayList<>(); // add header
         magn_list.add("Choose");
