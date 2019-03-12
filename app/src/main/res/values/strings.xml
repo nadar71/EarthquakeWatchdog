@@ -2,7 +2,7 @@
 
 <resources>
     <string name="app_name">EarthQuake Watchdog</string>
-    <string name="searching">Retrieving earthquakes data...</string>
+    <string name="searching">Retrieving earthquakes data&#8230;</string>
 
     <!-- - - - - - - - - - - Strings For Title and other text - - - - - - - - - - - - - - - - - -->
     <string name="my_position_ic_title">My Position</string>
@@ -18,6 +18,8 @@
     <string name="earthquake_markers_label">Hide Earthquakes markers</string>
     <string name="dialog_manual_loc_title">Manual Location setting active (Not using gps)</string>
     <string name="dialog_manual_loc_msg">To set/override your position manually, long press on a map point.</string>
+    <string name="quick_settings_title">Quick settings</string>
+
 
 
 
@@ -191,6 +193,10 @@
     <!-- - - - - - - - don't show me again Manual loc suggestion preference  - - - - - - - - - - -->
     <string name="settings_dontshow_me_again" translatable="false">false</string>
 
+
+    <!-- - - - - - - - - - - - - - Spinner default label and value - - - - - - - - - - - - - - - -->
+    <string name="spinner_defaultchoice_label">Choose</string>
+    <string name="spinner_defaultchoice_value" translatable="false">choose</string>
 
 
 </resources>

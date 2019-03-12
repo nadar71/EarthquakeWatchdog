@@ -573,18 +573,18 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         //TODO : update with choice to save or not list when passing to acc
         saveFlag.setVisibility(View.INVISIBLE);
         */
-        builder.setTitle("Quick settings");
+        builder.setTitle(getResources().getString(R.string.quick_settings_title));
 
         // 1 -  spinner order by choice : spinner_order_by
         final Spinner spinner_order_by = (Spinner) view.findViewById(R.id.order_by_spinner);
         // list of labels for order by spinner list
         final List<String> order_list  = new ArrayList<>(); // add header
-        order_list.add("Choose");
+        order_list.add(getResources().getString(R.string.spinner_defaultchoice_label));
         order_list.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_order_by_labels)));
 
         // list of  values corresponding positionally in list to the labels
         final List<String> order_list_values = new ArrayList<>(); // add header
-        order_list_values.add("Choose");
+        order_list_values.add(getResources().getString(R.string.spinner_defaultchoice_value));
         order_list_values.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_order_by_values)));
 
         // put labels in spinner
@@ -600,12 +600,12 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         final Spinner spinner_min_magnitude = (Spinner) view.findViewById(R.id.min_magnitude_spinner);
         // list of labels for magnitude min  spinner list
         final List<String> magn_list  = new ArrayList<>(); // add header
-        magn_list.add("Choose");
+        magn_list.add(getResources().getString(R.string.spinner_defaultchoice_label));
         magn_list.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_min_magnitude_labels)));
 
         // list of  values corresponding positionally in list to the labels
         final List<String> magn_list_values = new ArrayList<>(); // add header
-        magn_list_values.add("Choose");
+        magn_list_values.add(getResources().getString(R.string.spinner_defaultchoice_value));
         magn_list_values.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_min_magnitude_values)));
 
         // put labels in spinner
@@ -636,14 +636,14 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                         magn_list, magn_list_values);
 
                 // set value selected for filter in preference keys
-                if(!spinner_order_by_choice.equalsIgnoreCase("Choose")){
+                if(!spinner_order_by_choice.equals(getResources().getString(R.string.spinner_defaultchoice_value))){
                     editor.putString(getString(R.string.settings_order_by_key),
                             spinner_order_by_choice );
                     editor.apply();
                     updateList = true;
                 }
 
-                if(!spinner_min_magn_choice.equalsIgnoreCase("Choose")) {
+                if(!spinner_min_magn_choice.equalsIgnoreCase(getResources().getString(R.string.spinner_defaultchoice_value))) {
                     editor.putString(getString(R.string.settings_min_magnitude_key),
                             spinner_min_magn_choice );
                     editor.apply();

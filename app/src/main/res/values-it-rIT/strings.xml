@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">EarthQuake Watchdog</string>
-    <string name="searching">Recupero i dati sui terremoti...</string>
+    <string name="searching">Recupero i dati sui terremoti&#8230;</string>
     <string name="my_position_ic_title">La mia posizione</string>
     <string name="refresh_ic_title">Aggiorna</string>
     <string name="spinner_title">Tipo Mappa</string>
@@ -21,7 +21,7 @@
     <string name="dialog_check_box_label">Salva</string>
     <string name="settings_title">Impostazioni</string>
     <string name="settings_menu_item">Impostazioni</string>
-    <string name="settings_menu_item_quick">Impostazione Veloce</string>
+    <string name="settings_menu_item_quick">Impostazioni Veloci</string>
     <string name="settings_menu_item_general">Impostazioni Generali</string>
     <string name="category_settings_title">"Impostazioni "</string>
     <string name="category_help_title">Aiuto</string>
@@ -71,6 +71,8 @@
     <string name="earthquake_markers_label">Nascondi posizione terremoti</string>
     <string name="dialog_manual_loc_title">Localizzazione manuale attiva (no gps)</string>
     <string name="dialog_manual_loc_msg">Per impostare la tua posizione manualmente, premi a lungo su un punto della mappa.</string>
+    <string name="quick_settings_title">Impostazioni Veloci</string>
+    <string name="spinner_defaultchoice_label">Scegli</string>
     <!--
     <string name="settings_order_by_magnitude_value">magnitudo</string>
     <string name="settings_order_by_most_recent_value">data</string>
