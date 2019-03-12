@@ -575,12 +575,19 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         */
         builder.setTitle("Quick settings");
 
-        // sponner order by choice : spinner_order_by
+        // 1 -  spinner order by choice : spinner_order_by
         final Spinner spinner_order_by = (Spinner) view.findViewById(R.id.order_by_spinner);
-        List<String> order_list  = new ArrayList<>(); // add header
+        // list of labels for order by spinner list
+        final List<String> order_list  = new ArrayList<>(); // add header
         order_list.add("Choose");
-        order_list.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_order_by_values)));
+        order_list.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_order_by_labels)));
 
+        // list of  values corresponding positionally in list to the labels
+        final List<String> order_list_values = new ArrayList<>(); // add header
+        order_list_values.add("Choose");
+        order_list_values.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_order_by_values)));
+
+        // put labels in spinner
         ArrayAdapter<String> adapter_01 = new ArrayAdapter<String>(MainActivity.this,
                 android.R.layout.simple_spinner_item,
                 order_list);
@@ -588,12 +595,20 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         spinner_order_by.setAdapter(adapter_01);
 
 
-        // spinner choose min magnitude : spinner_min_magnitude
-        final Spinner spinner_min_magnitude = (Spinner) view.findViewById(R.id.min_magnitude_spinner);
-        List<String> magn_list  = new ArrayList<>(); // add header
-        magn_list.add("Choose");
-        magn_list.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_min_magnitude_values)));
 
+        // 2 - spinner choose min magnitude : spinner_min_magnitude
+        final Spinner spinner_min_magnitude = (Spinner) view.findViewById(R.id.min_magnitude_spinner);
+        // list of labels for magnitude min  spinner list
+        final List<String> magn_list  = new ArrayList<>(); // add header
+        magn_list.add("Choose");
+        magn_list.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_min_magnitude_labels)));
+
+        // list of  values corresponding positionally in list to the labels
+        final List<String> magn_list_values = new ArrayList<>(); // add header
+        magn_list_values.add("Choose");
+        magn_list_values.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_min_magnitude_values)));
+
+        // put labels in spinner
         ArrayAdapter<String> adapter_02 = new ArrayAdapter<String>(MainActivity.this,
                 android.R.layout.simple_spinner_item,
                 magn_list);
@@ -609,9 +624,18 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
                 // check choices
-                String spinner_order_by_choice = spinner_order_by.getSelectedItem().toString();
-                String spinner_min_magn_choice = spinner_min_magnitude.getSelectedItem().toString();
+                // convert labels to values
 
+                String spinner_order_by_choice = convertFromLabelsToKeyvalues(
+                        spinner_order_by.getSelectedItem().toString(),
+                        order_list, order_list_values);
+
+
+                String spinner_min_magn_choice = convertFromLabelsToKeyvalues(
+                        spinner_min_magnitude.getSelectedItem().toString(),
+                        magn_list, magn_list_values);
+
+                // set value selected for filter in preference keys
                 if(!spinner_order_by_choice.equalsIgnoreCase("Choose")){
                     editor.putString(getString(R.string.settings_order_by_key),
                             spinner_order_by_choice );
@@ -657,6 +681,23 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         android.support.v7.app.AlertDialog dialog = builder.create();
         dialog.show();
 
+    }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Get spinner values corrisponding to a specific label in spinner list
+     * @param selectedItem
+     * @param labelsList
+     * @param valuesList
+     * @return
+     * ---------------------------------------------------------------------------------------------
+     */
+    private String convertFromLabelsToKeyvalues(String selectedItem,
+                                                final List<String> labelsList,
+                                                final List<String> valuesList){
+        int position = labelsList.indexOf(selectedItem);
+        return valuesList.get(position);
     }
 
 
