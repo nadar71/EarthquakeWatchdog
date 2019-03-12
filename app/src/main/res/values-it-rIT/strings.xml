@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">EarthQuake Watchdog</string>
+    <string name="searching">Recupero i dati sui terremoti...</string>
+    <string name="my_position_ic_title">La mia posizione</string>
+    <string name="refresh_ic_title">Aggiorna</string>
+    <string name="spinner_title">Tipo Mappa</string>
+    <string name="title_activity_my_position">Mappa</string>
+    <string name="sugges_manual_loc_title">Nel caso tu preferisca geolocalizzazione Manuale SENZA GPS</string>
+    <string name="sugges_manual_loc_text">In Impostazioni, in alto a destra, spunta
+        \'Usa localizzatione Manuale\' e segui le istruzioni.\nNon usa il servizio automatico di geolocalizzazione né il gps.
+    </string>
+    <string name="save_label">Salva</string>
+    <string name="dont_ask_more">Non mostrare di nuovo</string>
+    <string name="distance_from_default_location">dalla posizione di default</string>
+    <string name="distance_from_user_location">da te</string>
+    <string name="no_earthquakes">Nessun terremoto trovato, Prova un altro filtro.</string>
+    <string name="no_internet_connection">Nessuna connessione a internet</string>
+    <string name="title_activity_settings">Impostazioni</string>
+    <string name="title_activity_maps_manual_localization_on">Localizzazione Manuale Attiva</string>
+    <string name="dialog_check_box_label">Salva</string>
+    <string name="settings_title">Impostazioni</string>
+    <string name="settings_menu_item">Impostazioni</string>
+    <string name="settings_menu_item_quick">Veloce</string>
+    <string name="settings_menu_item_general">Impostazioni Generali</string>
+    <string name="category_settings_title">"Impostazioni "</string>
+    <string name="category_help_title">Aiuto</string>
+    <string name="settings_order_by_label">Ordina per</string>
+    <string name="settings_order_by_magnitude_label">Magnitudo (dalla più alta)</string>
+    <string name="settings_order_by_most_recent_label">Più recente</string>
+    <string name="settings_order_by_nearest_label">Il più vicino a te</string>
+    <string name="settings_order_by_farthest_label">Il più lontano da te</string>
+    <string name="settings_distance_unit_label">Unità di misura per la Distanza</string>
+    <string name="settings_km_distance_unit_label">Km</string>
+    <string name="settings_mi_distance_unit_label">Mi</string>
+    <string name="settings_min_magnitude_label">Magnitudo minima</string>
+    <string name="settings_max_equakes_label">Quanti terremoti visualizzare ?</string>
+    <string name="gdpr_btn_title">GDPR</string>
+    <string name="gdpr_btn_summary">Impostazioni GDPR</string>
+    <string name="faq_btn_title">Faq &amp; Disclaimer</string>
+    <string name="faq_btn_summary">Che cosa l\'app può e non pò fare</string>
+    <string name="faq_text">
+        <b>FAQ &amp; DISCLAIMER</b>\n
+        La presente app scarica e mostra i dati relativi ai terremoti (fino a 120 terremoti) presi dal servizio online di
+        <a href='https://earthquake.usgs.gov/earthquakes/'> USGS.gov </a>.
+        Non è in nessun modo collegata a USGS nè è un\'app di questa organizzazione.\n\n
+
+        L\'app ha solo scopi informtivi, le date rigurdanti i terremoti non sono in tempo reale
+        (controlla su <a href='https://earthquake.usgs.gov/earthquakes/'> USGS.gov site </a> per i dettagli al riguardo)
+        Non ha perciò l\'intento di essere un'avvio in tempo reale sui terremoti,
+        non va perciò utilizzata come app salva vita, non sono perciò responsabile di un suo eventuale uso improprio\n\n
+
+        Nella mappa richiede i permessi di geolocalizzazione solo per calcolare la distanza dei
+        terremoti dall\'utente, e le coordinate dell\'utente sono immagazinate soltanto a questo scopo.
+        Se vengono negati i permessi di geolocalizzazione, l\'app permette comunque il posizionamento manuale
+        tenendo premuto il dito nel punto desiderato della mappa, senza usare gps nè qualsiasi altro servizio di geolocalizzazione,
+        controllare nella impostazioni delle schermata mappa.\n
+        Se vengono negati i permessi di geolocalizzazione e non viene fatta la localizzazione manuale, l\'app
+        la posizione di default di Google map (Google company location) e calcolerà la distanza dei terremoti rispetto ad essa.
+        \n\n
+
+        Spero che troverai la mia app utile, se vuoi guarda le mie altre app e giochi sul mio sito\n
+        <a href='http://www.indie-walkabout.eu'>http://www.indie-walkabout.eu</a>.\n
+
+        Per suggerimenti, informazioni o errori per favore contattami qui : \n
+        <a href='mailto:indie.walkabout.1971@gmail.com'>indie.walkabout.1971@gmail.com</a>\n
+
+    </string>
+    <string name="manual_localization_label">Usa localizzazione manuale (senza gps)</string>
+</resources>
