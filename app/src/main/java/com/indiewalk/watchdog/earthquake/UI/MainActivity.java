@@ -573,12 +573,12 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         //TODO : update with choice to save or not list when passing to acc
         saveFlag.setVisibility(View.INVISIBLE);
         */
-        builder.setTitle("Quick settings");
+        builder.setTitle(getResources().getString(R.string.spinner_title_in_main));
 
         // order by
         final Spinner spinner_order_by = (Spinner) view.findViewById(R.id.order_by_spinner);
         List<String> order_list  = new ArrayList<>(); // add header
-        order_list.add("Choose");
+        order_list.add(getResources().getString(R.string.spinner_default_choice));
         order_list.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_order_by_values)));
 
         ArrayAdapter<String> adapter_01 = new ArrayAdapter<String>(MainActivity.this,
@@ -591,7 +591,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         // min magnitude
         final Spinner spinner_min_magnitude = (Spinner) view.findViewById(R.id.min_magnitude_spinner);
         List<String> magn_list  = new ArrayList<>(); // add header
-        magn_list.add("Choose");
+        magn_list.add(getResources().getString(R.string.spinner_default_choice));
         magn_list.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_min_magnitude_values)));
 
         ArrayAdapter<String> adapter_02 = new ArrayAdapter<String>(MainActivity.this,

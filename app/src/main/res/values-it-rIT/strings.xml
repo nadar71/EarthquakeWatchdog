@@ -71,6 +71,8 @@
     <string name="earthquake_markers_label">Nascondi posizione terremoti</string>
     <string name="dialog_manual_loc_title">Localizzazione manuale attiva (no gps)</string>
     <string name="dialog_manual_loc_msg">Per impostare la tua posizione manualmente, premi a lungo su un punto della mappa.</string>
+    <string name="spinner_default_choice">Scegli</string>
+    <string name="spinner_title_in_main">Impostazione Veloce</string>
     <!--
     <string name="settings_order_by_magnitude_value">magnitudo</string>
     <string name="settings_order_by_most_recent_value">data</string>

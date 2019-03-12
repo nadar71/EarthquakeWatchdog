@@ -18,6 +18,10 @@
     <string name="earthquake_markers_label">Hide Earthquakes markers</string>
     <string name="dialog_manual_loc_title">Manual Location setting active (Not using gps)</string>
     <string name="dialog_manual_loc_msg">To set/override your position manually, long press on a map point.</string>
+    <string name="spinner_title_in_main">Quick settings</string>
+    <string name="spinner_default_choice">Choose</string>
+
+
 
 
 
