@@ -97,11 +97,11 @@
         android:ellipsize="end"
         android:maxLines="3"
         android:scrollbars="horizontal"
-        android:text="Rumoi, Japan"
         android:textColor="@color/textColorEarthquakeLocation"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBaseline_toBaselineOf="@+id/locationOffsetText"
-        app:layout_constraintStart_toEndOf="@+id/locationOffsetText" />
+        app:layout_constraintStart_toEndOf="@+id/locationOffsetText"
+        tools:text="Tierras Nuevas Poniente y caliente y test , Puerto Rico, Central America log text test" />
 
 </android.support.constraint.ConstraintLayout>

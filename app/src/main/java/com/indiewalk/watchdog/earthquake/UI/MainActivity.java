@@ -46,13 +46,13 @@ import java.util.Arrays;
 import java.util.List;
 
 
-// ** for DEBUG reason
 
 
 public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<List<Earthquake>> {
 
     public static final String TAG = MainActivity.class.getName();
 
+    // this is the default position, google at mountain view
     public static final double DEFAULT_LAT = 37.4219999;
     public static final double DEFAULT_LNG = -122.0862515;
 
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     //Progress bar
     private ProgressBar loadingInProgress;
 
-    // Empty view
+    // Empty view while loading
     private TextView emptyListText;
 
     // ListView Adapter
@@ -74,14 +74,14 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             // "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&minmag=6&limit=10"; // debug
 
 
-    // Constant  id for loader which retrieve data from remote source (not necessary there is only it!)
+    // Id for loader which retrieve data from remote source (not necessary there is only it!)
     private static final int EARTHQUAKE_LOADER_ID = 1;
 
     // Preferences value
     String minMagnitude, orderBy,lat_s, lng_s, numEquakes;
 
     // Db reference
-    // TODO : debug, use livedata/viewmodel/repository
+    // TODO : now for debug,in future use livedata/viewmodel/repository
     EarthquakeDatabase eqDb;
 
     // SharePreferences ref
@@ -160,14 +160,15 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
 
         // get db instance
-        // TODO : debug, use livedata/viewmodel/repository
+        // TODO : now for debug,in future use livedata/viewmodel/repository
         eqDb = EarthquakeDatabase.getDbInstance(getApplicationContext());
 
         // init shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        // Find a reference to the {@link ListView} in the layout : using listView because it has only tens of
-        // entry, otherwise RecycleView would be better
+        // Find a reference to the {@link ListView} in the layout : using listView because
+        // at the momento it has only tens of entry.
+        // TODO : It will upgrade to RecycleView when a time interval would be available in preferences
         earthquakeListView = (ListView) findViewById(R.id.list);
 
         // Create a new {@link EarthquakeAdapter} of {@link Earthquakes} objects
@@ -179,7 +180,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
 
 
-        // Click on item
+        // Clicking on item shows an action dialog
         earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -283,7 +284,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     /**
      * ---------------------------------------------------------------------------------------------
      * Set and check location coordinates from shared preferences.
-     * If not set, put defaut value
+     * If not set, put default value
      * ---------------------------------------------------------------------------------------------
      */
     private void checkPreferences() {
@@ -393,7 +394,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
      * @param earthquakesReturnedByLoader
      * ---------------------------------------------------------------------------------------------
      */
-    // TODO : use livedata/viewmodel for this: loader don't need to return the equake list structure
+    // TODO : in the future, use livedata/viewmodel for this: loader don't need to return the equake list structure
     // it has been already stored in db; must only return
     @Override
     public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> earthquakesReturnedByLoader) {
@@ -423,7 +424,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
      * ---------------------------------------------------------------------------------------------
      */
 
-    // TODO : for debug, use livedata/viewmodel/repository
+    // TODO : now for debug,in future use livedata/viewmodel/repository
     private void updateList() {
         Log.i(TAG, "updateList Executing ");
         // clear the adapter of previous data
