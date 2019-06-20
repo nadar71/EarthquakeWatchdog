@@ -34,7 +34,9 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdView;
 import com.indiewalk.watchdog.earthquake.MapsActivity;
 import com.indiewalk.watchdog.earthquake.R;
+import com.indiewalk.watchdog.earthquake.SingletonProvider;
 import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
+import com.indiewalk.watchdog.earthquake.data.EarthquakeRepository;
 import com.indiewalk.watchdog.earthquake.net.EarthquakeAsyncLoader;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 import com.indiewalk.watchdog.earthquake.util.ConsentSDK;
@@ -44,6 +46,7 @@ import com.indiewalk.watchdog.earthquake.util.MyUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 
 
 
@@ -81,8 +84,9 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     String minMagnitude, orderBy,lat_s, lng_s, numEquakes;
 
     // Db reference
-    // TODO : now for debug,in future use livedata/viewmodel/repository
-    EarthquakeDatabase eqDb;
+    // TODO : debug, use livedata/viewmodel/repository
+    // EarthquakeDatabase eqDb;
+    private EarthquakeRepository eqRepository;
 
     // SharePreferences ref
     SharedPreferences sharedPreferences;
@@ -160,8 +164,9 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
 
         // get db instance
-        // TODO : now for debug,in future use livedata/viewmodel/repository
-        eqDb = EarthquakeDatabase.getDbInstance(getApplicationContext());
+        // TODO : debug, use livedata/viewmodel/repository
+        // eqDb = EarthquakeDatabase.getDbInstance(getApplicationContext());
+        eqRepository = ((SingletonProvider)SingletonProvider.getsContext()).getRepository();
 
         // init shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -335,7 +340,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     /**
      * ---------------------------------------------------------------------------------------------
      * Retrieve Remote Data.
-     * Check internet connectin availability first
+     * Check internet connection availability first
      * ---------------------------------------------------------------------------------------------
      */
     private void retrieveRemoteData() {
@@ -365,7 +370,6 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             // hide progress bar
             loadingInProgress.setVisibility(View.GONE);
             emptyListText.setText(R.string.no_internet_connection);
-
         }
     }
 
@@ -420,7 +424,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Update the adapter/equakes list regarding the user preferences
+     * Update the adapter/equakes list, based on user's preferences
      * ---------------------------------------------------------------------------------------------
      */
 
@@ -434,22 +438,22 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
         // set equakes list showing based on user preferences
         if (orderBy.equals(getString(R.string.settings_order_by_magnitude_value))){
-            earthquakes = eqDb.earthquakeDbDao().loadAll_orderby_mag();
+            earthquakes = eqRepository.loadAll_orderby_mag();
             // add to adapter
             adapter.addAll(earthquakes);
 
         } else if (orderBy.equals(getString(R.string.settings_order_by_most_recent_value))){
-            earthquakes = eqDb.earthquakeDbDao().loadAll_orderby_most_recent();
+            earthquakes = eqRepository.loadAll_orderby_most_recent();
             // add to adapter
             adapter.addAll(earthquakes);
 
         }  else if (orderBy.equals(getString(R.string.settings_order_by_nearest_value))){
-            earthquakes = eqDb.earthquakeDbDao().loadAll_orderby_nearest();
+            earthquakes = eqRepository.loadAll_orderby_nearest();
             // add to adapter
             adapter.addAll(earthquakes);
 
         }  else if (orderBy.equals(getString(R.string.settings_order_by_farthest_value))){
-            earthquakes = eqDb.earthquakeDbDao().loadAll_orderby_farthest();
+            earthquakes = eqRepository.loadAll_orderby_farthest();
             // add to adapter
             adapter.addAll(earthquakes);
 

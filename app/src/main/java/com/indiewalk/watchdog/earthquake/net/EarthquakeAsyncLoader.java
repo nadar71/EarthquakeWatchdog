@@ -78,7 +78,7 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
         // checkPreferences();
 
         // create instance of request and collect the result in ArrayList<Earthquake>
-        earthquakes = new EarthQuakeQuery().fetchEarthquakeData(queryUrl);
+        earthquakes = new EarthQuakeNetworkRequest().fetchEarthquakeData(queryUrl);
         Log.i(TAG, "loadInBackground: loadInBackground ended, returning data requested.");
 
 
