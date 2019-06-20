@@ -25,10 +25,10 @@ import java.util.ArrayList;
  * ---------------------------------------------------------------------------------------------
  */
 
-public class EarthQuakeQuery {
+public class EarthQuakeNetworkRequest {
 
     // log tag definition
-    private static final String TAG = EarthQuakeQuery.class.getName();
+    private static final String TAG = EarthQuakeNetworkRequest.class.getName();
     // tmp data structure for returning results
     private ArrayList<Earthquake> earthquakes = null;
 
