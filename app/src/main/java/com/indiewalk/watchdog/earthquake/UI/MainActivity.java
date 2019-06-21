@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     // Db reference
     // TODO : debug, use livedata/viewmodel/repository
     // EarthquakeDatabase eqDb;
-    private EarthquakeRepository eqRepository;
+    // private EarthquakeRepository eqRepository;
 
     // SharePreferences ref
     SharedPreferences sharedPreferences;
@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         // get db instance
         // TODO : debug, use livedata/viewmodel/repository
         // eqDb = EarthquakeDatabase.getDbInstance(getApplicationContext());
-        eqRepository = ((SingletonProvider)SingletonProvider.getsContext()).getRepository();
+        // eqRepository = ((SingletonProvider)SingletonProvider.getsContext()).getRepository();
 
         // init shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -428,7 +428,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
 
         // --> update UI when loader finished
-        if (setEartquakesList(earthquakesReturnedByLoader) == true) {
+        if (setEartquakesList(earthquakesReturnedByLoader)) {
             updateList();
         } else {
             Log.i(TAG, "Problem with earthquake list, is empty. Check the request. ");
@@ -481,6 +481,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             @Override
             public void onChanged(@Nullable List<Earthquake> earthquakeList) {
                 Log.d(TAG, "Receiving database "+ listType + " LiveData");
+                earthquakes = earthquakeList;
                 adapter.addAll(earthquakeList);
                 /*
                 if (earthquakeList.size() > 0 ) {
