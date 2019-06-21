@@ -73,11 +73,33 @@ public class EarthquakeRepository {
     //----------------------------------------------------------------------------------------------
     //  INSERT
     //----------------------------------------------------------------------------------------------
-    @Insert
     public void insertEarthquake(Earthquake earthquake){
         eqDb.earthquakeDbDao().insertEarthquake(earthquake);
     }
 
+
+
+    //----------------------------------------------------------------------------------------------
+    //  DROP TABLE
+    //----------------------------------------------------------------------------------------------
+    // drop table : delete all table content each loading
+    public void dropEarthquakeListTable(){
+        dropEarthquakeListTable();
+    }
+
+
+    //----------------------------------------------------------------------------------------------
+    //  OTHER METHODS
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * Return  the non-empty list of earthquake if any
+     * @return
+     */
+    public LiveData<List<Earthquake>> getEarthquakesList(){
+        return loadAll();
+
+    }
 
 
 

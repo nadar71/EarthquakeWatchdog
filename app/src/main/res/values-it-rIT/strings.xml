@@ -14,8 +14,8 @@
     <string name="dont_ask_more">Non mostrare di nuovo</string>
     <string name="distance_from_default_location">dalla posizione di default</string>
     <string name="distance_from_user_location">da te</string>
-    <string name="no_earthquakes">Nessun terremoto trovato, Prova un altro filtro.</string>
-    <string name="no_internet_connection">Nessuna connessione a internet</string>
+    <string name="no_earthquakes">Nessun terremoto trovato. Prova un altro filtro.</string>
+    <string name="no_internet_connection">Nessuna connessione a internet.\\nDevi effettuare almeno una connessione per scaricare i dati relativi ai terremoti!</string>
     <string name="title_activity_settings">Impostazioni</string>
     <string name="title_activity_maps_manual_localization_on">Localizzazione Manuale On</string>
     <string name="dialog_check_box_label">Salva</string>
@@ -37,7 +37,7 @@
     <string name="settings_max_equakes_label">Quanti terremoti vuoi visualizzare ?</string>
     <string name="gdpr_btn_title">GDPR</string>
     <string name="gdpr_btn_summary">Impostazioni GDPR</string>
-    <string name="faq_btn_title">Faq &amp; Disclaimer</string>
+    <string name="faq_btn_title">Faq &amp;  Disclaimer</string>
     <string name="faq_btn_summary">Che cosa l\'app può e non può fare</string>
     <string name="faq_text">
         <b>FAQ &amp; DISCLAIMER</b>\n

@@ -92,16 +92,8 @@ public class MapsActivity extends AppCompatActivity
     // Marker for my current position by gps
     Marker              myCurrentPositionMarker = null;
 
-    // List of all the earthquake in db
-    // TODO: retrieve them more efficiently with livedata & c.
-    // LiveData<List<Earthquake>> earthquakes;
-
     // Markers associated with earthquake on map
     List<Marker> earthquakesMarkersList;
-
-    // Db reference
-    // TODO : create and interface with repository
-    // EarthquakeDatabase eqDb;
 
     // Maps type list
     private static final CharSequence[] MAP_TYPE_ITEMS =
@@ -142,20 +134,6 @@ public class MapsActivity extends AppCompatActivity
 
         // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
         mAdView.loadAd(ConsentSDK.getAdRequest(MapsActivity.this));
-
-        // get db instance
-        // eqDb = EarthquakeDatabase.getDbInstance(getApplicationContext());
-
-        // retrieve eq currently in db, in different thread
-        // TODO: implements livedata/viewmodel/repository
-        /*
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                earthquakes = eqDb.earthquakeDbDao().loadAll();
-            }
-        });
-        */
 
 
         // init shared preferences

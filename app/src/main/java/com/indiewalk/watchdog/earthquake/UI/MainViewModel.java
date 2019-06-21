@@ -28,11 +28,12 @@ public class MainViewModel extends ViewModel {
 
 
     /**
-     * Standard MainViewModel constructor; init repository
+     * Standard MainViewModel constructor
      */
     public MainViewModel() {
         // init repository
-        eqRepository = ((SingletonProvider) SingletonProvider.getsContext()).getRepository();
+        eqRepository       = ((SingletonProvider) SingletonProvider.getsContext()).getRepository();
+        earthquakesEntries = eqRepository.getEarthquakesList();
     }
 
 

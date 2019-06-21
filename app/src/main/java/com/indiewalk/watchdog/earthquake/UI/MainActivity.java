@@ -71,8 +71,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     public static final String ORDER_BY_NEAREST       = "nearest";
     public static final String ORDER_BY_FARTHEST      = "farthest";
 
-    private String listType;
-
+    private MainViewModel mViewModel;
 
 
     ListView earthquakeListView;
@@ -98,11 +97,6 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
     // Preferences value
     String minMagnitude, orderBy,lat_s, lng_s, numEquakes;
-
-    // Db reference
-    // TODO : debug, use livedata/viewmodel/repository
-    // EarthquakeDatabase eqDb;
-    // private EarthquakeRepository eqRepository;
 
     // SharePreferences ref
     SharedPreferences sharedPreferences;
@@ -178,12 +172,6 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         });
 
 
-
-        // get db instance
-        // TODO : debug, use livedata/viewmodel/repository
-        // eqDb = EarthquakeDatabase.getDbInstance(getApplicationContext());
-        // eqRepository = ((SingletonProvider)SingletonProvider.getsContext()).getRepository();
-
         // init shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -200,24 +188,11 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
 
 
-
         // Clicking on item shows an action dialog
         earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
                 showActionDialog(position);
-                /*
-                // get url data
-                Earthquake earthquake = earthquakes.get(position);
-                String url = earthquake.getUrl();
-                Log.i("setOnItemClickListener", "onItemClick: "+url);
-
-                // Open the related url page of the eq clicked
-                Uri webpage = Uri.parse(url);
-                Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
-                startActivity(Intent.createChooser(webIntent, "Open details"));
-                */
             }
         });
 
@@ -225,7 +200,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         checkPreferences();
 
         // Call loader for retrieving data
-        retrieveRemoteData();
+        // retrieveRemoteData();
+        retrieveData();
 
 
     }
@@ -355,11 +331,10 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Retrieve Remote Data.
-     * Check internet connection availability first
+     * Get earthquake list, from db or if necessary from restful service
      * ---------------------------------------------------------------------------------------------
      */
-    private void retrieveRemoteData() {
+    private void retrieveData() {
         Log.i(TAG, "retrieveRemoteData: Requesting fresh data.");
         // set progress bar
         loadingInProgress = findViewById(R.id.loading_spinner);
@@ -369,6 +344,23 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         earthquakeListView.setEmptyView(emptyListText);
         emptyListText.setText(R.string.searching);
 
+        // Check through MainViewModel the eqlist from repository if is not null and empty,
+        // otherwise
+        // make  a request for remote data using loader
+        mViewModel  = ViewModelProviders.of(this).get(MainViewModel.class);
+        LiveData<List<Earthquake>> earthquakes = mViewModel.getEqList();
+        earthquakes.observe(this, new Observer<List<Earthquake>>() {
+            @Override
+            public void onChanged(@Nullable List<Earthquake> earthquakeEntries) {
+                if (earthquakeEntries != null  && !earthquakeEntries.isEmpty() ){
+                    updateList();
+                } else {
+                    retrieveRemoteData();
+                }
+            }
+        });
+
+        /*
         // check connection
         // reference to connection manager
         ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -387,7 +379,36 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             loadingInProgress.setVisibility(View.GONE);
             emptyListText.setText(R.string.no_internet_connection);
         }
+        */
     }
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Retrieve Remote Data.
+     * Check internet connection availability first
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void retrieveRemoteData() {
+        // check connection
+        // reference to connection manager
+        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        // network status retrieving
+        NetworkInfo netinfo = connManager.getActiveNetworkInfo();
+
+        if(netinfo != null && netinfo.isConnected()){
+            // LoaderManager reference
+            LoaderManager loaderManager = getLoaderManager();
+            // Init loader : id above, bundle = null , this= current activity for LoaderCallbacks
+            loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
+        }else{
+            // hide progress bar
+            loadingInProgress.setVisibility(View.GONE);
+            emptyListText.setText(R.string.no_internet_connection);
+        }
+
+    }
+
 
     /**
      * ---------------------------------------------------------------------------------------------
@@ -443,8 +464,6 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
      * Update the adapter/equakes list, based on user's preferences
      * ---------------------------------------------------------------------------------------------
      */
-
-    // TODO : now for debug,in future use livedata/viewmodel/repository
     private void updateList() {
         Log.i(TAG, "updateList Executing ");
         // clear the adapter of previous data
@@ -452,27 +471,38 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
         checkPreferences();
 
-        // MainViewModelFactory instance with default
-        MainViewModelFactory factory = new MainViewModelFactory(LOAD_ALL_NO_ORDER);
-
 
         // set equakes list showing based on user preferences
         if (orderBy.equals(getString(R.string.settings_order_by_magnitude_value))){
-
-            factory= new MainViewModelFactory(ORDER_BY_MAGNITUDE);
+            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_MAGNITUDE);
+            filterDatafromRepository(factory);
 
         } else if (orderBy.equals(getString(R.string.settings_order_by_most_recent_value))){
-            factory= new MainViewModelFactory(ORDER_BY_MOST_RECENT);
+            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_MOST_RECENT);
+            filterDatafromRepository(factory);
 
         }  else if (orderBy.equals(getString(R.string.settings_order_by_nearest_value))){
-            factory= new MainViewModelFactory(ORDER_BY_NEAREST);
+            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_NEAREST);
+            filterDatafromRepository(factory);
 
         }  else if (orderBy.equals(getString(R.string.settings_order_by_farthest_value))){
-            factory= new MainViewModelFactory(ORDER_BY_FARTHEST);
+            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_FARTHEST);
+            filterDatafromRepository(factory);
 
         }
 
 
+
+    }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Make repository request for specific data and ordering
+     * @param factory
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void filterDatafromRepository(MainViewModelFactory factory) {
         // Get eq list through LiveData
         final MainViewModel viewModel = ViewModelProviders.of(this,factory).get(MainViewModel.class);
 
@@ -480,24 +510,13 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         equakes.observe(this, new Observer<List<Earthquake>>() {
             @Override
             public void onChanged(@Nullable List<Earthquake> earthquakeList) {
-                Log.d(TAG, "Receiving database "+ listType + " LiveData");
                 earthquakes = earthquakeList;
                 adapter.addAll(earthquakeList);
-                /*
-                if (earthquakeList.size() > 0 ) {
-                    emptyListText.setVisibility(View.INVISIBLE);
-                } else {
-                    emptyListText.setVisibility(View.VISIBLE);
-                }
-                */
+                adapter.notifyDataSetChanged();
+                loadingInProgress.setVisibility(View.GONE);
             }
         });
-
-
-
     }
-
-
 
 
     /**
@@ -522,7 +541,6 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
      * @return true/false
      * ---------------------------------------------------------------------------------------------
      */
-    // TODO : load from db
     protected boolean setEartquakesList(List<Earthquake> earthquakes){
         if (  (earthquakes != null) && (earthquakes.isEmpty() == false)  ){
             // this.earthquakes = earthquakes;

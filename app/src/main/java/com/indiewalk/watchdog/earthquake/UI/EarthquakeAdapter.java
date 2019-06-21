@@ -3,11 +3,7 @@ package com.indiewalk.watchdog.earthquake.UI;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,13 +11,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
 import java.text.DecimalFormat;
-//import java.time.format.DateTimeFormatter; only for api 26, using Date class before java 8 for retrocompat
 import java.util.ArrayList;
 
 /**
@@ -261,6 +255,58 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         DecimalFormat formatter = new DecimalFormat("0.0");
         return formatter.format(mag);
     }
+
+
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Swaps the list in case of data changes and notifying about changes.
+     * ---------------------------------------------------------------------------------------------
+     */
+    /*
+    void swapEarthquakesList(final List<Earthquake> earthquakes) {
+        // No forecast data, recreate all
+        if (mForecast == null) {
+            mForecast = earthquakes;
+            notifyDataSetChanged();
+        } else {
+            // Check differences between :
+            // - old forecast list (current list in mForecast)
+            // - new forecast list (values in db)
+            // dispatch result fo comparison to recycleview adapter view with dispatchUpdatesTo
+            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+                @Override
+                public int getOldListSize() {
+                    return mForecast.size();
+                }
+
+                @Override
+                public int getNewListSize() {
+                    return newForecast.size();
+                }
+
+                @Override
+                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                    return mForecast.get(oldItemPosition).getId() ==
+                            newForecast.get(newItemPosition).getId();
+                }
+
+                @Override
+                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                    ListWeatherEntry newWeather = newForecast.get(newItemPosition);
+                    ListWeatherEntry oldWeather = mForecast.get(oldItemPosition);
+                    return newWeather.getId() == oldWeather.getId() && newWeather.getDate().equals(oldWeather.getDate());
+                }
+            });
+            mForecast = newForecast;
+            result.dispatchUpdatesTo(this);
+        }
+
+
+
+    }
+    */
 
 
 

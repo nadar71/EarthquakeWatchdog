@@ -45,7 +45,7 @@ public abstract class EarthquakeDatabase extends RoomDatabase {
                 Log.d(TAG, "Creating App db singleton instance...");
                 eqDbInstance = Room.databaseBuilder(context.getApplicationContext(), EarthquakeDatabase.class,EarthquakeDatabase.DBNAME)
                         // TODO : now for debugging; delete this when passing to repository, livedata & c.
-                        .allowMainThreadQueries()
+                        // .allowMainThreadQueries()
                         .addMigrations(MIGRATION_2_3)
                         .addMigrations(MIGRATION_3_4)
                         .build();
