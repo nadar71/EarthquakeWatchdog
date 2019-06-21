@@ -1,6 +1,10 @@
 
 package com.indiewalk.watchdog.earthquake.UI;
 
+
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,6 +15,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -58,6 +63,17 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     // this is the default position, google at mountain view
     public static final double DEFAULT_LAT = 37.4219999;
     public static final double DEFAULT_LNG = -122.0862515;
+
+    // Key constant for view model parameters
+    public static final String LOAD_ALL_NO_ORDER      = "load_all_no_order";
+    public static final String ORDER_BY_MAGNITUDE     = "magnitude_ordering";
+    public static final String ORDER_BY_MOST_RECENT   = "most_recent";
+    public static final String ORDER_BY_NEAREST       = "nearest";
+    public static final String ORDER_BY_FARTHEST      = "farthest";
+
+    private String listType;
+
+
 
     ListView earthquakeListView;
     private List<Earthquake> earthquakes;
@@ -436,28 +452,47 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
         checkPreferences();
 
+        // MainViewModelFactory instance with default
+        MainViewModelFactory factory = new MainViewModelFactory(LOAD_ALL_NO_ORDER);
+
+
         // set equakes list showing based on user preferences
         if (orderBy.equals(getString(R.string.settings_order_by_magnitude_value))){
-            earthquakes = eqRepository.loadAll_orderby_mag();
-            // add to adapter
-            adapter.addAll(earthquakes);
+
+            factory= new MainViewModelFactory(ORDER_BY_MAGNITUDE);
 
         } else if (orderBy.equals(getString(R.string.settings_order_by_most_recent_value))){
-            earthquakes = eqRepository.loadAll_orderby_most_recent();
-            // add to adapter
-            adapter.addAll(earthquakes);
+            factory= new MainViewModelFactory(ORDER_BY_MOST_RECENT);
 
         }  else if (orderBy.equals(getString(R.string.settings_order_by_nearest_value))){
-            earthquakes = eqRepository.loadAll_orderby_nearest();
-            // add to adapter
-            adapter.addAll(earthquakes);
+            factory= new MainViewModelFactory(ORDER_BY_NEAREST);
 
         }  else if (orderBy.equals(getString(R.string.settings_order_by_farthest_value))){
-            earthquakes = eqRepository.loadAll_orderby_farthest();
-            // add to adapter
-            adapter.addAll(earthquakes);
+            factory= new MainViewModelFactory(ORDER_BY_FARTHEST);
 
         }
+
+
+        // Get eq list through LiveData
+        final MainViewModel viewModel = ViewModelProviders.of(this,factory).get(MainViewModel.class);
+
+        LiveData<List<Earthquake>> equakes = viewModel.getEqList();
+        equakes.observe(this, new Observer<List<Earthquake>>() {
+            @Override
+            public void onChanged(@Nullable List<Earthquake> earthquakeList) {
+                Log.d(TAG, "Receiving database "+ listType + " LiveData");
+                adapter.addAll(earthquakeList);
+                /*
+                if (earthquakeList.size() > 0 ) {
+                    emptyListText.setVisibility(View.INVISIBLE);
+                } else {
+                    emptyListText.setVisibility(View.VISIBLE);
+                }
+                */
+            }
+        });
+
+
 
     }
 

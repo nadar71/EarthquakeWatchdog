@@ -1,5 +1,6 @@
 package com.indiewalk.watchdog.earthquake.data;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -17,23 +18,23 @@ public interface EarthquakeDbDao {
     //----------------------------------------------------------------------------------------------
     // retrieve all the eqs
     @Query("SELECT * FROM EARTHQUAKE_LIST ")
-    List<Earthquake> loadAll();
+    LiveData<List<Earthquake>> loadAll();
 
     // retrieve all the eqs order by magnitude
     @Query("SELECT * FROM EARTHQUAKE_LIST ORDER BY magnitude")
-    List<Earthquake> loadAll_orderby_mag();
+    LiveData<List<Earthquake>> loadAll_orderby_mag();
 
     // retrieve all the eqs order by most recent (time desc)
     @Query("SELECT * FROM EARTHQUAKE_LIST ORDER BY timeInMillisec desc")
-    List<Earthquake> loadAll_orderby_most_recent();
+    LiveData<List<Earthquake>> loadAll_orderby_most_recent();
 
     // retrieve all the eqs order by nearest to user
     @Query("SELECT * FROM EARTHQUAKE_LIST ORDER BY userDistance asc")
-    List<Earthquake> loadAll_orderby_nearest();
+    LiveData<List<Earthquake>> loadAll_orderby_nearest();
 
     // retrieve all the eqs order by farthest to user
     @Query("SELECT * FROM EARTHQUAKE_LIST ORDER BY userDistance desc")
-    List<Earthquake> loadAll_orderby_farthest();
+    LiveData<List<Earthquake>> loadAll_orderby_farthest();
 
 
 

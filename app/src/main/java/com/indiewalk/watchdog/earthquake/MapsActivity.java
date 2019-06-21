@@ -2,6 +2,9 @@ package com.indiewalk.watchdog.earthquake;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,6 +18,7 @@ import android.os.Build;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -47,6 +51,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.indiewalk.watchdog.earthquake.UI.MainActivity;
+import com.indiewalk.watchdog.earthquake.UI.MainViewModel;
+import com.indiewalk.watchdog.earthquake.UI.MainViewModelFactory;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
 import com.indiewalk.watchdog.earthquake.util.AppExecutors;
@@ -88,14 +94,14 @@ public class MapsActivity extends AppCompatActivity
 
     // List of all the earthquake in db
     // TODO: retrieve them more efficiently with livedata & c.
-    List<Earthquake> earthquakes;
+    // LiveData<List<Earthquake>> earthquakes;
 
     // Markers associated with earthquake on map
     List<Marker> earthquakesMarkersList;
 
     // Db reference
     // TODO : create and interface with repository
-    EarthquakeDatabase eqDb;
+    // EarthquakeDatabase eqDb;
 
     // Maps type list
     private static final CharSequence[] MAP_TYPE_ITEMS =
@@ -138,16 +144,19 @@ public class MapsActivity extends AppCompatActivity
         mAdView.loadAd(ConsentSDK.getAdRequest(MapsActivity.this));
 
         // get db instance
-        eqDb = EarthquakeDatabase.getDbInstance(getApplicationContext());
+        // eqDb = EarthquakeDatabase.getDbInstance(getApplicationContext());
 
         // retrieve eq currently in db, in different thread
         // TODO: implements livedata/viewmodel/repository
+        /*
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
                 earthquakes = eqDb.earthquakeDbDao().loadAll();
             }
         });
+        */
+
 
         // init shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -225,54 +234,19 @@ public class MapsActivity extends AppCompatActivity
         // set equakes markers on map
         earthquakesMarkersList = new ArrayList<Marker>();
 
-        for(Earthquake earthquake : earthquakes) {
-            // convert eq position icon to bitmap
-            BitmapDescriptor eqMarkerIcon = MyUtil.getBitmapFromVector(context, R.drawable.ic_earthquake_pointer,
-                    MyUtil.getMagnitudeColor(earthquake.getMagnitude(),context));
+        // Get eq list through LiveData
+        MainViewModelFactory factory = new MainViewModelFactory(MainActivity.LOAD_ALL_NO_ORDER);
+        final MainViewModel viewModel = ViewModelProviders.of(this,factory).get(MainViewModel.class);
 
-            earthquakesMarkersList.add(mGoogleMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(earthquake.getLatitude(), earthquake.getLongitude()))
-                            .title("Location : " + earthquake.getLocation())
-                            .snippet("Magnitude : " + earthquake.getMagnitude())
-                            .icon(eqMarkerIcon)
-            ));
+        LiveData<List<Earthquake>> equakes = viewModel.getEqList();
+        equakes.observe(this, new Observer<List<Earthquake>>() {
+            @Override
+            public void onChanged(@Nullable List<Earthquake> earthquakeList) {
 
-            mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                setMarkerForEachEq(earthquakeList);
 
-                @Override
-                public View getInfoWindow(Marker arg0) {
-                    return null;
-                }
-
-                @Override
-                public View getInfoContents(Marker marker) {
-
-                    LinearLayout info = new LinearLayout(context);
-                    info.setOrientation(LinearLayout.VERTICAL);
-
-                    TextView title = new TextView(context);
-                    title.setTextColor(Color.BLACK);
-                    title.setGravity(Gravity.CENTER);
-                    title.setTypeface(null, Typeface.BOLD);
-                    title.setText(marker.getTitle());
-
-                    TextView snippet = new TextView(context);
-                    snippet.setTextColor(Color.GRAY);
-                    snippet.setText(marker.getSnippet());
-
-                    info.addView(title);
-                    info.addView(snippet);
-
-                    return info;
-                }
-            });
-
-
-
-            Log.d(TAG, "onMapReady: latitude : " + earthquake.getLatitude() + " longitude : " + earthquake.getLongitude());
-        }
-
-
+            }
+        });
 
 
         // set device location request params
@@ -339,7 +313,65 @@ public class MapsActivity extends AppCompatActivity
         // zoom on a particular equake if request came from main activity
         zoomOnEquake();
 
+    }
 
+
+
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Show marker and details n click for each eq on map
+     * @param earthquakeList
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void setMarkerForEachEq(@Nullable List<Earthquake> earthquakeList) {
+        for(Earthquake earthquake : earthquakeList) {
+            // convert eq position icon to bitmap
+            BitmapDescriptor eqMarkerIcon = MyUtil.getBitmapFromVector(context,
+                    R.drawable.ic_earthquake_pointer,
+                    MyUtil.getMagnitudeColor(earthquake.getMagnitude(),context));
+
+            earthquakesMarkersList.add(mGoogleMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(earthquake.getLatitude(), earthquake.getLongitude()))
+                    .title("Location : " + earthquake.getLocation())
+                    .snippet("Magnitude : " + earthquake.getMagnitude())
+                    .icon(eqMarkerIcon)
+            ));
+
+            mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+                @Override
+                public View getInfoWindow(Marker arg0) {
+                    return null;
+                }
+
+                @Override
+                public View getInfoContents(Marker marker) {
+
+                    LinearLayout info = new LinearLayout(context);
+                    info.setOrientation(LinearLayout.VERTICAL);
+
+                    TextView title = new TextView(context);
+                    title.setTextColor(Color.BLACK);
+                    title.setGravity(Gravity.CENTER);
+                    title.setTypeface(null, Typeface.BOLD);
+                    title.setText(marker.getTitle());
+
+                    TextView snippet = new TextView(context);
+                    snippet.setTextColor(Color.GRAY);
+                    snippet.setText(marker.getSnippet());
+
+                    info.addView(title);
+                    info.addView(snippet);
+
+                    return info;
+                }
+            });
+
+
+            Log.d(TAG, "onMapReady: latitude : " + earthquake.getLatitude() + " longitude : " + earthquake.getLongitude());
+        }
     }
 
 
