@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">EarthQuake Watchdog</string>
-    <string name="searching">Recupero i dati sui terremoti&#8230;</string>
+    <string name="searching">Carico gli ultimi i dati sui terremoti&#8230;</string>
     <string name="my_position_ic_title">La mia posizione</string>
     <string name="refresh_ic_title">Aggiorna</string>
     <string name="spinner_title">Tipo Mappa</string>
@@ -15,7 +15,7 @@
     <string name="distance_from_default_location">dalla posizione di default</string>
     <string name="distance_from_user_location">da te</string>
     <string name="no_earthquakes">Nessun terremoto trovato. Prova un altro filtro.</string>
-    <string name="no_internet_connection">Nessuna connessione a internet.\\nDevi effettuare almeno una connessione per scaricare i dati relativi ai terremoti!</string>
+    <string name="no_internet_connection">Nessuna connessione a internet.Devi effettuare almeno una connessione per scaricare i dati relativi ai terremoti!</string>
     <string name="title_activity_settings">Impostazioni</string>
     <string name="title_activity_maps_manual_localization_on">Localizzazione Manuale On</string>
     <string name="dialog_check_box_label">Salva</string>

@@ -517,6 +517,10 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
         if(netinfo != null && netinfo.isConnected()){
             loadingInProgress.setVisibility(View.VISIBLE);
+            earthquakeListView.setVisibility(View.GONE);
+            emptyListText.setVisibility(View.VISIBLE);
+            emptyListText.setText(R.string.searching);
+
             // LoaderManager reference
             LoaderManager loaderManager = getLoaderManager();
             // Init loader : id above, bundle = null , this= current activity for LoaderCallbacks
@@ -524,8 +528,10 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         }else{
             // hide progress bar
             loadingInProgress.setVisibility(View.GONE);
+            earthquakeListView.setVisibility(View.GONE);
+            emptyListText.setVisibility(View.VISIBLE);
             emptyListText.setText(R.string.no_internet_connection);
-            // earthquakeListView.setVisibility(View.GONE);
+
         }
 
     }
@@ -569,6 +575,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
         // Set empty state text to display "No earthquakes found."
         emptyListText.setText(R.string.no_earthquakes);
+
 
 
         // --> update UI when loader finished
@@ -692,6 +699,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                 startActivity(setMapIntent);
                 return true;
             case R.id.refresh_action:
+                loadingInProgress.setVisibility(View.VISIBLE);
                 retrieveRemoteData();
                 return true;
             default:

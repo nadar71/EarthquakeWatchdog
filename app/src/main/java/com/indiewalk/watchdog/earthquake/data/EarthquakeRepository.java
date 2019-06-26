@@ -45,30 +45,30 @@ public class EarthquakeRepository {
     }
 
     // retrieve all the eqs order by desc magnitude
-    public LiveData<List<Earthquake>> loadAll_orderby_desc_mag(){
-        return eqDb.earthquakeDbDao().loadAll_orderby_desc_mag();
+    public LiveData<List<Earthquake>> loadAll_orderby_desc_mag(double min_mag){
+        return eqDb.earthquakeDbDao().loadAll_orderby_desc_mag(min_mag);
     }
 
 
     // retrieve all the eqs order by asc magnitude
-    public LiveData<List<Earthquake>> loadAll_orderby_asc_mag(){
-        return eqDb.earthquakeDbDao().loadAll_orderby_asc_mag();
+    public LiveData<List<Earthquake>> loadAll_orderby_asc_mag(double min_mag){
+        return eqDb.earthquakeDbDao().loadAll_orderby_asc_mag(min_mag);
     }
 
 
     // retrieve all the eqs order by most recent (time desc)
-    public LiveData<List<Earthquake>> loadAll_orderby_most_recent(){
-        return eqDb.earthquakeDbDao().loadAll_orderby_most_recent();
+    public LiveData<List<Earthquake>> loadAll_orderby_most_recent(double min_mag){
+        return eqDb.earthquakeDbDao().loadAll_orderby_most_recent(min_mag);
     }
 
     // retrieve all the eqs order by nearest to user
-    public LiveData<List<Earthquake>> loadAll_orderby_nearest(){
-        return eqDb.earthquakeDbDao().loadAll_orderby_nearest();
+    public LiveData<List<Earthquake>> loadAll_orderby_nearest(double min_mag){
+        return eqDb.earthquakeDbDao().loadAll_orderby_nearest(min_mag);
     }
 
     // retrieve all the eqs order by farthest to user
-    public LiveData<List<Earthquake>> loadAll_orderby_farthest(){
-        return eqDb.earthquakeDbDao().loadAll_orderby_farthest();
+    public LiveData<List<Earthquake>> loadAll_orderby_farthest(double min_mag){
+        return eqDb.earthquakeDbDao().loadAll_orderby_farthest(min_mag);
     }
 
 

@@ -21,30 +21,28 @@ public interface EarthquakeDbDao {
     LiveData<List<Earthquake>> loadAll();
 
     // retrieve all the eqs order by desc magnitude
-    @Query("SELECT * FROM EARTHQUAKE_LIST ORDER BY magnitude desc")
-    LiveData<List<Earthquake>> loadAll_orderby_desc_mag();
+    @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY magnitude desc")
+    LiveData<List<Earthquake>> loadAll_orderby_desc_mag(double min_mag);
 
     // retrieve all the eqs order by asc magnitude
-    @Query("SELECT * FROM EARTHQUAKE_LIST ORDER BY magnitude asc")
-    LiveData<List<Earthquake>> loadAll_orderby_asc_mag();
+    @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY magnitude asc")
+    LiveData<List<Earthquake>> loadAll_orderby_asc_mag(double min_mag);
 
     // retrieve all the eqs order by min magnitude
-    // TODO: SET IN REPO
-    @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >:min_mag")
+    @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag")
     LiveData<List<Earthquake>> loadAll_orderby_min_mag(double min_mag);
 
-
     // retrieve all the eqs order by most recent (time desc)
-    @Query("SELECT * FROM EARTHQUAKE_LIST ORDER BY timeInMillisec desc")
-    LiveData<List<Earthquake>> loadAll_orderby_most_recent();
+    @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY timeInMillisec desc")
+    LiveData<List<Earthquake>> loadAll_orderby_most_recent(double min_mag);
 
     // retrieve all the eqs order by nearest to user
-    @Query("SELECT * FROM EARTHQUAKE_LIST ORDER BY userDistance asc")
-    LiveData<List<Earthquake>> loadAll_orderby_nearest();
+    @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY userDistance asc")
+    LiveData<List<Earthquake>> loadAll_orderby_nearest(double min_mag);
 
     // retrieve all the eqs order by farthest to user
-    @Query("SELECT * FROM EARTHQUAKE_LIST ORDER BY userDistance desc")
-    LiveData<List<Earthquake>> loadAll_orderby_farthest();
+    @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY userDistance desc")
+    LiveData<List<Earthquake>> loadAll_orderby_farthest(double min_mag);
 
 
 
