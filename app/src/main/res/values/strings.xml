@@ -64,11 +64,13 @@
     <!-- - - - - - - - Strings For Order-By Preference [CHAR LIMIT=30] - - - - - - - - - - - - - -->
     <string name="settings_order_by_label">Order By</string>
     <string name="settings_order_by_key" translatable="false">order_by</string>
-    <string name="settings_order_by_default" translatable="false">@string/settings_order_by_magnitude_value</string>
+    <string name="settings_order_by_default" translatable="false">@string/settings_order_by_desc_magnitude_value</string>
 
     <!-- Label for order-by magnitude option [CHAR LIMIT=20] -->
-    <string name="settings_order_by_magnitude_label">Magnitude (from higher one)</string>
-    <string name="settings_order_by_magnitude_value" translatable="false">magnitude</string>
+    <string name="settings_order_by_desc_magnitude_label">Magnitude (from higher one)</string>
+    <string name="settings_order_by_desc_magnitude_value" translatable="false">magnitude_desc</string>
+    <string name="settings_order_by_asc_magnitude_label">Magnitude (from lower one)</string>
+    <string name="settings_order_by_asc_magnitude_value" translatable="false">magnitude_asc</string>
 
     <!-- Label for order-by most recent option [CHAR LIMIT=20] -->
     <string name="settings_order_by_most_recent_label">Most Recent</string>
@@ -102,7 +104,7 @@
     <!-- - - - - - - - - - - Strings For Minimum Magnitude Preference  - - - - - - - - - - - - - -->
     <string name="settings_min_magnitude_label">Minimum Magnitude</string>
     <string name="settings_min_magnitude_key" translatable="false">min_magnitude</string>
-    <string name="settings_min_magnitude_default" translatable="false">@string/settings_6_0_min_magnitude_value</string>
+    <string name="settings_min_magnitude_default" translatable="false">@string/settings_1_0_min_magnitude_value</string>
 
     <string name="settings_1_0_min_magnitude_label" translatable="false">1.0+</string>
     <string name="settings_2_0_min_magnitude_label" translatable="false">2.0+</string>

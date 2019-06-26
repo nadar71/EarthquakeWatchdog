@@ -44,10 +44,17 @@ public class EarthquakeRepository {
         return eqDb.earthquakeDbDao().loadAll();
     }
 
-    // retrieve all the eqs order by magnitude
-    public LiveData<List<Earthquake>> loadAll_orderby_mag(){
+    // retrieve all the eqs order by desc magnitude
+    public LiveData<List<Earthquake>> loadAll_orderby_desc_mag(){
         return eqDb.earthquakeDbDao().loadAll_orderby_desc_mag();
     }
+
+
+    // retrieve all the eqs order by asc magnitude
+    public LiveData<List<Earthquake>> loadAll_orderby_asc_mag(){
+        return eqDb.earthquakeDbDao().loadAll_orderby_asc_mag();
+    }
+
 
     // retrieve all the eqs order by most recent (time desc)
     public LiveData<List<Earthquake>> loadAll_orderby_most_recent(){

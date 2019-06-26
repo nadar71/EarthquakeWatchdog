@@ -25,7 +25,6 @@ public interface EarthquakeDbDao {
     LiveData<List<Earthquake>> loadAll_orderby_desc_mag();
 
     // retrieve all the eqs order by asc magnitude
-    // TODO: SET IN REPO
     @Query("SELECT * FROM EARTHQUAKE_LIST ORDER BY magnitude asc")
     LiveData<List<Earthquake>> loadAll_orderby_asc_mag();
 

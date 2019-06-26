@@ -53,9 +53,13 @@ public class MainViewModel extends ViewModel {
 
 
         // choose the type of food list to load from db
-        if (listType.equals(MainActivity.ORDER_BY_MAGNITUDE)) {
-            Log.d(TAG, "setupAdapter: ORDER_BY_MAGNITUDE : " + listType);
-            earthquakesEntries = eqRepository.loadAll_orderby_mag();
+        if (listType.equals(MainActivity.ORDER_BY_DESC_MAGNITUDE)) {
+            Log.d(TAG, "setupAdapter: ORDER_BY_DESC_MAGNITUDE : " + listType);
+            earthquakesEntries = eqRepository.loadAll_orderby_desc_mag();
+
+        }if (listType.equals(MainActivity.ORDER_BY_ASC_MAGNITUDE)) {
+            Log.d(TAG, "setupAdapter: ORDER_BY_ASC_MAGNITUDE : " + listType);
+            earthquakesEntries = eqRepository.loadAll_orderby_asc_mag();
 
         }else if (listType.equals(MainActivity.ORDER_BY_MOST_RECENT)){
             Log.d(TAG, "setupAdapter: ORDER_BY_MOST_RECENT : " + listType);

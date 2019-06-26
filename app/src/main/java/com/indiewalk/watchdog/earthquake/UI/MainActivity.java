@@ -39,9 +39,6 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdView;
 import com.indiewalk.watchdog.earthquake.MapsActivity;
 import com.indiewalk.watchdog.earthquake.R;
-import com.indiewalk.watchdog.earthquake.SingletonProvider;
-import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
-import com.indiewalk.watchdog.earthquake.data.EarthquakeRepository;
 import com.indiewalk.watchdog.earthquake.net.EarthquakeAsyncLoader;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 import com.indiewalk.watchdog.earthquake.util.ConsentSDK;
@@ -65,11 +62,12 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     public static final double DEFAULT_LNG = -122.0862515;
 
     // Key constant for view model parameters
-    public static final String LOAD_ALL_NO_ORDER      = "load_all_no_order";
-    public static final String ORDER_BY_MAGNITUDE     = "magnitude_ordering";
-    public static final String ORDER_BY_MOST_RECENT   = "most_recent";
-    public static final String ORDER_BY_NEAREST       = "nearest";
-    public static final String ORDER_BY_FARTHEST      = "farthest";
+    public static final String LOAD_ALL_NO_ORDER       = "load_all_no_order";
+    public static final String ORDER_BY_DESC_MAGNITUDE = "magnitude_desc_ordering";
+    public static final String ORDER_BY_ASC_MAGNITUDE  = "magnitude_asc_ordering";
+    public static final String ORDER_BY_MOST_RECENT    = "most_recent";
+    public static final String ORDER_BY_NEAREST        = "nearest";
+    public static final String ORDER_BY_FARTHEST       = "farthest";
 
     // private MainViewModel mViewModel;
 
@@ -316,18 +314,81 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                 getString(R.string.settings_order_by_key),
                 getString(R.string.settings_order_by_default));
 
+
+
         // recover preferred equakes num to display
         numEquakes = sharedPreferences.getString(
                 getString(R.string.settings_max_equakes_key),
                 getString(R.string.settings_max_equakes_default));
 
-        // TODO : delete when all is done through repository
+        // check preferences safety
+        safePreferencesValue(editor);
+
+    }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * making code more robust checking if for same reasons the defaut value stored are null or
+     * not equals to none of the preferences stored values (e.g.  in case of key value change on code
+     * but user saved with the previous one with previous app version )
+     * @param editor
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void safePreferencesValue(SharedPreferences.Editor editor) {
+
+        // minMagnitude safe
+        if (minMagnitude.isEmpty() || minMagnitude == null) {
+            minMagnitude = getString(R.string.settings_min_magnitude_default);
+            editor.putString(getString(R.string.settings_min_magnitude_key), getString(R.string.settings_min_magnitude_default));
+        }
+
+        if ((!minMagnitude.equals(getString(R.string.settings_1_0_min_magnitude_value))) &&
+            (!minMagnitude.equals(getString(R.string.settings_2_0_min_magnitude_value))) &&
+            (!minMagnitude.equals(getString(R.string.settings_3_0_min_magnitude_value))) &&
+            (!minMagnitude.equals(getString(R.string.settings_4_0_min_magnitude_value))) &&
+            (!minMagnitude.equals(getString(R.string.settings_4_5_min_magnitude_label))) &&
+            (!minMagnitude.equals(getString(R.string.settings_5_0_min_magnitude_label))) &&
+            (!minMagnitude.equals(getString(R.string.settings_5_5_min_magnitude_value))) &&
+            (!minMagnitude.equals(getString(R.string.settings_6_0_min_magnitude_value))) &&
+            (!minMagnitude.equals(getString(R.string.settings_6_5_min_magnitude_value)))
+        ){
+            minMagnitude = getString(R.string.settings_min_magnitude_default);
+            editor.putString(getString(R.string.settings_min_magnitude_key), getString(R.string.settings_min_magnitude_default));
+        }
+
+        // orderBy safe
         if (orderBy.isEmpty() || orderBy == null) {
             orderBy = getString(R.string.settings_order_by_default);
+            editor.putString(getString(R.string.settings_order_by_key), getString(R.string.settings_order_by_default));
+        }
+
+        if ((!orderBy.equals(getString(R.string.settings_order_by_desc_magnitude_value))) &&
+            (!orderBy.equals(getString(R.string.settings_order_by_asc_magnitude_value))) &&
+            (!orderBy.equals(getString(R.string.settings_order_by_most_recent_value))) &&
+            (!orderBy.equals(getString(R.string.settings_order_by_nearest_value))) &&
+            (!orderBy.equals(getString(R.string.settings_order_by_farthest_value)))
+        ){
+            orderBy = getString(R.string.settings_order_by_default);
+            editor.putString(getString(R.string.settings_order_by_key), getString(R.string.settings_order_by_default));
+        }
+
+        // numEquakes safe
+        if (numEquakes.isEmpty() || numEquakes == null) {
+            numEquakes = getString(R.string.settings_max_equakes_default);
+            editor.putString(getString(R.string.settings_max_equakes_key), getString(R.string.settings_max_equakes_default));
+        }
+
+        if ((!numEquakes.equals(getString(R.string.settings_max_30_equakes_value))) &&
+            (!numEquakes.equals(getString(R.string.settings_max_60_equakes_value))) &&
+            (!numEquakes.equals(getString(R.string.settings_max_90_equakes_value))) &&
+            (!numEquakes.equals(getString(R.string.settings_max_120_equakes_value)))
+        ){
+            orderBy = getString(R.string.settings_max_equakes_default);
+            editor.putString(getString(R.string.settings_order_by_key), getString(R.string.settings_order_by_default));
         }
     }
 
-    
 
     /**
      * ---------------------------------------------------------------------------------------------
@@ -384,8 +445,12 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
 
         // set equakes list showing based on user preferences
-        if (orderBy.equals(getString(R.string.settings_order_by_magnitude_value))){
-            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_MAGNITUDE);
+        if (orderBy.equals(getString(R.string.settings_order_by_desc_magnitude_value))){
+            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_DESC_MAGNITUDE);
+            filterDatafromRepository(factory);
+
+        } else if (orderBy.equals(getString(R.string.settings_order_by_asc_magnitude_value))){
+            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_ASC_MAGNITUDE);
             filterDatafromRepository(factory);
 
         } else if (orderBy.equals(getString(R.string.settings_order_by_most_recent_value))){

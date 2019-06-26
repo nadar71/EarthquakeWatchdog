@@ -26,7 +26,7 @@
     <string name="category_settings_title">"Impostazioni "</string>
     <string name="category_help_title">Aiuto</string>
     <string name="settings_order_by_label">Ordina per</string>
-    <string name="settings_order_by_magnitude_label">Magnitudo (dalla più alta)</string>
+    <string name="settings_order_by_desc_magnitude_label">Magnitudo (dalla più alta)</string>
     <string name="settings_order_by_most_recent_label">Più recente</string>
     <string name="settings_order_by_nearest_label">Il più vicino a te</string>
     <string name="settings_order_by_farthest_label">Il più lontano da te</string>
@@ -73,8 +73,9 @@
     <string name="dialog_manual_loc_msg">Per impostare la tua posizione manualmente, premi a lungo su un punto della mappa.</string>
     <string name="quick_settings_title">Impostazioni Veloci</string>
     <string name="spinner_defaultchoice_label">Scegli</string>
+    <string name="settings_order_by_asc_magnitude_label">Magnitudo (dalla più bassa)</string>
     <!--
-    <string name="settings_order_by_magnitude_value">magnitudo</string>
+    <string name="settings_order_by_desc_magnitude_value">magnitudo</string>
     <string name="settings_order_by_most_recent_value">data</string>
     <string name="settings_order_by_nearest_value">più vicino</string>
     <string name="settings_order_by_farthest_value">più lontano</string>
