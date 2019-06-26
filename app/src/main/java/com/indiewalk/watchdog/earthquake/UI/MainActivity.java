@@ -525,6 +525,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             // hide progress bar
             loadingInProgress.setVisibility(View.GONE);
             emptyListText.setText(R.string.no_internet_connection);
+            // earthquakeListView.setVisibility(View.GONE);
         }
 
     }
