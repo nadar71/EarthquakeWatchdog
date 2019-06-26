@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     public static final String ORDER_BY_NEAREST       = "nearest";
     public static final String ORDER_BY_FARTHEST      = "farthest";
 
-    private MainViewModel mViewModel;
+    // private MainViewModel mViewModel;
 
 
     ListView earthquakeListView;
@@ -344,21 +344,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         earthquakeListView.setEmptyView(emptyListText);
         emptyListText.setText(R.string.searching);
 
-        // Check through MainViewModel the eqlist from repository if is not null and empty,
-        // otherwise
-        // make  a request for remote data using loader
-        mViewModel  = ViewModelProviders.of(this).get(MainViewModel.class);
-        LiveData<List<Earthquake>> earthquakes = mViewModel.getEqList();
-        earthquakes.observe(this, new Observer<List<Earthquake>>() {
-            @Override
-            public void onChanged(@Nullable List<Earthquake> earthquakeEntries) {
-                if (earthquakeEntries != null  && !earthquakeEntries.isEmpty() ){
-                    updateList();
-                } else {
-                    retrieveRemoteData();
-                }
-            }
-        });
+
+        updateList();
 
         /*
         // check connection
@@ -380,6 +367,73 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             emptyListText.setText(R.string.no_internet_connection);
         }
         */
+    }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Update the adapter/equakes list, based on user's preferences, using viewmodel/livedata
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void updateList() {
+        Log.i(TAG, "updateList Executing ");
+        // clear the adapter of previous data
+        adapter.clear();
+
+        checkPreferences();
+
+
+        // set equakes list showing based on user preferences
+        if (orderBy.equals(getString(R.string.settings_order_by_magnitude_value))){
+            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_MAGNITUDE);
+            filterDatafromRepository(factory);
+
+        } else if (orderBy.equals(getString(R.string.settings_order_by_most_recent_value))){
+            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_MOST_RECENT);
+            filterDatafromRepository(factory);
+
+        }  else if (orderBy.equals(getString(R.string.settings_order_by_nearest_value))){
+            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_NEAREST);
+            filterDatafromRepository(factory);
+
+        }  else if (orderBy.equals(getString(R.string.settings_order_by_farthest_value))){
+            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_FARTHEST);
+            filterDatafromRepository(factory);
+
+        }
+
+
+
+    }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Make repository request for specific data and ordering
+     * @param factory
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void filterDatafromRepository(MainViewModelFactory factory) {
+        // Get eq list through LiveData
+        final MainViewModel viewModel = ViewModelProviders.of(this,factory).get(MainViewModel.class);
+
+        LiveData<List<Earthquake>> equakes = viewModel.getEqList();
+        equakes.observe(this, new Observer<List<Earthquake>>() {
+            @Override
+            public void onChanged(@Nullable List<Earthquake> earthquakeEntries) {
+                if (earthquakeEntries != null && !earthquakeEntries.isEmpty()) {
+                    earthquakes = earthquakeEntries;
+                    adapter.addAll(earthquakeEntries);
+                    adapter.notifyDataSetChanged();
+                    loadingInProgress.setVisibility(View.GONE);
+
+                } else {
+                    // make  a request for remote data using loader
+                    // TODO : incapsulate this check inside repository
+                    retrieveRemoteData();
+                }
+            }
+        });
     }
 
     /**
@@ -408,6 +462,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         }
 
     }
+
+
 
 
     /**
@@ -459,64 +515,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Update the adapter/equakes list, based on user's preferences
-     * ---------------------------------------------------------------------------------------------
-     */
-    private void updateList() {
-        Log.i(TAG, "updateList Executing ");
-        // clear the adapter of previous data
-        adapter.clear();
 
-        checkPreferences();
-
-
-        // set equakes list showing based on user preferences
-        if (orderBy.equals(getString(R.string.settings_order_by_magnitude_value))){
-            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_MAGNITUDE);
-            filterDatafromRepository(factory);
-
-        } else if (orderBy.equals(getString(R.string.settings_order_by_most_recent_value))){
-            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_MOST_RECENT);
-            filterDatafromRepository(factory);
-
-        }  else if (orderBy.equals(getString(R.string.settings_order_by_nearest_value))){
-            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_NEAREST);
-            filterDatafromRepository(factory);
-
-        }  else if (orderBy.equals(getString(R.string.settings_order_by_farthest_value))){
-            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_FARTHEST);
-            filterDatafromRepository(factory);
-
-        }
-
-
-
-    }
-
-
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Make repository request for specific data and ordering
-     * @param factory
-     * ---------------------------------------------------------------------------------------------
-     */
-    private void filterDatafromRepository(MainViewModelFactory factory) {
-        // Get eq list through LiveData
-        final MainViewModel viewModel = ViewModelProviders.of(this,factory).get(MainViewModel.class);
-
-        LiveData<List<Earthquake>> equakes = viewModel.getEqList();
-        equakes.observe(this, new Observer<List<Earthquake>>() {
-            @Override
-            public void onChanged(@Nullable List<Earthquake> earthquakeList) {
-                earthquakes = earthquakeList;
-                adapter.addAll(earthquakeList);
-                adapter.notifyDataSetChanged();
-                loadingInProgress.setVisibility(View.GONE);
-            }
-        });
-    }
 
 
     /**
@@ -678,8 +677,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                boolean restartActivity = false;   // need to restart the activity
-                boolean updateList      = false;   // need to sort  the list without restarting activity
+                // boolean restartActivity = false;   // need to restart the activity
+                // boolean updateList      = false;   // need to sort  the list without restarting activity
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
                 // check choices
@@ -699,19 +698,20 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                     editor.putString(getString(R.string.settings_order_by_key),
                             spinner_order_by_choice );
                     editor.apply();
-                    updateList = true;
+                    // updateList = true;
                 }
 
                 if(!spinner_min_magn_choice.equalsIgnoreCase(getResources().getString(R.string.spinner_defaultchoice_value))) {
                     editor.putString(getString(R.string.settings_min_magnitude_key),
                             spinner_min_magn_choice );
                     editor.apply();
-                    restartActivity = true;
+                    // restartActivity = true;
                 }
 
                 Log.i(TAG, "onClick: ");
                 // process choices
 
+                /*
                 if (restartActivity == false){
                     if (updateList == true) {
                         dialog.dismiss();
@@ -722,6 +722,10 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                     dialog.dismiss();
                     MyUtil.restartActivity(MainActivity.this);
                 }
+                */
+
+                dialog.dismiss();
+                MyUtil.restartActivity(MainActivity.this);
 
 
 

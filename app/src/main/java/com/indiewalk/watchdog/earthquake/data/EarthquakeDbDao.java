@@ -20,9 +20,20 @@ public interface EarthquakeDbDao {
     @Query("SELECT * FROM EARTHQUAKE_LIST ")
     LiveData<List<Earthquake>> loadAll();
 
-    // retrieve all the eqs order by magnitude
-    @Query("SELECT * FROM EARTHQUAKE_LIST ORDER BY magnitude")
-    LiveData<List<Earthquake>> loadAll_orderby_mag();
+    // retrieve all the eqs order by desc magnitude
+    @Query("SELECT * FROM EARTHQUAKE_LIST ORDER BY magnitude desc")
+    LiveData<List<Earthquake>> loadAll_orderby_desc_mag();
+
+    // retrieve all the eqs order by asc magnitude
+    // TODO: SET IN REPO
+    @Query("SELECT * FROM EARTHQUAKE_LIST ORDER BY magnitude asc")
+    LiveData<List<Earthquake>> loadAll_orderby_asc_mag();
+
+    // retrieve all the eqs order by min magnitude
+    // TODO: SET IN REPO
+    @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >:min_mag")
+    LiveData<List<Earthquake>> loadAll_orderby_min_mag(double min_mag);
+
 
     // retrieve all the eqs order by most recent (time desc)
     @Query("SELECT * FROM EARTHQUAKE_LIST ORDER BY timeInMillisec desc")

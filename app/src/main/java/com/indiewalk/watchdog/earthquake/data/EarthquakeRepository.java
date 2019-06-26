@@ -1,8 +1,6 @@
 package com.indiewalk.watchdog.earthquake.data;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.persistence.room.Insert;
-import android.arch.persistence.room.Query;
 
 import java.util.List;
 
@@ -48,7 +46,7 @@ public class EarthquakeRepository {
 
     // retrieve all the eqs order by magnitude
     public LiveData<List<Earthquake>> loadAll_orderby_mag(){
-        return eqDb.earthquakeDbDao().loadAll_orderby_mag();
+        return eqDb.earthquakeDbDao().loadAll_orderby_desc_mag();
     }
 
     // retrieve all the eqs order by most recent (time desc)
