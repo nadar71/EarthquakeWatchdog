@@ -68,7 +68,8 @@
 
     <!-- Label for order-by magnitude option [CHAR LIMIT=20] -->
     <string name="settings_order_by_desc_magnitude_label">Magnitude (from higher one)</string>
-    <string name="settings_order_by_desc_magnitude_value" translatable="false">magnitude_desc</string>
+    <string name="settings_order_by_desc_magnitude_value" translatable="false">magnitude</string>
+    <!-- this value is for USGS query, and request in order by desc magnitude : DON'T CHANGE-->
     <string name="settings_order_by_asc_magnitude_label">Magnitude (from lower one)</string>
     <string name="settings_order_by_asc_magnitude_value" translatable="false">magnitude_asc</string>
 

@@ -48,7 +48,7 @@ public class MainViewModel extends ViewModel {
         Log.d(TAG, "Actively retrieving the collections from repository");
 
         // get repository instance
-        eqRepository = ((SingletonProvider) SingletonProvider.getsContext()).getRepository();
+        eqRepository = ((SingletonProvider) SingletonProvider.getsContext()).getRepository();   
 
 
 

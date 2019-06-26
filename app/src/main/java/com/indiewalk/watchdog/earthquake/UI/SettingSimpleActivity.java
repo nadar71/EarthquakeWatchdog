@@ -71,12 +71,15 @@ public class SettingSimpleActivity extends AppCompatActivity {
             Preference minMagnitude = findPreference(getString(R.string.settings_min_magnitude_key));
             bindPreferenceSummaryToValue(minMagnitude);
 
+            // TODO : must delete this part
+            /*
             Preference maxEquakesNum = findPreference(getString(R.string.settings_max_equakes_key));
             bindPreferenceSummaryToValue(maxEquakesNum);
-/*
+            */
+            /*
             Preference manualLoc = findPreference(getString(R.string.manual_Localization_key));
             bindPreferenceSummaryToValue(manualLoc);
-*/
+            */
 
             // gdprConsentBtn = findViewById(R.id.gdpr_withdraw_btn);
             Preference gdprConsentBtn = findPreference(getString(R.string.gdpr_btn_key));

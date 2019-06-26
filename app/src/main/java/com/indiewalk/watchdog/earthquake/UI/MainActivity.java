@@ -516,6 +516,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         NetworkInfo netinfo = connManager.getActiveNetworkInfo();
 
         if(netinfo != null && netinfo.isConnected()){
+            loadingInProgress.setVisibility(View.VISIBLE);
             // LoaderManager reference
             LoaderManager loaderManager = getLoaderManager();
             // Init loader : id above, bundle = null , this= current activity for LoaderCallbacks
@@ -563,7 +564,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         Log.i(TAG, "onLoadFinished: Loader return back with data");
 
         // hide progress bar
-        loadingInProgress.setVisibility(View.GONE);
+        // loadingInProgress.setVisibility(View.GONE);
 
         // Set empty state text to display "No earthquakes found."
         emptyListText.setText(R.string.no_earthquakes);
@@ -571,7 +572,10 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
         // --> update UI when loader finished
         if (setEartquakesList(earthquakesReturnedByLoader)) {
-            updateList();
+            // updateList();
+            // Restarting the activity to make livedata allow set up
+            // the new (eventually) retrieved data in the order defined in preferences
+            MyUtil.restartActivity(MainActivity.this);
         } else {
             Log.i(TAG, "Problem with earthquake list, is empty. Check the request. ");
         }
@@ -630,16 +634,30 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         Uri.Builder builder = rootUri.buildUpon();
 
         builder.appendQueryParameter("format","geojson");
-        builder.appendQueryParameter("limit",numEquakes);
+
+        // commented, it creates only problem, will be substituted with user preferred time range
+        // builder.appendQueryParameter("limit",numEquakes);
+
         // calculate 30-days ago date and set as start date
         // String aMonthAgo = MyUtil.oldDate(30).toString();
         // builder.appendQueryParameter("starttime",aMonthAgo);
 
+        // TODO : must make this part update by user preferences
+        // calculate 7-days ago date and set as start date
+        String aWeekAgo = MyUtil.oldDate(7).toString();
+        builder.appendQueryParameter("starttime",aWeekAgo);
+
+
+        /*
         builder.appendQueryParameter("minmag",minMagnitude); // TODO : delete
+
         if (!orderBy.equals(getString(R.string.settings_order_by_nearest_value))
                 && !orderBy.equals(getString(R.string.settings_order_by_farthest_value)) ){
+            orderBy = getString(R.string.settings_order_by_default);
             builder.appendQueryParameter("orderby", orderBy);     // TODO : delete
         }
+        */
+
 
         return  builder.toString();
     }
