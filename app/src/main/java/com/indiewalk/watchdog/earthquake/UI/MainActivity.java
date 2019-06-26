@@ -488,8 +488,15 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             public void onChanged(@Nullable List<Earthquake> earthquakeEntries) {
                 if (earthquakeEntries != null && !earthquakeEntries.isEmpty()) {
                     earthquakes = earthquakeEntries;
+
+                    // delete previous data
+                    adapter.clear();
+                    adapter.notifyDataSetChanged();
+
+                    // add new ones while arriving
                     adapter.addAll(earthquakeEntries);
                     adapter.notifyDataSetChanged();
+
                     loadingInProgress.setVisibility(View.GONE);
 
                 } else {
@@ -575,15 +582,10 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
         // Set empty state text to display "No earthquakes found."
         emptyListText.setText(R.string.no_earthquakes);
-
-
-
+        
         // --> update UI when loader finished
         if (setEartquakesList(earthquakesReturnedByLoader)) {
-            // updateList();
-            // Restarting the activity to make livedata allow set up
-            // the new (eventually) retrieved data in the order defined in preferences
-            MyUtil.restartActivity(MainActivity.this);
+            updateList();
         } else {
             Log.i(TAG, "Problem with earthquake list, is empty. Check the request. ");
         }
