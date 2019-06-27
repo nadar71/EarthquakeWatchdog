@@ -19,6 +19,7 @@
     <string name="dialog_manual_loc_title">Manual Location setting active (Not using gps)</string>
     <string name="dialog_manual_loc_msg">To set/override your position manually, long press on a map point.</string>
     <string name="quick_settings_title">Quick settings</string>
+    <string name="data_update_toast">Date update in the range of : </string>
 
 
 
@@ -144,6 +145,23 @@
     <string name="settings_max_90_equakes_value" translatable="false">90</string>
     <string name="settings_max_120_equakes_value" translatable="false">120</string>
 
+
+    <!-- - - - - - - - - - - Strings For date filter  Preference  - - - - - - - - - - - - - -->
+    <string name="settings_date_filter_label">Date filter : </string>
+    <string name="settings_date_filter_key" translatable="false">date_filter</string>
+    <string name="settings_date_filter_default" translatable="false">@string/settings_date_period_24h_value</string>
+
+    <string name="settings_date_period_today_label" translatable="true">Today</string>
+    <string name="settings_date_period_24h_label" translatable="true">24h</string>
+    <string name="settings_date_period_48h_label" translatable="true">48h</string>
+    <string name="settings_date_period_week_label" translatable="true">Last Week</string>
+    <string name="settings_date_period_month_label" translatable="true">Last Month</string>
+
+    <string name="settings_date_period_today_value" translatable="false">0</string>
+    <string name="settings_date_period_24h_value" translatable="false">1</string>
+    <string name="settings_date_period_48h_value" translatable="false">2</string>
+    <string name="settings_date_period_week_value" translatable="false">7</string>
+    <string name="settings_date_period_month_value" translatable="false">30</string>
 
     <!-- - - - - - - - - - Help category for Preference - - - - - - - - - - - - - - - - - - - - -->
     <string name="gdpr_btn_key" translatable="false">gdpr_withdraw</string>

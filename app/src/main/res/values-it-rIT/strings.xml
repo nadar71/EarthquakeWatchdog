@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">EarthQuake Watchdog</string>
-    <string name="searching">Carico gli ultimi i dati sui terremoti&#8230;</string>
+    <string name="searching">Carico gli ultimi dati sui terremoti&#8230;</string>
     <string name="my_position_ic_title">La mia posizione</string>
     <string name="refresh_ic_title">Aggiorna</string>
     <string name="spinner_title">Tipo Mappa</string>
@@ -74,6 +74,13 @@
     <string name="quick_settings_title">Impostazioni Veloci</string>
     <string name="spinner_defaultchoice_label">Scegli</string>
     <string name="settings_order_by_asc_magnitude_label">Magnitudo (dalla più bassa)</string>
+    <string name="settings_date_filter_label">Filtro data :</string>
+    <string name="settings_date_period_today_label">Oggi</string>
+    <string name="settings_date_period_24h_label">24h</string>
+    <string name="settings_date_period_48h_label">48h</string>
+    <string name="settings_date_period_week_label">Ultima settimana</string>
+    <string name="settings_date_period_month_label">Ultimo mese</string>
+    <string name="data_update_toast">"Dati aggiornati nell'intervallo di : "</string>
     <!--
     <string name="settings_order_by_desc_magnitude_value">magnitudo</string>
     <string name="settings_order_by_most_recent_value">data</string>

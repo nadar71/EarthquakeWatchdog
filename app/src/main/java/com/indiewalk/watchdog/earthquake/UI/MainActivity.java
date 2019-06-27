@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +29,6 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-// Loader lib stuff
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Loader;
@@ -53,7 +53,8 @@ import java.util.List;
 
 
 
-public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<List<Earthquake>> {
+public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<List<Earthquake>>,
+        SharedPreferences.OnSharedPreferenceChangeListener{
 
     public static final String TAG = MainActivity.class.getName();
 
@@ -68,6 +69,9 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     public static final String ORDER_BY_MOST_RECENT    = "most_recent";
     public static final String ORDER_BY_NEAREST        = "nearest";
     public static final String ORDER_BY_FARTHEST       = "farthest";
+
+    // TODO : Temporary, must use only onPreferenceChanges
+    public static boolean NEED_REMOTE_UPDATE           = false;
 
     // private MainViewModel mViewModel;
 
@@ -94,7 +98,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     private static final int EARTHQUAKE_LOADER_ID = 1;
 
     // Preferences value
-    String minMagnitude, orderBy,lat_s, lng_s, numEquakes;
+    String minMagnitude, orderBy,lat_s, lng_s, dateFilter, dateFilterLabel;
 
     // SharePreferences ref
     SharedPreferences sharedPreferences;
@@ -194,14 +198,69 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             }
         });
 
-        // check preferences for changes
+
+        // set preferences value in case of changes
+        // checkPreferences();
+
+        // TODO : temporary, must be set in repository init
+        // get aware of date filter changes
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(this);
+
+    }
+
+
+
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Check if device location is stored by previous accessing in-map section, and in case retrieve
+     * coordinates
+     * ---------------------------------------------------------------------------------------------
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // update local vars for preferences changes
         checkPreferences();
 
         // Call loader for retrieving data
-        // retrieveRemoteData();
         retrieveData();
+    }
 
 
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Set with the purpose of unregistering preferences changes
+     * ---------------------------------------------------------------------------------------------
+     */
+    @Override
+    protected void onDestroy() {
+        // TODO : temporary, must be set in repository init
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
+        super.onStop();
+    }
+
+
+
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Registering preferences change only for data filter changes
+     * @param sharedPreferences
+     * @param key
+     * ---------------------------------------------------------------------------------------------
+     */
+    // TODO : temporary, must be set in repository init
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.d("Dict", "PreferenceChanged: " + key);
+        if (key.equals(getString(R.string.settings_date_filter_key))){
+            NEED_REMOTE_UPDATE = true;
+        }
     }
 
 
@@ -259,23 +318,6 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
 
 
-
-
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Check if device location is stored by previous accessing in-map section, and in case retrieve
-     * coordinates
-     * ---------------------------------------------------------------------------------------------
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // check preferences for changes
-        checkPreferences();
-
-    }
-
-
     /**
      * ---------------------------------------------------------------------------------------------
      * Set and check location coordinates from shared preferences.
@@ -315,15 +357,32 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                 getString(R.string.settings_order_by_default));
 
 
+        // recover preferred date filter by param from prefs or set a default from string value
+        dateFilter = sharedPreferences.getString(
+                getString(R.string.settings_date_filter_key),
+                getString(R.string.settings_date_filter_default));
 
+        if ((dateFilter.equals(getString(R.string.settings_date_period_today_value))))
+            dateFilterLabel = getString(R.string.settings_date_period_today_label);
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_24h_value))))
+            dateFilterLabel = getString(R.string.settings_date_period_24h_label);
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_48h_value))))
+            dateFilterLabel = getString(R.string.settings_date_period_48h_label);
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_week_value))))
+            dateFilterLabel = getString(R.string.settings_date_period_week_label);
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_month_value))))
+            dateFilterLabel = getString(R.string.settings_date_period_month_label);
+
+
+        /* left in case of debug
         // recover preferred equakes num to display
         numEquakes = sharedPreferences.getString(
                 getString(R.string.settings_max_equakes_key),
                 getString(R.string.settings_max_equakes_default));
+        */
 
         // check preferences safety
         safePreferencesValue(editor);
-
     }
 
 
@@ -373,6 +432,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             editor.putString(getString(R.string.settings_order_by_key), getString(R.string.settings_order_by_default));
         }
 
+
+        /* left in case of debug
         // numEquakes safe
         if (numEquakes.isEmpty() || numEquakes == null) {
             numEquakes = getString(R.string.settings_max_equakes_default);
@@ -387,6 +448,25 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             orderBy = getString(R.string.settings_max_equakes_default);
             editor.putString(getString(R.string.settings_order_by_key), getString(R.string.settings_order_by_default));
         }
+        */
+
+
+        // date filter safe
+        if (dateFilter.isEmpty() || dateFilter == null) {
+            dateFilter = getString(R.string.settings_date_filter_default);
+            editor.putString(getString(R.string.settings_date_filter_key), getString(R.string.settings_date_filter_default));
+        }
+
+        if ((!dateFilter.equals(getString(R.string.settings_date_period_today_value))) &&
+            (!dateFilter.equals(getString(R.string.settings_date_period_24h_value))) &&
+            (!dateFilter.equals(getString(R.string.settings_date_period_48h_value))) &&
+            (!dateFilter.equals(getString(R.string.settings_date_period_week_value))) &&
+            (!dateFilter.equals(getString(R.string.settings_date_period_month_value)))
+        ){
+            dateFilter = getString(R.string.settings_date_filter_default);
+            editor.putString(getString(R.string.settings_date_filter_key), getString(R.string.settings_date_filter_default));
+        }
+
     }
 
 
@@ -405,8 +485,14 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         earthquakeListView.setEmptyView(emptyListText);
         emptyListText.setText(R.string.searching);
 
-
-        updateList();
+        // TODO : temporary, must be set in repository init
+        // check if date filter has been changed
+        if (NEED_REMOTE_UPDATE) {
+            retrieveRemoteData();
+            NEED_REMOTE_UPDATE = false;
+        } else {
+            updateList();
+        }
 
         /*
         // check connection
@@ -499,6 +585,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
                     loadingInProgress.setVisibility(View.GONE);
 
+
                 } else {
                     // make  a request for remote data using loader
                     // TODO : incapsulate this check inside repository
@@ -582,10 +669,17 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
         // Set empty state text to display "No earthquakes found."
         emptyListText.setText(R.string.no_earthquakes);
-        
+
         // --> update UI when loader finished
         if (setEartquakesList(earthquakesReturnedByLoader)) {
             updateList();
+
+            Toast alert = Toast.makeText(MainActivity.this,
+                    getString(R.string.data_update_toast) + dateFilterLabel
+                    , Toast.LENGTH_LONG);
+            alert.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
+            alert.show();
+
         } else {
             Log.i(TAG, "Problem with earthquake list, is empty. Check the request. ");
         }
@@ -652,10 +746,9 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         // String aMonthAgo = MyUtil.oldDate(30).toString();
         // builder.appendQueryParameter("starttime",aMonthAgo);
 
-        // TODO : must make this part update by user preferences
-        // calculate 7-days ago date and set as start date
-        String aWeekAgo = MyUtil.oldDate(7).toString();
-        builder.appendQueryParameter("starttime",aWeekAgo);
+        int offset = Integer.parseInt(dateFilter);
+        String rangeAgo = MyUtil.oldDate(offset).toString();
+        builder.appendQueryParameter("starttime",rangeAgo);
 
 
         /*
@@ -753,12 +846,12 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         // list of labels for magnitude min  spinner list
         final List<String> magn_list  = new ArrayList<>(); // add header
         magn_list.add(getResources().getString(R.string.spinner_defaultchoice_label));
-        magn_list.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_min_magnitude_labels)));
+        magn_list.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_array_min_magnitude_labels)));
 
         // list of  values corresponding positionally in list to the labels
         final List<String> magn_list_values = new ArrayList<>(); // add header
         magn_list_values.add(getResources().getString(R.string.spinner_defaultchoice_value));
-        magn_list_values.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_min_magnitude_values)));
+        magn_list_values.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_array_min_magnitude_values)));
 
         // put labels in spinner
         ArrayAdapter<String> adapter_02 = new ArrayAdapter<String>(MainActivity.this,
