@@ -12,6 +12,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -62,8 +64,10 @@ import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
 import android.app.AlertDialog;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -257,6 +261,7 @@ public class MapsActivity extends AppCompatActivity
             } else {
                 mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
                 mGoogleMap.setMyLocationEnabled(true);
+
 
                 // set user marker in case of previous coordinates not default
                 checkPrevious();
@@ -472,6 +477,9 @@ public class MapsActivity extends AppCompatActivity
             userLocationMarker(Double.parseDouble(lat_s), Double.parseDouble(lng_s));
         }
 
+        // save in preferences
+        setLocationAddress(Double.parseDouble(lat_s), Double.parseDouble(lng_s));
+
     }
 
 
@@ -552,6 +560,10 @@ public class MapsActivity extends AppCompatActivity
                 editor.putString(getString(R.string.device_lng), Double.toString(userLng));
                 editor.apply();
 
+                // set address location in pref
+                setLocationAddress(userLat, userLng);
+
+
                 // stop progress bar
                 dialog.dismiss();
 
@@ -565,6 +577,50 @@ public class MapsActivity extends AppCompatActivity
     };
 
 
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Recover and save location address in preferences
+     * @param userLat
+     * @param userLng
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void setLocationAddress(double userLat, double userLng) {
+        //Set Address
+        String address;
+        try {
+            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(userLat, userLng, 1);
+            if (addresses != null && addresses.size() > 0) {
+
+                // String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                String city = addresses.get(0).getLocality();
+                // String state = addresses.get(0).getAdminArea();
+                // String country = addresses.get(0).getCountryName();
+                String postalCode = addresses.get(0).getPostalCode();
+                String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
+
+                address = city + " " + postalCode + " " + knownName;
+
+                // Log.d(TAG, "getAddress:  address" + address);
+                Log.d(TAG, "getAddress:  city : " + city);
+                // Log.d(TAG, "getAddress:  state" + state);
+                Log.d(TAG, "getAddress:  postalCode : " + postalCode);
+                Log.d(TAG, "getAddress:  knownName : " + knownName);
+
+                Log.d(TAG, "Address : "+ address);
+
+                SharedPreferences locationPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+                SharedPreferences.Editor editor = locationPreferences.edit();
+                editor.putString(getString(R.string.location_address), address);
+                editor.apply();
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
 
 
     /**
@@ -835,7 +891,7 @@ public class MapsActivity extends AppCompatActivity
 
                 // set flag for manual_Localization_On
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(getString(R.string.manual_Localization_On), "true");
+                editor.putString( getString(R.string.manual_Localization_On), "true");
                 editor.apply();
 
 
@@ -844,6 +900,10 @@ public class MapsActivity extends AppCompatActivity
 
                 editor.putString(getString(R.string.device_lng),Double.toString(latLng.longitude));
                 editor.apply();
+
+
+                // save in preferences
+                setLocationAddress(latLng.latitude, latLng.longitude);
 
                 manualLocIsOn = true;
 

@@ -25,7 +25,7 @@
     <string name="settings_menu_item_general">Impostazioni Generali</string>
     <string name="category_settings_title">"Impostazioni "</string>
     <string name="category_help_title">Aiuto</string>
-    <string name="settings_order_by_label">Ordina per</string>
+    <string name="settings_order_by_label">Ordinato per :</string>
     <string name="settings_order_by_desc_magnitude_label">Magnitudo (dalla più alta)</string>
     <string name="settings_order_by_most_recent_label">Più recente</string>
     <string name="settings_order_by_nearest_label">Il più vicino a te</string>
@@ -37,35 +37,9 @@
     <string name="settings_max_equakes_label">Quanti terremoti vuoi visualizzare ?</string>
     <string name="gdpr_btn_title">GDPR</string>
     <string name="gdpr_btn_summary">Impostazioni GDPR</string>
-    <string name="faq_btn_title">Faq &amp;  Disclaimer</string>
+    <string name="faq_btn_title">Faq &amp; Disclaimer</string>
     <string name="faq_btn_summary">Che cosa l\'app può e non può fare</string>
-    <string name="faq_text">
-        <b>FAQ &amp; DISCLAIMER</b>\n
-        La presente app mostra i dati relativi ai terremoti (fino a 120 terremoti) presi dal servizio online di
-        <a href='https://earthquake.usgs.gov/earthquakes/'> USGS.gov </a>.
-        Non è in nessun modo collegata a USGS nè è un\'app di questa organizzazione.\n\n
-
-        L\'app ha solo scopi informativi, le date rigurdanti i terremoti non sono in tempo reale
-        (controlla su <a href='https://earthquake.usgs.gov/earthquakes/'> USGS.gov site </a> per i dettagli al riguardo)
-        Non ha perciò l\'intento di essere un\'alert in tempo reale sui terremoti e
-        non va perciò utilizzata come app salva vita, non sono perciò responsabile di un suo eventuale uso improprio.\n\n
-
-        Nella mappa vengono richiesti i permessi di geolocalizzazione solo per calcolare la distanza dei
-        terremoti dall\'utente, e le coordinate dell\'utente sono immagazzinate soltanto a questo scopo.\n
-        Se vengono negati i permessi di geolocalizzazione, l\'app permette comunque il posizionamento manuale
-        tenendo premuto il dito nella posizione desiderata sulla mappa, senza usare gps nè qualsiasi altro servizio di geolocalizzazione,
-        controllare nella impostazioni delle schermata mappa.\n
-        Se vengono negati i permessi di geolocalizzazione e non viene fatta la localizzazione manuale, l\'app utilizzerà
-        la posizione di default di Google map (Google Company location) e calcolerà la distanza dei terremoti rispetto ad essa.
-        \n\n
-
-        Spero che troverai la mia app utile, scopri le mie altre app e giochi sul mio sito\n
-        <a href='http://www.indie-walkabout.eu'>http://www.indie-walkabout.eu</a>.\n
-
-        Per suggerimenti, informazioni o errori per favore contattami qui : \n
-        <a href='mailto:indie.walkabout.1971@gmail.com'>indie.walkabout.1971@gmail.com</a>\n
-
-    </string>
+    <string name="faq_text">"         <b>FAQ &amp; DISCLAIMER</b>\\n         La presente app mostra i dati relativi ai terremoti (fino a 120 terremoti) presi dal servizio online di         <a href="https://earthquake.usgs.gov/earthquakes/"> USGS.gov </a>.         Non è in nessun modo collegata a USGS nè è un\'app di questa organizzazione.\\n\\n          L\'app ha solo scopi informativi, le date rigurdanti i terremoti non sono in tempo reale         (controlla su <a href="https://earthquake.usgs.gov/earthquakes/"> USGS.gov site </a> per i dettagli al riguardo)         Non ha perciò l\'intento di essere un\'alert in tempo reale sui terremoti e         non va perciò utilizzata come app salva vita, non sono perciò responsabile di un suo eventuale uso improprio.\\n\\n          Nella mappa vengono richiesti i permessi di geolocalizzazione solo per calcolare la distanza dei         terremoti dall\'utente, e le coordinate dell\'utente sono immagazzinate soltanto a questo scopo.\\n         Se vengono negati i permessi di geolocalizzazione, l\'app permette comunque il posizionamento manuale         tenendo premuto il dito nella posizione desiderata sulla mappa, senza usare gps nè qualsiasi altro servizio di geolocalizzazione,         controllare nella impostazioni delle schermata mappa.\\n         Se vengono negati i permessi di geolocalizzazione e non viene fatta la localizzazione manuale, l\'app utilizzerà         la posizione di default di Google map (Google Company location) e calcolerà la distanza dei terremoti rispetto ad essa.         \\n\\n          Spero che troverai la mia app utile, scopri le mie altre app e giochi sul mio sito\\n         <a href="http://www.indie-walkabout.eu">http://www.indie-walkabout.eu</a>.\\n          Per suggerimenti, informazioni o errori per favore contattami qui : \\n         <a href="mailto:indie.walkabout.1971@gmail.com">indie.walkabout.1971@gmail.com</a>\\n      "</string>
     <string name="manual_localization_label">Usa localizzaz. manuale (no gps)</string>
     <string name="locationOffset_label">Vicino a</string>
     <string name="earthquake_markers_label">Nascondi posizione terremoti</string>
@@ -80,7 +54,10 @@
     <string name="settings_date_period_48h_label">48h</string>
     <string name="settings_date_period_week_label">Ultima settimana</string>
     <string name="settings_date_period_month_label">Ultimo mese</string>
-    <string name="data_update_toast">"Dati aggiornati nell'intervallo di : "</string>
+    <string name="data_update_toast">"Dati aggiornati nell\'intervallo di : "</string>
+    <string name="last_update_label">Ultimo aggiornamento :</string>
+    <string name="time_range_label">Intervallo di tempo :</string>
+    <string name="your_position_label">La tua posizione :</string>
     <!--
     <string name="settings_order_by_desc_magnitude_value">magnitudo</string>
     <string name="settings_order_by_most_recent_value">data</string>

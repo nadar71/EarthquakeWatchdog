@@ -148,8 +148,10 @@ public class SettingSimpleActivity extends AppCompatActivity {
 
 
         /**
+         * -----------------------------------------------------------------------------------------
          * Bind prefs text shown below label on prefs changes
          * @param preference
+         * -----------------------------------------------------------------------------------------
          */
         private void bindPreferenceSummaryToValue(Preference preference) {
             preference.setOnPreferenceChangeListener(this);  // bind

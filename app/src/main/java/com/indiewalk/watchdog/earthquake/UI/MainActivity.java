@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     // this is the default position, google at mountain view
     public static final double DEFAULT_LAT = 37.4219999;
     public static final double DEFAULT_LNG = -122.0862515;
+    public static final String DEFAULT_ADDRESS = "Mountain View,CA";
 
     // Key constant for view model parameters
     public static final String LOAD_ALL_NO_ORDER       = "load_all_no_order";
@@ -70,22 +72,20 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     public static final String ORDER_BY_NEAREST        = "nearest";
     public static final String ORDER_BY_FARTHEST       = "farthest";
 
+    private String lastUpdate = "";
+
     // TODO : Temporary, must use only onPreferenceChanges
     public static boolean NEED_REMOTE_UPDATE           = false;
-
-    // private MainViewModel mViewModel;
-
 
     ListView earthquakeListView;
     private List<Earthquake> earthquakes;
 
-    //Progress bar
     private ProgressBar loadingInProgress;
 
-    // Empty view while loading
     private TextView emptyListText;
+    private TextView order_value_tv, minMagn_value_tv,lastUp_value_tv,eq_period_value_tv, location_value_tv;
+    private View filter_memo;
 
-    // ListView Adapter
     private EarthquakeAdapter adapter;
 
     // URL to query the USGS dataset for earthquake information 
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     private static final int EARTHQUAKE_LOADER_ID = 1;
 
     // Preferences value
-    String minMagnitude, orderBy,lat_s, lng_s, dateFilter, dateFilterLabel;
+    String minMagnitude, orderBy,lat_s, lng_s, dateFilter, dateFilterLabel, location_address;
 
     // SharePreferences ref
     SharedPreferences sharedPreferences;
@@ -113,6 +113,14 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
+
+        order_value_tv     = findViewById(R.id.order_value_tv);
+        minMagn_value_tv   = findViewById(R.id.minMagn_value_tv);
+        lastUp_value_tv    = findViewById(R.id.lastUp_value_tv);
+        eq_period_value_tv = findViewById(R.id.eq_period_value_tv);
+        location_value_tv  = findViewById(R.id.location_value_tv);
+
 
         // Initialize ConsentSDK
         ConsentSDK consentSDK = new ConsentSDK.Builder(this)
@@ -374,6 +382,11 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             dateFilterLabel = getString(R.string.settings_date_period_month_label);
 
 
+        // recover min magnitude value from prefs or set a default from string value
+        location_address = sharedPreferences.getString(
+                getString(R.string.location_address),
+                DEFAULT_ADDRESS);
+
         /* left in case of debug
         // recover preferred equakes num to display
         numEquakes = sharedPreferences.getString(
@@ -383,6 +396,61 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
         // check preferences safety
         safePreferencesValue(editor);
+
+        // summary above list
+        setFilterSummary();
+    }
+
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Summarize the filter settings for the eq list shown
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void setFilterSummary() {
+        // set up filter summary
+        // order by
+        if (orderBy.equals(getString(R.string.settings_order_by_desc_magnitude_value)))
+            order_value_tv.setText(getString(R.string.settings_order_by_desc_magnitude_label));
+
+        if (orderBy.equals(getString(R.string.settings_order_by_asc_magnitude_value)))
+            order_value_tv.setText(getString(R.string.settings_order_by_asc_magnitude_label));
+
+        if (orderBy.equals(getString(R.string.settings_order_by_most_recent_value)))
+            order_value_tv.setText(getString(R.string.settings_order_by_most_recent_label));
+
+        if (orderBy.equals(getString(R.string.settings_order_by_nearest_value)))
+            order_value_tv.setText(getString(R.string.settings_order_by_nearest_label));
+
+        if (orderBy.equals(getString(R.string.settings_order_by_farthest_value)))
+            order_value_tv.setText(getString(R.string.settings_order_by_farthest_label));
+
+        // min magnitude
+        minMagn_value_tv.setText(minMagnitude);
+
+        // last update time
+        lastUp_value_tv.setText(lastUpdate);
+
+        // time range
+        if ((dateFilter.equals(getString(R.string.settings_date_period_today_value))))
+            eq_period_value_tv.setText(getString(R.string.settings_date_period_today_label));
+
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_24h_value))))
+            eq_period_value_tv.setText(getString(R.string.settings_date_period_24h_label));
+
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_48h_value))))
+            eq_period_value_tv.setText(getString(R.string.settings_date_period_48h_label));
+
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_week_value))))
+            eq_period_value_tv.setText(getString(R.string.settings_date_period_week_label));
+
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_month_value))))
+            eq_period_value_tv.setText(getString(R.string.settings_date_period_month_label));
+
+
+        //location address
+        location_value_tv.setText(location_address);
     }
 
 
@@ -467,6 +535,12 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             editor.putString(getString(R.string.settings_date_filter_key), getString(R.string.settings_date_filter_default));
         }
 
+
+        if (location_address.isEmpty() || location_address == null) {
+            location_address = DEFAULT_ADDRESS;
+            editor.putString(getString(R.string.location_address), location_address);
+        }
+
     }
 
 
@@ -483,6 +557,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         // set Empty View in case of List empty
         emptyListText = findViewById(R.id.empty_view);
         earthquakeListView.setEmptyView(emptyListText);
+
         emptyListText.setText(R.string.searching);
 
         // TODO : temporary, must be set in repository init
@@ -611,6 +686,10 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
         if(netinfo != null && netinfo.isConnected()){
             loadingInProgress.setVisibility(View.VISIBLE);
+
+            filter_memo = findViewById(R.id.summary_layout);
+            filter_memo.setVisibility(View.INVISIBLE);
+
             earthquakeListView.setVisibility(View.GONE);
             emptyListText.setVisibility(View.VISIBLE);
             emptyListText.setText(R.string.searching);
@@ -673,6 +752,14 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         // --> update UI when loader finished
         if (setEartquakesList(earthquakesReturnedByLoader)) {
             updateList();
+
+            // store the last update time
+            lastUpdate = MyUtil.formatDateFromMsec(System.currentTimeMillis()) +
+                    " " +
+                    MyUtil.formatTimeFromMsec(System.currentTimeMillis());
+            lastUp_value_tv.setText(lastUpdate);
+
+            filter_memo.setVisibility(View.VISIBLE);
 
             Toast alert = Toast.makeText(MainActivity.this,
                     getString(R.string.data_update_toast) + dateFilterLabel

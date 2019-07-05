@@ -210,7 +210,6 @@ public class EarthQuakeNetworkRequest {
 
                 // add to list of all earthquakes
                 earthquakes.add(tmp);
-
             }
 
 
