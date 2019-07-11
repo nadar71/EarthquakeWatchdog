@@ -197,7 +197,6 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         earthquakeListView.setAdapter(adapter);
 
 
-
         // Clicking on item shows an action dialog
         earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

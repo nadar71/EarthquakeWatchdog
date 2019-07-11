@@ -168,6 +168,20 @@ public class MapsActivity extends AppCompatActivity
 
     }
 
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Stop locating device when activity is on pause for battery saving
+     * ---------------------------------------------------------------------------------------------
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        //stop location updates when Activity is no longer active
+        if (mFusedLocationClient != null) {
+            mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+        }
+    }
 
     /**
      * ---------------------------------------------------------------------------------------------
@@ -185,26 +199,11 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
-
     /**
      * ---------------------------------------------------------------------------------------------
-     * Stop locating device when activity is on pause for battery saving
-     * ---------------------------------------------------------------------------------------------
-     */
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        //stop location updates when Activity is no longer active
-        if (mFusedLocationClient != null) {
-            mFusedLocationClient.removeLocationUpdates(mLocationCallback);
-        }
-    }
-
-
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Show map, equakes markers, device marker
+     * Callback when map is available.
+     * Show map, equakes markers, device marker.
+     * When {@localizeUser()} ended
      * @param googleMap
      * ---------------------------------------------------------------------------------------------
      */
@@ -237,8 +236,9 @@ public class MapsActivity extends AppCompatActivity
         mLocationRequest.setFastestInterval(120000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
-        // localize user only if manual localization is not set
+        // -1- localize user only if MANUAL LOCALIZATION OFF
         if ( manualLocIsOn == false) {
+            // support for os version newer and older
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (ContextCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -270,9 +270,8 @@ public class MapsActivity extends AppCompatActivity
                 showGpsRequestAlert();
             }
 
-        // in case on manual localization on
+        // -2- in case on MANUAL LOCALIZATION ON
         } else {
-
             // get previous set position
             lat_s = sharedPreferences.getString(getString(R.string.device_lat),Double.toString(MainActivity.DEFAULT_LAT));
             lng_s = sharedPreferences.getString(getString(R.string.device_lng),Double.toString(MainActivity.DEFAULT_LNG));
@@ -304,7 +303,7 @@ public class MapsActivity extends AppCompatActivity
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Show marker and details n click for each eq on map
+     * Set marker and details on click for each eq on map
      * @param earthquakeList
      * ---------------------------------------------------------------------------------------------
      */
@@ -486,7 +485,7 @@ public class MapsActivity extends AppCompatActivity
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Check if there a location manually set
+     * Check if there is a location manually set
      * ---------------------------------------------------------------------------------------------
      */
     private void checkManualLocation(){
@@ -530,7 +529,7 @@ public class MapsActivity extends AppCompatActivity
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Set user locations coordinates
+     * Set user locations coordinates in case of MANUAL LOCALIZATION OFF
      * ---------------------------------------------------------------------------------------------
      */
     LocationCallback mLocationCallback = new LocationCallback() {
