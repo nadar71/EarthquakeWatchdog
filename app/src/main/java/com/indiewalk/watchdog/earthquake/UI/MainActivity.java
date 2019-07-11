@@ -17,7 +17,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -75,6 +74,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     private String lastUpdate = "";
 
     // TODO : Temporary, must use only onPreferenceChanges
+    // flag for reloading data from remote due to different time range requested for data in preferences
     public static boolean NEED_REMOTE_UPDATE           = false;
 
     ListView earthquakeListView;
@@ -120,6 +120,9 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         lastUp_value_tv    = findViewById(R.id.lastUp_value_tv);
         eq_period_value_tv = findViewById(R.id.eq_period_value_tv);
         location_value_tv  = findViewById(R.id.location_value_tv);
+        loadingInProgress  = findViewById(R.id.loading_spinner);
+        emptyListText      = findViewById(R.id.empty_view);
+        filter_memo        = findViewById(R.id.summary_layout);
 
 
         // Initialize ConsentSDK
@@ -550,13 +553,10 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
      */
     private void retrieveData() {
         Log.i(TAG, "retrieveRemoteData: Requesting fresh data.");
-        // set progress bar
-        loadingInProgress = findViewById(R.id.loading_spinner);
 
-        // set Empty View in case of List empty
-        emptyListText = findViewById(R.id.empty_view);
+
+        // show empty list and load in progress
         earthquakeListView.setEmptyView(emptyListText);
-
         emptyListText.setText(R.string.searching);
 
         // TODO : temporary, must be set in repository init
@@ -568,26 +568,6 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             updateList();
         }
 
-        /*
-        // check connection
-        // reference to connection manager
-        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        // network status retrieving
-        NetworkInfo netinfo = connManager.getActiveNetworkInfo();
-
-        if(netinfo != null && netinfo.isConnected()){
-            // LoaderManager reference
-            LoaderManager loaderManager = getLoaderManager();
-            // Init loader : id above, bundle = null , this= current activity for LoaderCallbacks
-            loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
-        }else{
-
-            // hide progress bar
-            loadingInProgress.setVisibility(View.GONE);
-            emptyListText.setText(R.string.no_internet_connection);
-        }
-        */
     }
 
 
@@ -657,8 +637,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                     adapter.addAll(earthquakeEntries);
                     adapter.notifyDataSetChanged();
 
-                    loadingInProgress.setVisibility(View.GONE);
-
+                    showEarthquakeListView();
 
                 } else {
                     // make  a request for remote data using loader
@@ -684,32 +663,56 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         NetworkInfo netinfo = connManager.getActiveNetworkInfo();
 
         if(netinfo != null && netinfo.isConnected()){
-            loadingInProgress.setVisibility(View.VISIBLE);
-
-            filter_memo = findViewById(R.id.summary_layout);
-            filter_memo.setVisibility(View.INVISIBLE);
-
-            earthquakeListView.setVisibility(View.GONE);
-            emptyListText.setVisibility(View.VISIBLE);
-            emptyListText.setText(R.string.searching);
+            showLoading();
 
             // LoaderManager reference
             LoaderManager loaderManager = getLoaderManager();
             // Init loader : id above, bundle = null , this= current activity for LoaderCallbacks
             loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
-        }else{
-            // hide progress bar
-            loadingInProgress.setVisibility(View.GONE);
-            earthquakeListView.setVisibility(View.GONE);
-            emptyListText.setVisibility(View.VISIBLE);
-            emptyListText.setText(R.string.no_internet_connection);
 
+        }else{
+            showNoInternetConnection();
         }
 
     }
 
 
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Show No Internet Connection view
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void showNoInternetConnection() {
+        // hide progress bar
+        loadingInProgress.setVisibility(View.GONE);
+        filter_memo.setVisibility(View.INVISIBLE);
+        earthquakeListView.setVisibility(View.GONE);
+        emptyListText.setVisibility(View.VISIBLE);
+        emptyListText.setText(R.string.no_internet_connection);
+    }
 
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Show loading in progress view, hiding earthquake list
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void showLoading() {
+        loadingInProgress.setVisibility(View.VISIBLE);
+        filter_memo.setVisibility(View.INVISIBLE);
+        earthquakeListView.setVisibility(View.GONE);
+        emptyListText.setVisibility(View.VISIBLE);
+        emptyListText.setText(R.string.searching);
+    }
+
+    /**
+     * Show hearthquake list after loading/retrieving data completed
+     */
+    private void showEarthquakeListView() {
+        loadingInProgress.setVisibility(View.INVISIBLE);
+        filter_memo.setVisibility(View.VISIBLE);
+        earthquakeListView.setVisibility(View.VISIBLE);
+        emptyListText.setVisibility(View.INVISIBLE);
+    }
 
     /**
      * ---------------------------------------------------------------------------------------------

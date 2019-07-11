@@ -73,6 +73,7 @@ public class MainViewModel extends ViewModel {
         context = (SingletonProvider) SingletonProvider.getsContext();
 
         // get repository instance
+        // TODO : in repo, check if there are already updated data in db in this step
         eqRepository = ((SingletonProvider) SingletonProvider.getsContext()).getRepository();
 
         // init shared preferences and get value
