@@ -44,6 +44,9 @@ dependencies {
     implementation 'android.arch.lifecycle:livedata:1.1.1'
     implementation "android.arch.lifecycle:extensions:1.1.1"
 
+    // firebase
+    implementation "com.firebase:firebase-jobdispatcher:0.5.0"
+
     //  Ads through Firebase
     // implementation 'com.google.firebase:firebase-ads:17.1.1'
 

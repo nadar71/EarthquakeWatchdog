@@ -56,8 +56,6 @@ import com.indiewalk.watchdog.earthquake.UI.MainActivity;
 import com.indiewalk.watchdog.earthquake.UI.MainViewModel;
 import com.indiewalk.watchdog.earthquake.UI.MainViewModelFactory;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
-import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
-import com.indiewalk.watchdog.earthquake.util.AppExecutors;
 import com.indiewalk.watchdog.earthquake.util.ConsentSDK;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
 

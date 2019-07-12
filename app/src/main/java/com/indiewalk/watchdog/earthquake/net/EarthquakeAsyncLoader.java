@@ -33,7 +33,7 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
     // query url
     private String queryUrl;
 
-    // tmp list for getting the internediate result in extractFeatureFromJson
+    // tmp list for getting the intermediate result in extractFeatureFromJson
     private ArrayList<Earthquake> earthquakes = null;
 
     // Preferences value

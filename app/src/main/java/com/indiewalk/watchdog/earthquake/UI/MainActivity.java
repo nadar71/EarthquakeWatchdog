@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     public static final String ORDER_BY_ASC_MAGNITUDE  = "magnitude_asc_ordering";
     public static final String ORDER_BY_MOST_RECENT    = "most_recent";
     public static final String ORDER_BY_NEAREST        = "nearest";
-    public static final String ORDER_BY_FARTHEST       = "farthest";
+    public static final String ORDER_BY_FURTHEST = "farthest";
 
     private String lastUpdate = "";
 
@@ -87,11 +87,6 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     private View filter_memo;
 
     private EarthquakeAdapter adapter;
-
-    // URL to query the USGS dataset for earthquake information 
-    private static final String USGS_REQUEST_URL =
-            "https://earthquake.usgs.gov/fdsnws/event/1/query";
-            // "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&minmag=6&limit=10"; // debug
 
 
     // Id for loader which retrieve data from remote source (not necessary there is only it!)
@@ -405,55 +400,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Summarize the filter settings for the eq list shown
-     * ---------------------------------------------------------------------------------------------
-     */
-    private void setFilterSummary() {
-        // set up filter summary
-        // order by
-        if (orderBy.equals(getString(R.string.settings_order_by_desc_magnitude_value)))
-            order_value_tv.setText(getString(R.string.settings_order_by_desc_magnitude_label));
 
-        if (orderBy.equals(getString(R.string.settings_order_by_asc_magnitude_value)))
-            order_value_tv.setText(getString(R.string.settings_order_by_asc_magnitude_label));
-
-        if (orderBy.equals(getString(R.string.settings_order_by_most_recent_value)))
-            order_value_tv.setText(getString(R.string.settings_order_by_most_recent_label));
-
-        if (orderBy.equals(getString(R.string.settings_order_by_nearest_value)))
-            order_value_tv.setText(getString(R.string.settings_order_by_nearest_label));
-
-        if (orderBy.equals(getString(R.string.settings_order_by_farthest_value)))
-            order_value_tv.setText(getString(R.string.settings_order_by_farthest_label));
-
-        // min magnitude
-        minMagn_value_tv.setText(minMagnitude);
-
-        // last update time
-        lastUp_value_tv.setText(lastUpdate);
-
-        // time range
-        if ((dateFilter.equals(getString(R.string.settings_date_period_today_value))))
-            eq_period_value_tv.setText(getString(R.string.settings_date_period_today_label));
-
-        else if ((dateFilter.equals(getString(R.string.settings_date_period_24h_value))))
-            eq_period_value_tv.setText(getString(R.string.settings_date_period_24h_label));
-
-        else if ((dateFilter.equals(getString(R.string.settings_date_period_48h_value))))
-            eq_period_value_tv.setText(getString(R.string.settings_date_period_48h_label));
-
-        else if ((dateFilter.equals(getString(R.string.settings_date_period_week_value))))
-            eq_period_value_tv.setText(getString(R.string.settings_date_period_week_label));
-
-        else if ((dateFilter.equals(getString(R.string.settings_date_period_month_value))))
-            eq_period_value_tv.setText(getString(R.string.settings_date_period_month_label));
-
-
-        //location address
-        location_value_tv.setText(location_address);
-    }
 
 
     /**
@@ -545,6 +492,55 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
     }
 
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Summarize the filter settings for the eq list shown
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void setFilterSummary() {
+        // set up filter summary
+        // order by
+        if (orderBy.equals(getString(R.string.settings_order_by_desc_magnitude_value)))
+            order_value_tv.setText(getString(R.string.settings_order_by_desc_magnitude_label));
+
+        if (orderBy.equals(getString(R.string.settings_order_by_asc_magnitude_value)))
+            order_value_tv.setText(getString(R.string.settings_order_by_asc_magnitude_label));
+
+        if (orderBy.equals(getString(R.string.settings_order_by_most_recent_value)))
+            order_value_tv.setText(getString(R.string.settings_order_by_most_recent_label));
+
+        if (orderBy.equals(getString(R.string.settings_order_by_nearest_value)))
+            order_value_tv.setText(getString(R.string.settings_order_by_nearest_label));
+
+        if (orderBy.equals(getString(R.string.settings_order_by_farthest_value)))
+            order_value_tv.setText(getString(R.string.settings_order_by_farthest_label));
+
+        // min magnitude
+        minMagn_value_tv.setText(minMagnitude);
+
+        // last update time
+        lastUp_value_tv.setText(lastUpdate);
+
+        // time range
+        if ((dateFilter.equals(getString(R.string.settings_date_period_today_value))))
+            eq_period_value_tv.setText(getString(R.string.settings_date_period_today_label));
+
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_24h_value))))
+            eq_period_value_tv.setText(getString(R.string.settings_date_period_24h_label));
+
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_48h_value))))
+            eq_period_value_tv.setText(getString(R.string.settings_date_period_48h_label));
+
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_week_value))))
+            eq_period_value_tv.setText(getString(R.string.settings_date_period_week_label));
+
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_month_value))))
+            eq_period_value_tv.setText(getString(R.string.settings_date_period_month_label));
+
+
+        //location address
+        location_value_tv.setText(location_address);
+    }
 
     /**
      * ---------------------------------------------------------------------------------------------
@@ -602,7 +598,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             filterDatafromRepository(factory);
 
         }  else if (orderBy.equals(getString(R.string.settings_order_by_farthest_value))){
-            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_FARTHEST);
+            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_FURTHEST);
             filterDatafromRepository(factory);
 
         }
@@ -626,26 +622,34 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         equakes.observe(this, new Observer<List<Earthquake>>() {
             @Override
             public void onChanged(@Nullable List<Earthquake> earthquakeEntries) {
-                if (earthquakeEntries != null && !earthquakeEntries.isEmpty()) {
+                if (earthquakeEntries != null && !earthquakeEntries.isEmpty()) { // data ready in db
                     earthquakes = earthquakeEntries;
-
-                    // delete previous data
-                    adapter.clear();
-                    adapter.notifyDataSetChanged();
-
-                    // add new ones while arriving
-                    adapter.addAll(earthquakeEntries);
-                    adapter.notifyDataSetChanged();
-
+                    updateAdapter(earthquakeEntries);
                     showEarthquakeListView();
-
-                } else {
+                } else {                                                         // waiting for data
                     // make  a request for remote data using loader
                     // TODO : incapsulate this check inside repository
                     retrieveRemoteData();
                 }
             }
         });
+    }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Notify and update adapter data
+     * @param earthquakeEntries
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void updateAdapter(@Nullable List<Earthquake> earthquakeEntries) {
+        // delete previous data
+        adapter.clear();
+        adapter.notifyDataSetChanged();
+
+        // add new ones while arriving
+        adapter.addAll(earthquakeEntries);
+        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -725,7 +729,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     @Override
     public Loader<List<Earthquake>> onCreateLoader(int id, Bundle args) {
         Log.i(TAG, "onCreateLoader: Create a new Loader");
-        String urlReq = composeQueryUrl();
+        String urlReq = MyUtil.composeQueryUrl(dateFilter);
         Log.i(TAG, "onCreateLoader: urlReq : "+urlReq);
         // create a new loader for the url
         return new EarthquakeAsyncLoader(this, urlReq );
@@ -816,43 +820,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Compose a query url starting from preferences parameters
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
-    public String composeQueryUrl(){
-        Uri rootUri = Uri.parse(USGS_REQUEST_URL);
-        Uri.Builder builder = rootUri.buildUpon();
 
-        builder.appendQueryParameter("format","geojson");
-
-        // commented, it creates only problem, will be substituted with user preferred time range
-        // builder.appendQueryParameter("limit",numEquakes);
-
-        // calculate 30-days ago date and set as start date
-        // String aMonthAgo = MyUtil.oldDate(30).toString();
-        // builder.appendQueryParameter("starttime",aMonthAgo);
-
-        int offset = Integer.parseInt(dateFilter);
-        String rangeAgo = MyUtil.oldDate(offset).toString();
-        builder.appendQueryParameter("starttime",rangeAgo);
-
-
-        /*
-        builder.appendQueryParameter("minmag",minMagnitude); // TODO : delete
-
-        if (!orderBy.equals(getString(R.string.settings_order_by_nearest_value))
-                && !orderBy.equals(getString(R.string.settings_order_by_farthest_value)) ){
-            orderBy = getString(R.string.settings_order_by_default);
-            builder.appendQueryParameter("orderby", orderBy);     // TODO : delete
-        }
-        */
-
-
-        return  builder.toString();
-    }
 
 
     // ---------------------------------------------------------------------------------------------

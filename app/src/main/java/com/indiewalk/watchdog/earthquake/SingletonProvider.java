@@ -5,15 +5,16 @@ import android.content.Context;
 
 import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
 import com.indiewalk.watchdog.earthquake.data.EarthquakeRepository;
+import com.indiewalk.watchdog.earthquake.net.EarthquakeNetworkDataSource;
 import com.indiewalk.watchdog.earthquake.util.AppExecutors;
 
 
 /**
  * -------------------------------------------------------------------------------------------------
- * Class used for access singletons and application context wherever in the app.
+ * Class used for access classes singletons and application context wherever in the app.
  * Just like repository is an interface for all data operations.
  * Can be used dependency injection as well.
- * NB : register in manifest in <Application  android:name=".SingletonProvider" >... </Application>
+ * NB : registered in manifest in <Application  android:name=".SingletonProvider" >... </Application>
  * -------------------------------------------------------------------------------------------------
  */
 public class SingletonProvider extends Application {
@@ -26,10 +27,7 @@ public class SingletonProvider extends Application {
     public void onCreate() {
         super.onCreate();
         mAppExecutors = AppExecutors.getInstance();
-
         sContext = getApplicationContext();
-
-
     }
 
     /**
@@ -73,5 +71,17 @@ public class SingletonProvider extends Application {
      */
     public static Context getsContext(){
         return sContext;
+    }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Return EarthquakeDatasource singleton instance
+     * @return
+     * ---------------------------------------------------------------------------------------------
+     */
+    public EarthquakeNetworkDataSource getNetworkDatasource() {
+        getRepository(); // the repository is not created if called from a intent service
+        return EarthquakeNetworkDataSource.getInstance(sContext,mAppExecutors);
     }
 }

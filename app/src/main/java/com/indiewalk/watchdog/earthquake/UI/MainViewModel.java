@@ -99,8 +99,8 @@ public class MainViewModel extends ViewModel {
             Log.d(TAG, "setupAdapter: ORDER_BY_NEAREST : " + listType);
             earthquakesEntries = eqRepository.loadAll_orderby_nearest(dMinMagnitude);
 
-        }else if (listType.equals(MainActivity.ORDER_BY_FARTHEST)){
-            Log.d(TAG, "setupAdapter: ORDER_BY_FARTHEST : " + listType);
+        }else if (listType.equals(MainActivity.ORDER_BY_FURTHEST)){
+            Log.d(TAG, "setupAdapter: ORDER_BY_FURTHEST : " + listType);
             earthquakesEntries = eqRepository.loadAll_orderby_farthest(dMinMagnitude);
 
         }else if (listType.equals(MainActivity.LOAD_ALL_NO_ORDER)){

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * ---------------------------------------------------------------------------------------------
  * Class which do all the stuff for remote request to RESTFul service
- * USED INSIDE LOADER CALLBACK
+ * USED INSIDE LOADER CALLBACK and...
  * ---------------------------------------------------------------------------------------------
  */
 
