@@ -110,7 +110,7 @@ public class EarthquakeNetworkDataSource {
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(driver);
 
         // Create the Job
-        Job syncWeatherAppJob = dispatcher.newJobBuilder()
+        Job syncEarthquakeAppJob = dispatcher.newJobBuilder()
                 .setService(EarthquakeFirebaseJobService.class)
                 .setTag(EARTHQUAKE_SYNC_TAG)
                 .setConstraints(Constraint.ON_ANY_NETWORK)
@@ -123,7 +123,7 @@ public class EarthquakeNetworkDataSource {
                 .build();
 
         // Schedule the Job with the dispatcher
-        dispatcher.schedule(syncWeatherAppJob);
+        dispatcher.schedule(syncEarthquakeAppJob);
         Log.d(TAG, "Job scheduled");
     }
 

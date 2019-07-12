@@ -555,8 +555,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         earthquakeListView.setEmptyView(emptyListText);
         emptyListText.setText(R.string.searching);
 
-        // TODO : temporary, must be set in repository init
-        // check if date filter has been changed
+        // TODO : temporary, data must be updated setting an observer in repository on specific preference
+        // check if date filter or other preferences which need remote update has been changed
         if (NEED_REMOTE_UPDATE) {
             retrieveRemoteData();
             NEED_REMOTE_UPDATE = false;
@@ -629,7 +629,10 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                 } else {                                                         // waiting for data
                     // make  a request for remote data using loader
                     // TODO : incapsulate this check inside repository
-                    retrieveRemoteData();
+                    // retrieveRemoteData();
+                    // While waiting that the repository getting aware that the eqs lsit is empty
+                    // and ask for a remote update
+                    showLoading();
                 }
             }
         });

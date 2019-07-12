@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
+import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase_Impl;
 import com.indiewalk.watchdog.earthquake.data.EarthquakeRepository;
 import com.indiewalk.watchdog.earthquake.net.EarthquakeNetworkDataSource;
 import com.indiewalk.watchdog.earthquake.util.AppExecutors;
@@ -47,8 +48,20 @@ public class SingletonProvider extends Application {
      * @return
      * ---------------------------------------------------------------------------------------------
      */
+    // repo standard constructor
     public EarthquakeRepository getRepository() {
         return EarthquakeRepository.getInstance(getDatabase());
+    }
+
+
+    // repo constructor with data source support
+    public EarthquakeRepository getRepositoryWithDataSource() {
+        EarthquakeDatabase db = getDatabase();
+        AppExecutors executors = AppExecutors.getInstance();
+        EarthquakeNetworkDataSource networkDataSource =
+                EarthquakeNetworkDataSource.getInstance(this.getApplicationContext(), executors);
+
+        return EarthquakeRepository.getInstanceWithDataSource(db,networkDataSource, executors);
     }
 
 

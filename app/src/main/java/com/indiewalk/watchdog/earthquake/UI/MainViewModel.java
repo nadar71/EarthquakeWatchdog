@@ -74,7 +74,8 @@ public class MainViewModel extends ViewModel {
 
         // get repository instance
         // TODO : in repo, check if there are already updated data in db in this step
-        eqRepository = ((SingletonProvider) SingletonProvider.getsContext()).getRepository();
+        // eqRepository = ((SingletonProvider) SingletonProvider.getsContext()).getRepository();
+        eqRepository = ((SingletonProvider) SingletonProvider.getsContext()).getRepositoryWithDataSource();
 
         // init shared preferences and get value
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);

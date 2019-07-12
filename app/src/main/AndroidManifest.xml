@@ -73,7 +73,6 @@
              You can define the keys for the debug and release targets in src/debug/ and src/release/. 
         -->
 
-
         <!-- -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -95,6 +94,22 @@
             android:screenOrientation="portrait"></activity>
         <activity android:name=".UI.FaqActivity"></activity>
 
+
+        <service
+            android:name=".net.EarthquakeSyncIntentService"
+            android:exported="false" />
+
+
+        <service
+            android:name=".net.EarthquakeFirebaseJobService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
+            </intent-filter>
+        </service>
+
+
+        <!-- unused activities  : TODO : must delete
         <activity
             android:name=".unused.MyPositionActivity"
             android:label="@string/title_activity_my_position" />
@@ -103,6 +118,7 @@
             android:name=".unused.SplashActivity"
             android:screenOrientation="portrait">
         </activity>
+        -->
 
     </application>
 

@@ -20,6 +20,9 @@ public interface EarthquakeDbDao {
     @Query("SELECT * FROM EARTHQUAKE_LIST ")
     LiveData<List<Earthquake>> loadAll();
 
+    @Query("SELECT * FROM EARTHQUAKE_LIST ")
+    List<Earthquake> loadAllNoLiveData();
+
     // retrieve all the eqs order by desc magnitude
     @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY magnitude desc")
     LiveData<List<Earthquake>> loadAll_orderby_desc_mag(double min_mag);
@@ -53,6 +56,10 @@ public interface EarthquakeDbDao {
     //----------------------------------------------------------------------------------------------
     @Insert
     void insertEarthquake(Earthquake earthquake);
+
+    // Insert all the earthquakes info get from restful at a new update
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void renewDataInsert(Earthquake... earthquake);
 
 
     //----------------------------------------------------------------------------------------------

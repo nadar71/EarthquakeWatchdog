@@ -9,7 +9,7 @@
         android:id="@+id/summary_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorPrimary"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/colorPrimaryDark"
+            android:background="@color/colorPrimary"
             android:orientation="horizontal">
 
             <TextView
@@ -28,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.7"
-                android:background="@color/colorPrimaryDark"
+                android:background="@color/colorPrimary"
                 android:paddingLeft="5dp"
                 android:paddingTop="1dp"
                 android:paddingRight="5dp"
@@ -43,7 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/colorPrimaryDark"
+                android:background="@color/colorPrimary"
                 android:paddingLeft="5dp"
                 android:paddingTop="1dp"
                 android:paddingRight="5dp"
@@ -58,7 +58,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/colorPrimaryDark"
+            android:background="@color/colorPrimary"
             android:orientation="horizontal">
 
             <TextView
@@ -66,7 +66,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.7"
-                android:background="@color/colorPrimaryDark"
+                android:background="@color/colorPrimary"
                 android:paddingLeft="5dp"
                 android:paddingTop="1dp"
                 android:paddingRight="5dp"
@@ -81,7 +81,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/colorPrimaryDark"
+                android:background="@color/colorPrimary"
                 android:paddingLeft="5dp"
                 android:paddingTop="1dp"
                 android:paddingRight="5dp"
@@ -96,7 +96,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/colorPrimaryDark"
+            android:background="@color/colorPrimary"
             android:orientation="horizontal">
 
             <TextView
@@ -104,7 +104,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.7"
-                android:background="@color/colorPrimaryDark"
+                android:background="@color/colorPrimary"
                 android:paddingLeft="5dp"
                 android:paddingTop="1dp"
                 android:paddingRight="5dp"
@@ -119,7 +119,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/colorPrimaryDark"
+                android:background="@color/colorPrimary"
                 android:paddingLeft="5dp"
                 android:paddingTop="1dp"
                 android:paddingRight="5dp"
@@ -134,7 +134,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/colorPrimaryDark"
+            android:background="@color/colorPrimary"
             android:orientation="horizontal">
 
             <TextView
@@ -142,7 +142,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.7"
-                android:background="@color/colorPrimaryDark"
+                android:background="@color/colorPrimary"
                 android:paddingLeft="5dp"
                 android:paddingTop="1dp"
                 android:paddingRight="5dp"
@@ -157,7 +157,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/colorPrimaryDark"
+                android:background="@color/colorPrimary"
                 android:paddingLeft="5dp"
                 android:paddingTop="1dp"
                 android:paddingRight="5dp"
@@ -172,7 +172,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/colorPrimaryDark"
+            android:background="@color/colorPrimary"
             android:orientation="horizontal">
 
             <TextView
@@ -180,7 +180,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.7"
-                android:background="@color/colorPrimaryDark"
+                android:background="@color/colorPrimary"
                 android:paddingLeft="5dp"
                 android:paddingTop="1dp"
                 android:paddingRight="5dp"
@@ -195,7 +195,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/colorPrimaryDark"
+                android:background="@color/colorPrimary"
                 android:paddingLeft="5dp"
                 android:paddingTop="1dp"
                 android:paddingRight="5dp"
