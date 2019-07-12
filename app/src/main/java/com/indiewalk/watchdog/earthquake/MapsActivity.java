@@ -2,6 +2,9 @@ package com.indiewalk.watchdog.earthquake;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,12 +12,15 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -47,17 +53,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.indiewalk.watchdog.earthquake.UI.MainActivity;
+import com.indiewalk.watchdog.earthquake.UI.MainViewModel;
+import com.indiewalk.watchdog.earthquake.UI.MainViewModelFactory;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
-import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
-import com.indiewalk.watchdog.earthquake.util.AppExecutors;
 import com.indiewalk.watchdog.earthquake.util.ConsentSDK;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
 
 import android.app.AlertDialog;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -86,16 +94,8 @@ public class MapsActivity extends AppCompatActivity
     // Marker for my current position by gps
     Marker              myCurrentPositionMarker = null;
 
-    // List of all the earthquake in db
-    // TODO: retrieve them more efficiently with livedata & c.
-    List<Earthquake> earthquakes;
-
     // Markers associated with earthquake on map
     List<Marker> earthquakesMarkersList;
-
-    // Db reference
-    // TODO : create and interface with repository
-    EarthquakeDatabase eqDb;
 
     // Maps type list
     private static final CharSequence[] MAP_TYPE_ITEMS =
@@ -137,17 +137,6 @@ public class MapsActivity extends AppCompatActivity
         // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
         mAdView.loadAd(ConsentSDK.getAdRequest(MapsActivity.this));
 
-        // get db instance
-        eqDb = EarthquakeDatabase.getDbInstance(getApplicationContext());
-
-        // retrieve eq currently in db, in different thread
-        // TODO: implements livedata/viewmodel/repository
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                earthquakes = eqDb.earthquakeDbDao().loadAll();
-            }
-        });
 
         // init shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -177,6 +166,20 @@ public class MapsActivity extends AppCompatActivity
 
     }
 
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Stop locating device when activity is on pause for battery saving
+     * ---------------------------------------------------------------------------------------------
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        //stop location updates when Activity is no longer active
+        if (mFusedLocationClient != null) {
+            mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+        }
+    }
 
     /**
      * ---------------------------------------------------------------------------------------------
@@ -194,26 +197,11 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
-
     /**
      * ---------------------------------------------------------------------------------------------
-     * Stop locating device when activity is on pause for battery saving
-     * ---------------------------------------------------------------------------------------------
-     */
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        //stop location updates when Activity is no longer active
-        if (mFusedLocationClient != null) {
-            mFusedLocationClient.removeLocationUpdates(mLocationCallback);
-        }
-    }
-
-
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Show map, equakes markers, device marker
+     * Callback when map is available.
+     * Show map, equakes markers, device marker.
+     * When {@localizeUser()} ended
      * @param googleMap
      * ---------------------------------------------------------------------------------------------
      */
@@ -225,16 +213,110 @@ public class MapsActivity extends AppCompatActivity
         // set equakes markers on map
         earthquakesMarkersList = new ArrayList<Marker>();
 
-        for(Earthquake earthquake : earthquakes) {
+        // Get eq list through LiveData
+        MainViewModelFactory factory = new MainViewModelFactory(MainActivity.LOAD_ALL_NO_ORDER);
+        final MainViewModel viewModel = ViewModelProviders.of(this,factory).get(MainViewModel.class);
+
+        LiveData<List<Earthquake>> equakes = viewModel.getEqList();
+        equakes.observe(this, new Observer<List<Earthquake>>() {
+            @Override
+            public void onChanged(@Nullable List<Earthquake> earthquakeList) {
+
+                setMarkerForEachEq(earthquakeList);
+
+            }
+        });
+
+
+        // set device location request params
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(120000); // two minute interval
+        mLocationRequest.setFastestInterval(120000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+
+        // -1- localize user only if MANUAL LOCALIZATION OFF
+        if ( manualLocIsOn == false) {
+            // support for os version newer and older
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    //Location Permission already granted
+                    mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+                    mGoogleMap.setMyLocationEnabled(true);
+
+                    // set user marker in case of previous coordinates not default
+                    checkPrevious();
+
+                    // ask for gps if not enabled
+                    showGpsRequestAlert();
+                } else {
+                    //Request Location Permission
+                    checkLocationPermission();
+
+                    // ask for gps if not enabled
+                    showGpsRequestAlert();
+                }
+            } else {
+                mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+                mGoogleMap.setMyLocationEnabled(true);
+
+
+                // set user marker in case of previous coordinates not default
+                checkPrevious();
+
+                // ask for gps if not enabled
+                showGpsRequestAlert();
+            }
+
+        // -2- in case on MANUAL LOCALIZATION ON
+        } else {
+            // get previous set position
+            lat_s = sharedPreferences.getString(getString(R.string.device_lat),Double.toString(MainActivity.DEFAULT_LAT));
+            lng_s = sharedPreferences.getString(getString(R.string.device_lng),Double.toString(MainActivity.DEFAULT_LNG));
+
+            LatLng latLng = new LatLng(Double.parseDouble(lat_s),Double.parseDouble(lng_s));
+
+            // set marker
+            myCurrentPositionMarker = mGoogleMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .title("Your Manual position")
+                    .snippet("Latitude : " + lat_s + "\n" + "Longitude : " + lng_s));
+            myCurrentPositionMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+
+            // allow to change location
+            manualLocalizationAlert();
+
+            // fly to the new location
+            animateCameraTo(Double.parseDouble(lat_s), Double.parseDouble(lng_s),3f);
+        }
+
+        // zoom on a particular equake if request came from main activity
+        zoomOnEquake();
+
+    }
+
+
+
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Set marker and details on click for each eq on map
+     * @param earthquakeList
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void setMarkerForEachEq(@Nullable List<Earthquake> earthquakeList) {
+        for(Earthquake earthquake : earthquakeList) {
             // convert eq position icon to bitmap
-            BitmapDescriptor eqMarkerIcon = MyUtil.getBitmapFromVector(context, R.drawable.ic_earthquake_pointer,
+            BitmapDescriptor eqMarkerIcon = MyUtil.getBitmapFromVector(context,
+                    R.drawable.ic_earthquake_pointer,
                     MyUtil.getMagnitudeColor(earthquake.getMagnitude(),context));
 
             earthquakesMarkersList.add(mGoogleMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(earthquake.getLatitude(), earthquake.getLongitude()))
-                            .title("Location : " + earthquake.getLocation())
-                            .snippet("Magnitude : " + earthquake.getMagnitude())
-                            .icon(eqMarkerIcon)
+                    .position(new LatLng(earthquake.getLatitude(), earthquake.getLongitude()))
+                    .title("Location : " + earthquake.getLocation())
+                    .snippet("Magnitude : " + earthquake.getMagnitude())
+                    .icon(eqMarkerIcon)
             ));
 
             mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
@@ -268,78 +350,8 @@ public class MapsActivity extends AppCompatActivity
             });
 
 
-
             Log.d(TAG, "onMapReady: latitude : " + earthquake.getLatitude() + " longitude : " + earthquake.getLongitude());
         }
-
-
-
-
-        // set device location request params
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(120000); // two minute interval
-        mLocationRequest.setFastestInterval(120000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-
-        // localize user only if manual localization is not set
-        if ( manualLocIsOn == false) {
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    //Location Permission already granted
-                    mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-                    mGoogleMap.setMyLocationEnabled(true);
-
-                    // set user marker in case of previous coordinates not default
-                    checkPrevious();
-
-                    // ask for gps if not enabled
-                    showGpsRequestAlert();
-                } else {
-                    //Request Location Permission
-                    checkLocationPermission();
-
-                    // ask for gps if not enabled
-                    showGpsRequestAlert();
-                }
-            } else {
-                mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-                mGoogleMap.setMyLocationEnabled(true);
-
-                // set user marker in case of previous coordinates not default
-                checkPrevious();
-
-                // ask for gps if not enabled
-                showGpsRequestAlert();
-            }
-
-        // in case on manual localization on
-        } else {
-
-            // get previous set position
-            lat_s = sharedPreferences.getString(getString(R.string.device_lat),Double.toString(MainActivity.DEFAULT_LAT));
-            lng_s = sharedPreferences.getString(getString(R.string.device_lng),Double.toString(MainActivity.DEFAULT_LNG));
-
-            LatLng latLng = new LatLng(Double.parseDouble(lat_s),Double.parseDouble(lng_s));
-
-            // set marker
-            myCurrentPositionMarker = mGoogleMap.addMarker(new MarkerOptions()
-                    .position(latLng)
-                    .title("Your Manual position")
-                    .snippet("Latitude : " + lat_s + "\n" + "Longitude : " + lng_s));
-            myCurrentPositionMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-
-            // allow to change location
-            manualLocalizationAlert();
-
-            // fly to the new location
-            animateCameraTo(Double.parseDouble(lat_s), Double.parseDouble(lng_s),3f);
-        }
-
-        // zoom on a particular equake if request came from main activity
-        zoomOnEquake();
-
-
     }
 
 
@@ -462,13 +474,16 @@ public class MapsActivity extends AppCompatActivity
             userLocationMarker(Double.parseDouble(lat_s), Double.parseDouble(lng_s));
         }
 
+        // save in preferences
+        setLocationAddress(Double.parseDouble(lat_s), Double.parseDouble(lng_s));
+
     }
 
 
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Check if there a location manually set
+     * Check if there is a location manually set
      * ---------------------------------------------------------------------------------------------
      */
     private void checkManualLocation(){
@@ -512,7 +527,7 @@ public class MapsActivity extends AppCompatActivity
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Set user locations coordinates
+     * Set user locations coordinates in case of MANUAL LOCALIZATION OFF
      * ---------------------------------------------------------------------------------------------
      */
     LocationCallback mLocationCallback = new LocationCallback() {
@@ -542,6 +557,10 @@ public class MapsActivity extends AppCompatActivity
                 editor.putString(getString(R.string.device_lng), Double.toString(userLng));
                 editor.apply();
 
+                // set address location in pref
+                setLocationAddress(userLat, userLng);
+
+
                 // stop progress bar
                 dialog.dismiss();
 
@@ -555,6 +574,50 @@ public class MapsActivity extends AppCompatActivity
     };
 
 
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Recover and save location address in preferences
+     * @param userLat
+     * @param userLng
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void setLocationAddress(double userLat, double userLng) {
+        //Set Address
+        String address;
+        try {
+            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(userLat, userLng, 1);
+            if (addresses != null && addresses.size() > 0) {
+
+                // String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                String city = addresses.get(0).getLocality();
+                // String state = addresses.get(0).getAdminArea();
+                // String country = addresses.get(0).getCountryName();
+                String postalCode = addresses.get(0).getPostalCode();
+                String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
+
+                address = city + " " + postalCode + " " + knownName;
+
+                // Log.d(TAG, "getAddress:  address" + address);
+                Log.d(TAG, "getAddress:  city : " + city);
+                // Log.d(TAG, "getAddress:  state" + state);
+                Log.d(TAG, "getAddress:  postalCode : " + postalCode);
+                Log.d(TAG, "getAddress:  knownName : " + knownName);
+
+                Log.d(TAG, "Address : "+ address);
+
+                SharedPreferences locationPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+                SharedPreferences.Editor editor = locationPreferences.edit();
+                editor.putString(getString(R.string.location_address), address);
+                editor.apply();
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
 
 
     /**
@@ -825,7 +888,7 @@ public class MapsActivity extends AppCompatActivity
 
                 // set flag for manual_Localization_On
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(getString(R.string.manual_Localization_On), "true");
+                editor.putString( getString(R.string.manual_Localization_On), "true");
                 editor.apply();
 
 
@@ -834,6 +897,10 @@ public class MapsActivity extends AppCompatActivity
 
                 editor.putString(getString(R.string.device_lng),Double.toString(latLng.longitude));
                 editor.apply();
+
+
+                // save in preferences
+                setLocationAddress(latLng.latitude, latLng.longitude);
 
                 manualLocIsOn = true;
 

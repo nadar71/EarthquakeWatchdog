@@ -16,26 +16,36 @@
 
     <ListPreference
         android:defaultValue="@string/settings_distance_unit_by_default"
-        android:entries="@array/settings_distance_unit_labels"
-        android:entryValues="@array/settings_distance_unit_values"
+        android:entries="@array/settings_array_distance_unit_labels"
+        android:entryValues="@array/settings_array_distance_unit_values"
         android:key="@string/settings_distance_unit_by_key"
         android:title="@string/settings_distance_unit_label" />
 
     <ListPreference
         android:defaultValue="@string/settings_min_magnitude_default"
-        android:entries="@array/settings_min_magnitude_labels"
-        android:entryValues="@array/settings_min_magnitude_values"
+        android:entries="@array/settings_array_min_magnitude_labels"
+        android:entryValues="@array/settings_array_min_magnitude_values"
         android:key="@string/settings_min_magnitude_key"
         android:title="@string/settings_min_magnitude_label" />
 
-
+    <!-- // TODO : must delete this part -->
+    <!--
     <ListPreference
         android:defaultValue="@string/settings_max_equakes_default"
         android:entries="@array/settings_max_earthquakes_labels"
         android:entryValues="@array/settings_max_earthquakes_values"
         android:key="@string/settings_max_equakes_key"
         android:title="@string/settings_max_equakes_label" />
+    -->
+
+    <ListPreference
+        android:defaultValue="@string/settings_date_filter_default"
+        android:entries="@array/settings_array_date_filter_labels"
+        android:entryValues="@array/settings_array_date_filter_values"
+        android:key="@string/settings_date_filter_key"
+        android:title="@string/settings_date_filter_label" />
     </PreferenceCategory>
+
 
     <PreferenceCategory
         android:title="@string/category_help_title">

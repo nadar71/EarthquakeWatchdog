@@ -21,14 +21,14 @@ import java.util.ArrayList;
 /**
  * ---------------------------------------------------------------------------------------------
  * Class which do all the stuff for remote request to RESTFul service
- * USED INSIDE LOADER CALLBACK
+ * USED INSIDE LOADER CALLBACK and...
  * ---------------------------------------------------------------------------------------------
  */
 
-public class EarthQuakeQuery {
+public class EarthQuakeNetworkRequest {
 
     // log tag definition
-    private static final String TAG = EarthQuakeQuery.class.getName();
+    private static final String TAG = EarthQuakeNetworkRequest.class.getName();
     // tmp data structure for returning results
     private ArrayList<Earthquake> earthquakes = null;
 
@@ -210,7 +210,6 @@ public class EarthQuakeQuery {
 
                 // add to list of all earthquakes
                 earthquakes.add(tmp);
-
             }
 
 

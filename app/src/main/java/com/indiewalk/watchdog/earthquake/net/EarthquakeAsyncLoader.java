@@ -33,7 +33,7 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
     // query url
     private String queryUrl;
 
-    // tmp list for getting the internediate result in extractFeatureFromJson
+    // tmp list for getting the intermediate result in extractFeatureFromJson
     private ArrayList<Earthquake> earthquakes = null;
 
     // Preferences value
@@ -74,11 +74,8 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
             return null;
         }
 
-        // setup preferences
-        // checkPreferences();
-
         // create instance of request and collect the result in ArrayList<Earthquake>
-        earthquakes = new EarthQuakeQuery().fetchEarthquakeData(queryUrl);
+        earthquakes = new EarthQuakeNetworkRequest().fetchEarthquakeData(queryUrl);
         Log.i(TAG, "loadInBackground: loadInBackground ended, returning data requested.");
 
 
@@ -93,10 +90,8 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
             eqDb.earthquakeDbDao().insertEarthquake(earthquake);
         }
 
-
         // TODO : check if there are specific visualization preferences for showing equakes
         // TODO : do not forget to clear the  list before retrieving data
-
 
         // return to main activity for list view
         // TODO : return true

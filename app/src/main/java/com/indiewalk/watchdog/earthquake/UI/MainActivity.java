@@ -1,6 +1,10 @@
 
 package com.indiewalk.watchdog.earthquake.UI;
 
+
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,8 +15,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,7 +29,6 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-// Loader lib stuff
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Loader;
@@ -34,7 +39,6 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdView;
 import com.indiewalk.watchdog.earthquake.MapsActivity;
 import com.indiewalk.watchdog.earthquake.R;
-import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
 import com.indiewalk.watchdog.earthquake.net.EarthquakeAsyncLoader;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 import com.indiewalk.watchdog.earthquake.util.ConsentSDK;
@@ -46,43 +50,50 @@ import java.util.Arrays;
 import java.util.List;
 
 
-// ** for DEBUG reason
 
 
-public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<List<Earthquake>> {
+
+public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<List<Earthquake>>,
+        SharedPreferences.OnSharedPreferenceChangeListener{
 
     public static final String TAG = MainActivity.class.getName();
 
+    // this is the default position, google at mountain view
     public static final double DEFAULT_LAT = 37.4219999;
     public static final double DEFAULT_LNG = -122.0862515;
+    public static final String DEFAULT_ADDRESS = "Mountain View,CA";
+
+    // Key constant for view model parameters
+    public static final String LOAD_ALL_NO_ORDER       = "load_all_no_order";
+    public static final String ORDER_BY_DESC_MAGNITUDE = "magnitude_desc_ordering";
+    public static final String ORDER_BY_ASC_MAGNITUDE  = "magnitude_asc_ordering";
+    public static final String ORDER_BY_MOST_RECENT    = "most_recent";
+    public static final String ORDER_BY_NEAREST        = "nearest";
+    public static final String ORDER_BY_FURTHEST = "farthest";
+
+    private String lastUpdate = "";
+
+    // TODO : Temporary, must use only onPreferenceChanges
+    // flag for reloading data from remote due to different time range requested for data in preferences
+    public static boolean NEED_REMOTE_UPDATE           = false;
 
     ListView earthquakeListView;
     private List<Earthquake> earthquakes;
 
-    //Progress bar
     private ProgressBar loadingInProgress;
 
-    // Empty view
     private TextView emptyListText;
+    private TextView order_value_tv, minMagn_value_tv,lastUp_value_tv,eq_period_value_tv, location_value_tv;
+    private View filter_memo;
 
-    // ListView Adapter
     private EarthquakeAdapter adapter;
 
-    // URL to query the USGS dataset for earthquake information 
-    private static final String USGS_REQUEST_URL =
-            "https://earthquake.usgs.gov/fdsnws/event/1/query";
-            // "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&minmag=6&limit=10"; // debug
 
-
-    // Constant  id for loader which retrieve data from remote source (not necessary there is only it!)
+    // Id for loader which retrieve data from remote source (not necessary there is only it!)
     private static final int EARTHQUAKE_LOADER_ID = 1;
 
     // Preferences value
-    String minMagnitude, orderBy,lat_s, lng_s, numEquakes;
-
-    // Db reference
-    // TODO : debug, use livedata/viewmodel/repository
-    EarthquakeDatabase eqDb;
+    String minMagnitude, orderBy,lat_s, lng_s, dateFilter, dateFilterLabel, location_address;
 
     // SharePreferences ref
     SharedPreferences sharedPreferences;
@@ -97,6 +108,17 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
+
+        order_value_tv     = findViewById(R.id.order_value_tv);
+        minMagn_value_tv   = findViewById(R.id.minMagn_value_tv);
+        lastUp_value_tv    = findViewById(R.id.lastUp_value_tv);
+        eq_period_value_tv = findViewById(R.id.eq_period_value_tv);
+        location_value_tv  = findViewById(R.id.location_value_tv);
+        loadingInProgress  = findViewById(R.id.loading_spinner);
+        emptyListText      = findViewById(R.id.empty_view);
+        filter_memo        = findViewById(R.id.summary_layout);
+
 
         // Initialize ConsentSDK
         ConsentSDK consentSDK = new ConsentSDK.Builder(this)
@@ -158,16 +180,12 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         });
 
 
-
-        // get db instance
-        // TODO : debug, use livedata/viewmodel/repository
-        eqDb = EarthquakeDatabase.getDbInstance(getApplicationContext());
-
         // init shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        // Find a reference to the {@link ListView} in the layout : using listView because it has only tens of
-        // entry, otherwise RecycleView would be better
+        // Find a reference to the {@link ListView} in the layout : using listView because
+        // at the momento it has only tens of entry.
+        // TODO : It will upgrade to RecycleView when a time interval would be available in preferences
         earthquakeListView = (ListView) findViewById(R.id.list);
 
         // Create a new {@link EarthquakeAdapter} of {@link Earthquakes} objects
@@ -177,35 +195,77 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         earthquakeListView.setAdapter(adapter);
 
 
-
-
-        // Click on item
+        // Clicking on item shows an action dialog
         earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
                 showActionDialog(position);
-                /*
-                // get url data
-                Earthquake earthquake = earthquakes.get(position);
-                String url = earthquake.getUrl();
-                Log.i("setOnItemClickListener", "onItemClick: "+url);
-
-                // Open the related url page of the eq clicked
-                Uri webpage = Uri.parse(url);
-                Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
-                startActivity(Intent.createChooser(webIntent, "Open details"));
-                */
             }
         });
 
-        // check preferences for changes
+
+        // set preferences value in case of changes
+        // checkPreferences();
+
+        // TODO : temporary, must be set in repository init
+        // get aware of date filter changes
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(this);
+
+    }
+
+
+
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Check if device location is stored by previous accessing in-map section, and in case retrieve
+     * coordinates
+     * ---------------------------------------------------------------------------------------------
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // update local vars for preferences changes
         checkPreferences();
 
         // Call loader for retrieving data
-        retrieveRemoteData();
+        retrieveData();
+    }
 
 
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Set with the purpose of unregistering preferences changes
+     * ---------------------------------------------------------------------------------------------
+     */
+    @Override
+    protected void onDestroy() {
+        // TODO : temporary, must be set in repository init
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
+        super.onStop();
+    }
+
+
+
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Registering preferences change only for data filter changes
+     * @param sharedPreferences
+     * @param key
+     * ---------------------------------------------------------------------------------------------
+     */
+    // TODO : temporary, must be set in repository init
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.d("Dict", "PreferenceChanged: " + key);
+        if (key.equals(getString(R.string.settings_date_filter_key))){
+            NEED_REMOTE_UPDATE = true;
+        }
     }
 
 
@@ -263,27 +323,10 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
 
 
-
-
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Check if device location is stored by previous accessing in-map section, and in case retrieve
-     * coordinates
-     * ---------------------------------------------------------------------------------------------
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // check preferences for changes
-        checkPreferences();
-
-    }
-
-
     /**
      * ---------------------------------------------------------------------------------------------
      * Set and check location coordinates from shared preferences.
-     * If not set, put defaut value
+     * If not set, put default value
      * ---------------------------------------------------------------------------------------------
      */
     private void checkPreferences() {
@@ -318,35 +361,307 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                 getString(R.string.settings_order_by_key),
                 getString(R.string.settings_order_by_default));
 
+
+        // recover preferred date filter by param from prefs or set a default from string value
+        dateFilter = sharedPreferences.getString(
+                getString(R.string.settings_date_filter_key),
+                getString(R.string.settings_date_filter_default));
+
+        if ((dateFilter.equals(getString(R.string.settings_date_period_today_value))))
+            dateFilterLabel = getString(R.string.settings_date_period_today_label);
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_24h_value))))
+            dateFilterLabel = getString(R.string.settings_date_period_24h_label);
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_48h_value))))
+            dateFilterLabel = getString(R.string.settings_date_period_48h_label);
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_week_value))))
+            dateFilterLabel = getString(R.string.settings_date_period_week_label);
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_month_value))))
+            dateFilterLabel = getString(R.string.settings_date_period_month_label);
+
+
+        // recover min magnitude value from prefs or set a default from string value
+        location_address = sharedPreferences.getString(
+                getString(R.string.location_address),
+                DEFAULT_ADDRESS);
+
+        /* left in case of debug
         // recover preferred equakes num to display
         numEquakes = sharedPreferences.getString(
                 getString(R.string.settings_max_equakes_key),
                 getString(R.string.settings_max_equakes_default));
+        */
 
-        // TODO : delete when all is done through repository
-        if (orderBy.isEmpty() || orderBy == null) {
-            orderBy = getString(R.string.settings_order_by_default);
-        }
+        // check preferences safety
+        safePreferencesValue(editor);
+
+        // summary above list
+        setFilterSummary();
     }
 
-    
+
+
+
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * making code more robust checking if for same reasons the defaut value stored are null or
+     * not equals to none of the preferences stored values (e.g.  in case of key value change on code
+     * but user saved with the previous one with previous app version )
+     * @param editor
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void safePreferencesValue(SharedPreferences.Editor editor) {
+
+        // minMagnitude safe
+        if (minMagnitude.isEmpty() || minMagnitude == null) {
+            minMagnitude = getString(R.string.settings_min_magnitude_default);
+            editor.putString(getString(R.string.settings_min_magnitude_key), getString(R.string.settings_min_magnitude_default));
+        }
+
+        if ((!minMagnitude.equals(getString(R.string.settings_1_0_min_magnitude_value))) &&
+            (!minMagnitude.equals(getString(R.string.settings_2_0_min_magnitude_value))) &&
+            (!minMagnitude.equals(getString(R.string.settings_3_0_min_magnitude_value))) &&
+            (!minMagnitude.equals(getString(R.string.settings_4_0_min_magnitude_value))) &&
+            (!minMagnitude.equals(getString(R.string.settings_4_5_min_magnitude_label))) &&
+            (!minMagnitude.equals(getString(R.string.settings_5_0_min_magnitude_label))) &&
+            (!minMagnitude.equals(getString(R.string.settings_5_5_min_magnitude_value))) &&
+            (!minMagnitude.equals(getString(R.string.settings_6_0_min_magnitude_value))) &&
+            (!minMagnitude.equals(getString(R.string.settings_6_5_min_magnitude_value)))
+        ){
+            minMagnitude = getString(R.string.settings_min_magnitude_default);
+            editor.putString(getString(R.string.settings_min_magnitude_key), getString(R.string.settings_min_magnitude_default));
+        }
+
+        // orderBy safe
+        if (orderBy.isEmpty() || orderBy == null) {
+            orderBy = getString(R.string.settings_order_by_default);
+            editor.putString(getString(R.string.settings_order_by_key), getString(R.string.settings_order_by_default));
+        }
+
+        if ((!orderBy.equals(getString(R.string.settings_order_by_desc_magnitude_value))) &&
+            (!orderBy.equals(getString(R.string.settings_order_by_asc_magnitude_value))) &&
+            (!orderBy.equals(getString(R.string.settings_order_by_most_recent_value))) &&
+            (!orderBy.equals(getString(R.string.settings_order_by_nearest_value))) &&
+            (!orderBy.equals(getString(R.string.settings_order_by_farthest_value)))
+        ){
+            orderBy = getString(R.string.settings_order_by_default);
+            editor.putString(getString(R.string.settings_order_by_key), getString(R.string.settings_order_by_default));
+        }
+
+
+        /* left in case of debug
+        // numEquakes safe
+        if (numEquakes.isEmpty() || numEquakes == null) {
+            numEquakes = getString(R.string.settings_max_equakes_default);
+            editor.putString(getString(R.string.settings_max_equakes_key), getString(R.string.settings_max_equakes_default));
+        }
+
+        if ((!numEquakes.equals(getString(R.string.settings_max_30_equakes_value))) &&
+            (!numEquakes.equals(getString(R.string.settings_max_60_equakes_value))) &&
+            (!numEquakes.equals(getString(R.string.settings_max_90_equakes_value))) &&
+            (!numEquakes.equals(getString(R.string.settings_max_120_equakes_value)))
+        ){
+            orderBy = getString(R.string.settings_max_equakes_default);
+            editor.putString(getString(R.string.settings_order_by_key), getString(R.string.settings_order_by_default));
+        }
+        */
+
+
+        // date filter safe
+        if (dateFilter.isEmpty() || dateFilter == null) {
+            dateFilter = getString(R.string.settings_date_filter_default);
+            editor.putString(getString(R.string.settings_date_filter_key), getString(R.string.settings_date_filter_default));
+        }
+
+        if ((!dateFilter.equals(getString(R.string.settings_date_period_today_value))) &&
+            (!dateFilter.equals(getString(R.string.settings_date_period_24h_value))) &&
+            (!dateFilter.equals(getString(R.string.settings_date_period_48h_value))) &&
+            (!dateFilter.equals(getString(R.string.settings_date_period_week_value))) &&
+            (!dateFilter.equals(getString(R.string.settings_date_period_month_value)))
+        ){
+            dateFilter = getString(R.string.settings_date_filter_default);
+            editor.putString(getString(R.string.settings_date_filter_key), getString(R.string.settings_date_filter_default));
+        }
+
+
+        if (location_address.isEmpty() || location_address == null) {
+            location_address = DEFAULT_ADDRESS;
+            editor.putString(getString(R.string.location_address), location_address);
+        }
+
+    }
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Summarize the filter settings for the eq list shown
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void setFilterSummary() {
+        // set up filter summary
+        // order by
+        if (orderBy.equals(getString(R.string.settings_order_by_desc_magnitude_value)))
+            order_value_tv.setText(getString(R.string.settings_order_by_desc_magnitude_label));
+
+        if (orderBy.equals(getString(R.string.settings_order_by_asc_magnitude_value)))
+            order_value_tv.setText(getString(R.string.settings_order_by_asc_magnitude_label));
+
+        if (orderBy.equals(getString(R.string.settings_order_by_most_recent_value)))
+            order_value_tv.setText(getString(R.string.settings_order_by_most_recent_label));
+
+        if (orderBy.equals(getString(R.string.settings_order_by_nearest_value)))
+            order_value_tv.setText(getString(R.string.settings_order_by_nearest_label));
+
+        if (orderBy.equals(getString(R.string.settings_order_by_farthest_value)))
+            order_value_tv.setText(getString(R.string.settings_order_by_farthest_label));
+
+        // min magnitude
+        minMagn_value_tv.setText(minMagnitude);
+
+        // last update time
+        lastUp_value_tv.setText(lastUpdate);
+
+        // time range
+        if ((dateFilter.equals(getString(R.string.settings_date_period_today_value))))
+            eq_period_value_tv.setText(getString(R.string.settings_date_period_today_label));
+
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_24h_value))))
+            eq_period_value_tv.setText(getString(R.string.settings_date_period_24h_label));
+
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_48h_value))))
+            eq_period_value_tv.setText(getString(R.string.settings_date_period_48h_label));
+
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_week_value))))
+            eq_period_value_tv.setText(getString(R.string.settings_date_period_week_label));
+
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_month_value))))
+            eq_period_value_tv.setText(getString(R.string.settings_date_period_month_label));
+
+
+        //location address
+        location_value_tv.setText(location_address);
+    }
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Get earthquake list, from db or if necessary from restful service
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void retrieveData() {
+        Log.i(TAG, "retrieveRemoteData: Requesting fresh data.");
+
+
+        // show empty list and load in progress
+        earthquakeListView.setEmptyView(emptyListText);
+        emptyListText.setText(R.string.searching);
+
+        // TODO : temporary, data must be updated setting an observer in repository on specific preference
+        // check if date filter or other preferences which need remote update has been changed
+        if (NEED_REMOTE_UPDATE) {
+            retrieveRemoteData();
+            NEED_REMOTE_UPDATE = false;
+        } else {
+            updateList();
+        }
+
+    }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Update the adapter/equakes list, based on user's preferences, using viewmodel/livedata
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void updateList() {
+        Log.i(TAG, "updateList Executing ");
+        // clear the adapter of previous data
+        adapter.clear();
+
+        checkPreferences();
+
+
+        // set equakes list showing based on user preferences
+        if (orderBy.equals(getString(R.string.settings_order_by_desc_magnitude_value))){
+            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_DESC_MAGNITUDE);
+            filterDatafromRepository(factory);
+
+        } else if (orderBy.equals(getString(R.string.settings_order_by_asc_magnitude_value))){
+            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_ASC_MAGNITUDE);
+            filterDatafromRepository(factory);
+
+        } else if (orderBy.equals(getString(R.string.settings_order_by_most_recent_value))){
+            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_MOST_RECENT);
+            filterDatafromRepository(factory);
+
+        }  else if (orderBy.equals(getString(R.string.settings_order_by_nearest_value))){
+            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_NEAREST);
+            filterDatafromRepository(factory);
+
+        }  else if (orderBy.equals(getString(R.string.settings_order_by_farthest_value))){
+            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_FURTHEST);
+            filterDatafromRepository(factory);
+
+        }
+
+
+
+    }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Make repository request for specific data and ordering
+     * @param factory
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void filterDatafromRepository(MainViewModelFactory factory) {
+        // Get eq list through LiveData
+        final MainViewModel viewModel = ViewModelProviders.of(this,factory).get(MainViewModel.class);
+
+        LiveData<List<Earthquake>> equakes = viewModel.getEqList();
+        equakes.observe(this, new Observer<List<Earthquake>>() {
+            @Override
+            public void onChanged(@Nullable List<Earthquake> earthquakeEntries) {
+                if (earthquakeEntries != null && !earthquakeEntries.isEmpty()) { // data ready in db
+                    earthquakes = earthquakeEntries;
+                    updateAdapter(earthquakeEntries);
+                    showEarthquakeListView();
+                } else {                                                         // waiting for data
+                    // make  a request for remote data using loader
+                    // TODO : incapsulate this check inside repository
+                    // retrieveRemoteData();
+                    // While waiting that the repository getting aware that the eqs lsit is empty
+                    // and ask for a remote update
+                    showLoading();
+                }
+            }
+        });
+    }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Notify and update adapter data
+     * @param earthquakeEntries
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void updateAdapter(@Nullable List<Earthquake> earthquakeEntries) {
+        // delete previous data
+        adapter.clear();
+        adapter.notifyDataSetChanged();
+
+        // add new ones while arriving
+        adapter.addAll(earthquakeEntries);
+        adapter.notifyDataSetChanged();
+    }
 
     /**
      * ---------------------------------------------------------------------------------------------
      * Retrieve Remote Data.
-     * Check internet connectin availability first
+     * Check internet connection availability first
      * ---------------------------------------------------------------------------------------------
      */
     private void retrieveRemoteData() {
-        Log.i(TAG, "retrieveRemoteData: Requesting fresh data.");
-        // set progress bar
-        loadingInProgress = findViewById(R.id.loading_spinner);
-
-        // set Empty View in case of List empty
-        emptyListText = findViewById(R.id.empty_view);
-        earthquakeListView.setEmptyView(emptyListText);
-        emptyListText.setText(R.string.searching);
-
         // check connection
         // reference to connection manager
         ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -355,17 +670,55 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         NetworkInfo netinfo = connManager.getActiveNetworkInfo();
 
         if(netinfo != null && netinfo.isConnected()){
+            showLoading();
+
             // LoaderManager reference
             LoaderManager loaderManager = getLoaderManager();
             // Init loader : id above, bundle = null , this= current activity for LoaderCallbacks
             loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
+
         }else{
-
-            // hide progress bar
-            loadingInProgress.setVisibility(View.GONE);
-            emptyListText.setText(R.string.no_internet_connection);
-
+            showNoInternetConnection();
         }
+
+    }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Show No Internet Connection view
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void showNoInternetConnection() {
+        // hide progress bar
+        loadingInProgress.setVisibility(View.GONE);
+        filter_memo.setVisibility(View.INVISIBLE);
+        earthquakeListView.setVisibility(View.GONE);
+        emptyListText.setVisibility(View.VISIBLE);
+        emptyListText.setText(R.string.no_internet_connection);
+    }
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Show loading in progress view, hiding earthquake list
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void showLoading() {
+        loadingInProgress.setVisibility(View.VISIBLE);
+        filter_memo.setVisibility(View.INVISIBLE);
+        earthquakeListView.setVisibility(View.GONE);
+        emptyListText.setVisibility(View.VISIBLE);
+        emptyListText.setText(R.string.searching);
+    }
+
+    /**
+     * Show hearthquake list after loading/retrieving data completed
+     */
+    private void showEarthquakeListView() {
+        loadingInProgress.setVisibility(View.INVISIBLE);
+        filter_memo.setVisibility(View.VISIBLE);
+        earthquakeListView.setVisibility(View.VISIBLE);
+        emptyListText.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -379,7 +732,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     @Override
     public Loader<List<Earthquake>> onCreateLoader(int id, Bundle args) {
         Log.i(TAG, "onCreateLoader: Create a new Loader");
-        String urlReq = composeQueryUrl();
+        String urlReq = MyUtil.composeQueryUrl(dateFilter);
         Log.i(TAG, "onCreateLoader: urlReq : "+urlReq);
         // create a new loader for the url
         return new EarthquakeAsyncLoader(this, urlReq );
@@ -393,22 +746,36 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
      * @param earthquakesReturnedByLoader
      * ---------------------------------------------------------------------------------------------
      */
-    // TODO : use livedata/viewmodel for this: loader don't need to return the equake list structure
+    // TODO : in the future, use livedata/viewmodel for this: loader don't need to return the equake list structure
     // it has been already stored in db; must only return
     @Override
     public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> earthquakesReturnedByLoader) {
         Log.i(TAG, "onLoadFinished: Loader return back with data");
 
         // hide progress bar
-        loadingInProgress.setVisibility(View.GONE);
+        // loadingInProgress.setVisibility(View.GONE);
 
         // Set empty state text to display "No earthquakes found."
         emptyListText.setText(R.string.no_earthquakes);
 
-
         // --> update UI when loader finished
-        if (setEartquakesList(earthquakesReturnedByLoader) == true) {
+        if (setEartquakesList(earthquakesReturnedByLoader)) {
             updateList();
+
+            // store the last update time
+            lastUpdate = MyUtil.formatDateFromMsec(System.currentTimeMillis()) +
+                    " " +
+                    MyUtil.formatTimeFromMsec(System.currentTimeMillis());
+            lastUp_value_tv.setText(lastUpdate);
+
+            filter_memo.setVisibility(View.VISIBLE);
+
+            Toast alert = Toast.makeText(MainActivity.this,
+                    getString(R.string.data_update_toast) + dateFilterLabel
+                    , Toast.LENGTH_LONG);
+            alert.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
+            alert.show();
+
         } else {
             Log.i(TAG, "Problem with earthquake list, is empty. Check the request. ");
         }
@@ -416,45 +783,6 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
     }
 
-
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Update the adapter/equakes list regarding the user preferences
-     * ---------------------------------------------------------------------------------------------
-     */
-
-    // TODO : for debug, use livedata/viewmodel/repository
-    private void updateList() {
-        Log.i(TAG, "updateList Executing ");
-        // clear the adapter of previous data
-        adapter.clear();
-
-        checkPreferences();
-
-        // set equakes list showing based on user preferences
-        if (orderBy.equals(getString(R.string.settings_order_by_magnitude_value))){
-            earthquakes = eqDb.earthquakeDbDao().loadAll_orderby_mag();
-            // add to adapter
-            adapter.addAll(earthquakes);
-
-        } else if (orderBy.equals(getString(R.string.settings_order_by_most_recent_value))){
-            earthquakes = eqDb.earthquakeDbDao().loadAll_orderby_most_recent();
-            // add to adapter
-            adapter.addAll(earthquakes);
-
-        }  else if (orderBy.equals(getString(R.string.settings_order_by_nearest_value))){
-            earthquakes = eqDb.earthquakeDbDao().loadAll_orderby_nearest();
-            // add to adapter
-            adapter.addAll(earthquakes);
-
-        }  else if (orderBy.equals(getString(R.string.settings_order_by_farthest_value))){
-            earthquakes = eqDb.earthquakeDbDao().loadAll_orderby_farthest();
-            // add to adapter
-            adapter.addAll(earthquakes);
-
-        }
-
-    }
 
 
 
@@ -481,7 +809,6 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
      * @return true/false
      * ---------------------------------------------------------------------------------------------
      */
-    // TODO : load from db
     protected boolean setEartquakesList(List<Earthquake> earthquakes){
         if (  (earthquakes != null) && (earthquakes.isEmpty() == false)  ){
             // this.earthquakes = earthquakes;
@@ -496,30 +823,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Compose a query url starting from preferences parameters
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
-    public String composeQueryUrl(){
-        Uri rootUri = Uri.parse(USGS_REQUEST_URL);
-        Uri.Builder builder = rootUri.buildUpon();
 
-        builder.appendQueryParameter("format","geojson");
-        builder.appendQueryParameter("limit",numEquakes);
-        // calculate 30-days ago date and set as start date
-        // String aMonthAgo = MyUtil.oldDate(30).toString();
-        // builder.appendQueryParameter("starttime",aMonthAgo);
-
-        builder.appendQueryParameter("minmag",minMagnitude); // TODO : delete
-        if (!orderBy.equals(getString(R.string.settings_order_by_nearest_value))
-                && !orderBy.equals(getString(R.string.settings_order_by_farthest_value)) ){
-            builder.appendQueryParameter("orderby", orderBy);     // TODO : delete
-        }
-
-        return  builder.toString();
-    }
 
 
     // ---------------------------------------------------------------------------------------------
@@ -550,6 +854,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                 startActivity(setMapIntent);
                 return true;
             case R.id.refresh_action:
+                loadingInProgress.setVisibility(View.VISIBLE);
                 retrieveRemoteData();
                 return true;
             default:
@@ -601,12 +906,12 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         // list of labels for magnitude min  spinner list
         final List<String> magn_list  = new ArrayList<>(); // add header
         magn_list.add(getResources().getString(R.string.spinner_defaultchoice_label));
-        magn_list.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_min_magnitude_labels)));
+        magn_list.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_array_min_magnitude_labels)));
 
         // list of  values corresponding positionally in list to the labels
         final List<String> magn_list_values = new ArrayList<>(); // add header
         magn_list_values.add(getResources().getString(R.string.spinner_defaultchoice_value));
-        magn_list_values.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_min_magnitude_values)));
+        magn_list_values.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_array_min_magnitude_values)));
 
         // put labels in spinner
         ArrayAdapter<String> adapter_02 = new ArrayAdapter<String>(MainActivity.this,
@@ -619,8 +924,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                boolean restartActivity = false;   // need to restart the activity
-                boolean updateList      = false;   // need to sort  the list without restarting activity
+                // boolean restartActivity = false;   // need to restart the activity
+                // boolean updateList      = false;   // need to sort  the list without restarting activity
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
                 // check choices
@@ -640,19 +945,20 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                     editor.putString(getString(R.string.settings_order_by_key),
                             spinner_order_by_choice );
                     editor.apply();
-                    updateList = true;
+                    // updateList = true;
                 }
 
                 if(!spinner_min_magn_choice.equalsIgnoreCase(getResources().getString(R.string.spinner_defaultchoice_value))) {
                     editor.putString(getString(R.string.settings_min_magnitude_key),
                             spinner_min_magn_choice );
                     editor.apply();
-                    restartActivity = true;
+                    // restartActivity = true;
                 }
 
                 Log.i(TAG, "onClick: ");
                 // process choices
 
+                /*
                 if (restartActivity == false){
                     if (updateList == true) {
                         dialog.dismiss();
@@ -663,6 +969,10 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                     dialog.dismiss();
                     MyUtil.restartActivity(MainActivity.this);
                 }
+                */
+
+                dialog.dismiss();
+                MyUtil.restartActivity(MainActivity.this);
 
 
 

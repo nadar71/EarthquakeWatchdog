@@ -3,33 +3,35 @@
 
     <!-- - - - - - - - order by preferences value keys-values array - - - - - - - - - - - - - - -->
     <string-array name="settings_order_by_labels">
-        <item>@string/settings_order_by_magnitude_label</item>
+        <item>@string/settings_order_by_desc_magnitude_label</item>
+        <item>@string/settings_order_by_asc_magnitude_label</item>
         <item>@string/settings_order_by_most_recent_label</item>
         <item>@string/settings_order_by_nearest_label</item>
         <item>@string/settings_order_by_farthest_label</item>
     </string-array>
 
     <string-array name="settings_order_by_values">
-        <item>@string/settings_order_by_magnitude_value</item>
+        <item>@string/settings_order_by_desc_magnitude_value</item>
+        <item>@string/settings_order_by_asc_magnitude_value</item>
         <item>@string/settings_order_by_most_recent_value</item>
         <item>@string/settings_order_by_nearest_value</item>
         <item>@string/settings_order_by_farthest_value</item>
     </string-array>
 
     <!-- - - - - - - - distance unit preferences value keys-values array - - - - - - - - - - - - -->
-    <string-array name="settings_distance_unit_labels">
+    <string-array name="settings_array_distance_unit_labels">
         <item>@string/settings_km_distance_unit_label</item>
         <item>@string/settings_mi_distance_unit_label</item>
     </string-array>
 
-    <string-array name="settings_distance_unit_values">
+    <string-array name="settings_array_distance_unit_values">
         <item>@string/settings_km_distance_unit_value</item>
         <item>@string/settings_mi_distance_unit_value</item>
     </string-array>
 
 
     <!-- - - - - - - min magnitude preferences value keys-values array - - - - - - - - - - - - -->
-    <string-array name="settings_min_magnitude_labels">
+    <string-array name="settings_array_min_magnitude_labels">
         <item>@string/settings_1_0_min_magnitude_label</item>
         <item>@string/settings_2_0_min_magnitude_label</item>
         <item>@string/settings_3_0_min_magnitude_label</item>
@@ -41,7 +43,7 @@
         <item>@string/settings_6_5_min_magnitude_label</item>
     </string-array>
 
-    <string-array name="settings_min_magnitude_values">
+    <string-array name="settings_array_min_magnitude_values">
         <item>@string/settings_1_0_min_magnitude_value</item>
         <item>@string/settings_2_0_min_magnitude_value</item>
         <item>@string/settings_3_0_min_magnitude_value</item>
@@ -69,6 +71,26 @@
         <item>@string/settings_max_120_equakes_value</item>
 
     </string-array>
+
+
+    <!-- - - - - date filter preferences value keys-values array- - - - - - - -->
+    <string-array name="settings_array_date_filter_labels">
+        <item>@string/settings_date_period_today_label</item>
+        <item>@string/settings_date_period_24h_label</item>
+        <item>@string/settings_date_period_48h_label</item>
+        <item>@string/settings_date_period_week_label</item>
+        <item>@string/settings_date_period_month_label</item>
+    </string-array>
+
+    <string-array name="settings_array_date_filter_values">
+        <item>@string/settings_date_period_today_value</item>
+        <item>@string/settings_date_period_24h_value</item>
+        <item>@string/settings_date_period_48h_value</item>
+        <item>@string/settings_date_period_week_value</item>
+        <item>@string/settings_date_period_month_value</item>
+    </string-array>
+
+
 
 
 </resources>

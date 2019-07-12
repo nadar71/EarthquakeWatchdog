@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
@@ -71,12 +72,19 @@ public class SettingSimpleActivity extends AppCompatActivity {
             Preference minMagnitude = findPreference(getString(R.string.settings_min_magnitude_key));
             bindPreferenceSummaryToValue(minMagnitude);
 
+            // TODO : must delete this part
+            /*
             Preference maxEquakesNum = findPreference(getString(R.string.settings_max_equakes_key));
             bindPreferenceSummaryToValue(maxEquakesNum);
-/*
+            */
+
+            Preference dateFilter = findPreference(getString(R.string.settings_date_filter_key));
+            bindPreferenceSummaryToValue(dateFilter);
+
+            /*
             Preference manualLoc = findPreference(getString(R.string.manual_Localization_key));
             bindPreferenceSummaryToValue(manualLoc);
-*/
+            */
 
             // gdprConsentBtn = findViewById(R.id.gdpr_withdraw_btn);
             Preference gdprConsentBtn = findPreference(getString(R.string.gdpr_btn_key));
@@ -140,8 +148,10 @@ public class SettingSimpleActivity extends AppCompatActivity {
 
 
         /**
+         * -----------------------------------------------------------------------------------------
          * Bind prefs text shown below label on prefs changes
          * @param preference
+         * -----------------------------------------------------------------------------------------
          */
         private void bindPreferenceSummaryToValue(Preference preference) {
             preference.setOnPreferenceChangeListener(this);  // bind

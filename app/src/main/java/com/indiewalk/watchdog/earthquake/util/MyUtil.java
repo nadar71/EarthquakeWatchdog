@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
@@ -27,6 +28,50 @@ import java.util.Calendar;
 
 public class MyUtil {
 
+
+    // URL to query the USGS dataset for earthquake information
+    private static final String USGS_REQUEST_URL =
+            "https://earthquake.usgs.gov/fdsnws/event/1/query";
+    // "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&minmag=6&limit=10"; // debug
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Compose a query url starting from preferences parameters
+     * @return
+     * ---------------------------------------------------------------------------------------------
+     */
+    public static String composeQueryUrl(String dateFilter){
+        Uri rootUri = Uri.parse(USGS_REQUEST_URL);
+        Uri.Builder builder = rootUri.buildUpon();
+
+        builder.appendQueryParameter("format","geojson");
+
+        // commented, it creates only problem, will be substituted with user preferred time range
+        // builder.appendQueryParameter("limit",numEquakes);
+
+        // calculate 30-days ago date and set as start date
+        // String aMonthAgo = MyUtil.oldDate(30).toString();
+        // builder.appendQueryParameter("starttime",aMonthAgo);
+
+        int offset = Integer.parseInt(dateFilter);
+        String rangeAgo = MyUtil.oldDate(offset).toString();
+        builder.appendQueryParameter("starttime",rangeAgo);
+
+
+        /*
+        builder.appendQueryParameter("minmag",minMagnitude); // TODO : delete
+
+        if (!orderBy.equals(getString(R.string.settings_order_by_nearest_value))
+                && !orderBy.equals(getString(R.string.settings_order_by_farthest_value)) ){
+            orderBy = getString(R.string.settings_order_by_default);
+            builder.appendQueryParameter("orderby", orderBy);     // TODO : delete
+        }
+        */
+
+
+        return  builder.toString();
+    }
 
     /**
      * ---------------------------------------------------------------------------------------------

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/summary_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/line_01"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/order_label_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.7"
+                android:background="@color/colorPrimary"
+                android:paddingLeft="5dp"
+                android:paddingTop="1dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="1dp"
+                android:text="@string/settings_order_by_label"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/order_value_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                android:paddingLeft="5dp"
+                android:paddingTop="1dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="1dp"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:textSize="14sp"
+                tools:text="Magnitude smaller" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/line_02"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/minMagn_label_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.7"
+                android:background="@color/colorPrimary"
+                android:paddingLeft="5dp"
+                android:paddingTop="1dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="1dp"
+                android:text="@string/settings_min_magnitude_label"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/minMagn_value_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                android:paddingLeft="5dp"
+                android:paddingTop="1dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="1dp"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:textSize="14sp"
+                tools:text="1.0+" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/line_03"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/lastUp_label_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.7"
+                android:background="@color/colorPrimary"
+                android:paddingLeft="5dp"
+                android:paddingTop="1dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="1dp"
+                android:text="@string/last_update_label"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/lastUp_value_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                android:paddingLeft="5dp"
+                android:paddingTop="1dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="1dp"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:textSize="14sp"
+                tools:text="10/10/2019 10:10" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/line_04"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/eq_period_label_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.7"
+                android:background="@color/colorPrimary"
+                android:paddingLeft="5dp"
+                android:paddingTop="1dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="1dp"
+                android:text="@string/time_range_label"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/eq_period_value_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                android:paddingLeft="5dp"
+                android:paddingTop="1dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="1dp"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:textSize="14sp"
+                tools:text="1 week" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/line_05"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/location_label_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.7"
+                android:background="@color/colorPrimary"
+                android:paddingLeft="5dp"
+                android:paddingTop="1dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="1dp"
+                android:text="@string/your_position_label"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/location_value_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                android:paddingLeft="5dp"
+                android:paddingTop="1dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="1dp"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
+                android:textSize="14sp"
+                tools:text="Mountain View, CA" />
+        </LinearLayout>
+
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
