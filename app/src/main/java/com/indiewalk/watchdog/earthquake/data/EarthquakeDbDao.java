@@ -43,9 +43,9 @@ public interface EarthquakeDbDao {
     @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY userDistance asc")
     LiveData<List<Earthquake>> loadAll_orderby_nearest(double min_mag);
 
-    // retrieve all the eqs order by farthest to user
+    // retrieve all the eqs order by furthest to user
     @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY userDistance desc")
-    LiveData<List<Earthquake>> loadAll_orderby_farthest(double min_mag);
+    LiveData<List<Earthquake>> loadAll_orderby_furthest(double min_mag);
 
 
 

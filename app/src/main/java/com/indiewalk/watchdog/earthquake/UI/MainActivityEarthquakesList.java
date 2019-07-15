@@ -1,13 +1,14 @@
-
 package com.indiewalk.watchdog.earthquake.UI;
 
-
+import android.app.AlertDialog;
+import android.app.LoaderManager;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -17,44 +18,40 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.app.LoaderManager;
-import android.app.LoaderManager.LoaderCallbacks;
-import android.content.Loader;
-import android.app.AlertDialog;
-
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdView;
 import com.indiewalk.watchdog.earthquake.MapsActivity;
 import com.indiewalk.watchdog.earthquake.R;
-import com.indiewalk.watchdog.earthquake.net.EarthquakeAsyncLoader;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
+import com.indiewalk.watchdog.earthquake.net.EarthquakeAsyncLoader;
 import com.indiewalk.watchdog.earthquake.util.ConsentSDK;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
 
 
-
-
-public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<List<Earthquake>>,
-        SharedPreferences.OnSharedPreferenceChangeListener{
+public class MainActivityEarthquakesList extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<List<Earthquake>>,
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        EarthquakeListAdapter.ItemClickListener{
 
     public static final String TAG = MainActivity.class.getName();
 
@@ -69,31 +66,31 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     public static final String ORDER_BY_ASC_MAGNITUDE  = "magnitude_asc_ordering";
     public static final String ORDER_BY_MOST_RECENT    = "most_recent";
     public static final String ORDER_BY_NEAREST        = "nearest";
-    public static final String ORDER_BY_FURTHEST = "farthest";
+    public static final String ORDER_BY_FURTHEST       = "furthest";
 
     private String lastUpdate = "";
 
     // TODO : Temporary, must use only onPreferenceChanges
     // flag for reloading data from remote due to different time range requested for data in preferences
-    public static boolean NEED_REMOTE_UPDATE           = false;
+    public static boolean NEED_REMOTE_UPDATE = false;
 
-    ListView earthquakeListView;
+    RecyclerView earthquakeListView;
     private List<Earthquake> earthquakes;
 
     private ProgressBar loadingInProgress;
 
     private TextView emptyListText;
-    private TextView order_value_tv, minMagn_value_tv,lastUp_value_tv,eq_period_value_tv, location_value_tv;
+    private TextView order_value_tv, minMagn_value_tv, lastUp_value_tv, eq_period_value_tv, location_value_tv;
     private View filter_memo;
 
-    private EarthquakeAdapter adapter;
+    private EarthquakeListAdapter adapter;
 
 
     // Id for loader which retrieve data from remote source (not necessary there is only it!)
     private static final int EARTHQUAKE_LOADER_ID = 1;
 
     // Preferences value
-    String minMagnitude, orderBy,lat_s, lng_s, dateFilter, dateFilterLabel, location_address;
+    String minMagnitude, orderBy, lat_s, lng_s, dateFilter, dateFilterLabel, location_address;
 
     // SharePreferences ref
     SharedPreferences sharedPreferences;
@@ -102,22 +99,20 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     private AdView mAdView;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_activity);
+        setContentView(R.layout.main_activity_earthquakes_list);
 
 
-        order_value_tv     = findViewById(R.id.order_value_tv);
-        minMagn_value_tv   = findViewById(R.id.minMagn_value_tv);
-        lastUp_value_tv    = findViewById(R.id.lastUp_value_tv);
+        order_value_tv = findViewById(R.id.order_value_tv);
+        minMagn_value_tv = findViewById(R.id.minMagn_value_tv);
+        lastUp_value_tv = findViewById(R.id.lastUp_value_tv);
         eq_period_value_tv = findViewById(R.id.eq_period_value_tv);
-        location_value_tv  = findViewById(R.id.location_value_tv);
-        loadingInProgress  = findViewById(R.id.loading_spinner);
-        emptyListText      = findViewById(R.id.empty_view);
-        filter_memo        = findViewById(R.id.summary_layout);
+        location_value_tv = findViewById(R.id.location_value_tv);
+        loadingInProgress = findViewById(R.id.loading_spinner);
+        emptyListText = findViewById(R.id.empty_view);
+        filter_memo = findViewById(R.id.summary_layout);
 
 
         // Initialize ConsentSDK
@@ -134,31 +129,30 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         consentSDK.checkConsent(new ConsentSDK.ConsentCallback() {
             @Override
             public void onResult(boolean isRequestLocationInEeaOrUnknown) {
-                Log.i("gdpr_TAG", "onResult: isRequestLocationInEeaOrUnknown : "+isRequestLocationInEeaOrUnknown);
+                Log.i("gdpr_TAG", "onResult: isRequestLocationInEeaOrUnknown : " + isRequestLocationInEeaOrUnknown);
                 // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
-                mAdView.loadAd(ConsentSDK.getAdRequest(MainActivity.this));
+                mAdView.loadAd(ConsentSDK.getAdRequest(MainActivityEarthquakesList.this));
             }
         });
-
 
 
         mAdView = findViewById(R.id.adView);
 
         // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
-        mAdView.loadAd(ConsentSDK.getAdRequest(MainActivity.this));
+        mAdView.loadAd(ConsentSDK.getAdRequest(MainActivityEarthquakesList.this));
 
 
         mAdView.setAdListener(new AdListener() {
             @Override
             public void onAdLoaded() {
                 // Code to be executed when an ad finishes loading.
-                // Toast.makeText(MainActivity.this, "Adloaded ok", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(MainActivityEarthquakesList.this, "Adloaded ok", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onAdFailedToLoad(int errorCode) {
                 // Code to be executed when an ad request fails.
-                // Toast.makeText(MainActivity.this, "Adloaded FAILED TO LOAD "+errorCode, Toast.LENGTH_LONG).show();
+                // Toast.makeText(MainActivityEarthquakesList.this, "Adloaded FAILED TO LOAD "+errorCode, Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -183,25 +177,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         // init shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        // Find a reference to the {@link ListView} in the layout : using listView because
-        // at the momento it has only tens of entry.
-        earthquakeListView = (ListView) findViewById(R.id.list);
-
-        // Create a new {@link EarthquakeAdapter} of {@link Earthquakes} objects
-        adapter = new EarthquakeAdapter(this, new ArrayList<Earthquake>());
-
-        // Set the adapter on the {@link ListView} so the list can be populated in the user interface
-        earthquakeListView.setAdapter(adapter);
-
-
-        // Clicking on item shows an action dialog
-        earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                showActionDialog(position);
-            }
-        });
-
+        // list init
+        initRecycleView();
 
         // set preferences value in case of changes
         // checkPreferences();
@@ -226,6 +203,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     @Override
     protected void onResume() {
         super.onResume();
+
         // update local vars for preferences changes
         checkPreferences();
 
@@ -248,12 +226,77 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     }
 
 
+    // Clicking on item shows action dialog
+    @Override
+    public void onItemClickListener(int itemId) {
+        Log.d(TAG, "onItemClickListener: Item" + itemId + "touched.");
+        showActionDialog(itemId);
+    }
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Recycle view init
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void initRecycleView(){
+        // Find a reference to the {@link ListView} in the layout : using listView because
+        // at the momento it has only tens of entry.
+        earthquakeListView = findViewById(R.id.list);
+
+        // Set LinearLayout
+        earthquakeListView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Create a new {@link EarthquakeAdapter} of {@link Earthquakes} objects
+        adapter = new EarthquakeListAdapter(this, this);
+
+        // Set the adapter on the {@link ListView} so the list can be populated in the user interface
+        earthquakeListView.setAdapter(adapter);
+
+
+        /*
+        // Clicking on item shows an action dialog
+        earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                showActionDialog(position);
+            }
+        });
+        */
+
+        // Divider decorator
+        DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
+        earthquakeListView.addItemDecoration(decoration);
+
+
+        // make fab button hide when scrolling list
+        /*
+        earthquakeListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0 || dy < 0 && fab.isShown())
+                    fab.hide();
+            }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE)
+                    fab.show();
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+        });
+        */
+
+
+
+    }
 
 
 
     /**
      * ---------------------------------------------------------------------------------------------
      * Registering preferences change only for data filter changes
+     *
      * @param sharedPreferences
      * @param key
      * ---------------------------------------------------------------------------------------------
@@ -262,7 +305,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Log.d("Dict", "PreferenceChanged: " + key);
-        if (key.equals(getString(R.string.settings_date_filter_key))){
+        if (key.equals(getString(R.string.settings_date_filter_key))) {
             NEED_REMOTE_UPDATE = true;
         }
     }
@@ -271,43 +314,41 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     /**
      * ---------------------------------------------------------------------------------------------
      * Show Select action alert dialog
-     * @param position
-     * ---------------------------------------------------------------------------------------------
+     *
+     * @param position ---------------------------------------------------------------------------------------------
      */
     private void showActionDialog(int position) {
-        final Context context = MainActivity.this;
+        final Context context = MainActivityEarthquakesList.this;
         final int pos = position;
         CharSequence[] items = {"Show on Map", "Details", "Feel it?"};
 
-        new AlertDialog.Builder(MainActivity.this)
+        new AlertDialog.Builder(MainActivityEarthquakesList.this)
                 .setTitle("Action")
                 .setItems(items, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int item) {
 
-                        if(item==0){       // Show on Map
+                        if (item == 0) {       // Show on Map
                             Earthquake earthquake = earthquakes.get(pos);
                             Intent showEqOnMap = new Intent(context, MapsActivity.class);
-                            showEqOnMap.putExtra("ShowEquake","true");
-                            showEqOnMap.putExtra("equake_lat",Double.toString(earthquake.getLatitude()));
-                            showEqOnMap.putExtra("equake_lng",Double.toString(earthquake.getLongitude()));
+                            showEqOnMap.putExtra("ShowEquake", "true");
+                            showEqOnMap.putExtra("equake_lat", Double.toString(earthquake.getLatitude()));
+                            showEqOnMap.putExtra("equake_lng", Double.toString(earthquake.getLongitude()));
                             startActivity(showEqOnMap);
-                        }
-                        else if(item==1){  // USGS site Details
+                        } else if (item == 1) {  // USGS site Details
                             Earthquake earthquake = earthquakes.get(pos);
                             String url = earthquake.getUrl();
-                            Log.i("setOnItemClickListener", "onItemClick: "+url);
+                            Log.i("setOnItemClickListener", "onItemClick: " + url);
 
                             // Open the related url page of the eq clicked
                             Uri webpage = Uri.parse(url);
                             Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
                             startActivity(Intent.createChooser(webIntent, "Open details"));
 
-                        }
-                        else if(item==2){  // Feel it?
+                        } else if (item == 2) {  // Feel it?
                             Earthquake earthquake = earthquakes.get(pos);
                             String url = earthquake.getUrl() + "/tellus";
-                            Log.i("setOnItemClickListener", "onItemClick: "+url);
+                            Log.i("setOnItemClickListener", "onItemClick: " + url);
 
                             // Open the related url page of the eq clicked
                             Uri webpage = Uri.parse(url);
@@ -321,7 +362,6 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     }
 
 
-
     /**
      * ---------------------------------------------------------------------------------------------
      * Set and check location coordinates from shared preferences.
@@ -330,8 +370,8 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
      */
     private void checkPreferences() {
 
-        lat_s = sharedPreferences.getString(getString(R.string.device_lat),Double.toString(DEFAULT_LAT));
-        lng_s = sharedPreferences.getString(getString(R.string.device_lng),Double.toString(DEFAULT_LNG));
+        lat_s = sharedPreferences.getString(getString(R.string.device_lat), Double.toString(DEFAULT_LAT));
+        lng_s = sharedPreferences.getString(getString(R.string.device_lng), Double.toString(DEFAULT_LNG));
 
 
         // set default coord if there are no one
@@ -398,17 +438,13 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     }
 
 
-
-
-
-
     /**
      * ---------------------------------------------------------------------------------------------
      * making code more robust checking if for same reasons the defaut value stored are null or
      * not equals to none of the preferences stored values (e.g.  in case of key value change on code
      * but user saved with the previous one with previous app version )
-     * @param editor
-     * ---------------------------------------------------------------------------------------------
+     *
+     * @param editor ---------------------------------------------------------------------------------------------
      */
     private void safePreferencesValue(SharedPreferences.Editor editor) {
 
@@ -419,15 +455,15 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         }
 
         if ((!minMagnitude.equals(getString(R.string.settings_1_0_min_magnitude_value))) &&
-            (!minMagnitude.equals(getString(R.string.settings_2_0_min_magnitude_value))) &&
-            (!minMagnitude.equals(getString(R.string.settings_3_0_min_magnitude_value))) &&
-            (!minMagnitude.equals(getString(R.string.settings_4_0_min_magnitude_value))) &&
-            (!minMagnitude.equals(getString(R.string.settings_4_5_min_magnitude_label))) &&
-            (!minMagnitude.equals(getString(R.string.settings_5_0_min_magnitude_label))) &&
-            (!minMagnitude.equals(getString(R.string.settings_5_5_min_magnitude_value))) &&
-            (!minMagnitude.equals(getString(R.string.settings_6_0_min_magnitude_value))) &&
-            (!minMagnitude.equals(getString(R.string.settings_6_5_min_magnitude_value)))
-        ){
+                (!minMagnitude.equals(getString(R.string.settings_2_0_min_magnitude_value))) &&
+                (!minMagnitude.equals(getString(R.string.settings_3_0_min_magnitude_value))) &&
+                (!minMagnitude.equals(getString(R.string.settings_4_0_min_magnitude_value))) &&
+                (!minMagnitude.equals(getString(R.string.settings_4_5_min_magnitude_label))) &&
+                (!minMagnitude.equals(getString(R.string.settings_5_0_min_magnitude_label))) &&
+                (!minMagnitude.equals(getString(R.string.settings_5_5_min_magnitude_value))) &&
+                (!minMagnitude.equals(getString(R.string.settings_6_0_min_magnitude_value))) &&
+                (!minMagnitude.equals(getString(R.string.settings_6_5_min_magnitude_value)))
+        ) {
             minMagnitude = getString(R.string.settings_min_magnitude_default);
             editor.putString(getString(R.string.settings_min_magnitude_key), getString(R.string.settings_min_magnitude_default));
         }
@@ -439,11 +475,11 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         }
 
         if ((!orderBy.equals(getString(R.string.settings_order_by_desc_magnitude_value))) &&
-            (!orderBy.equals(getString(R.string.settings_order_by_asc_magnitude_value))) &&
-            (!orderBy.equals(getString(R.string.settings_order_by_most_recent_value))) &&
-            (!orderBy.equals(getString(R.string.settings_order_by_nearest_value))) &&
-            (!orderBy.equals(getString(R.string.settings_order_by_furthest_value)))
-        ){
+                (!orderBy.equals(getString(R.string.settings_order_by_asc_magnitude_value))) &&
+                (!orderBy.equals(getString(R.string.settings_order_by_most_recent_value))) &&
+                (!orderBy.equals(getString(R.string.settings_order_by_nearest_value))) &&
+                (!orderBy.equals(getString(R.string.settings_order_by_furthest_value)))
+        ) {
             orderBy = getString(R.string.settings_order_by_default);
             editor.putString(getString(R.string.settings_order_by_key), getString(R.string.settings_order_by_default));
         }
@@ -474,11 +510,11 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         }
 
         if ((!dateFilter.equals(getString(R.string.settings_date_period_today_value))) &&
-            (!dateFilter.equals(getString(R.string.settings_date_period_24h_value))) &&
-            (!dateFilter.equals(getString(R.string.settings_date_period_48h_value))) &&
-            (!dateFilter.equals(getString(R.string.settings_date_period_week_value))) &&
-            (!dateFilter.equals(getString(R.string.settings_date_period_month_value)))
-        ){
+                (!dateFilter.equals(getString(R.string.settings_date_period_24h_value))) &&
+                (!dateFilter.equals(getString(R.string.settings_date_period_48h_value))) &&
+                (!dateFilter.equals(getString(R.string.settings_date_period_week_value))) &&
+                (!dateFilter.equals(getString(R.string.settings_date_period_month_value)))
+        ) {
             dateFilter = getString(R.string.settings_date_filter_default);
             editor.putString(getString(R.string.settings_date_filter_key), getString(R.string.settings_date_filter_default));
         }
@@ -551,8 +587,9 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
 
         // show empty list and load in progress
-        earthquakeListView.setEmptyView(emptyListText);
-        emptyListText.setText(R.string.searching);
+        // earthquakeListView.setEmptyView(emptyListText);
+        // emptyListText.setText(R.string.searching);
+        showLoading();
 
         // TODO : temporary, data must be updated setting an observer in repository on specific preference
         // check if date filter or other preferences which need remote update has been changed
@@ -574,34 +611,33 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     private void updateList() {
         Log.i(TAG, "updateList Executing ");
         // clear the adapter of previous data
-        adapter.clear();
+        adapter.resetEarthquakesEntries();
 
         checkPreferences();
 
 
         // set equakes list showing based on user preferences
-        if (orderBy.equals(getString(R.string.settings_order_by_desc_magnitude_value))){
-            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_DESC_MAGNITUDE);
+        if (orderBy.equals(getString(R.string.settings_order_by_desc_magnitude_value))) {
+            MainViewModelFactory factory = new MainViewModelFactory(ORDER_BY_DESC_MAGNITUDE);
             filterDatafromRepository(factory);
 
-        } else if (orderBy.equals(getString(R.string.settings_order_by_asc_magnitude_value))){
-            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_ASC_MAGNITUDE);
+        } else if (orderBy.equals(getString(R.string.settings_order_by_asc_magnitude_value))) {
+            MainViewModelFactory factory = new MainViewModelFactory(ORDER_BY_ASC_MAGNITUDE);
             filterDatafromRepository(factory);
 
-        } else if (orderBy.equals(getString(R.string.settings_order_by_most_recent_value))){
-            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_MOST_RECENT);
+        } else if (orderBy.equals(getString(R.string.settings_order_by_most_recent_value))) {
+            MainViewModelFactory factory = new MainViewModelFactory(ORDER_BY_MOST_RECENT);
             filterDatafromRepository(factory);
 
-        }  else if (orderBy.equals(getString(R.string.settings_order_by_nearest_value))){
-            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_NEAREST);
+        } else if (orderBy.equals(getString(R.string.settings_order_by_nearest_value))) {
+            MainViewModelFactory factory = new MainViewModelFactory(ORDER_BY_NEAREST);
             filterDatafromRepository(factory);
 
-        }  else if (orderBy.equals(getString(R.string.settings_order_by_furthest_value))){
-            MainViewModelFactory factory= new MainViewModelFactory(ORDER_BY_FURTHEST);
+        } else if (orderBy.equals(getString(R.string.settings_order_by_furthest_value))) {
+            MainViewModelFactory factory = new MainViewModelFactory(ORDER_BY_FURTHEST);
             filterDatafromRepository(factory);
 
         }
-
 
 
     }
@@ -610,12 +646,15 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     /**
      * ---------------------------------------------------------------------------------------------
      * Make repository request for specific data and ordering
+     *
      * @param factory
      * ---------------------------------------------------------------------------------------------
      */
     private void filterDatafromRepository(MainViewModelFactory factory) {
         // Get eq list through LiveData
-        final MainViewModel viewModel = ViewModelProviders.of(this,factory).get(MainViewModel.class);
+        final MainViewModel viewModel = ViewModelProviders
+                .of(this, factory)
+                .get(MainViewModel.class);
 
         LiveData<List<Earthquake>> equakes = viewModel.getEqList();
         equakes.observe(this, new Observer<List<Earthquake>>() {
@@ -626,9 +665,6 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                     updateAdapter(earthquakeEntries);
                     showEarthquakeListView();
                 } else {                                                         // waiting for data
-                    // make  a request for remote data using loader
-                    // TODO : incapsulate this check inside repository
-                    // retrieveRemoteData();
                     // While waiting that the repository getting aware that the eqs lsit is empty
                     // and ask for a remote update
                     showLoading();
@@ -641,17 +677,12 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     /**
      * ---------------------------------------------------------------------------------------------
      * Notify and update adapter data
+     *
      * @param earthquakeEntries
      * ---------------------------------------------------------------------------------------------
      */
     private void updateAdapter(@Nullable List<Earthquake> earthquakeEntries) {
-        // delete previous data
-        adapter.clear();
-        adapter.notifyDataSetChanged();
-
-        // add new ones while arriving
-        adapter.addAll(earthquakeEntries);
-        adapter.notifyDataSetChanged();
+        adapter.setEarthquakesEntries(earthquakeEntries);
     }
 
     /**
@@ -663,12 +694,13 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     private void retrieveRemoteData() {
         // check connection
         // reference to connection manager
-        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connManager =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
         // network status retrieving
         NetworkInfo netinfo = connManager.getActiveNetworkInfo();
 
-        if(netinfo != null && netinfo.isConnected()){
+        if (netinfo != null && netinfo.isConnected()) {
             showLoading();
 
             // LoaderManager reference
@@ -676,7 +708,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
             // Init loader : id above, bundle = null , this= current activity for LoaderCallbacks
             loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
 
-        }else{
+        } else {
             showNoInternetConnection();
         }
 
@@ -723,26 +755,30 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     /**
      * ---------------------------------------------------------------------------------------------
      * Create loader
+     *
      * @param id
      * @param args
      * @return
+     *
      * ---------------------------------------------------------------------------------------------
      */
     @Override
     public Loader<List<Earthquake>> onCreateLoader(int id, Bundle args) {
         Log.i(TAG, "onCreateLoader: Create a new Loader");
         String urlReq = MyUtil.composeQueryUrl(dateFilter);
-        Log.i(TAG, "onCreateLoader: urlReq : "+urlReq);
+        Log.i(TAG, "onCreateLoader: urlReq : " + urlReq);
         // create a new loader for the url
-        return new EarthquakeAsyncLoader(this, urlReq );
+        return new EarthquakeAsyncLoader(this, urlReq);
     }
 
 
     /**
      * ---------------------------------------------------------------------------------------------
      * Loader finished
+     *
      * @param loader
      * @param earthquakesReturnedByLoader
+     *
      * ---------------------------------------------------------------------------------------------
      */
     // TODO : in the future, use livedata/viewmodel for this: loader don't need to return the equake list structure
@@ -769,7 +805,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
 
             filter_memo.setVisibility(View.VISIBLE);
 
-            Toast alert = Toast.makeText(MainActivity.this,
+            Toast alert = Toast.makeText(MainActivityEarthquakesList.this,
                     getString(R.string.data_update_toast) + dateFilterLabel
                     , Toast.LENGTH_LONG);
             alert.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
@@ -783,46 +819,42 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     }
 
 
-
-
-
     /**
      * ---------------------------------------------------------------------------------------------
      * Loader reset
+     *
      * @param loader
+     *
      * ---------------------------------------------------------------------------------------------
      */
     @Override
     public void onLoaderReset(@NonNull Loader loader) {
         Log.i(TAG, "onLoaderReset: Reset Loader previous data");
         // reset loader to clean up previous data
-        adapter.clear();
+        adapter.resetEarthquakesEntries();
     }
-
 
 
     /**
      * ---------------------------------------------------------------------------------------------
      * Used by onLoadFinished to populate the ArrayList fetched
+     *
      * @param earthquakes
      * @return true/false
      * ---------------------------------------------------------------------------------------------
      */
-    protected boolean setEartquakesList(List<Earthquake> earthquakes){
-        if (  (earthquakes != null) && (earthquakes.isEmpty() == false)  ){
+    protected boolean setEartquakesList(List<Earthquake> earthquakes) {
+        if ((earthquakes != null) && (earthquakes.isEmpty() == false)) {
             // this.earthquakes = earthquakes;
             // updateList();
             return true;
-        }else{
+        } else {
             Log.i(TAG, "The earthquake list is empty. Check the request. ");
             Toast.makeText(this, "The earthquake list is empty. Check the request. ", Toast.LENGTH_LONG).show();
             return false;
         }
 
     }
-
-
-
 
 
     // ---------------------------------------------------------------------------------------------
@@ -837,7 +869,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch(id){
+        switch (id) {
             case R.id.action_settings:
                 return true;
             case R.id.quick_settings:
@@ -868,9 +900,9 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
      * Dialog with spinner for quick settings
      * ---------------------------------------------------------------------------------------------
      */
-    private void showDialog(){
-        android.support.v7.app.AlertDialog.Builder  builder =
-                new android.support.v7.app.AlertDialog.Builder(MainActivity.this);
+    private void showDialog() {
+        android.support.v7.app.AlertDialog.Builder builder =
+                new android.support.v7.app.AlertDialog.Builder(MainActivityEarthquakesList.this);
         View view = getLayoutInflater().inflate(R.layout.quick_settings_dialog, null);
         /*
         CheckBox saveFlag = (CheckBox)findViewById(R.id.dialog_checkBox);
@@ -882,7 +914,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         // 1 -  spinner order by choice : spinner_order_by
         final Spinner spinner_order_by = (Spinner) view.findViewById(R.id.order_by_spinner);
         // list of labels for order by spinner list
-        final List<String> order_list  = new ArrayList<>(); // add header
+        final List<String> order_list = new ArrayList<>(); // add header
         order_list.add(getResources().getString(R.string.spinner_defaultchoice_label));
         order_list.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_order_by_labels)));
 
@@ -892,18 +924,17 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         order_list_values.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_order_by_values)));
 
         // put labels in spinner
-        ArrayAdapter<String> adapter_01 = new ArrayAdapter<String>(MainActivity.this,
+        ArrayAdapter<String> adapter_01 = new ArrayAdapter<String>(MainActivityEarthquakesList.this,
                 android.R.layout.simple_spinner_item,
                 order_list);
         adapter_01.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         spinner_order_by.setAdapter(adapter_01);
 
 
-
         // 2 - spinner choose min magnitude : spinner_min_magnitude
         final Spinner spinner_min_magnitude = (Spinner) view.findViewById(R.id.min_magnitude_spinner);
         // list of labels for magnitude min  spinner list
-        final List<String> magn_list  = new ArrayList<>(); // add header
+        final List<String> magn_list = new ArrayList<>(); // add header
         magn_list.add(getResources().getString(R.string.spinner_defaultchoice_label));
         magn_list.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_array_min_magnitude_labels)));
 
@@ -913,7 +944,7 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
         magn_list_values.addAll(Arrays.asList(getResources().getStringArray(R.array.settings_array_min_magnitude_values)));
 
         // put labels in spinner
-        ArrayAdapter<String> adapter_02 = new ArrayAdapter<String>(MainActivity.this,
+        ArrayAdapter<String> adapter_02 = new ArrayAdapter<String>(MainActivityEarthquakesList.this,
                 android.R.layout.simple_spinner_item,
                 magn_list);
         adapter_02.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
@@ -940,16 +971,16 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                         magn_list, magn_list_values);
 
                 // set value selected for filter in preference keys
-                if(!spinner_order_by_choice.equals(getResources().getString(R.string.spinner_defaultchoice_value))){
+                if (!spinner_order_by_choice.equals(getResources().getString(R.string.spinner_defaultchoice_value))) {
                     editor.putString(getString(R.string.settings_order_by_key),
-                            spinner_order_by_choice );
+                            spinner_order_by_choice);
                     editor.apply();
                     // updateList = true;
                 }
 
-                if(!spinner_min_magn_choice.equalsIgnoreCase(getResources().getString(R.string.spinner_defaultchoice_value))) {
+                if (!spinner_min_magn_choice.equalsIgnoreCase(getResources().getString(R.string.spinner_defaultchoice_value))) {
                     editor.putString(getString(R.string.settings_min_magnitude_key),
-                            spinner_min_magn_choice );
+                            spinner_min_magn_choice);
                     editor.apply();
                     // restartActivity = true;
                 }
@@ -966,13 +997,12 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
                 } else if (restartActivity == true){
                     // restart activity
                     dialog.dismiss();
-                    MyUtil.restartActivity(MainActivity.this);
+                    MyUtil.restartActivity(MainActivityEarthquakesList.this);
                 }
                 */
 
                 dialog.dismiss();
-                MyUtil.restartActivity(MainActivity.this);
-
+                MyUtil.restartActivity(MainActivityEarthquakesList.this);
 
 
             }
@@ -996,19 +1026,18 @@ public class MainActivity extends AppCompatActivity  implements LoaderCallbacks<
     /**
      * ---------------------------------------------------------------------------------------------
      * Get spinner values corrisponding to a specific label in spinner list
+     *
      * @param selectedItem
      * @param labelsList
      * @param valuesList
-     * @return
-     * ---------------------------------------------------------------------------------------------
+     * @return ---------------------------------------------------------------------------------------------
      */
     private String convertFromLabelsToKeyvalues(String selectedItem,
                                                 final List<String> labelsList,
-                                                final List<String> valuesList){
+                                                final List<String> valuesList) {
         int position = labelsList.indexOf(selectedItem);
         return valuesList.get(position);
     }
-
 
 
 }

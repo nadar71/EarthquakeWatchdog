@@ -63,7 +63,7 @@ public class MyUtil {
         builder.appendQueryParameter("minmag",minMagnitude); // TODO : delete
 
         if (!orderBy.equals(getString(R.string.settings_order_by_nearest_value))
-                && !orderBy.equals(getString(R.string.settings_order_by_farthest_value)) ){
+                && !orderBy.equals(getString(R.string.settings_order_by_furthest_value)) ){
             orderBy = getString(R.string.settings_order_by_default);
             builder.appendQueryParameter("orderby", orderBy);     // TODO : delete
         }

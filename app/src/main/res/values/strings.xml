@@ -24,15 +24,9 @@
     <string name="your_position_label">Your position : </string>
 
 
-
-
-
-
     <!-- distance type -->
     <string name="distance_from_default_location">from default location</string>
     <string name="distance_from_user_location">from you</string>
-
-
 
 
     <!-- Text to display in the list when there are no earthquakes -->
@@ -87,8 +81,8 @@
     <string name="settings_order_by_nearest_value" translatable="false">nearest</string>
 
     <!-- Label for order-by nearest to you  [CHAR LIMIT=20] -->
-    <string name="settings_order_by_farthest_label">Farthest to you</string>
-    <string name="settings_order_by_farthest_value" translatable="false">farthest</string>
+    <string name="settings_order_by_furthest_label">Furthest to you</string>
+    <string name="settings_order_by_furthest_value" translatable="false">furthest</string>
 
 
     <!-- - - - - - - - Strings For Distance measure unit - - - - - - - - - - - - - -->
