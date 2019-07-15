@@ -32,7 +32,7 @@ public class EarthquakeNetworkDataSource {
     private static final int    SYNC_INTERVAL_SECONDS = (int) TimeUnit.HOURS.toSeconds(SYNC_INTERVAL_HOURS);
     // available time window for job
     private static final int    SYNC_FLEXTIME_SECONDS = SYNC_INTERVAL_SECONDS / 3;
-    private static final String EARTHQUAKE_SYNC_TAG = "weatherapp-sync";
+    private static final String EARTHQUAKE_SYNC_TAG = "earthquakes-sync";
 
     // SharePreferences ref
     private SharedPreferences sharedPreferences;
@@ -50,7 +50,7 @@ public class EarthquakeNetworkDataSource {
     private final MutableLiveData<Earthquake[]> earthquakesDownloaded;
 
     private EarthquakeNetworkDataSource(Context context, AppExecutors executors) {
-        this.context = context;
+        this.context   = context;
         this.executors = executors;
 
         earthquakesDownloaded = new MutableLiveData<Earthquake[]>();

@@ -13,7 +13,6 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.indiewalk.watchdog.earthquake.R;
-import com.indiewalk.watchdog.earthquake.UI.MainActivity;
 import com.indiewalk.watchdog.earthquake.util.ConsentSDK;
 
 public class SplashActivity extends AppCompatActivity {

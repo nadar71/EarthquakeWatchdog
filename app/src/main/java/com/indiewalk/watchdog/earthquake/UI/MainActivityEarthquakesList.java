@@ -38,6 +38,7 @@ import com.indiewalk.watchdog.earthquake.MapsActivity;
 import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 import com.indiewalk.watchdog.earthquake.net.EarthquakeAsyncLoader;
+import com.indiewalk.watchdog.earthquake.unused.MainActivity;
 import com.indiewalk.watchdog.earthquake.util.ConsentSDK;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
 

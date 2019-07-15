@@ -1,5 +1,5 @@
 
-package com.indiewalk.watchdog.earthquake.UI;
+package com.indiewalk.watchdog.earthquake.unused;
 
 
 import android.arch.lifecycle.LiveData;
@@ -39,6 +39,9 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdView;
 import com.indiewalk.watchdog.earthquake.MapsActivity;
 import com.indiewalk.watchdog.earthquake.R;
+import com.indiewalk.watchdog.earthquake.UI.MainViewModel;
+import com.indiewalk.watchdog.earthquake.UI.MainViewModelFactory;
+import com.indiewalk.watchdog.earthquake.UI.SettingSimpleActivity;
 import com.indiewalk.watchdog.earthquake.net.EarthquakeAsyncLoader;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 import com.indiewalk.watchdog.earthquake.util.ConsentSDK;

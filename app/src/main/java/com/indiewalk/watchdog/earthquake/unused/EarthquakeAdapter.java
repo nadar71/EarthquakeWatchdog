@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.UI;
+package com.indiewalk.watchdog.earthquake.unused;
 
 import android.app.Activity;
 import android.content.Context;

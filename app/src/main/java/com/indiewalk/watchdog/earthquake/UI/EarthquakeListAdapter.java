@@ -16,6 +16,7 @@ import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.SingletonProvider;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 import com.indiewalk.watchdog.earthquake.data.EarthquakeRepository;
+import com.indiewalk.watchdog.earthquake.unused.MainActivity;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
 import java.text.DecimalFormat;
@@ -59,7 +60,7 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
         // set preferred distance unit
         checkPreferences();
 
-        repository = ((SingletonProvider) SingletonProvider.getsContext()).getRepository();
+        repository = ((SingletonProvider) SingletonProvider.getsContext()).getRepositoryWithDataSource();
     }
 
 
@@ -141,7 +142,7 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
      * ----------------------------------------------------------------------------------
      */
     public void setEarthquakesEntries(List<Earthquake> earthquakesEntries) {
-        this.earthquakesEntries.clear();
+        if  (this.earthquakesEntries != null) this.earthquakesEntries.clear();
         this.earthquakesEntries = earthquakesEntries;
         //data changed, refresh the view : notify the related observers
         notifyDataSetChanged();

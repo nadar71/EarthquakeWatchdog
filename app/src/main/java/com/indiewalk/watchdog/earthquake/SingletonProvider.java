@@ -54,6 +54,7 @@ public class SingletonProvider extends Application {
     }
 
 
+
     // repo constructor with data source support
     public EarthquakeRepository getRepositoryWithDataSource() {
         EarthquakeDatabase db = getDatabase();
@@ -94,7 +95,9 @@ public class SingletonProvider extends Application {
      * ---------------------------------------------------------------------------------------------
      */
     public EarthquakeNetworkDataSource getNetworkDatasource() {
-        getRepository(); // the repository is not created if called from a intent service
+        // getRepository(); // the repository is not created if called from a intent service
+        // nedeed otherwise the repository is not created if called from a intent service
+        getRepositoryWithDataSource();
         return EarthquakeNetworkDataSource.getInstance(sContext,mAppExecutors);
     }
 }

@@ -7,7 +7,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.indiewalk.watchdog.earthquake.R;
-import com.indiewalk.watchdog.earthquake.UI.MainActivity;
+import com.indiewalk.watchdog.earthquake.UI.MainActivityEarthquakesList;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
@@ -112,25 +112,25 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
          SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
 
          //get preferences for check
-         lat_s = sharedPreferences.getString(context.getString(R.string.device_lat),Double.toString(MainActivity.DEFAULT_LAT));
-         lng_s = sharedPreferences.getString(context.getString(R.string.device_lng),Double.toString(MainActivity.DEFAULT_LNG));
+         lat_s = sharedPreferences.getString(context.getString(R.string.device_lat),Double.toString(MainActivityEarthquakesList.DEFAULT_LAT));
+         lng_s = sharedPreferences.getString(context.getString(R.string.device_lng),Double.toString(MainActivityEarthquakesList.DEFAULT_LNG));
 
 
          // set default coord if there are no one
          SharedPreferences.Editor editor = sharedPreferences.edit();
          if (lat_s.isEmpty() == true) {
-             editor.putString(context.getString(R.string.device_lat), Double.toString(MainActivity.DEFAULT_LAT));
+             editor.putString(context.getString(R.string.device_lat), Double.toString(MainActivityEarthquakesList.DEFAULT_LAT));
              editor.apply();
          }
 
          if (lng_s.isEmpty() == true) {
-             editor.putString(context.getString(R.string.device_lng), Double.toString(MainActivity.DEFAULT_LNG));
+             editor.putString(context.getString(R.string.device_lng), Double.toString(MainActivityEarthquakesList.DEFAULT_LNG));
              editor.apply();
          }
 
          // get user lat, lng
-         lat_s = sharedPreferences.getString(context.getString(R.string.device_lat),Double.toString(MainActivity.DEFAULT_LAT));
-         lng_s = sharedPreferences.getString(context.getString(R.string.device_lng),Double.toString(MainActivity.DEFAULT_LNG));
+         lat_s = sharedPreferences.getString(context.getString(R.string.device_lat),Double.toString(MainActivityEarthquakesList.DEFAULT_LAT));
+         lng_s = sharedPreferences.getString(context.getString(R.string.device_lng),Double.toString(MainActivityEarthquakesList.DEFAULT_LNG));
 
          // get distance unit choosen
          dist_unit = sharedPreferences.getString(context.getString(R.string.settings_distance_unit_by_key),
