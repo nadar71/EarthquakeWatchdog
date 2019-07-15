@@ -38,7 +38,6 @@ import com.indiewalk.watchdog.earthquake.MapsActivity;
 import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 import com.indiewalk.watchdog.earthquake.net.EarthquakeAsyncLoader;
-import com.indiewalk.watchdog.earthquake.unused.MainActivity;
 import com.indiewalk.watchdog.earthquake.util.ConsentSDK;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
@@ -54,7 +53,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener,
         EarthquakeListAdapter.ItemClickListener{
 
-    public static final String TAG = MainActivity.class.getName();
+    public static final String TAG = MainActivityEarthquakesList.class.getName();
 
     // this is the default position, google at mountain view
     public static final double DEFAULT_LAT = 37.4219999;
@@ -612,7 +611,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
     private void updateList() {
         Log.i(TAG, "updateList Executing ");
         // clear the adapter of previous data
-        adapter.resetEarthquakesEntries();
+        // adapter.resetEarthquakesEntries();
 
         checkPreferences();
 

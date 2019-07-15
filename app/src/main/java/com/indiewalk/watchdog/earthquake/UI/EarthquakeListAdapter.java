@@ -16,7 +16,7 @@ import com.indiewalk.watchdog.earthquake.R;
 import com.indiewalk.watchdog.earthquake.SingletonProvider;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
 import com.indiewalk.watchdog.earthquake.data.EarthquakeRepository;
-import com.indiewalk.watchdog.earthquake.unused.MainActivity;
+import com.indiewalk.watchdog.earthquake.UI.MainActivityEarthquakesList;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
 import java.text.DecimalFormat;
@@ -53,7 +53,7 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
      */
     public EarthquakeListAdapter(Context context, ItemClickListener listener) {
         this.context             = context;
-        eqItemClickListener = listener;
+        eqItemClickListener      = listener;
 
         locationOffset = context.getResources().getString(R.string.locationOffset_label);
 
@@ -142,7 +142,7 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
      * ----------------------------------------------------------------------------------
      */
     public void setEarthquakesEntries(List<Earthquake> earthquakesEntries) {
-        if  (this.earthquakesEntries != null) this.earthquakesEntries.clear();
+        // if  (this.earthquakesEntries != null) this.earthquakesEntries.clear();
         this.earthquakesEntries = earthquakesEntries;
         //data changed, refresh the view : notify the related observers
         notifyDataSetChanged();
@@ -218,7 +218,10 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
 
 
         @Override
-        public void onClick(View view) {}
+        public void onClick(View view) {
+            int elementId = earthquakesEntries.get(getAdapterPosition()).getId();
+            eqItemClickListener.onItemClickListener(elementId);
+        }
 
     }
 
@@ -240,13 +243,13 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
         Log.i(TAG, "EarthquakeAdapter : dist unit : "+ dist_unit);
 
         String lat_s = sharedPreferences.getString(context.getString(R.string.device_lat),
-                Double.toString(MainActivity.DEFAULT_LAT));
+                Double.toString(MainActivityEarthquakesList.DEFAULT_LAT));
         String lng_s = sharedPreferences.getString(context.getString(R.string.device_lng),
-                Double.toString(MainActivity.DEFAULT_LNG));
+                Double.toString(MainActivityEarthquakesList.DEFAULT_LNG));
 
         // if there is user location different from default location
-        if ( (!lat_s.equals(Double.toString(MainActivity.DEFAULT_LAT))) &&
-                (!lng_s.equals(Double.toString(MainActivity.DEFAULT_LNG))) ) {
+        if ( (!lat_s.equals(Double.toString(MainActivityEarthquakesList.DEFAULT_LAT))) &&
+                (!lng_s.equals(Double.toString(MainActivityEarthquakesList.DEFAULT_LNG))) ) {
             return true; // custom location
         } else {
             return false; // default location, Google inc. Mountain view

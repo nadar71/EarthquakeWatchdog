@@ -40,17 +40,13 @@
             android:value="@string/admob_key_app_id" />
 
         <activity
-            android:name=".unused.MainActivity"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity
             android:name=".UI.SettingSimpleActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".unused.MainActivity"
+            android:parentActivityName=".UI.MainActivityEarthquakesList"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.indiewalk.watchdog.earthquake.unused.MainActivity" />
+                android:value="com.indiewalk.watchdog.earthquake.UI.MainActivityEarthquakesList" />
         </activity>
         <!--
         <meta-data
