@@ -228,10 +228,11 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
 
     // Clicking on item shows action dialog
     @Override
-    public void onItemClickListener(int itemId) {
-        Log.d(TAG, "onItemClickListener: Item" + itemId + "touched.");
-        showActionDialog(itemId);
+    public void onItemClickListener(View v, int position) {
+        Log.d(TAG, "onItemClickListener: Item at position : " + position + " touched.");
+        showActionDialog(position);
     }
+
 
     /**
      * ---------------------------------------------------------------------------------------------

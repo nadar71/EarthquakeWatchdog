@@ -163,7 +163,7 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
     // Implemented in calling class if needed
     // ----------------------------------------------------------------------------------
     public interface ItemClickListener {
-        void onItemClickListener(int itemId);
+        void onItemClickListener(View v, int position);
     }
 
 
@@ -219,8 +219,8 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
 
         @Override
         public void onClick(View view) {
-            int elementId = earthquakesEntries.get(getAdapterPosition()).getId();
-            eqItemClickListener.onItemClickListener(elementId);
+            // int elementId = earthquakesEntries.get(getAdapterPosition()).getId();
+            eqItemClickListener.onItemClickListener(view, this.getLayoutPosition());
         }
 
     }
