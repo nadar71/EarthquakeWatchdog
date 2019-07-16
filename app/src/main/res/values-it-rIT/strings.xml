@@ -29,7 +29,7 @@
     <string name="settings_order_by_desc_magnitude_label">Magnitudo (dalla più alta)</string>
     <string name="settings_order_by_most_recent_label">Più recente</string>
     <string name="settings_order_by_nearest_label">Il più vicino a te</string>
-    <string name="settings_order_by_farthest_label">Il più lontano da te</string>
+    <string name="settings_order_by_furthest_label">Il più lontano da te</string>
     <string name="settings_distance_unit_label">Unità di misura per la Distanza</string>
     <string name="settings_km_distance_unit_label">Km</string>
     <string name="settings_mi_distance_unit_label">Mi</string>
@@ -62,6 +62,6 @@
     <string name="settings_order_by_desc_magnitude_value">magnitudo</string>
     <string name="settings_order_by_most_recent_value">data</string>
     <string name="settings_order_by_nearest_value">più vicino</string>
-    <string name="settings_order_by_farthest_value">più lontano</string>
+    <string name="settings_order_by_furthest_value">più lontano</string>
     -->
 </resources>

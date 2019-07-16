@@ -13,7 +13,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.indiewalk.watchdog.earthquake.R;
-import com.indiewalk.watchdog.earthquake.UI.MainActivity;
+import com.indiewalk.watchdog.earthquake.UI.MainActivityEarthquakesList;
 import com.indiewalk.watchdog.earthquake.util.ConsentSDK;
 
 public class SplashActivity extends AppCompatActivity {
@@ -50,14 +50,14 @@ public class SplashActivity extends AppCompatActivity {
         loadingHandler();
     }
 
-    // Go to MainActivity
+    // Go to MainActivityEarthquakesList
     private void goToMain() {
         // Wait few seconds just to show my stunning loading indication, you like it right :P.
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 // Go to main after the consent is done.
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                Intent intent = new Intent(getApplicationContext(), MainActivityEarthquakesList.class);
                 startActivity(intent);
                 finish();
             }

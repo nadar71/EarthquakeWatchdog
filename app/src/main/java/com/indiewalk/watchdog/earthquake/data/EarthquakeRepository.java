@@ -6,7 +6,6 @@ import android.util.Log;
 import com.indiewalk.watchdog.earthquake.net.EarthquakeNetworkDataSource;
 import com.indiewalk.watchdog.earthquake.util.AppExecutors;
 
-import java.util.Date;
 import java.util.List;
 
 public class EarthquakeRepository {
@@ -188,10 +187,10 @@ public class EarthquakeRepository {
         return eqDb.earthquakeDbDao().loadAll_orderby_nearest(min_mag);
     }
 
-    // retrieve all the eqs order by farthest to user
-    public LiveData<List<Earthquake>> loadAll_orderby_farthest(double min_mag){
+    // retrieve all the eqs order by furthest to user
+    public LiveData<List<Earthquake>> loadAll_orderby_furthest(double min_mag){
         initializeData();
-        return eqDb.earthquakeDbDao().loadAll_orderby_farthest(min_mag);
+        return eqDb.earthquakeDbDao().loadAll_orderby_furthest(min_mag);
     }
 
 
