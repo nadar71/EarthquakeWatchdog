@@ -17,11 +17,13 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -32,6 +34,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdView;
@@ -47,6 +50,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
+import android.support.design.widget.FloatingActionButton;
 
 
 public class MainActivityEarthquakesList extends AppCompatActivity implements
@@ -87,7 +91,9 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
 
     private TextView emptyListText;
     private TextView order_value_tv, minMagn_value_tv, lastUp_value_tv, eq_period_value_tv, location_value_tv;
+    private View summary_layout;
     private View filter_memo;
+    private FloatingActionButton fab ;
 
     private EarthquakeListAdapter adapter;
 
@@ -110,15 +116,19 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity_earthquakes_list);
 
+        // summary fields
+        summary_layout      = findViewById(R.id.filter_memo);
+        order_value_tv      = findViewById(R.id.order_value_tv);
+        minMagn_value_tv    = findViewById(R.id.minMagn_value_tv);
+        lastUp_value_tv     = findViewById(R.id.lastUp_value_tv);
+        eq_period_value_tv  = findViewById(R.id.eq_period_value_tv);
+        location_value_tv   = findViewById(R.id.location_value_tv);
 
-        order_value_tv = findViewById(R.id.order_value_tv);
-        minMagn_value_tv = findViewById(R.id.minMagn_value_tv);
-        lastUp_value_tv = findViewById(R.id.lastUp_value_tv);
-        eq_period_value_tv = findViewById(R.id.eq_period_value_tv);
-        location_value_tv = findViewById(R.id.location_value_tv);
-        loadingInProgress = findViewById(R.id.loading_spinner);
-        emptyListText = findViewById(R.id.empty_view);
-        filter_memo = findViewById(R.id.summary_layout);
+        loadingInProgress   = findViewById(R.id.loading_spinner);
+        emptyListText       = findViewById(R.id.empty_view);
+        filter_memo         = findViewById(R.id.summary_layout);
+        fab                 = findViewById(R.id.info_filter_fb);
+
 
 
         // Initialize ConsentSDK
@@ -180,6 +190,9 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
         });
 
         setupActionBar();
+
+        // summary layout start gone
+        summary_layout.setVisibility(View.GONE);
 
         // init shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -288,7 +301,6 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
 
 
         // make fab button hide when scrolling list
-        /*
         earthquakeListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
@@ -304,8 +316,14 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
                 super.onScrollStateChanged(recyclerView, newState);
             }
         });
-        */
 
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (summary_layout.isShown()) summary_layout.setVisibility(View.GONE);
+                else summary_layout.setVisibility(View.VISIBLE);
+            }
+        });
 
 
     }
