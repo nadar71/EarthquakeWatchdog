@@ -29,7 +29,7 @@ public class EarthquakeNetworkDataSource {
 
     // Synchronizing Interval with rest service for udpdated eq info
     private static final int    SYNC_INTERVAL_HOURS = 1;
-    private static final int    SYNC_INTERVAL_SECONDS = (int) TimeUnit.HOURS.toSeconds(SYNC_INTERVAL_HOURS);
+    private static final int    SYNC_INTERVAL_SECONDS = (int) TimeUnit.HOURS.toSeconds(SYNC_INTERVAL_HOURS); // 10; //
     // available time window for job
     private static final int    SYNC_FLEXTIME_SECONDS = SYNC_INTERVAL_SECONDS / 3;
     private static final String EARTHQUAKE_SYNC_TAG = "earthquakes-sync";
@@ -141,10 +141,13 @@ public class EarthquakeNetworkDataSource {
         String queryUrl = MyUtil.composeQueryUrl(dateFilter);
         earthquakes = new EarthQuakeNetworkRequest().fetchEarthquakeData(queryUrl);
 
-        Earthquake[] arrEarthquakes = (Earthquake[])earthquakes.toArray();
+        // Update last update in preferences
+        MyUtil.setLastUpdateField(context);
 
+        Earthquake[] arrEarthquakes = earthquakes.toArray(new Earthquake[earthquakes.size()]);
+
+        // post data to livedata
         earthquakesDownloaded.postValue(arrEarthquakes);
-
     }
 
 

@@ -7,7 +7,7 @@ import com.firebase.jobdispatcher.JobService;
 import com.indiewalk.watchdog.earthquake.SingletonProvider;
 
 public class EarthquakeFirebaseJobService extends JobService {
-    private static final String LOG_TAG = EarthquakeFirebaseJobService.class.getSimpleName();
+    private static final String TAG = EarthquakeFirebaseJobService.class.getSimpleName();
 
     /**
      * ---------------------------------------------------------------------------------------------
@@ -17,10 +17,11 @@ public class EarthquakeFirebaseJobService extends JobService {
      */
     @Override
     public boolean onStartJob(final JobParameters jobParameters) {
-        Log.d(LOG_TAG, "Earthquake remote fetching Job service started");
+        Log.d(TAG, "Earthquake remote fetching Job service started");
 
         EarthquakeNetworkDataSource networkDataSource =
                 ((SingletonProvider)SingletonProvider.getsContext()).getNetworkDatasource();
+
         networkDataSource.fetchEarthquakeWrapper();
 
         jobFinished(jobParameters, false);

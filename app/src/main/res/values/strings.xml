@@ -146,7 +146,7 @@
     <!-- - - - - - - - - - - Strings For date filter  Preference  - - - - - - - - - - - - - -->
     <string name="settings_date_filter_label">Date filter : </string>
     <string name="settings_date_filter_key" translatable="false">date_filter</string>
-    <string name="settings_date_filter_default" translatable="false">@string/settings_date_period_24h_value</string>
+    <string name="settings_date_filter_default" translatable="false">@string/settings_date_period_today_value</string>
 
     <string name="settings_date_period_today_label" translatable="true">Today</string>
     <string name="settings_date_period_24h_label" translatable="true">24h</string>
@@ -171,12 +171,13 @@
 
     <string name="faq_text">"         <b>FAQ &amp; DISCLAIMER</b>          This app downloads and shows data about earthquakes (till the last 120 earthquakes happened) taken from         <a href="https://earthquake.usgs.gov/earthquakes/"> USGS.gov </a> online service.         It is not in any way related to USGS nor it is an app from them.            It has only informative purposes, the datas about earthquakes are not in real time         (check <a href="https://earthquake.usgs.gov/earthquakes/"> USGS.gov site </a> for details)         So it has not intent to be a real time earthquake alert app,         not use it as a saving-life app, I\'m not responsible of every improper use of this app.            In map it asks for user location permissions only for calculating distance of         earthquake from user, and the users coordinates are stored for this purpose only.         If permissions for localization are negated, it allows anyway manual positioning         by long pressing on map, without using gps nor any other localization system,         check in map settings.          If permissions are not allowed nor a manual localization is done, it uses         the default location (Google location) and calculate earthquake distance from there.                     Hope you\'ll enjoy my app and find it useful, check out my other app and games on my site          <a href="http://www.indie-walkabout.eu">http://www.indie-walkabout.eu</a>.           For suggestions, info or bugs please contact me at           <a href="mailto:indie.walkabout.1971@gmail.com">indie.walkabout.1971@gmail.com</a>       "</string>
 
-    <!-- - - - - - - - - - Strings For SharedPreference - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - Key Strings for Preference - - - - - - - - - - - - - - - - - - - - -->
     <string name="location_coord" translatable="false">sharedPref</string>
     <string name="device_lat" translatable="false">device_lat</string>
     <string name="device_lng" translatable="false">device_lng</string>
     <string name="manual_Localization_On" translatable="false">manual_Localization_On</string>
     <string name="location_address" translatable="false">location_address</string>
+    <string name="last_update" translatable="false">last_update</string>
 
     <!-- - - - - - - - - - - - -  Manual localization flag Preference  - - - - - - - - - - - - - -->
     <string name="manual_localization_label">Use manual localization (no gps)</string>
