@@ -61,18 +61,6 @@ public class MyUtil {
         String rangeAgo = MyUtil.oldDate(offset).toString();
         builder.appendQueryParameter("starttime",rangeAgo);
 
-
-        /*
-        builder.appendQueryParameter("minmag",minMagnitude); // TODO : delete
-
-        if (!orderBy.equals(getString(R.string.settings_order_by_nearest_value))
-                && !orderBy.equals(getString(R.string.settings_order_by_furthest_value)) ){
-            orderBy = getString(R.string.settings_order_by_default);
-            builder.appendQueryParameter("orderby", orderBy);     // TODO : delete
-        }
-        */
-
-
         return  builder.toString();
     }
 
