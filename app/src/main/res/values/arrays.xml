@@ -6,6 +6,7 @@
         <item>@string/settings_order_by_desc_magnitude_label</item>
         <item>@string/settings_order_by_asc_magnitude_label</item>
         <item>@string/settings_order_by_most_recent_label</item>
+        <item>@string/settings_order_by_oldest_label</item>
         <item>@string/settings_order_by_nearest_label</item>
         <item>@string/settings_order_by_furthest_label</item>
     </string-array>
@@ -14,6 +15,7 @@
         <item>@string/settings_order_by_desc_magnitude_value</item>
         <item>@string/settings_order_by_asc_magnitude_value</item>
         <item>@string/settings_order_by_most_recent_value</item>
+        <item>@string/settings_order_by_oldest_value</item>
         <item>@string/settings_order_by_nearest_value</item>
         <item>@string/settings_order_by_furthest_value</item>
     </string-array>
@@ -79,7 +81,8 @@
         <item>@string/settings_date_period_24h_label</item>
         <item>@string/settings_date_period_48h_label</item>
         <item>@string/settings_date_period_week_label</item>
-        <item>@string/settings_date_period_month_label</item>
+        <item>@string/settings_date_period_2_week_label</item>
+        <!-- <item>@string/settings_date_period_month_label</item> #68 -->
     </string-array>
 
     <string-array name="settings_array_date_filter_values">
@@ -87,7 +90,8 @@
         <item>@string/settings_date_period_24h_value</item>
         <item>@string/settings_date_period_48h_value</item>
         <item>@string/settings_date_period_week_value</item>
-        <item>@string/settings_date_period_month_value</item>
+        <item>@string/settings_date_period_2_week_value</item>
+        <!--  <item>@string/settings_date_period_month_value</item> #68 -->
     </string-array>
 
 

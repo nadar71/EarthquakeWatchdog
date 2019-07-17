@@ -66,6 +66,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
     public static final String ORDER_BY_DESC_MAGNITUDE = "magnitude_desc_ordering";
     public static final String ORDER_BY_ASC_MAGNITUDE  = "magnitude_asc_ordering";
     public static final String ORDER_BY_MOST_RECENT    = "most_recent";
+    public static final String ORDER_BY_OLDEST         = "oldest";
     public static final String ORDER_BY_NEAREST        = "nearest";
     public static final String ORDER_BY_FURTHEST       = "furthest";
 
@@ -395,7 +396,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
 
 
         // recover last update from preferences
-        lastUpdate= sharedPreferences.getString(
+        lastUpdate = sharedPreferences.getString(
                 getString(R.string.last_update),
                 DEFAULT_LAST_UPDATE);
 
@@ -424,8 +425,12 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
             dateFilterLabel = getString(R.string.settings_date_period_48h_label);
         else if ((dateFilter.equals(getString(R.string.settings_date_period_week_value))))
             dateFilterLabel = getString(R.string.settings_date_period_week_label);
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_2_week_value))))
+            dateFilterLabel = getString(R.string.settings_date_period_2_week_label);
+        /* #68
         else if ((dateFilter.equals(getString(R.string.settings_date_period_month_value))))
             dateFilterLabel = getString(R.string.settings_date_period_month_label);
+        */
 
 
         // recover min magnitude value from prefs or set a default from string value
@@ -497,6 +502,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
         if ((!orderBy.equals(getString(R.string.settings_order_by_desc_magnitude_value))) &&
                 (!orderBy.equals(getString(R.string.settings_order_by_asc_magnitude_value))) &&
                 (!orderBy.equals(getString(R.string.settings_order_by_most_recent_value))) &&
+                (!orderBy.equals(getString(R.string.settings_order_by_oldest_value))) &&
                 (!orderBy.equals(getString(R.string.settings_order_by_nearest_value))) &&
                 (!orderBy.equals(getString(R.string.settings_order_by_furthest_value)))
         ) {
@@ -533,7 +539,8 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
                 (!dateFilter.equals(getString(R.string.settings_date_period_24h_value))) &&
                 (!dateFilter.equals(getString(R.string.settings_date_period_48h_value))) &&
                 (!dateFilter.equals(getString(R.string.settings_date_period_week_value))) &&
-                (!dateFilter.equals(getString(R.string.settings_date_period_month_value)))
+                (!dateFilter.equals(getString(R.string.settings_date_period_2_week_value)))
+                // #68 && (!dateFilter.equals(getString(R.string.settings_date_period_month_value)))
         ) {
             dateFilter = getString(R.string.settings_date_filter_default);
             editor.putString(getString(R.string.settings_date_filter_key), getString(R.string.settings_date_filter_default));
@@ -566,6 +573,9 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
         if (orderBy.equals(getString(R.string.settings_order_by_most_recent_value)))
             order_value_tv.setText(getString(R.string.settings_order_by_most_recent_label));
 
+        if (orderBy.equals(getString(R.string.settings_order_by_oldest_value)))
+            order_value_tv.setText(getString(R.string.settings_order_by_oldest_label));
+
         if (orderBy.equals(getString(R.string.settings_order_by_nearest_value)))
             order_value_tv.setText(getString(R.string.settings_order_by_nearest_label));
 
@@ -591,8 +601,12 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
         else if ((dateFilter.equals(getString(R.string.settings_date_period_week_value))))
             eq_period_value_tv.setText(getString(R.string.settings_date_period_week_label));
 
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_2_week_value))))
+            eq_period_value_tv.setText(getString(R.string.settings_date_period_2_week_label));
+        /*
         else if ((dateFilter.equals(getString(R.string.settings_date_period_month_value))))
             eq_period_value_tv.setText(getString(R.string.settings_date_period_month_label));
+        */
 
 
         //location address
@@ -649,6 +663,10 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
             MainViewModelFactory factory = new MainViewModelFactory(ORDER_BY_MOST_RECENT);
             filterDatafromRepository(factory);
 
+        } else if (orderBy.equals(getString(R.string.settings_order_by_oldest_value))) {
+            MainViewModelFactory factory = new MainViewModelFactory(ORDER_BY_OLDEST);
+            filterDatafromRepository(factory);
+
         } else if (orderBy.equals(getString(R.string.settings_order_by_nearest_value))) {
             MainViewModelFactory factory = new MainViewModelFactory(ORDER_BY_NEAREST);
             filterDatafromRepository(factory);
@@ -656,7 +674,6 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
         } else if (orderBy.equals(getString(R.string.settings_order_by_furthest_value))) {
             MainViewModelFactory factory = new MainViewModelFactory(ORDER_BY_FURTHEST);
             filterDatafromRepository(factory);
-
         }
 
 
