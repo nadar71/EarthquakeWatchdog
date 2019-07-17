@@ -6,8 +6,10 @@ import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
 import com.indiewalk.watchdog.earthquake.SingletonProvider;
 
+
 public class EarthquakeFirebaseJobService extends JobService {
     private static final String TAG = EarthquakeFirebaseJobService.class.getSimpleName();
+
 
     /**
      * ---------------------------------------------------------------------------------------------
@@ -22,7 +24,7 @@ public class EarthquakeFirebaseJobService extends JobService {
         EarthquakeNetworkDataSource networkDataSource =
                 ((SingletonProvider)SingletonProvider.getsContext()).getNetworkDatasource();
 
-        networkDataSource.fetchEarthquakeWrapper();
+        networkDataSource.startFetchEarthquakeService();
 
         jobFinished(jobParameters, false);
         return true;
@@ -31,6 +33,6 @@ public class EarthquakeFirebaseJobService extends JobService {
 
     @Override
     public boolean onStopJob(JobParameters jobParameters) {
-        return true;
+        return false;
     }
 }
