@@ -181,6 +181,14 @@ public class EarthquakeRepository {
         return eqDb.earthquakeDbDao().loadAll_orderby_most_recent(min_mag);
     }
 
+
+    // retrieve all the eqs order by oldest (time asc)
+    public LiveData<List<Earthquake>> loadAll_orderby_oldest(double min_mag){
+        initializeData();
+        return eqDb.earthquakeDbDao().loadAll_orderby_oldest(min_mag);
+    }
+
+
     // retrieve all the eqs order by nearest to user
     public LiveData<List<Earthquake>> loadAll_orderby_nearest(double min_mag){
         initializeData();

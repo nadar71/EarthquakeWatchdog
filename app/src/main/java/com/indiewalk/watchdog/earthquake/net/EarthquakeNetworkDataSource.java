@@ -193,7 +193,8 @@ public class EarthquakeNetworkDataSource {
                 (!dateFilter.equals(context.getString(R.string.settings_date_period_24h_value))) &&
                 (!dateFilter.equals(context.getString(R.string.settings_date_period_48h_value))) &&
                 (!dateFilter.equals(context.getString(R.string.settings_date_period_week_value))) &&
-                (!dateFilter.equals(context.getString(R.string.settings_date_period_month_value)))
+                (!dateFilter.equals(context.getString(R.string.settings_date_period_2_week_value)))
+                // #68 && (!dateFilter.equals(context.getString(R.string.settings_date_period_month_value)))
         ){
             dateFilter = context.getString(R.string.settings_date_filter_default);
             editor.putString(context.getString(R.string.settings_date_filter_key),

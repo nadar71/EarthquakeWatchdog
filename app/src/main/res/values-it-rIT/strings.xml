@@ -58,6 +58,8 @@
     <string name="last_update_label">Ultimo aggiornamento :</string>
     <string name="time_range_label">Intervallo di tempo :</string>
     <string name="your_position_label">La tua posizione :</string>
+    <string name="settings_date_period_2_week_label">Ultime 2 settimane</string>
+    <string name="settings_order_by_oldest_label">Più vecchio</string>
     <!--
     <string name="settings_order_by_desc_magnitude_value">magnitudo</string>
     <string name="settings_order_by_most_recent_value">data</string>
