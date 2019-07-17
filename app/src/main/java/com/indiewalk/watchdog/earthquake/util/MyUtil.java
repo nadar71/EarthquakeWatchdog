@@ -3,11 +3,13 @@ package com.indiewalk.watchdog.earthquake.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -20,6 +22,7 @@ import android.view.View;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.indiewalk.watchdog.earthquake.R;
+import com.indiewalk.watchdog.earthquake.UI.MainActivityEarthquakesList;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -308,6 +311,27 @@ public class MyUtil {
             default : break;
         }
         return ContextCompat.getDrawable(context,R.drawable.ic_earthquake_pointer);
+    }
+
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Update last update field in preferences
+     * ---------------------------------------------------------------------------------------------
+     */
+    public static String setLastUpdateField(Context context) {
+        // store the last update time
+        String lastUpdate = MyUtil.formatDateFromMsec(System.currentTimeMillis()) +
+                " " +
+                MyUtil.formatTimeFromMsec(System.currentTimeMillis());
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(context.getString(R.string.last_update), lastUpdate);
+        editor.apply();
+
+        return lastUpdate;
     }
 
 

@@ -59,6 +59,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
     public static final double DEFAULT_LAT = 37.4219999;
     public static final double DEFAULT_LNG = -122.0862515;
     public static final String DEFAULT_ADDRESS = "Mountain View,CA";
+    public static final String DEFAULT_LAST_UPDATE = "";
 
     // Key constant for view model parameters
     public static final String LOAD_ALL_NO_ORDER       = "load_all_no_order";
@@ -371,6 +372,9 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
      */
     private void checkPreferences() {
 
+
+
+        // get coords from preferences
         lat_s = sharedPreferences.getString(getString(R.string.device_lat), Double.toString(DEFAULT_LAT));
         lng_s = sharedPreferences.getString(getString(R.string.device_lng), Double.toString(DEFAULT_LNG));
 
@@ -389,6 +393,11 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
         // Toast.makeText(this, "Current Location : lat : " + lat_s + " long : " + lng_s, Toast.LENGTH_SHORT).show();
         Log.i(TAG, "onResume: Current Location : lat : " + lat_s + " long : " + lng_s);
 
+
+        // recover last update from preferences
+        lastUpdate= sharedPreferences.getString(
+                getString(R.string.last_update),
+                DEFAULT_LAST_UPDATE);
 
         // recover min magnitude value from prefs or set a default from string value
         minMagnitude = sharedPreferences.getString(
@@ -448,6 +457,16 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
      * @param editor ---------------------------------------------------------------------------------------------
      */
     private void safePreferencesValue(SharedPreferences.Editor editor) {
+
+        // lastUpdate
+        /* Left for debug; don't need this, use repository check in datasource
+        if (lastUpdate.isEmpty() || lastUpdate == null) {
+            // it's the first start, need to load data
+            NEED_REMOTE_UPDATE = true;
+            dateFilter = getString(R.string.settings_date_filter_default);
+            editor.putString(getString(R.string.settings_date_filter_key), getString(R.string.settings_date_filter_default));
+        }
+        */
 
         // minMagnitude safe
         if (minMagnitude.isEmpty() || minMagnitude == null) {
@@ -528,6 +547,8 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
 
     }
 
+
+
     /**
      * ---------------------------------------------------------------------------------------------
      * Summarize the filter settings for the eq list shown
@@ -588,8 +609,6 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
 
 
         // show empty list and load in progress
-        // earthquakeListView.setEmptyView(emptyListText);
-        // emptyListText.setText(R.string.searching);
         showLoading();
 
         // TODO : temporary, data must be updated setting an observer in repository on specific preference
@@ -664,6 +683,8 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
                 if (earthquakeEntries != null && !earthquakeEntries.isEmpty()) { // data ready in db
                     earthquakes = earthquakeEntries;
                     updateAdapter(earthquakeEntries);
+                    // used to update the last update field, updated by datasource at 1st start
+                    checkPreferences();
                     showEarthquakeListView();
                 } else {                                                         // waiting for data
                     // While waiting that the repository getting aware that the eqs lsit is empty
@@ -782,7 +803,6 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
      *
      * ---------------------------------------------------------------------------------------------
      */
-    // TODO : in the future, use livedata/viewmodel for this: loader don't need to return the equake list structure
     // it has been already stored in db; must only return
     @Override
     public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> earthquakesReturnedByLoader) {
@@ -798,12 +818,12 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
         if (setEartquakesList(earthquakesReturnedByLoader)) {
             updateList();
 
-            // store the last update time
-            lastUpdate = MyUtil.formatDateFromMsec(System.currentTimeMillis()) +
-                    " " +
-                    MyUtil.formatTimeFromMsec(System.currentTimeMillis());
+            // update preferences
+            lastUpdate = MyUtil.setLastUpdateField(this);
+
             lastUp_value_tv.setText(lastUpdate);
 
+            // show filter summary
             filter_memo.setVisibility(View.VISIBLE);
 
             Toast alert = Toast.makeText(MainActivityEarthquakesList.this,

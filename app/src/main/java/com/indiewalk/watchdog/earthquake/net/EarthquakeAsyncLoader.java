@@ -80,7 +80,7 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
 
 
         // update with distance from user, distance unit each earthquake
-        setUserPreferences(earthquakes);
+        setEqDistanceFromCurrentCoords(earthquakes);
 
         // delete previous results in db, only newest are valid
         eqDb.earthquakeDbDao().dropEarthquakeListTable();
@@ -90,11 +90,6 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
             eqDb.earthquakeDbDao().insertEarthquake(earthquake);
         }
 
-        // TODO : check if there are specific visualization preferences for showing equakes
-        // TODO : do not forget to clear the  list before retrieving data
-
-        // return to main activity for list view
-        // TODO : return true
         return earthquakes;
     }
 
@@ -105,7 +100,7 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
      * Update with distance unit preferred.
      * ---------------------------------------------------------------------------------------------
      */
-     private void setUserPreferences(ArrayList<Earthquake> earthquakes){
+     private void setEqDistanceFromCurrentCoords(ArrayList<Earthquake> earthquakes){
 
          // Check location coordinates from shared preferences.If not set, put default value
 
@@ -147,7 +142,7 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
                  distance = (int) MyUtil.fromKmToMiles(distance);
              }
 
-             Log.i(TAG, "setUserPreferences: eq distance from user : "+distance);
+             Log.i(TAG, "setEqDistanceFromCurrentCoords: eq distance from user : "+distance);
              // set in equake
              eq.setUserDistance(distance);
          }
