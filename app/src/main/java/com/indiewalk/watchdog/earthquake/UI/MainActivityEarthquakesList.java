@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -178,6 +179,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
             }
         });
 
+        setupActionBar();
 
         // init shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -195,8 +197,19 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
 
     }
 
+    
 
-
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Set icons, title etc. in action bar
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(getString(R.string.title_reduced));
+        actionBar.setIcon(R.mipmap.ic_launcher);
+        actionBar.setDisplayShowHomeEnabled(true);
+    }
 
 
     /**
