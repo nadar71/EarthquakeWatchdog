@@ -28,7 +28,6 @@
         android:key="@string/settings_min_magnitude_key"
         android:title="@string/settings_min_magnitude_label" />
 
-    <!-- // TODO : must delete this part -->
     <!--
     <ListPreference
         android:defaultValue="@string/settings_max_equakes_default"

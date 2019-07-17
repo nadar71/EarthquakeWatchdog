@@ -70,6 +70,9 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
     public static final String ORDER_BY_NEAREST        = "nearest";
     public static final String ORDER_BY_FURTHEST       = "furthest";
 
+    // day limit for accessing map
+    public static final int daysLimit = 1;
+
     private String lastUpdate = "";
 
     // TODO : Temporary, must use only onPreferenceChanges
@@ -332,12 +335,21 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
                     public void onClick(DialogInterface dialog, int item) {
 
                         if (item == 0) {       // Show on Map
-                            Earthquake earthquake = earthquakes.get(pos);
-                            Intent showEqOnMap = new Intent(context, MapsActivity.class);
-                            showEqOnMap.putExtra("ShowEquake", "true");
-                            showEqOnMap.putExtra("equake_lat", Double.toString(earthquake.getLatitude()));
-                            showEqOnMap.putExtra("equake_lng", Double.toString(earthquake.getLongitude()));
-                            startActivity(showEqOnMap);
+                            int nDays = Integer.parseInt(dateFilter);
+                            if (nDays <= daysLimit) {
+                                Earthquake earthquake = earthquakes.get(pos);
+                                Intent showEqOnMap = new Intent(context, MapsActivity.class);
+                                showEqOnMap.putExtra("ShowEquake", "true");
+                                showEqOnMap.putExtra("equake_lat",
+                                        Double.toString(earthquake.getLatitude()));
+                                showEqOnMap.putExtra("equake_lng",
+                                        Double.toString(earthquake.getLongitude()));
+                                startActivity(showEqOnMap);
+                            }else{
+                                Toast.makeText(MainActivityEarthquakesList.this,
+                                        getString(R.string.use_of_map_forbidden), Toast.LENGTH_LONG).show();
+                            }
+
                         } else if (item == 1) {  // USGS site Details
                             Earthquake earthquake = earthquakes.get(pos);
                             String url = earthquake.getUrl();
@@ -421,10 +433,19 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
             dateFilterLabel = getString(R.string.settings_date_period_today_label);
         else if ((dateFilter.equals(getString(R.string.settings_date_period_24h_value))))
             dateFilterLabel = getString(R.string.settings_date_period_24h_label);
+
         else if ((dateFilter.equals(getString(R.string.settings_date_period_48h_value))))
             dateFilterLabel = getString(R.string.settings_date_period_48h_label);
+        /*
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_3_days_value))))
+            dateFilterLabel = getString(R.string.settings_date_period_3_days_label);
+
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_4_days_value))))
+            dateFilterLabel = getString(R.string.settings_date_period_4_days_label);
+        */
         else if ((dateFilter.equals(getString(R.string.settings_date_period_week_value))))
             dateFilterLabel = getString(R.string.settings_date_period_week_label);
+
         else if ((dateFilter.equals(getString(R.string.settings_date_period_2_week_value))))
             dateFilterLabel = getString(R.string.settings_date_period_2_week_label);
         /* #68
@@ -538,6 +559,8 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
         if ((!dateFilter.equals(getString(R.string.settings_date_period_today_value))) &&
                 (!dateFilter.equals(getString(R.string.settings_date_period_24h_value))) &&
                 (!dateFilter.equals(getString(R.string.settings_date_period_48h_value))) &&
+                /*(!dateFilter.equals(getString(R.string.settings_date_period_3_days_value))) &&
+                (!dateFilter.equals(getString(R.string.settings_date_period_4_days_value))) && */
                 (!dateFilter.equals(getString(R.string.settings_date_period_week_value))) &&
                 (!dateFilter.equals(getString(R.string.settings_date_period_2_week_value)))
                 // #68 && (!dateFilter.equals(getString(R.string.settings_date_period_month_value)))
@@ -597,7 +620,13 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
 
         else if ((dateFilter.equals(getString(R.string.settings_date_period_48h_value))))
             eq_period_value_tv.setText(getString(R.string.settings_date_period_48h_label));
+        /*
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_3_days_value))))
+            dateFilterLabel = getString(R.string.settings_date_period_3_days_label);
 
+        else if ((dateFilter.equals(getString(R.string.settings_date_period_4_days_value))))
+            dateFilterLabel = getString(R.string.settings_date_period_4_days_label);
+        */
         else if ((dateFilter.equals(getString(R.string.settings_date_period_week_value))))
             eq_period_value_tv.setText(getString(R.string.settings_date_period_week_label));
 
@@ -607,7 +636,6 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
         else if ((dateFilter.equals(getString(R.string.settings_date_period_month_value))))
             eq_period_value_tv.setText(getString(R.string.settings_date_period_month_label));
         */
-
 
         //location address
         location_value_tv.setText(location_address);
@@ -918,12 +946,16 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
                 startActivity(settingsIntent);
                 return true;
             case R.id.set_myposition_action:
-                // Intent setMapIntent = new Intent(this, MyPositionActivity.class);
-                Intent setMapIntent = new Intent(this, MapsActivity.class);
-                startActivity(setMapIntent);
+                int nDays = Integer.parseInt(dateFilter);
+                if (nDays <= daysLimit) {
+                    Intent setMapIntent = new Intent(this, MapsActivity.class);
+                    startActivity(setMapIntent);
+                }else{
+                    Toast.makeText(this, getString(R.string.use_of_map_forbidden), Toast.LENGTH_LONG).show();
+                }
                 return true;
             case R.id.refresh_action:
-                loadingInProgress.setVisibility(View.VISIBLE);
+                showLoading();
                 retrieveRemoteData();
                 return true;
             default:

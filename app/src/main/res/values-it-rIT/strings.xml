@@ -60,6 +60,9 @@
     <string name="your_position_label">La tua posizione :</string>
     <string name="settings_date_period_2_week_label">Ultime 2 settimane</string>
     <string name="settings_order_by_oldest_label">Più vecchio</string>
+    <string name="use_of_map_forbidden">Mi spiace, non è possibile visualizzare i terremoti sulla mappa per un intervallo di tempo superiore alle 24h, cambia per favore le impostazioni del filtro nelle Impostazioni Generali</string>
+    <string name="settings_date_period_3_days_label">3 giorni fa</string>
+    <string name="settings_date_period_4_days_label">4 giorni fa</string>
     <!--
     <string name="settings_order_by_desc_magnitude_value">magnitudo</string>
     <string name="settings_order_by_most_recent_value">data</string>
