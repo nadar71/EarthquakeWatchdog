@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -22,7 +24,9 @@ import android.view.View;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.indiewalk.watchdog.earthquake.R;
+import com.indiewalk.watchdog.earthquake.SingletonProvider;
 import com.indiewalk.watchdog.earthquake.UI.MainActivityEarthquakesList;
+import com.indiewalk.watchdog.earthquake.net.EarthquakeFirebaseJobService;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -31,6 +35,8 @@ import java.util.Calendar;
 
 public class MyUtil {
 
+
+    private static final String TAG = MyUtil.class.getSimpleName();
 
     // URL to query the USGS dataset for earthquake information
     private static final String USGS_REQUEST_URL =
@@ -322,6 +328,29 @@ public class MyUtil {
         return lastUpdate;
     }
 
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Check if internet connection is on
+     * ---------------------------------------------------------------------------------------------
+     */
+    public static boolean isConnectionOk() {
+        // check connection
+        // reference to connection manager
+        ConnectivityManager connManager =
+                (ConnectivityManager) ((SingletonProvider)SingletonProvider.getsContext())
+                        .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        // network status retrieving
+        NetworkInfo netinfo = connManager.getActiveNetworkInfo();
+        if (netinfo != null && netinfo.isConnected()) {
+            Log.d(TAG, "Connections is down !");
+            return true;
+        }
+        else return false;
+
+    }
 
 
 }

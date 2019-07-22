@@ -10,20 +10,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -748,9 +744,21 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
      */
     private void filterDatafromRepository(MainViewModelFactory factory) {
         // Get eq list through LiveData
+        // NB : Here it check if there are eqs at first start :
+        //
+        // 1 - The MainViewModel get repository instance, then
+        //     try to recover eqs list using it
+        // 2 - In each repository dao method, there is a call to repo initializeData :
+        //     Here it checks if there are data or need to be remote requested
+        //
+        // Moreover, getting repo instance with getRepositoryWithDataSource it activates
+        // an observerforever on networkData = networkDataSource.getEarthquakesData()
+        // in case of data change due to scheduled update
+
         final MainViewModel viewModel = ViewModelProviders
                 .of(this, factory)
                 .get(MainViewModel.class);
+
 
         LiveData<List<Earthquake>> equakes = viewModel.getEqList();
         equakes.observe(this, new Observer<List<Earthquake>>() {
@@ -763,9 +771,13 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
                     checkPreferences();
                     showEarthquakeListView();
                 } else {                                                         // waiting for data
-                    // While waiting that the repository getting aware that the eqs lsit is empty
+                    // While waiting that the repository getting aware that the eqs list is empty
                     // and ask for a remote update
-                    showLoading();
+                    if (MyUtil.isConnectionOk()) {
+                        showLoading();
+                    } else {
+                        showNoInternetConnection();
+                    }
                 }
             }
         });
@@ -790,17 +802,9 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
      * ---------------------------------------------------------------------------------------------
      */
     private void retrieveRemoteData() {
-        // check connection
-        // reference to connection manager
-        ConnectivityManager connManager =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        // network status retrieving
-        NetworkInfo netinfo = connManager.getActiveNetworkInfo();
-
-        if (netinfo != null && netinfo.isConnected()) {
+        if (MyUtil.isConnectionOk()) {
             showLoading();
-
             // LoaderManager reference
             LoaderManager loaderManager = getLoaderManager();
             // Init loader : id above, bundle = null , this= current activity for LoaderCallbacks

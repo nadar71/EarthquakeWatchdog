@@ -24,6 +24,7 @@ public class EarthquakeFirebaseJobService extends JobService {
         EarthquakeNetworkDataSource networkDataSource =
                 ((SingletonProvider)SingletonProvider.getsContext()).getNetworkDatasource();
 
+
         networkDataSource.startFetchEarthquakeService();
 
         jobFinished(jobParameters, false);
