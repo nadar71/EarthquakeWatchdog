@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.app.JobIntentService;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
@@ -31,7 +32,7 @@ public class EarthquakeNetworkDataSource {
 
     // Synchronizing Interval with rest service for udpdated eq info
     private static final int    SYNC_INTERVAL_HOURS = 1;
-    private static final int    SYNC_INTERVAL_SECONDS = 60; //(int) TimeUnit.HOURS.toSeconds(SYNC_INTERVAL_HOURS); // 60; //
+    private static final int    SYNC_INTERVAL_SECONDS = (int) TimeUnit.HOURS.toSeconds(SYNC_INTERVAL_HOURS); // 60; //
     // available time window for job
     private static final int    SYNC_FLEXTIME_SECONDS = SYNC_INTERVAL_SECONDS / 3;
     private static final String EARTHQUAKE_SYNC_TAG = "earthquakes-sync";
@@ -99,15 +100,8 @@ public class EarthquakeNetworkDataSource {
     public void startFetchEarthquakeService() {
 
         // need for issue : #92
-        // new EarthquakeSyncIntentService().enqueueWork(context, new Intent());
-
         Intent intentForFetching = new Intent(context, EarthquakeSyncIntentService.class);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ContextCompat.startForegroundService(context,intentForFetching);
-        } else {
-            context.startService(intentForFetching);
-        }
+        EarthquakeSyncIntentService.enqueueWork(context, intentForFetching);
 
         Log.d(TAG, "startFetchEarthquakeService : Fetch erthquakes data Service EarthquakeSyncIntentService created.");
     }
