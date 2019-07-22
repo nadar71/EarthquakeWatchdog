@@ -1,6 +1,7 @@
 package com.indiewalk.watchdog.earthquake.data;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.persistence.room.Query;
 import android.util.Log;
 
 import com.indiewalk.watchdog.earthquake.SingletonProvider;
@@ -46,7 +47,8 @@ public class EarthquakeRepository {
                         dropEarthquakeListTable();
 
                         // update with distance from user, distance unit each earthquake
-                        MyUtil.setEqDistanceFromCurrentCoords(newEqFromNetwork, (SingletonProvider)SingletonProvider.getsContext());
+                        MyUtil.setEqDistanceFromCurrentCoords(newEqFromNetwork,
+                                (SingletonProvider)SingletonProvider.getsContext());
 
                         eqDb.earthquakeDbDao().renewDataInsert(newEqFromNetwork);
                         Log.d(TAG, "WeatherAppRepository observer : New values inserted. ");
@@ -223,6 +225,23 @@ public class EarthquakeRepository {
         eqDb.earthquakeDbDao().insertEarthquake(earthquake);
     }
 
+
+    //----------------------------------------------------------------------------------------------
+    //  UPDATE
+    //----------------------------------------------------------------------------------------------
+    public void updatedAllEqsDistFromUser(List<Earthquake> equakes){
+        executors.diskIO().execute( () ->{
+                    Log.d(TAG, "Updating eqs distances from current user location. ");
+                    for(Earthquake eq:equakes) {
+                        eqDb.earthquakeDbDao().updatedEqDistanceFromUser(eq.getUserDistance(),
+                                eq.getId());
+                    }
+                    Log.d(TAG, "Updating eqs distances from current user location. : New values inserted. ");
+                }
+
+        );
+
+    }
 
 
     //----------------------------------------------------------------------------------------------

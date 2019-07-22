@@ -56,6 +56,7 @@ import com.indiewalk.watchdog.earthquake.UI.MainActivityEarthquakesList;
 import com.indiewalk.watchdog.earthquake.UI.MainViewModel;
 import com.indiewalk.watchdog.earthquake.UI.MainViewModelFactory;
 import com.indiewalk.watchdog.earthquake.data.Earthquake;
+import com.indiewalk.watchdog.earthquake.data.EarthquakeRepository;
 import com.indiewalk.watchdog.earthquake.util.ConsentSDK;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
@@ -96,6 +97,14 @@ public class MapsActivity extends AppCompatActivity
 
     // Markers associated with earthquake on map
     List<Marker> earthquakesMarkersList;
+
+    // eqs list with livedata
+    LiveData<List<Earthquake>> equakes;
+
+    // eqs list WITHOUT livedata
+    List<Earthquake> equakes_no_live;
+
+    EarthquakeRepository eqRepository;
 
     // Maps type list
     private static final CharSequence[] MAP_TYPE_ITEMS =
@@ -164,6 +173,9 @@ public class MapsActivity extends AppCompatActivity
                     getString(R.string.title_activity_maps_manual_localization_on) +"</font>"));
         }
 
+        // get repo
+        eqRepository = ((SingletonProvider) SingletonProvider.getsContext()).getRepository();
+
     }
 
     /**
@@ -217,11 +229,11 @@ public class MapsActivity extends AppCompatActivity
         MainViewModelFactory factory = new MainViewModelFactory(MainActivityEarthquakesList.LOAD_ALL_NO_ORDER);
         final MainViewModel viewModel = ViewModelProviders.of(this,factory).get(MainViewModel.class);
 
-        LiveData<List<Earthquake>> equakes = viewModel.getEqList();
+        equakes = viewModel.getEqList();
         equakes.observe(this, new Observer<List<Earthquake>>() {
             @Override
             public void onChanged(@Nullable List<Earthquake> earthquakeList) {
-
+                equakes_no_live = earthquakeList; // update for use outside
                 setMarkerForEachEq(earthquakeList);
 
             }
@@ -454,7 +466,7 @@ public class MapsActivity extends AppCompatActivity
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Check if there is already a user location set from previous access to avoid late while
+     * Check if there is already a user location set from previous access to avoid delay while
      * the gps is connecting
      * ---------------------------------------------------------------------------------------------
      */
@@ -560,6 +572,11 @@ public class MapsActivity extends AppCompatActivity
                 // set address location in pref
                 setLocationAddress(userLat, userLng);
 
+                // update equakes list with new distance from user
+                MyUtil.setEqDistanceFromCurrentCoords(equakes_no_live, context);
+
+                // update eqs in db
+                eqRepository.updatedAllEqsDistFromUser(equakes_no_live);
 
                 // stop progress bar
                 dialog.dismiss();
@@ -901,6 +918,12 @@ public class MapsActivity extends AppCompatActivity
 
                 // save in preferences
                 setLocationAddress(latLng.latitude, latLng.longitude);
+
+                // update equakes list with new distance from user
+                MyUtil.setEqDistanceFromCurrentCoords(equakes_no_live, context);
+
+                // update eqs in db
+                eqRepository.updatedAllEqsDistFromUser(equakes_no_live);
 
                 manualLocIsOn = true;
 

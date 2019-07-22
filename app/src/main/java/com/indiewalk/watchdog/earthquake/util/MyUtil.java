@@ -468,7 +468,6 @@ public class MyUtil {
             eq.setUserDistance(distance);
         }
 
-
     }
 
 
