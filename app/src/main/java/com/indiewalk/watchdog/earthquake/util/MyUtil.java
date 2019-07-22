@@ -361,9 +361,67 @@ public class MyUtil {
      * ---------------------------------------------------------------------------------------------
      * Update each equakes info with custom distance from user if any.
      * Update with distance unit preferred.
+     * Using List<Earthquake> earthquakes
      * ---------------------------------------------------------------------------------------------
      */
     public static void setEqDistanceFromCurrentCoords(List<Earthquake> earthquakes, Context context ){
+
+        // Check location coordinates from shared preferences.If not set, put default value
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+
+        //get preferences for check
+        String lat_s = sharedPreferences.getString(context.getString(R.string.device_lat),Double.toString(MainActivityEarthquakesList.DEFAULT_LAT));
+        String lng_s = sharedPreferences.getString(context.getString(R.string.device_lng),Double.toString(MainActivityEarthquakesList.DEFAULT_LNG));
+
+
+        // set default coord if there are no one
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        if (lat_s.isEmpty() == true) {
+            editor.putString(context.getString(R.string.device_lat), Double.toString(MainActivityEarthquakesList.DEFAULT_LAT));
+            editor.apply();
+        }
+
+        if (lng_s.isEmpty() == true) {
+            editor.putString(context.getString(R.string.device_lng), Double.toString(MainActivityEarthquakesList.DEFAULT_LNG));
+            editor.apply();
+        }
+
+        // get user lat, lng
+        lat_s = sharedPreferences.getString(context.getString(R.string.device_lat),Double.toString(MainActivityEarthquakesList.DEFAULT_LAT));
+        lng_s = sharedPreferences.getString(context.getString(R.string.device_lng),Double.toString(MainActivityEarthquakesList.DEFAULT_LNG));
+
+        // get distance unit choosen
+        String dist_unit = sharedPreferences.getString(context.getString(R.string.settings_distance_unit_by_key),
+                Double.toString(R.string.settings_distance_unit_by_default));
+
+
+        for(Earthquake eq : earthquakes){
+            double userLat = Double.valueOf(lat_s);
+            double userLng = Double.valueOf(lng_s);
+            int distance   = (int) MyUtil.haversineDistanceCalc(userLat, eq.getLatitude(),
+                    userLng, eq.getLongitude());
+            // convert in miles if needed
+            if (dist_unit.equals(context.getString(R.string.settings_mi_distance_unit_value))){
+                distance = (int) MyUtil.fromKmToMiles(distance);
+            }
+
+            Log.i(TAG, "setEqDistanceFromCurrentCoords: eq distance from user : "+distance);
+            // set in equake
+            eq.setUserDistance(distance);
+        }
+
+
+    }
+
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Overloaded version of setEqDistanceFromCurrentCoords, now using Earthquake[] earthquakes
+     * ---------------------------------------------------------------------------------------------
+     */
+    public static void setEqDistanceFromCurrentCoords(Earthquake[] earthquakes, Context context ){
 
         // Check location coordinates from shared preferences.If not set, put default value
 

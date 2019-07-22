@@ -3,6 +3,7 @@ package com.indiewalk.watchdog.earthquake.data;
 import android.arch.lifecycle.LiveData;
 import android.util.Log;
 
+import com.indiewalk.watchdog.earthquake.SingletonProvider;
 import com.indiewalk.watchdog.earthquake.net.EarthquakeNetworkDataSource;
 import com.indiewalk.watchdog.earthquake.util.AppExecutors;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
@@ -43,6 +44,10 @@ public class EarthquakeRepository {
                                 "New values found, deletes previous and insert new ones. ");
                         // Delete old and insert new data
                         dropEarthquakeListTable();
+
+                        // update with distance from user, distance unit each earthquake
+                        MyUtil.setEqDistanceFromCurrentCoords(newEqFromNetwork, (SingletonProvider)SingletonProvider.getsContext());
+
                         eqDb.earthquakeDbDao().renewDataInsert(newEqFromNetwork);
                         Log.d(TAG, "WeatherAppRepository observer : New values inserted. ");
                     }
