@@ -144,6 +144,7 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
     public void setEarthquakesEntries(List<Earthquake> earthquakesEntries) {
         // if  (this.earthquakesEntries != null) this.earthquakesEntries.clear();
         this.earthquakesEntries = earthquakesEntries;
+
         //data changed, refresh the view : notify the related observers
         notifyDataSetChanged();
     }

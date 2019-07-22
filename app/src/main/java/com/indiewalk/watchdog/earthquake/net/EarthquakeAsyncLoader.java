@@ -78,9 +78,8 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
         earthquakes = new EarthQuakeNetworkRequest().fetchEarthquakeData(queryUrl);
         Log.i(TAG, "loadInBackground: loadInBackground ended, returning data requested.");
 
-
         // update with distance from user, distance unit each earthquake
-        setEqDistanceFromCurrentCoords(earthquakes);
+        MyUtil.setEqDistanceFromCurrentCoords(earthquakes, context);
 
         // delete previous results in db, only newest are valid
         eqDb.earthquakeDbDao().dropEarthquakeListTable();
@@ -94,61 +93,7 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Update each equakes info with custom distance from user if any.
-     * Update with distance unit preferred.
-     * ---------------------------------------------------------------------------------------------
-     */
-     private void setEqDistanceFromCurrentCoords(ArrayList<Earthquake> earthquakes){
 
-         // Check location coordinates from shared preferences.If not set, put default value
-
-         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
-
-         //get preferences for check
-         lat_s = sharedPreferences.getString(context.getString(R.string.device_lat),Double.toString(MainActivityEarthquakesList.DEFAULT_LAT));
-         lng_s = sharedPreferences.getString(context.getString(R.string.device_lng),Double.toString(MainActivityEarthquakesList.DEFAULT_LNG));
-
-
-         // set default coord if there are no one
-         SharedPreferences.Editor editor = sharedPreferences.edit();
-         if (lat_s.isEmpty() == true) {
-             editor.putString(context.getString(R.string.device_lat), Double.toString(MainActivityEarthquakesList.DEFAULT_LAT));
-             editor.apply();
-         }
-
-         if (lng_s.isEmpty() == true) {
-             editor.putString(context.getString(R.string.device_lng), Double.toString(MainActivityEarthquakesList.DEFAULT_LNG));
-             editor.apply();
-         }
-
-         // get user lat, lng
-         lat_s = sharedPreferences.getString(context.getString(R.string.device_lat),Double.toString(MainActivityEarthquakesList.DEFAULT_LAT));
-         lng_s = sharedPreferences.getString(context.getString(R.string.device_lng),Double.toString(MainActivityEarthquakesList.DEFAULT_LNG));
-
-         // get distance unit choosen
-         dist_unit = sharedPreferences.getString(context.getString(R.string.settings_distance_unit_by_key),
-                 Double.toString(R.string.settings_distance_unit_by_default));
-
-
-         for(Earthquake eq : earthquakes){
-             double userLat = Double.valueOf(lat_s);
-             double userLng = Double.valueOf(lng_s);
-             int distance   = (int) MyUtil.haversineDistanceCalc(userLat, eq.getLatitude(),
-                                                           userLng, eq.getLongitude());
-             // convert in miles if needed
-             if (dist_unit.equals(context.getString(R.string.settings_mi_distance_unit_value))){
-                 distance = (int) MyUtil.fromKmToMiles(distance);
-             }
-
-             Log.i(TAG, "setEqDistanceFromCurrentCoords: eq distance from user : "+distance);
-             // set in equake
-             eq.setUserDistance(distance);
-         }
-
-
-     }
 
 
 
