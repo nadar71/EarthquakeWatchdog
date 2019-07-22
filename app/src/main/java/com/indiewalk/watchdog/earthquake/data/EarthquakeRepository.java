@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.indiewalk.watchdog.earthquake.net.EarthquakeNetworkDataSource;
 import com.indiewalk.watchdog.earthquake.util.AppExecutors;
+import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
 import java.util.List;
 
@@ -120,10 +121,15 @@ public class EarthquakeRepository {
 
         // try to fetch earthquakes remote data if needed
         executors.diskIO().execute(()->{
-            if(isRequestDataNeeded()){
-                Log.d(TAG, "initializeData: isFetchNeeded == true, run the intent from fetching data from remote");
-                startFetchEarthquakeService();
+            if (MyUtil.isConnectionOk()) {
+                if(isRequestDataNeeded()){
+                    Log.d(TAG, "initializeData: isFetchNeeded == true, run the intent from fetching data from remote");
+                    startFetchEarthquakeService();
+                }
+            } else {
+                return;
             }
+
         });
     }
 
@@ -232,11 +238,6 @@ public class EarthquakeRepository {
     public LiveData<List<Earthquake>> getEarthquakesList(){
         return loadAll();
     }
-
-
-
-
-
 
 
 

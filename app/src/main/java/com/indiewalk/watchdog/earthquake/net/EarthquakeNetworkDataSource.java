@@ -29,7 +29,7 @@ public class EarthquakeNetworkDataSource {
 
     // Synchronizing Interval with rest service for udpdated eq info
     private static final int    SYNC_INTERVAL_HOURS = 1;
-    private static final int    SYNC_INTERVAL_SECONDS = (int) TimeUnit.HOURS.toSeconds(SYNC_INTERVAL_HOURS); // 60; //
+    private static final int    SYNC_INTERVAL_SECONDS = 60; //(int) TimeUnit.HOURS.toSeconds(SYNC_INTERVAL_HOURS); // 60; //
     // available time window for job
     private static final int    SYNC_FLEXTIME_SECONDS = SYNC_INTERVAL_SECONDS / 3;
     private static final String EARTHQUAKE_SYNC_TAG = "earthquakes-sync";
