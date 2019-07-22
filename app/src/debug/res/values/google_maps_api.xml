@@ -22,7 +22,7 @@
 
     NB : the real google_maps_key is substitute here for cvs with : PUT_YOUR_GOOGLE_MAP_API_KEY_HERE
     -->
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyC-WlzT7eWRaVH-SeqkAHjUZJHfETJhyJs</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">PUT_YOUR_GOOGLE_MAP_API_KEY_HERE</string>
 
 
 </resources>
