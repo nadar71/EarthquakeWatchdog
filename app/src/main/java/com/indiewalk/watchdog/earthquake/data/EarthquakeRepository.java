@@ -1,6 +1,8 @@
 package com.indiewalk.watchdog.earthquake.data;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.persistence.room.Query;
+import android.content.Context;
 import android.util.Log;
 
 import com.indiewalk.watchdog.earthquake.SingletonProvider;
@@ -46,7 +48,8 @@ public class EarthquakeRepository {
                         dropEarthquakeListTable();
 
                         // update with distance from user, distance unit each earthquake
-                        MyUtil.setEqDistanceFromCurrentCoords(newEqFromNetwork, (SingletonProvider)SingletonProvider.getsContext());
+                        MyUtil.setEqDistanceFromCurrentCoords(newEqFromNetwork,
+                                (SingletonProvider)SingletonProvider.getsContext());
 
                         eqDb.earthquakeDbDao().renewDataInsert(newEqFromNetwork);
                         Log.d(TAG, "WeatherAppRepository observer : New values inserted. ");
@@ -223,6 +226,36 @@ public class EarthquakeRepository {
         eqDb.earthquakeDbDao().insertEarthquake(earthquake);
     }
 
+
+    //----------------------------------------------------------------------------------------------
+    //  UPDATE
+    //----------------------------------------------------------------------------------------------
+    public void updatedAllEqsDistFromUser(List<Earthquake> equakes, Context context){
+        executors.diskIO().execute( () ->{
+                    Log.d(TAG, "Updating eqs distances from current user location. ");
+
+                    /* // too slow
+                    for(Earthquake eq:equakes) {
+                        eqDb.earthquakeDbDao().updatedEqDistanceFromUser(eq.getUserDistance(),
+                                eq.getId());
+                    }*/
+
+                    // Delete old and insert new data
+                    dropEarthquakeListTable();
+
+                    // update with distance from user, distance unit each earthquake
+                    MyUtil.setEqDistanceFromCurrentCoords(equakes,context);
+
+                    if (equakes != null) { // workaround for #97
+                        Earthquake[] equakes_array = equakes.toArray(new Earthquake[equakes.size()]);
+                        eqDb.earthquakeDbDao().renewDataInsert(equakes_array);
+                        Log.d(TAG, "Updating eqs distances from current user location. : New values inserted. ");
+                    }
+                }
+
+        );
+
+    }
 
 
     //----------------------------------------------------------------------------------------------

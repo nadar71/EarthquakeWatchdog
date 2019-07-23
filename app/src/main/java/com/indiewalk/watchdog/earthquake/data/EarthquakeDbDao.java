@@ -67,6 +67,12 @@ public interface EarthquakeDbDao {
 
 
     //----------------------------------------------------------------------------------------------
+    //  UPDATE
+    //----------------------------------------------------------------------------------------------
+    @Query("UPDATE EARTHQUAKE_LIST SET userDistance =:new_distance WHERE id =:tid")
+    void updatedEqDistanceFromUser(int new_distance, int tid);
+
+    //----------------------------------------------------------------------------------------------
     //  DROP TABLE
     //----------------------------------------------------------------------------------------------
     // drop table : delete all table content each loading
