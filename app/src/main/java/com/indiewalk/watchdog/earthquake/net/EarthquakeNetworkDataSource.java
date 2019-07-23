@@ -147,7 +147,7 @@ public class EarthquakeNetworkDataSource {
         String queryUrl = MyUtil.composeQueryUrl(dateFilter);
         earthquakes = new EarthQuakeNetworkRequest().fetchEarthquakeData(queryUrl);
 
-        // Update last update in preferences
+        // Update last update field in preferences
         MyUtil.setLastUpdateField(context);
 
         Earthquake[] arrEarthquakes = earthquakes.toArray(new Earthquake[earthquakes.size()]);

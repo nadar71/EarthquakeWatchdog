@@ -367,7 +367,6 @@ public class MyUtil {
     public static void setEqDistanceFromCurrentCoords(List<Earthquake> earthquakes, Context context ){
 
         // Check location coordinates from shared preferences.If not set, put default value
-
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
 
         //get preferences for check
@@ -396,20 +395,22 @@ public class MyUtil {
                 Double.toString(R.string.settings_distance_unit_by_default));
 
 
-        for(Earthquake eq : earthquakes){
-            double userLat = Double.valueOf(lat_s);
-            double userLng = Double.valueOf(lng_s);
-            int distance   = (int) MyUtil.haversineDistanceCalc(userLat, eq.getLatitude(),
-                    userLng, eq.getLongitude());
-            // convert in miles if needed
-            if (dist_unit.equals(context.getString(R.string.settings_mi_distance_unit_value))){
-                distance = (int) MyUtil.fromKmToMiles(distance);
-            }
+        if ( earthquakes != null) { // workaround for #97
+            for (Earthquake eq : earthquakes) {
+                double userLat = Double.valueOf(lat_s);
+                double userLng = Double.valueOf(lng_s);
+                int distance = (int) MyUtil.haversineDistanceCalc(userLat, eq.getLatitude(),
+                        userLng, eq.getLongitude());
+                // convert in miles if needed
+                if (dist_unit.equals(context.getString(R.string.settings_mi_distance_unit_value))) {
+                    distance = (int) MyUtil.fromKmToMiles(distance);
+                }
 
-            Log.i(TAG, "setEqDistanceFromCurrentCoords: eq distance from user : "+distance);
-            // set in equake
-            eq.setUserDistance(distance);
-        }
+                Log.i(TAG, "setEqDistanceFromCurrentCoords: eq distance from user : " + distance);
+                // set in equake
+                eq.setUserDistance(distance);
+            }
+        } else return;
 
 
     }

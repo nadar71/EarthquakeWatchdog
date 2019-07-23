@@ -110,7 +110,7 @@
     <!-- - - - - - - - - - - Strings For Minimum Magnitude Preference  - - - - - - - - - - - - - -->
     <string name="settings_min_magnitude_label">Minimum Magnitude : </string>
     <string name="settings_min_magnitude_key" translatable="false">min_magnitude</string>
-    <string name="settings_min_magnitude_default" translatable="false">@string/settings_1_0_min_magnitude_value</string>
+    <string name="settings_min_magnitude_default" translatable="false">@string/settings_4_5_min_magnitude_value</string>
 
     <string name="settings_1_0_min_magnitude_label" translatable="false">1.0+</string>
     <string name="settings_2_0_min_magnitude_label" translatable="false">2.0+</string>

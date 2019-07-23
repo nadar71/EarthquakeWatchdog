@@ -173,8 +173,9 @@ public class MapsActivity extends AppCompatActivity
                     getString(R.string.title_activity_maps_manual_localization_on) +"</font>"));
         }
 
-        // get repo
-        eqRepository = ((SingletonProvider) SingletonProvider.getsContext()).getRepository();
+        // get repo. For issue #96,97 do not use getRepository()
+        eqRepository = ((SingletonProvider) SingletonProvider.getsContext())
+                .getRepositoryWithDataSource();
 
     }
 
@@ -573,10 +574,10 @@ public class MapsActivity extends AppCompatActivity
                 setLocationAddress(userLat, userLng);
 
                 // update equakes list with new distance from user
-                MyUtil.setEqDistanceFromCurrentCoords(equakes_no_live, context);
+                // MyUtil.setEqDistanceFromCurrentCoords(equakes_no_live, context);
 
                 // update eqs in db
-                eqRepository.updatedAllEqsDistFromUser(equakes_no_live);
+                eqRepository.updatedAllEqsDistFromUser(equakes_no_live, context);
 
                 // stop progress bar
                 dialog.dismiss();
@@ -920,10 +921,10 @@ public class MapsActivity extends AppCompatActivity
                 setLocationAddress(latLng.latitude, latLng.longitude);
 
                 // update equakes list with new distance from user
-                MyUtil.setEqDistanceFromCurrentCoords(equakes_no_live, context);
+                // MyUtil.setEqDistanceFromCurrentCoords(equakes_no_live, context);
 
                 // update eqs in db
-                eqRepository.updatedAllEqsDistFromUser(equakes_no_live);
+                eqRepository.updatedAllEqsDistFromUser(equakes_no_live, context);
 
                 manualLocIsOn = true;
 
