@@ -319,7 +319,14 @@ public class MapsActivity extends AppCompatActivity
      * ---------------------------------------------------------------------------------------------
      */
     private void setMarkerForEachEq(@Nullable List<Earthquake> earthquakeList) {
+        double minMagnitude = Double.parseDouble(sharedPreferences.getString(
+                getString(R.string.settings_min_magnitude_key),
+                getString(R.string.settings_min_magnitude_default)));
+
         for(Earthquake earthquake : earthquakeList) {
+
+            if (earthquake.getMagnitude() < minMagnitude) continue;
+
             // convert eq position icon to bitmap
             BitmapDescriptor eqMarkerIcon = MyUtil.getBitmapFromVector(context,
                     R.drawable.ic_earthquake_pointer,
