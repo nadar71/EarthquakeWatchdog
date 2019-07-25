@@ -47,4 +47,10 @@ Check out it on [Google Play](https://play.google.com/store/apps/details?id=com.
 - [ ] Viewing cluster earthquakes on map
 
 
+**Want to contribute?**
+Hell, yeah! Every help would be really appreciated! Check out here for easy how-to :
+See [CONTRIBUTING.md](https://github.com/nadar71/EarthquakeWatchdog/edit/master/CONTRIBUTING.md)
+Thank you! :smile:
+
+
 
