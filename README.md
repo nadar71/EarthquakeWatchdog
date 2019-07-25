@@ -9,16 +9,17 @@
 # EarthquakeWatchdog
 <!-- [![Release](https://img.shields.io/github/release/EarthquakeWatchdog/EarthquakeWatchdog.svg?style=flat-square)](https://github.com/nadar71/EarthquakeWatchdog/releases)-->
 
-With this free app you can explore earthquakes happens around the world, 
+Free app for exploring earthquakes that happens everytime around the world, 
 given by [USGS.gov](https://earthquake.usgs.gov/earthquakes/) earthquake service.
+Check out it on [Google Play](https://play.google.com/store/apps/details?id=com.indiewalk.watchdog.earthquake)!
 
 **Main features** :
 
 - list of last earthquakes from 1+ to 6.6+ around the world, till 120 earthquakes contemporarily (selection by date is coming, see below)
 
-- earthquakes can be recovered for today, 24h, 48h, 1 week, 2 weekΩ
+- earthquakes can be recovered for today, 24h, 48h, 1 week, 2 week and more will coming.
 
-- show distance of each earthquake from you by gps or with manual localization, that is without using gps or any other localization system
+- show distance of each earthquake from you by gps or by manual localization, that is without using gps or any other localization system
 
 - fly from earthquake in list to its position on map
 
@@ -42,6 +43,8 @@ given by [USGS.gov](https://earthquake.usgs.gov/earthquakes/) earthquake service
 - [ ] More details on each earthquakes
 
 - [ ] Concise earthquake statistics
+
+- [ ] Viewing cluster earthquakes on map
 
 
 
