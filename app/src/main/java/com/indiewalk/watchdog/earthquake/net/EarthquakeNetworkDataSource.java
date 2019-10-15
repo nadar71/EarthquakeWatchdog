@@ -144,11 +144,11 @@ public class EarthquakeNetworkDataSource {
      */
     public void fetchEarthquakeWrapper(){
         ArrayList<Earthquake> earthquakes;
-        String queryUrl = MyUtil.composeQueryUrl(dateFilter);
+        String queryUrl = MyUtil.INSTANCE.composeQueryUrl(dateFilter);
         earthquakes = new EarthQuakeNetworkRequest().fetchEarthquakeData(queryUrl);
 
         // Update last update field in preferences
-        MyUtil.setLastUpdateField(context);
+        MyUtil.INSTANCE.setLastUpdateField(context);
 
         Earthquake[] arrEarthquakes = earthquakes.toArray(new Earthquake[earthquakes.size()]);
 

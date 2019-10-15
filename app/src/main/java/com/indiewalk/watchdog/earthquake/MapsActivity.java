@@ -144,7 +144,7 @@ public class MapsActivity extends AppCompatActivity
         mAdView = findViewById(R.id.adView);
 
         // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
-        mAdView.loadAd(ConsentSDK.getAdRequest(MapsActivity.this));
+        mAdView.loadAd(ConsentSDK.Companion.getAdRequest(MapsActivity.this));
 
 
         // init shared preferences
@@ -328,9 +328,9 @@ public class MapsActivity extends AppCompatActivity
             if (earthquake.getMagnitude() < minMagnitude) continue;
 
             // convert eq position icon to bitmap
-            BitmapDescriptor eqMarkerIcon = MyUtil.getBitmapFromVector(context,
+            BitmapDescriptor eqMarkerIcon = MyUtil.INSTANCE.getBitmapFromVector(context,
                     R.drawable.ic_earthquake_pointer,
-                    MyUtil.getMagnitudeColor(earthquake.getMagnitude(),context));
+                    MyUtil.INSTANCE.getMagnitudeColor(earthquake.getMagnitude(),context));
 
             earthquakesMarkersList.add(mGoogleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(earthquake.getLatitude(), earthquake.getLongitude()))
@@ -662,7 +662,7 @@ public class MapsActivity extends AppCompatActivity
         }
 
         // convert user position icon to bitmap
-        BitmapDescriptor locationMarkerIcon = MyUtil.getBitmapFromVector(context, R.drawable.ic_home_white_24dp,
+        BitmapDescriptor locationMarkerIcon = MyUtil.INSTANCE.getBitmapFromVector(context, R.drawable.ic_home_white_24dp,
                 ContextCompat.getColor(context, R.color.marker_color));
 
         myCurrentPositionMarker = mGoogleMap.addMarker(new MarkerOptions()
@@ -978,7 +978,7 @@ public class MapsActivity extends AppCompatActivity
         getSupportActionBar().setTitle("");
 
         // restart activity
-        MyUtil.restartActivity(MapsActivity.this);
+        MyUtil.INSTANCE.restartActivity(MapsActivity.this);
 
     }
 

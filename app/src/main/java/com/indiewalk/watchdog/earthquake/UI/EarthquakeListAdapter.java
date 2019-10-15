@@ -97,7 +97,7 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
         holder.magnitudeView.setText(formatMagnitude(magnitude));
 
         // set proper image color for magnitude
-        holder.magnitudeView.setBackground(MyUtil.getMagnitudeImg(magnitude, context));
+        holder.magnitudeView.setBackground(MyUtil.INSTANCE.getMagnitudeImg(magnitude, context));
 
         // display locations formatted using {@link extractLocations}
         extractLocations(currentEartquakeItem.getLocation());
@@ -105,10 +105,10 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
         holder.primaryLocationView.setText(primaryLocation );
 
         // display date formatted using {@link formatDateFromMsec}
-        holder.dateView.setText(MyUtil.formatDateFromMsec(currentEartquakeItem.getTimeInMillisec()));
+        holder.dateView.setText(MyUtil.INSTANCE.formatDateFromMsec(currentEartquakeItem.getTimeInMillisec()));
 
         // display time formatted using {@link formatTimeFromMsec}
-        holder.timeView.setText(MyUtil.formatTimeFromMsec(currentEartquakeItem.getTimeInMillisec()));
+        holder.timeView.setText(MyUtil.INSTANCE.formatTimeFromMsec(currentEartquakeItem.getTimeInMillisec()));
 
         // set distance label based on user location type
         boolean check = checkPreferences();
@@ -295,7 +295,7 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
      */
     public String convertPlaceDist(String loc) {
         // convert distance in distance unit as preference
-        String distance = MyUtil.returnDigit(loc);
+        String distance = MyUtil.INSTANCE.returnDigit(loc);
         int   dist_i = -1;
         float dist_f = -1;
 
@@ -311,15 +311,15 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
         }
 
         if (dist_i > 0 ){
-            dist_i = (int) MyUtil.fromKmToMiles((double) dist_i);
+            dist_i = (int) MyUtil.INSTANCE.fromKmToMiles((double) dist_i);
         }
 
         if (dist_f > 0 ){
-            dist_i = (int) MyUtil.fromKmToMiles((double) dist_f);
+            dist_i = (int) MyUtil.INSTANCE.fromKmToMiles((double) dist_f);
         }
 
         // get rid of the original distance unit
-        loc  = MyUtil.returnChar(loc)
+        loc  = MyUtil.INSTANCE.returnChar(loc)
                 .replaceAll("Km","")
                 .replaceAll("km","")
                 .replaceAll("KM","")

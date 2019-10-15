@@ -48,7 +48,7 @@ public class EarthquakeRepository {
                         dropEarthquakeListTable();
 
                         // update with distance from user, distance unit each earthquake
-                        MyUtil.setEqDistanceFromCurrentCoords(newEqFromNetwork,
+                        MyUtil.INSTANCE.setEqDistanceFromCurrentCoords(newEqFromNetwork,
                                 (SingletonProvider)SingletonProvider.getsContext());
 
                         eqDb.earthquakeDbDao().renewDataInsert(newEqFromNetwork);
@@ -129,7 +129,7 @@ public class EarthquakeRepository {
 
         // try to fetch earthquakes remote data if needed
         executors.diskIO().execute(()->{
-            if (MyUtil.isConnectionOk()) {
+            if (MyUtil.INSTANCE.isConnectionOk()) {
                 if(isRequestDataNeeded()){
                     Log.d(TAG, "initializeData: isFetchNeeded == true, run the intent from fetching data from remote");
                     startFetchEarthquakeService();
@@ -244,7 +244,7 @@ public class EarthquakeRepository {
                     dropEarthquakeListTable();
 
                     // update with distance from user, distance unit each earthquake
-                    MyUtil.setEqDistanceFromCurrentCoords(equakes,context);
+                    MyUtil.INSTANCE.setEqDistanceFromCurrentCoords(equakes,context);
 
                     if (equakes != null) { // workaround for #97
                         Earthquake[] equakes_array = equakes.toArray(new Earthquake[equakes.size()]);

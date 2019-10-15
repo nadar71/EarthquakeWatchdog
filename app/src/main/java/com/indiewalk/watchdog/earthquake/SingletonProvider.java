@@ -27,7 +27,7 @@ public class SingletonProvider extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        mAppExecutors = AppExecutors.getInstance();
+        mAppExecutors = AppExecutors.Companion.getInstance();
         sContext = getApplicationContext();
     }
 
@@ -58,7 +58,7 @@ public class SingletonProvider extends Application {
     // repo constructor with data source support
     public EarthquakeRepository getRepositoryWithDataSource() {
         EarthquakeDatabase db = getDatabase();
-        AppExecutors executors = AppExecutors.getInstance();
+        AppExecutors executors = AppExecutors.Companion.getInstance();
         EarthquakeNetworkDataSource networkDataSource =
                 EarthquakeNetworkDataSource.getInstance(this.getApplicationContext(), executors);
 

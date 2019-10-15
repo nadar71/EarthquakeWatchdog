@@ -143,7 +143,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
             public void onResult(boolean isRequestLocationInEeaOrUnknown) {
                 Log.i("gdpr_TAG", "onResult: isRequestLocationInEeaOrUnknown : " + isRequestLocationInEeaOrUnknown);
                 // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
-                mAdView.loadAd(ConsentSDK.getAdRequest(MainActivityEarthquakesList.this));
+                mAdView.loadAd(ConsentSDK.Companion.getAdRequest(MainActivityEarthquakesList.this));
             }
         });
 
@@ -151,7 +151,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
         mAdView = findViewById(R.id.adView);
 
         // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
-        mAdView.loadAd(ConsentSDK.getAdRequest(MainActivityEarthquakesList.this));
+        mAdView.loadAd(ConsentSDK.Companion.getAdRequest(MainActivityEarthquakesList.this));
 
 
         mAdView.setAdListener(new AdListener() {
@@ -773,7 +773,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
                 } else {                                                         // waiting for data
                     // While waiting that the repository getting aware that the eqs list is empty
                     // and ask for a remote update
-                    if (MyUtil.isConnectionOk()) {
+                    if (MyUtil.INSTANCE.isConnectionOk()) {
                         showLoading();
                     } else {
                         showNoInternetConnection();
@@ -803,7 +803,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
      */
     private void retrieveRemoteData() {
 
-        if (MyUtil.isConnectionOk()) {
+        if (MyUtil.INSTANCE.isConnectionOk()) {
             showLoading();
             // LoaderManager reference
             LoaderManager loaderManager = getLoaderManager();
@@ -867,7 +867,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
     @Override
     public Loader<List<Earthquake>> onCreateLoader(int id, Bundle args) {
         Log.i(TAG, "onCreateLoader: Create a new Loader");
-        String urlReq = MyUtil.composeQueryUrl(dateFilter);
+        String urlReq = MyUtil.INSTANCE.composeQueryUrl(dateFilter);
         Log.i(TAG, "onCreateLoader: urlReq : " + urlReq);
         // create a new loader for the url
         return new EarthquakeAsyncLoader(this, urlReq);
@@ -899,7 +899,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
             updateList();
 
             // update preferences
-            lastUpdate = MyUtil.setLastUpdateField(this);
+            lastUpdate = MyUtil.INSTANCE.setLastUpdateField(this);
 
             lastUp_value_tv.setText(lastUpdate);
 
@@ -1107,7 +1107,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
                 */
 
                 dialog.dismiss();
-                MyUtil.restartActivity(MainActivityEarthquakesList.this);
+                MyUtil.INSTANCE.restartActivity(MainActivityEarthquakesList.this);
 
 
             }

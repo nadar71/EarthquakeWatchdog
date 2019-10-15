@@ -79,7 +79,7 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
         Log.i(TAG, "loadInBackground: loadInBackground ended, returning data requested.");
 
         // update with distance from user, distance unit each earthquake
-        MyUtil.setEqDistanceFromCurrentCoords(earthquakes, context);
+        MyUtil.INSTANCE.setEqDistanceFromCurrentCoords(earthquakes, context);
 
         // delete previous results in db, only newest are valid
         eqDb.earthquakeDbDao().dropEarthquakeListTable();
