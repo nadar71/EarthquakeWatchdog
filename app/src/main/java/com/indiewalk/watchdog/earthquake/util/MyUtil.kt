@@ -401,7 +401,7 @@ object MyUtil {
      * Overloaded version of setEqDistanceFromCurrentCoords, now using Earthquake[] earthquakes
      * ---------------------------------------------------------------------------------------------
      */
-    fun setEqDistanceFromCurrentCoords(earthquakes: Array<Earthquake>, context: Context) {
+    fun setEqDistanceFromCurrentCoords(earthquakes: Array<Earthquake>?, context: Context) {
 
         // Check location coordinates from shared preferences.If not set, put default value
 

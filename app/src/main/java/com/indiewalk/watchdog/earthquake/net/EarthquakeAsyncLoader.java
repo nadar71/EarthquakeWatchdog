@@ -52,7 +52,7 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
         queryUrl      = url;
 
         // init db instance to save data
-        eqDb = EarthquakeDatabase.getDbInstance(context.getApplicationContext());
+        eqDb = EarthquakeDatabase.Companion.getDbInstance(context.getApplicationContext());
     }
 
     @Override

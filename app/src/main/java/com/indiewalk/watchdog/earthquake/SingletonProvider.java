@@ -38,7 +38,7 @@ public class SingletonProvider extends Application {
      * ---------------------------------------------------------------------------------------------
      */
     public EarthquakeDatabase getDatabase() {
-        return EarthquakeDatabase.getDbInstance(this);
+        return EarthquakeDatabase.Companion.getDbInstance(this);
     }
 
 
@@ -50,7 +50,7 @@ public class SingletonProvider extends Application {
      */
     // repo standard constructor
     public EarthquakeRepository getRepository() {
-        return EarthquakeRepository.getInstance(getDatabase());
+        return EarthquakeRepository.Companion.getInstance(getDatabase());
     }
 
 
@@ -62,7 +62,7 @@ public class SingletonProvider extends Application {
         EarthquakeNetworkDataSource networkDataSource =
                 EarthquakeNetworkDataSource.getInstance(this.getApplicationContext(), executors);
 
-        return EarthquakeRepository.getInstanceWithDataSource(db,networkDataSource, executors);
+        return EarthquakeRepository.Companion.getInstanceWithDataSource(db,networkDataSource, executors);
     }
 
 
