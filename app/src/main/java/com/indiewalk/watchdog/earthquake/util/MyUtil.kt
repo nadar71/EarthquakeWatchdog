@@ -433,19 +433,21 @@ object MyUtil {
                 java.lang.Double.toString(R.string.settings_distance_unit_by_default.toDouble()))
 
 
-        for (eq in earthquakes) {
-            val userLat = java.lang.Double.valueOf(lat_s)!!
-            val userLng = java.lang.Double.valueOf(lng_s)!!
-            var distance = MyUtil.haversineDistanceCalc(userLat, eq.latitude,
-                    userLng, eq.longitude).toInt()
-            // convert in miles if needed
-            if (dist_unit == context.getString(R.string.settings_mi_distance_unit_value)) {
-                distance = MyUtil.fromKmToMiles(distance.toDouble()).toInt()
-            }
+        if (earthquakes != null) {
+            for (eq in earthquakes) {
+                val userLat = java.lang.Double.valueOf(lat_s)!!
+                val userLng = java.lang.Double.valueOf(lng_s)!!
+                var distance = MyUtil.haversineDistanceCalc(userLat, eq.latitude,
+                        userLng, eq.longitude).toInt()
+                // convert in miles if needed
+                if (dist_unit == context.getString(R.string.settings_mi_distance_unit_value)) {
+                    distance = MyUtil.fromKmToMiles(distance.toDouble()).toInt()
+                }
 
-            Log.i(TAG, "setEqDistanceFromCurrentCoords: eq distance from user : $distance")
-            // set in equake
-            eq.userDistance = distance
+                Log.i(TAG, "setEqDistanceFromCurrentCoords: eq distance from user : $distance")
+                // set in equake
+                eq.userDistance = distance
+            }
         }
 
     }

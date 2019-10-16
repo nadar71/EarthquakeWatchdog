@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase;
-import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase_Impl;
+// import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase_Impl;
 import com.indiewalk.watchdog.earthquake.data.EarthquakeRepository;
 import com.indiewalk.watchdog.earthquake.net.EarthquakeNetworkDataSource;
 import com.indiewalk.watchdog.earthquake.util.AppExecutors;
