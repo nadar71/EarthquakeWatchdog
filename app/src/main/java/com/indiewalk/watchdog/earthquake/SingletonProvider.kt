@@ -55,9 +55,9 @@ class SingletonProvider : Application() {
         get() {
             val db = database
             val executors = AppExecutors.instance
-            val networkDataSource = EarthquakeNetworkDataSource.getInstance(this.applicationContext, executors)
+            val networkDataSource = executors?.let { EarthquakeNetworkDataSource.getInstance(this.applicationContext, it) }
 
-            return EarthquakeRepository.getInstanceWithDataSource(db!!, networkDataSource, executors!!)
+            return networkDataSource?.let { EarthquakeRepository.getInstanceWithDataSource(db!!, it, executors!!) }
         }
 
 
@@ -69,10 +69,10 @@ class SingletonProvider : Application() {
      */
     // getRepository(); // the repository is not created if called from a intent service
     // nedeed otherwise the repository is not created if called from a intent service
-    val networkDatasource: EarthquakeNetworkDataSource
+    val networkDatasource: EarthquakeNetworkDataSource?
         get() {
             repositoryWithDataSource
-            return EarthquakeNetworkDataSource.getInstance(sContext, appExecutorsInstance)
+            return sContext?.let { appExecutorsInstance?.let { it1 -> EarthquakeNetworkDataSource.getInstance(it, it1) } }
         }
 
     override fun onCreate() {
