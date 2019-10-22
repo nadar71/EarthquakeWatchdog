@@ -60,7 +60,7 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
         // set preferred distance unit
         checkPreferences();
 
-        repository = ((SingletonProvider) SingletonProvider.getsContext()).getRepositoryWithDataSource();
+        repository = ((SingletonProvider) SingletonProvider.Companion.getsContext()).getRepositoryWithDataSource();
     }
 
 

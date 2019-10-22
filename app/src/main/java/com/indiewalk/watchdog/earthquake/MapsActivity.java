@@ -174,7 +174,7 @@ public class MapsActivity extends AppCompatActivity
         }
 
         // get repo. For issue #96,97 do not use getRepository()
-        eqRepository = ((SingletonProvider) SingletonProvider.getsContext())
+        eqRepository = ((SingletonProvider) SingletonProvider.Companion.getsContext())
                 .getRepositoryWithDataSource();
 
     }

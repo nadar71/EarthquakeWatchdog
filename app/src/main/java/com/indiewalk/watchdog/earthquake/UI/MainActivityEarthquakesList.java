@@ -71,6 +71,10 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
     public static final String ORDER_BY_NEAREST        = "nearest";
     public static final String ORDER_BY_FURTHEST       = "furthest";
 
+    private static final String APP_OPENING_COUNTER     = "app-opening-counter";
+    private static final String APP_CONSENT_NEED        = "consent_requested";
+    private static final boolean DEFAULT_CONSENT_NEED   = true;
+
     // day limit for accessing map
     public static final int daysLimit = 1;
 
@@ -106,6 +110,10 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
     // admob banner ref
     private AdView mAdView;
 
+    // Cnsent SDK vars
+    private static boolean checkConsentActive = true;
+    private ConsentSDK consentSDK;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,65 +133,8 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
         filter_memo         = findViewById(R.id.summary_layout);
         fab                 = findViewById(R.id.info_filter_fb);
 
-
-
-        // Initialize ConsentSDK
-        ConsentSDK consentSDK = new ConsentSDK.Builder(this)
-                .addTestDeviceId("7DC1A1E8AEAD7908E42271D4B68FB270") // redminote 5 // Add your test device id "Remove addTestDeviceId on production!"
-                // .addTestDeviceId("9978A5F791A259430A0156313ED9C6A2")
-                .addCustomLogTag("gdpr_TAG") // Add custom tag default: ID_LOG
-                .addPrivacyPolicy("http://www.indie-walkabout.eu/privacy-policy-app") // Add your privacy policy url
-                .addPublisherId("pub-8846176967909254") // Add your admob publisher id
-                .build();
-
-
-        // To check the consent and load ads
-        consentSDK.checkConsent(new ConsentSDK.ConsentCallback() {
-            @Override
-            public void onResult(boolean isRequestLocationInEeaOrUnknown) {
-                Log.i("gdpr_TAG", "onResult: isRequestLocationInEeaOrUnknown : " + isRequestLocationInEeaOrUnknown);
-                // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
-                mAdView.loadAd(ConsentSDK.Companion.getAdRequest(MainActivityEarthquakesList.this));
-            }
-        });
-
-
-        mAdView = findViewById(R.id.adView);
-
-        // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
-        mAdView.loadAd(ConsentSDK.Companion.getAdRequest(MainActivityEarthquakesList.this));
-
-
-        mAdView.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-                // Toast.makeText(MainActivityEarthquakesList.this, "Adloaded ok", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onAdFailedToLoad(int errorCode) {
-                // Code to be executed when an ad request fails.
-                // Toast.makeText(MainActivityEarthquakesList.this, "Adloaded FAILED TO LOAD "+errorCode, Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onAdOpened() {
-                // Code to be executed when an ad opens an overlay that
-                // covers the screen.
-            }
-
-            @Override
-            public void onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-            }
-
-            @Override
-            public void onAdClosed() {
-                // Code to be executed when when the user is about to return
-                // to the app after tapping on an ad.
-            }
-        });
+        // set consent sdk for gdpr true by default
+        // setConsentSDKNeed(true);
 
         setupActionBar();
 
@@ -206,19 +157,79 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
 
     }
 
-    
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Set icons, title etc. in action bar
-     * ---------------------------------------------------------------------------------------------
-     */
-    private void setupActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(getString(R.string.title_reduced));
-        actionBar.setIcon(R.mipmap.ic_launcher);
-        actionBar.setDisplayShowHomeEnabled(true);
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        checkConsentActive = getConsentSDKNeed();
+
+        if (checkConsentActive) {
+            // Initialize ConsentSDK
+            consentSDK = new ConsentSDK.Builder(this)
+                    .addTestDeviceId("7DC1A1E8AEAD7908E42271D4B68FB270") // redminote 5 // Add your test device id "Remove addTestDeviceId on production!"
+                    // .addTestDeviceId("9978A5F791A259430A0156313ED9C6A2")
+                    .addCustomLogTag("gdpr_TAG") // Add custom tag default: ID_LOG
+                    .addPrivacyPolicy("http://www.indie-walkabout.eu/privacy-policy-app") // Add your privacy policy url
+                    .addPublisherId("pub-8846176967909254") // Add your admob publisher id
+                    .build();
+
+
+            // To check the consent and load ads
+            consentSDK.checkConsent(new ConsentSDK.ConsentCallback() {
+                @Override
+                public void onResult(boolean isRequestLocationInEeaOrUnknown) {
+                    Log.i("gdpr_TAG", "onResult: isRequestLocationInEeaOrUnknown : " + isRequestLocationInEeaOrUnknown);
+                    // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
+                    mAdView.loadAd(ConsentSDK.Companion.getAdRequest(MainActivityEarthquakesList.this));
+                }
+            });
+
+
+            mAdView = findViewById(R.id.adView);
+
+            // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
+            mAdView.loadAd(ConsentSDK.Companion.getAdRequest(MainActivityEarthquakesList.this));
+
+            mAdView.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                    // Code to be executed when an ad finishes loading.
+                    // Toast.makeText(MainActivityEarthquakesList.this, "Adloaded ok", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onAdFailedToLoad(int errorCode) {
+                    // Code to be executed when an ad request fails.
+                    // Toast.makeText(MainActivityEarthquakesList.this, "Adloaded FAILED TO LOAD "+errorCode, Toast.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void onAdOpened() {
+                    // Code to be executed when an ad opens an overlay that
+                    // covers the screen.
+                }
+
+                @Override
+                public void onAdLeftApplication() {
+                    // Code to be executed when the user has left the app.
+                }
+
+                @Override
+                public void onAdClosed() {
+                    // Code to be executed when when the user is about to return
+                    // to the app after tapping on an ad.
+                }
+            });
+        }
+
+
+
     }
+
+
+
+
 
 
     /**
@@ -246,14 +257,58 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
      */
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         // TODO : temporary, must be set in repository init
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
-        super.onStop();
     }
 
 
-    // Clicking on item shows action dialog
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Set icons, title etc. in action bar
+     * ---------------------------------------------------------------------------------------------
+     */
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(getString(R.string.title_reduced));
+        actionBar.setIcon(R.mipmap.ic_launcher);
+        actionBar.setDisplayShowHomeEnabled(true);
+    }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Get if consent gdpr must be asked or not
+     * ---------------------------------------------------------------------------------------------
+     */
+    public boolean getConsentSDKNeed() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        return prefs.getBoolean(APP_CONSENT_NEED, DEFAULT_CONSENT_NEED);
+    }
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Set if consent gdpr must be asked or not
+     * ---------------------------------------------------------------------------------------------
+     */
+    public void setConsentSDKNeed( boolean isNeeded) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(APP_CONSENT_NEED, isNeeded);
+        editor.apply();
+    }
+
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Clicking on item shows action dialog
+     * @param v
+     * @param position
+     * ---------------------------------------------------------------------------------------------
+     */
     @Override
     public void onItemClickListener(View v, int position) {
         Log.d(TAG, "onItemClickListener: Item at position : " + position + " touched.");
@@ -963,6 +1018,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
     // ---------------------------------------------------------------------------------------------
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }

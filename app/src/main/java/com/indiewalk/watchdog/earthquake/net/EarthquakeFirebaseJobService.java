@@ -22,7 +22,7 @@ public class EarthquakeFirebaseJobService extends JobService {
         Log.d(TAG, "Earthquake remote fetching Job service started");
 
         EarthquakeNetworkDataSource networkDataSource =
-                ((SingletonProvider)SingletonProvider.getsContext()).getNetworkDatasource();
+                ((SingletonProvider) SingletonProvider.Companion.getsContext()).getNetworkDatasource();
 
 
         networkDataSource.startFetchEarthquakeService();

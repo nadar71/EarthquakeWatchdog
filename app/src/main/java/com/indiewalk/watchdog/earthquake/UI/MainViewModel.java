@@ -50,10 +50,10 @@ public class MainViewModel extends ViewModel {
      * ---------------------------------------------------------------------------------------------
      */
     public MainViewModel() {
-        context            = (SingletonProvider) SingletonProvider.getsContext();
+        context            = (SingletonProvider) SingletonProvider.Companion.getsContext();
 
         // init repository
-        eqRepository       = ((SingletonProvider) SingletonProvider.getsContext()).getRepository();
+        eqRepository       = ((SingletonProvider) SingletonProvider.Companion.getsContext()).getRepository();
         earthquakesEntries = eqRepository.getEarthquakesList();
 
         // init shared preferences
@@ -71,11 +71,11 @@ public class MainViewModel extends ViewModel {
     public MainViewModel(String listType) {
         Log.d(TAG, "Actively retrieving the collections from repository");
 
-        context = (SingletonProvider) SingletonProvider.getsContext();
+        context = (SingletonProvider) SingletonProvider.Companion.getsContext();
 
         // get repository instance
         // eqRepository = ((SingletonProvider) SingletonProvider.getsContext()).getRepository();
-        eqRepository = ((SingletonProvider) SingletonProvider.getsContext()).getRepositoryWithDataSource();
+        eqRepository = ((SingletonProvider) SingletonProvider.Companion.getsContext()).getRepositoryWithDataSource();
 
         // init shared preferences and get value
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);

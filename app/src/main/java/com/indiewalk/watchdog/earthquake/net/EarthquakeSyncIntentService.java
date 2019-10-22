@@ -21,7 +21,7 @@ public class EarthquakeSyncIntentService extends JobIntentService { // JobIntent
     @Override
     protected void onHandleWork(Intent intent) {
         // inject the network data source for using its fetching remote data method
-        EarthquakeNetworkDataSource networkDataSource = ((SingletonProvider) SingletonProvider.getsContext()).getNetworkDatasource();
+        EarthquakeNetworkDataSource networkDataSource = ((SingletonProvider) SingletonProvider.Companion.getsContext()).getNetworkDatasource();
         networkDataSource.fetchEarthquakeWrapper();
     }
 }
