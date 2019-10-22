@@ -35,7 +35,7 @@ class EarthquakeListAdapter
 
     private val repository: EarthquakeRepository?
 
-    private var earthquakesEntries: MutableList<Earthquake>? = null
+    internal var earthquakesEntries: MutableList<Earthquake>? = null
 
     private var primaryLocation: String? = null
 
@@ -175,7 +175,7 @@ class EarthquakeListAdapter
     }
 
 
-    internal inner class EarthquakeViewRowHolder// EarthquakeViewRowHolder Constructor
+    inner class EarthquakeViewRowHolder// EarthquakeViewRowHolder Constructor
     // @param itemView view inflated in onCreateViewHolder
     (itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
@@ -255,7 +255,7 @@ class EarthquakeListAdapter
             val splitResult = location.split("of".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             locationOffset = splitResult[0] + "of"
             // convert place distance to desidered distance unit
-            locationOffset = convertPlaceDist(locationOffset)
+            locationOffset = convertPlaceDist(locationOffset!!)
 
             primaryLocation = splitResult[1]
         } else {

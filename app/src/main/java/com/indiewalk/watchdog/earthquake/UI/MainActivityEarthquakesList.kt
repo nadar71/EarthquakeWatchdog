@@ -743,7 +743,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
 
 
         val equakes = viewModel.eqList
-        equakes.observe(this, Observer { earthquakeEntries ->
+        equakes?.observe(this, Observer { earthquakeEntries ->
             if (earthquakeEntries != null && !earthquakeEntries.isEmpty()) { // data ready in db
                 earthquakes = earthquakeEntries
                 updateAdapter(earthquakeEntries)
@@ -771,7 +771,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
      * ---------------------------------------------------------------------------------------------
      */
     private fun updateAdapter(earthquakeEntries: List<Earthquake>?) {
-        adapter!!.earthquakesEntries = earthquakeEntries
+        adapter!!.earthquakesEntries = earthquakeEntries as MutableList<Earthquake>?
     }
 
     /**

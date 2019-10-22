@@ -269,7 +269,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val factory = MainViewModelFactory(MainActivityEarthquakesList.LOAD_ALL_NO_ORDER)
         val viewModel = ViewModelProviders.of(this, factory).get(MainViewModel::class.java)
 
-        equakes = viewModel.eqList
+        equakes = viewModel.eqList!!
         equakes.observe(this, Observer { earthquakeList ->
             equakes_no_live = earthquakeList // update for use outside
             setMarkerForEachEq(earthquakeList)
