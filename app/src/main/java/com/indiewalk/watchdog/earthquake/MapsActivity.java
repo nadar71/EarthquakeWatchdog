@@ -227,7 +227,7 @@ public class MapsActivity extends AppCompatActivity
         earthquakesMarkersList = new ArrayList<Marker>();
 
         // Get eq list through LiveData
-        MainViewModelFactory factory = new MainViewModelFactory(MainActivityEarthquakesList.LOAD_ALL_NO_ORDER);
+        MainViewModelFactory factory = new MainViewModelFactory(MainActivityEarthquakesList.Companion.getLOAD_ALL_NO_ORDER());
         final MainViewModel viewModel = ViewModelProviders.of(this,factory).get(MainViewModel.class);
 
         equakes = viewModel.getEqList();
@@ -284,8 +284,8 @@ public class MapsActivity extends AppCompatActivity
         // -2- in case on MANUAL LOCALIZATION ON
         } else {
             // get previous set position
-            lat_s = sharedPreferences.getString(getString(R.string.device_lat),Double.toString(MainActivityEarthquakesList.DEFAULT_LAT));
-            lng_s = sharedPreferences.getString(getString(R.string.device_lng),Double.toString(MainActivityEarthquakesList.DEFAULT_LNG));
+            lat_s = sharedPreferences.getString(getString(R.string.device_lat),Double.toString(MainActivityEarthquakesList.Companion.getDEFAULT_LAT()));
+            lng_s = sharedPreferences.getString(getString(R.string.device_lng),Double.toString(MainActivityEarthquakesList.Companion.getDEFAULT_LNG()));
 
             LatLng latLng = new LatLng(Double.parseDouble(lat_s),Double.parseDouble(lng_s));
 
@@ -483,13 +483,13 @@ public class MapsActivity extends AppCompatActivity
         // SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         lat_s = sharedPreferences.getString(getString(R.string.device_lat),
-                Double.toString(MainActivityEarthquakesList.DEFAULT_LAT));
+                Double.toString(MainActivityEarthquakesList.Companion.getDEFAULT_LAT()));
         lng_s = sharedPreferences.getString(getString(R.string.device_lng),
-                Double.toString(MainActivityEarthquakesList.DEFAULT_LNG));
+                Double.toString(MainActivityEarthquakesList.Companion.getDEFAULT_LNG()));
 
         // if there is already user location different from default location
-        if ( (!lat_s.equals(Double.toString(MainActivityEarthquakesList.DEFAULT_LAT))) &&
-                (!lng_s.equals(Double.toString(MainActivityEarthquakesList.DEFAULT_LNG))) ) {
+        if ( (!lat_s.equals(Double.toString(MainActivityEarthquakesList.Companion.getDEFAULT_LAT()))) &&
+                (!lng_s.equals(Double.toString(MainActivityEarthquakesList.Companion.getDEFAULT_LNG()))) ) {
             // position the user location's marker
             userLocationMarker(Double.parseDouble(lat_s), Double.parseDouble(lng_s));
         }

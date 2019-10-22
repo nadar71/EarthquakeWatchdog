@@ -42,7 +42,7 @@ import org.hamcrest.Matchers.allOf
 @LargeTest
 @RunWith(AndroidJUnit4::class)
 class CheckMainActivityButton {
-    private var activity: MainActivityEarthquakesList? = null
+    private lateinit var activity: MainActivityEarthquakesList
 
     @Rule
     @JvmField
@@ -54,7 +54,7 @@ class CheckMainActivityButton {
         activity = mActivityTestRule.activity
 
         // set consentSDK avoid showing consent banner
-        activity!!.consentSDKNeed = false
+        activity.consentSDKNeed = false
 
 
         // Otherwise the workaround would be :

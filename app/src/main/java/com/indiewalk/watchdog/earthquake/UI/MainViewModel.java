@@ -84,31 +84,31 @@ public class MainViewModel extends ViewModel {
 
 
         // choose the type of food list to load from db
-        if (listType.equals(MainActivityEarthquakesList.ORDER_BY_DESC_MAGNITUDE)) {
+        if (listType.equals(MainActivityEarthquakesList.Companion.getORDER_BY_DESC_MAGNITUDE())) {
             Log.d(TAG, "setupAdapter: ORDER_BY_DESC_MAGNITUDE : " + listType);
             earthquakesEntries = eqRepository.loadAll_orderby_desc_mag(dMinMagnitude);
 
-        }if (listType.equals(MainActivityEarthquakesList.ORDER_BY_ASC_MAGNITUDE)) {
+        }if (listType.equals(MainActivityEarthquakesList.Companion.getORDER_BY_ASC_MAGNITUDE())) {
             Log.d(TAG, "setupAdapter: ORDER_BY_ASC_MAGNITUDE : " + listType);
             earthquakesEntries = eqRepository.loadAll_orderby_asc_mag(dMinMagnitude);
 
-        }else if (listType.equals(MainActivityEarthquakesList.ORDER_BY_MOST_RECENT)){
+        }else if (listType.equals(MainActivityEarthquakesList.Companion.getORDER_BY_MOST_RECENT())){
             Log.d(TAG, "setupAdapter: ORDER_BY_MOST_RECENT : " + listType);
             earthquakesEntries = eqRepository.loadAll_orderby_most_recent(dMinMagnitude);
 
-        }else if (listType.equals(MainActivityEarthquakesList.ORDER_BY_OLDEST)){
+        }else if (listType.equals(MainActivityEarthquakesList.Companion.getORDER_BY_OLDEST())){
             Log.d(TAG, "setupAdapter: ORDER_BY_OLDEST : " + listType);
             earthquakesEntries = eqRepository.loadAll_orderby_oldest(dMinMagnitude);
 
-        }else if (listType.equals(MainActivityEarthquakesList.ORDER_BY_NEAREST)){
+        }else if (listType.equals(MainActivityEarthquakesList.Companion.getORDER_BY_NEAREST())){
             Log.d(TAG, "setupAdapter: ORDER_BY_NEAREST : " + listType);
             earthquakesEntries = eqRepository.loadAll_orderby_nearest(dMinMagnitude);
 
-        }else if (listType.equals(MainActivityEarthquakesList.ORDER_BY_FURTHEST)){
+        }else if (listType.equals(MainActivityEarthquakesList.Companion.getORDER_BY_FURTHEST())){
             Log.d(TAG, "setupAdapter: ORDER_BY_FURTHEST : " + listType);
             earthquakesEntries = eqRepository.loadAll_orderby_furthest(dMinMagnitude);
 
-        }else if (listType.equals(MainActivityEarthquakesList.LOAD_ALL_NO_ORDER)){
+        }else if (listType.equals(MainActivityEarthquakesList.Companion.getLOAD_ALL_NO_ORDER())){
             Log.d(TAG, "setupAdapter: LOAD_ALL_NO_ORDER : " + listType);
             earthquakesEntries = eqRepository.loadAll();
         }

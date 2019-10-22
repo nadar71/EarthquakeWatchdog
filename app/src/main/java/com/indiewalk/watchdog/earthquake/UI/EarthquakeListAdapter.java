@@ -244,13 +244,13 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
         Log.i(TAG, "EarthquakeAdapter : dist unit : "+ dist_unit);
 
         String lat_s = sharedPreferences.getString(context.getString(R.string.device_lat),
-                Double.toString(MainActivityEarthquakesList.DEFAULT_LAT));
+                Double.toString(MainActivityEarthquakesList.Companion.getDEFAULT_LAT()));
         String lng_s = sharedPreferences.getString(context.getString(R.string.device_lng),
-                Double.toString(MainActivityEarthquakesList.DEFAULT_LNG));
+                Double.toString(MainActivityEarthquakesList.Companion.getDEFAULT_LNG()));
 
         // if there is user location different from default location
-        if ( (!lat_s.equals(Double.toString(MainActivityEarthquakesList.DEFAULT_LAT))) &&
-                (!lng_s.equals(Double.toString(MainActivityEarthquakesList.DEFAULT_LNG))) ) {
+        if ( (!lat_s.equals(Double.toString(MainActivityEarthquakesList.Companion.getDEFAULT_LAT()))) &&
+                (!lng_s.equals(Double.toString(MainActivityEarthquakesList.Companion.getDEFAULT_LNG()))) ) {
             return true; // custom location
         } else {
             return false; // default location, Google inc. Mountain view
