@@ -2,18 +2,14 @@ package com.indiewalk.watchdog.earthquake.UI
 
 import android.app.AlertDialog
 import android.app.LoaderManager
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.Loader
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -178,7 +174,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
             })
 
 
-            mAdView = findViewById(R.id.adView)
+            mAdView = findViewById(R.id.mAdView)
 
             // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
             mAdView!!.loadAd(ConsentSDK.getAdRequest(this@MainActivityEarthquakesList))
