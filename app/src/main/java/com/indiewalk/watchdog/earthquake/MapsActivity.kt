@@ -55,6 +55,8 @@ import com.indiewalk.watchdog.earthquake.data.Earthquake
 import com.indiewalk.watchdog.earthquake.data.EarthquakeRepository
 import com.indiewalk.watchdog.earthquake.util.ConsentSDK
 import com.indiewalk.watchdog.earthquake.util.MyUtil
+import kotlinx.android.synthetic.main.main_activity_earthquakes_list.*
+
 
 
 import android.app.AlertDialog
@@ -113,9 +115,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     // User location coords
     internal var lat_s: String? = null
     internal var lng_s: String? = null
-
-    // admob banner ref
-    private var mAdView: AdView? = null
 
 
     /**
@@ -181,11 +180,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
 
-        // load ads banner
-        mAdView = findViewById(R.id.mAdView)
-
         // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
-        mAdView!!.loadAd(ConsentSDK.getAdRequest(this@MapsActivity))
+        mAdView.loadAd(ConsentSDK.getAdRequest(this@MapsActivity))
 
 
         // init shared preferences

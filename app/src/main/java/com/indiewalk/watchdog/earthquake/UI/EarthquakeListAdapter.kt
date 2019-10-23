@@ -18,6 +18,7 @@ import com.indiewalk.watchdog.earthquake.data.EarthquakeRepository
 import com.indiewalk.watchdog.earthquake.UI.MainActivityEarthquakesList
 import com.indiewalk.watchdog.earthquake.util.MyUtil
 
+
 import java.text.DecimalFormat
 
 class EarthquakeListAdapter
