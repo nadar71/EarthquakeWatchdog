@@ -27,7 +27,6 @@ import android.widget.Toast
 
 
 import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdView
 import com.indiewalk.watchdog.earthquake.MapsActivity
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.data.Earthquake
@@ -40,6 +39,9 @@ import java.util.Arrays
 
 import android.support.v7.widget.DividerItemDecoration.VERTICAL
 import android.support.design.widget.FloatingActionButton
+import kotlinx.android.synthetic.main.filter_info.*
+import kotlinx.android.synthetic.main.main_activity_earthquakes_list.*
+import kotlinx.android.synthetic.main.main_activity_earthquakes_list.filter_summary
 
 
 class MainActivityEarthquakesList : AppCompatActivity(),
@@ -51,18 +53,6 @@ class MainActivityEarthquakesList : AppCompatActivity(),
 
     internal lateinit var earthquakeListView: RecyclerView
     private var earthquakes: List<Earthquake>? = null
-
-    private var loadingInProgress: ProgressBar? = null
-
-    private var emptyListText: TextView? = null
-    private var order_value_tv: TextView? = null
-    private var minMagn_value_tv: TextView? = null
-    private var lastUp_value_tv: TextView? = null
-    private var eq_period_value_tv: TextView? = null
-    private var location_value_tv: TextView? = null
-    private var summary_layout: View? = null
-    private var filter_memo: View? = null
-    private var fab: FloatingActionButton? = null
 
     private var adapter: EarthquakeListAdapter? = null
 
@@ -78,9 +68,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
     // SharePreferences ref
     internal lateinit var sharedPreferences: SharedPreferences
 
-    // admob banner ref
-    private var mAdView: AdView? = null
-    private var consentSDK: ConsentSDK? = null
+    private lateinit var consentSDK: ConsentSDK
 
 
     /**
@@ -110,26 +98,13 @@ class MainActivityEarthquakesList : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity_earthquakes_list)
 
-        // summary fields
-        summary_layout = findViewById(R.id.filter_memo)
-        order_value_tv = findViewById(R.id.order_value_tv)
-        minMagn_value_tv = findViewById(R.id.minMagn_value_tv)
-        lastUp_value_tv = findViewById(R.id.lastUp_value_tv)
-        eq_period_value_tv = findViewById(R.id.eq_period_value_tv)
-        location_value_tv = findViewById(R.id.location_value_tv)
-
-        loadingInProgress = findViewById(R.id.loading_spinner)
-        emptyListText = findViewById(R.id.empty_view)
-        filter_memo = findViewById(R.id.summary_layout)
-        fab = findViewById(R.id.info_filter_fb)
-
         // set consent sdk for gdpr true by default
         // setConsentSDKNeed(true);
 
         setupActionBar()
 
         // summary layout start gone
-        summary_layout!!.visibility = View.GONE
+        filter_summary.visibility = View.GONE
 
         // init shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
@@ -165,21 +140,20 @@ class MainActivityEarthquakesList : AppCompatActivity(),
 
 
             // To check the consent and load ads
-            consentSDK!!.checkConsent(object : ConsentSDK.ConsentCallback() {
+            consentSDK.checkConsent(object : ConsentSDK.ConsentCallback() {
                 override fun onResult(isRequestLocationInEeaOrUnknown: Boolean) {
                     Log.i("gdpr_TAG", "onResult: isRequestLocationInEeaOrUnknown : $isRequestLocationInEeaOrUnknown")
                     // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
-                    mAdView!!.loadAd(ConsentSDK.getAdRequest(this@MainActivityEarthquakesList))
+                    mAdView.loadAd(ConsentSDK.getAdRequest(this@MainActivityEarthquakesList))
                 }
             })
 
 
-            mAdView = findViewById(R.id.mAdView)
 
             // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
-            mAdView!!.loadAd(ConsentSDK.getAdRequest(this@MainActivityEarthquakesList))
+            mAdView.loadAd(ConsentSDK.getAdRequest(this@MainActivityEarthquakesList))
 
-            mAdView!!.adListener = object : AdListener() {
+            mAdView.adListener = object : AdListener() {
                 override fun onAdLoaded() {
                     // Code to be executed when an ad finishes loading.
                     // Toast.makeText(MainActivityEarthquakesList.this, "Adloaded ok", Toast.LENGTH_SHORT).show();
@@ -248,8 +222,8 @@ class MainActivityEarthquakesList : AppCompatActivity(),
     private fun setupActionBar() {
         val actionBar = supportActionBar
         actionBar!!.title = getString(R.string.title_reduced)
-        actionBar.setIcon(R.mipmap.ic_launcher)
-        actionBar.setDisplayShowHomeEnabled(true)
+        actionBar!!.setIcon(R.mipmap.ic_launcher)
+        actionBar!!.setDisplayShowHomeEnabled(true)
     }
 
 
@@ -301,26 +275,26 @@ class MainActivityEarthquakesList : AppCompatActivity(),
         earthquakeListView.addItemDecoration(decoration)
 
 
-        // make fab button hide when scrolling list
+        // make info_filter_fab button hide when scrolling list
         earthquakeListView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-                if (dy > 0 || dy < 0 && fab!!.isShown)
-                    fab!!.hide()
+                if (dy > 0 || dy < 0 && info_filter_fab.isShown)
+                    info_filter_fab.hide()
             }
 
             override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE)
-                    fab!!.show()
+                    info_filter_fab.show()
                 super.onScrollStateChanged(recyclerView, newState)
             }
         })
 
-        fab!!.setOnClickListener {
-            if (summary_layout!!.isShown)
-                summary_layout!!.visibility = View.GONE
+        info_filter_fab.setOnClickListener {
+            if (filter_summary.isShown)
+                filter_summary.visibility = View.GONE
             else
-                summary_layout!!.visibility = View.VISIBLE
+                filter_summary.visibility = View.VISIBLE
         }
 
 
@@ -601,40 +575,40 @@ class MainActivityEarthquakesList : AppCompatActivity(),
         // set up filter summary
         // order by
         if (orderBy == getString(R.string.settings_order_by_desc_magnitude_value))
-            order_value_tv!!.text = getString(R.string.settings_order_by_desc_magnitude_label)
+            order_value_tv.text = getString(R.string.settings_order_by_desc_magnitude_label)
 
         if (orderBy == getString(R.string.settings_order_by_asc_magnitude_value))
-            order_value_tv!!.text = getString(R.string.settings_order_by_asc_magnitude_label)
+            order_value_tv.text = getString(R.string.settings_order_by_asc_magnitude_label)
 
         if (orderBy == getString(R.string.settings_order_by_most_recent_value))
-            order_value_tv!!.text = getString(R.string.settings_order_by_most_recent_label)
+            order_value_tv.text = getString(R.string.settings_order_by_most_recent_label)
 
         if (orderBy == getString(R.string.settings_order_by_oldest_value))
-            order_value_tv!!.text = getString(R.string.settings_order_by_oldest_label)
+            order_value_tv.text = getString(R.string.settings_order_by_oldest_label)
 
         if (orderBy == getString(R.string.settings_order_by_nearest_value))
-            order_value_tv!!.text = getString(R.string.settings_order_by_nearest_label)
+            order_value_tv.text = getString(R.string.settings_order_by_nearest_label)
 
         if (orderBy == getString(R.string.settings_order_by_furthest_value))
-            order_value_tv!!.text = getString(R.string.settings_order_by_furthest_label)
+            order_value_tv.text = getString(R.string.settings_order_by_furthest_label)
 
         // min magnitude
-        minMagn_value_tv!!.text = minMagnitude
+        minMagn_value_tv.text = minMagnitude
 
         // last update time
-        lastUp_value_tv!!.text = lastUpdate
+        lastUp_value_tv.text = lastUpdate
 
         // time range
         if (dateFilter == getString(R.string.settings_date_period_today_value))
-            eq_period_value_tv!!.text = getString(R.string.settings_date_period_today_label)
+            eq_period_value_tv.text = getString(R.string.settings_date_period_today_label)
         else if (dateFilter == getString(R.string.settings_date_period_24h_value))
-            eq_period_value_tv!!.text = getString(R.string.settings_date_period_24h_label)
+            eq_period_value_tv.text = getString(R.string.settings_date_period_24h_label)
         else if (dateFilter == getString(R.string.settings_date_period_48h_value))
-            eq_period_value_tv!!.text = getString(R.string.settings_date_period_48h_label)
+            eq_period_value_tv.text = getString(R.string.settings_date_period_48h_label)
         else if (dateFilter == getString(R.string.settings_date_period_week_value))
-            eq_period_value_tv!!.text = getString(R.string.settings_date_period_week_label)
+            eq_period_value_tv.text = getString(R.string.settings_date_period_week_label)
         else if (dateFilter == getString(R.string.settings_date_period_2_week_value))
-            eq_period_value_tv!!.text = getString(R.string.settings_date_period_2_week_label)/*
+            eq_period_value_tv.text = getString(R.string.settings_date_period_2_week_label)/*
         else if ((dateFilter.equals(getString(R.string.settings_date_period_3_days_value))))
             dateFilterLabel = getString(R.string.settings_date_period_3_days_label);
 
@@ -647,7 +621,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
         */
 
         //location address
-        location_value_tv!!.text = location_address
+        location_value_tv.text = location_address
     }
 
     /**
@@ -803,11 +777,11 @@ class MainActivityEarthquakesList : AppCompatActivity(),
      */
     private fun showNoInternetConnection() {
         // hide progress bar
-        loadingInProgress!!.visibility = View.GONE
-        filter_memo!!.visibility = View.INVISIBLE
+        loadingInProgress.visibility = View.GONE
+        filter_summary.visibility = View.INVISIBLE
         earthquakeListView.visibility = View.GONE
-        emptyListText!!.visibility = View.VISIBLE
-        emptyListText!!.setText(R.string.no_internet_connection)
+        emptyListText.visibility = View.VISIBLE
+        emptyListText.setText(R.string.no_internet_connection)
     }
 
     /**
@@ -816,21 +790,21 @@ class MainActivityEarthquakesList : AppCompatActivity(),
      * ---------------------------------------------------------------------------------------------
      */
     private fun showLoading() {
-        loadingInProgress!!.visibility = View.VISIBLE
-        filter_memo!!.visibility = View.INVISIBLE
+        loadingInProgress.visibility = View.VISIBLE
+        filter_summary.visibility = View.INVISIBLE
         earthquakeListView.visibility = View.GONE
-        emptyListText!!.visibility = View.VISIBLE
-        emptyListText!!.setText(R.string.searching)
+        emptyListText.visibility = View.VISIBLE
+        emptyListText.setText(R.string.searching)
     }
 
     /**
      * Show hearthquake list after loading/retrieving data completed
      */
     private fun showEarthquakeListView() {
-        loadingInProgress!!.visibility = View.INVISIBLE
-        filter_memo!!.visibility = View.VISIBLE
+        loadingInProgress.visibility = View.INVISIBLE
+        filter_summary.visibility = View.VISIBLE
         earthquakeListView.visibility = View.VISIBLE
-        emptyListText!!.visibility = View.INVISIBLE
+        emptyListText.visibility = View.INVISIBLE
     }
 
     /**
@@ -878,10 +852,10 @@ class MainActivityEarthquakesList : AppCompatActivity(),
             // update preferences
             lastUpdate = MyUtil.setLastUpdateField(this)
 
-            lastUp_value_tv!!.text = lastUpdate
+            lastUp_value_tv.text = lastUpdate
 
             // show filter summary
-            filter_memo!!.visibility = View.VISIBLE
+            filter_summary.visibility = View.VISIBLE
 
             val alert = Toast.makeText(this@MainActivityEarthquakesList,
                     getString(R.string.data_update_toast) + dateFilterLabel, Toast.LENGTH_LONG)
@@ -1144,7 +1118,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
         // Id for loader which retrieve data from remote source (not necessary there is only it!)
         private val EARTHQUAKE_LOADER_ID = 1
 
-        // Cnsent SDK vars
+        // Consent SDK vars
         private var checkConsentActive = true
     }
 

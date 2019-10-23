@@ -1,24 +1,14 @@
 package com.indiewalk.watchdog.earthquake
 
 
-import android.content.Context
-import android.support.test.InstrumentationRegistry
-import android.support.test.espresso.ViewInteraction
 import android.support.test.espresso.intent.Intents
 import android.support.test.filters.LargeTest
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewParent
 
 import com.indiewalk.watchdog.earthquake.UI.MainActivityEarthquakesList
 import com.indiewalk.watchdog.earthquake.UI.SettingSimpleActivity
 
-import org.hamcrest.Description
-import org.hamcrest.Matcher
-import org.hamcrest.TypeSafeMatcher
-import org.hamcrest.core.IsInstanceOf
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -26,17 +16,13 @@ import org.junit.runner.RunWith
 
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.Espresso.pressBack
-import android.support.test.espresso.Espresso.pressBackUnconditionally
 import android.support.test.espresso.action.ViewActions.click
 import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.intent.Intents.intended
 import android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
-import android.support.test.espresso.matcher.ViewMatchers.withContentDescription
 import android.support.test.espresso.matcher.ViewMatchers.withId
-import android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import android.support.test.espresso.matcher.ViewMatchers.withText
-import org.hamcrest.Matchers.allOf
 
 
 @LargeTest
@@ -72,9 +58,9 @@ class CheckMainActivityButton {
 
     @Test
     fun checkInfoButton() {
-        val filter_btn = onView(withId(R.id.info_filter_fb)).check(matches(isDisplayed()))
+        val filter_btn = onView(withId(R.id.info_filter_fab)).check(matches(isDisplayed()))
         filter_btn.perform(click())
-        onView(withId(R.id.filter_memo)).check(matches(isDisplayed()))
+        onView(withId(R.id.filter_summary)).check(matches(isDisplayed()))
     }
 
     @Test
