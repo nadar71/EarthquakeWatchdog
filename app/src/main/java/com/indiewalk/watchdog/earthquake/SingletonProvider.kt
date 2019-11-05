@@ -47,7 +47,7 @@ class SingletonProvider : Application() {
      */
     // repo standard constructor
     val repository: EarthquakeRepository?
-        get() = EarthquakeRepository.getInstance(database!!)
+        get() = database?.let { EarthquakeRepository.getInstance(it) }
 
 
     // repo constructor with data source support

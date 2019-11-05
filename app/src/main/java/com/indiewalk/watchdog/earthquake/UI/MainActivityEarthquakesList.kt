@@ -41,7 +41,7 @@ import android.support.v7.widget.DividerItemDecoration.VERTICAL
 import android.support.design.widget.FloatingActionButton
 import kotlinx.android.synthetic.main.filter_info.*
 import kotlinx.android.synthetic.main.main_activity_earthquakes_list.*
-import kotlinx.android.synthetic.main.main_activity_earthquakes_list.filter_summary
+import kotlinx.android.synthetic.main.main_activity_earthquakes_list.btn_filter_details
 
 
 class MainActivityEarthquakesList : AppCompatActivity(),
@@ -104,7 +104,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
         setupActionBar()
 
         // summary layout start gone
-        filter_summary.visibility = View.GONE
+        btn_filter_details.visibility = View.GONE
 
         // init shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
@@ -291,10 +291,10 @@ class MainActivityEarthquakesList : AppCompatActivity(),
         })
 
         info_filter_fab.setOnClickListener {
-            if (filter_summary.isShown)
-                filter_summary.visibility = View.GONE
+            if (btn_filter_details.isShown)
+                btn_filter_details.visibility = View.GONE
             else
-                filter_summary.visibility = View.VISIBLE
+                btn_filter_details.visibility = View.VISIBLE
         }
 
 
@@ -778,7 +778,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
     private fun showNoInternetConnection() {
         // hide progress bar
         loadingInProgress.visibility = View.GONE
-        filter_summary.visibility = View.INVISIBLE
+        btn_filter_details.visibility = View.INVISIBLE
         earthquakeListView.visibility = View.GONE
         emptyListText.visibility = View.VISIBLE
         emptyListText.setText(R.string.no_internet_connection)
@@ -791,7 +791,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
      */
     private fun showLoading() {
         loadingInProgress.visibility = View.VISIBLE
-        filter_summary.visibility = View.INVISIBLE
+        btn_filter_details.visibility = View.INVISIBLE
         earthquakeListView.visibility = View.GONE
         emptyListText.visibility = View.VISIBLE
         emptyListText.setText(R.string.searching)
@@ -802,7 +802,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
      */
     private fun showEarthquakeListView() {
         loadingInProgress.visibility = View.INVISIBLE
-        filter_summary.visibility = View.VISIBLE
+        btn_filter_details.visibility = View.VISIBLE
         earthquakeListView.visibility = View.VISIBLE
         emptyListText.visibility = View.INVISIBLE
     }
@@ -855,7 +855,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
             lastUp_value_tv.text = lastUpdate
 
             // show filter summary
-            filter_summary.visibility = View.VISIBLE
+            btn_filter_details.visibility = View.VISIBLE
 
             val alert = Toast.makeText(this@MainActivityEarthquakesList,
                     getString(R.string.data_update_toast) + dateFilterLabel, Toast.LENGTH_LONG)

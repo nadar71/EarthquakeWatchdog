@@ -23,9 +23,10 @@ import android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
 import android.support.test.espresso.matcher.ViewMatchers.withId
 import android.support.test.espresso.matcher.ViewMatchers.withText
+import android.support.test.filters.MediumTest
 
 
-@LargeTest
+@MediumTest
 @RunWith(AndroidJUnit4::class)
 class CheckMainActivityButton {
     private lateinit var activity: MainActivityEarthquakesList
@@ -60,7 +61,7 @@ class CheckMainActivityButton {
     fun checkInfoButton() {
         val filter_btn = onView(withId(R.id.info_filter_fab)).check(matches(isDisplayed()))
         filter_btn.perform(click())
-        onView(withId(R.id.filter_summary)).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_filter_details)).check(matches(isDisplayed()))
     }
 
     @Test

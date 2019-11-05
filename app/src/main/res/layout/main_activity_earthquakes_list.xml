@@ -9,7 +9,7 @@
 
 
     <include
-        android:id="@+id/filter_summary"
+        android:id="@+id/btn_filter_details"
         layout="@layout/filter_info"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/filter_summary">
+        app:layout_constraintTop_toBottomOf="@+id/btn_filter_details">
 
     </android.support.v7.widget.RecyclerView>
 
