@@ -11,11 +11,11 @@ import com.indiewalk.watchdog.earthquake.util.AppExecutors
 import com.indiewalk.watchdog.earthquake.util.MyUtil
 
 class EarthquakeRepository {
-    private var networkDataSource: EarthquakeNetworkDataSource? = null
-    private var executors: AppExecutors? = null
+    private lateinit var networkDataSource: EarthquakeNetworkDataSource
+    lateinit var executors: AppExecutors
     private var mInitialized = false
 
-    private var eqDb: EarthquakeDatabase? = null
+    private var eqDb: EarthquakeDatabase
 
 
     /**
@@ -26,7 +26,7 @@ class EarthquakeRepository {
      */
     private val isRequestDataNeeded: Boolean
         get() {
-            val eqs = eqDb!!.earthquakeDbDao().loadAllNoLiveData()
+            val eqs = eqDb.earthquakeDbDao().loadAllNoLiveData()
             return if (eqs.size <= 0) true else false
         }
 
@@ -68,7 +68,7 @@ class EarthquakeRepository {
                         SingletonProvider.getsContext() as SingletonProvider)
 
                 if (newEqFromNetwork != null) {
-                    eqDb!!.earthquakeDbDao().renewDataInsert(*newEqFromNetwork)
+                    eqDb.earthquakeDbDao().renewDataInsert(*newEqFromNetwork)
                 }
                 Log.d(TAG, "WeatherAppRepository observer : New values inserted. ")
             }
@@ -85,7 +85,7 @@ class EarthquakeRepository {
      * ---------------------------------------------------------------------------------------------
      */
     @Synchronized
-    private fun initializeData() {
+    fun initializeData() {
 
         // Db data initialized check : at every app start
         if (mInitialized) {
@@ -97,11 +97,11 @@ class EarthquakeRepository {
         mInitialized = true
 
         // Set Synchronizing data every SYNC_INTERVAL_HOURS; if already present replace
-        networkDataSource!!.scheduleRecurringFetchEarthquakeSync()
+        networkDataSource.scheduleRecurringFetchEarthquakeSync()
 
 
         // try to fetch earthquakes remote data if needed
-        executors!!.diskIO().execute {
+        executors.diskIO().execute {
             if (MyUtil.isConnectionOk) {
                 if (isRequestDataNeeded) {
                     Log.d(TAG, "initializeData: isFetchNeeded == true, run the intent from fetching data from remote")
@@ -122,7 +122,7 @@ class EarthquakeRepository {
      */
     private fun startFetchEarthquakeService() {
         // call the intent service for retrieving network data daemon
-        networkDataSource!!.startFetchEarthquakeService()
+        networkDataSource.startFetchEarthquakeService()
     }
 
 
@@ -132,47 +132,47 @@ class EarthquakeRepository {
     // retrieve all the eqs
     fun loadAll(): LiveData<List<Earthquake>> {
         initializeData()
-        return eqDb!!.earthquakeDbDao().loadAll()
+        return eqDb.earthquakeDbDao().loadAll()
     }
 
     // retrieve all the eqs order by desc magnitude
     fun loadAll_orderby_desc_mag(min_mag: Double): LiveData<List<Earthquake>> {
         initializeData()
-        return eqDb!!.earthquakeDbDao().loadAll_orderby_desc_mag(min_mag)
+        return eqDb.earthquakeDbDao().loadAll_orderby_desc_mag(min_mag)
     }
 
 
     // retrieve all the eqs order by asc magnitude
     fun loadAll_orderby_asc_mag(min_mag: Double): LiveData<List<Earthquake>> {
         initializeData()
-        return eqDb!!.earthquakeDbDao().loadAll_orderby_asc_mag(min_mag)
+        return eqDb.earthquakeDbDao().loadAll_orderby_asc_mag(min_mag)
     }
 
 
     // retrieve all the eqs order by most recent (time desc)
     fun loadAll_orderby_most_recent(min_mag: Double): LiveData<List<Earthquake>> {
         initializeData()
-        return eqDb!!.earthquakeDbDao().loadAll_orderby_most_recent(min_mag)
+        return eqDb.earthquakeDbDao().loadAll_orderby_most_recent(min_mag)
     }
 
 
     // retrieve all the eqs order by oldest (time asc)
     fun loadAll_orderby_oldest(min_mag: Double): LiveData<List<Earthquake>> {
         initializeData()
-        return eqDb!!.earthquakeDbDao().loadAll_orderby_oldest(min_mag)
+        return eqDb.earthquakeDbDao().loadAll_orderby_oldest(min_mag)
     }
 
 
     // retrieve all the eqs order by nearest to user
     fun loadAll_orderby_nearest(min_mag: Double): LiveData<List<Earthquake>> {
         initializeData()
-        return eqDb!!.earthquakeDbDao().loadAll_orderby_nearest(min_mag)
+        return eqDb.earthquakeDbDao().loadAll_orderby_nearest(min_mag)
     }
 
     // retrieve all the eqs order by furthest to user
     fun loadAll_orderby_furthest(min_mag: Double): LiveData<List<Earthquake>> {
         initializeData()
-        return eqDb!!.earthquakeDbDao().loadAll_orderby_furthest(min_mag)
+        return eqDb.earthquakeDbDao().loadAll_orderby_furthest(min_mag)
     }
 
 
@@ -180,7 +180,7 @@ class EarthquakeRepository {
     //  INSERT
     //----------------------------------------------------------------------------------------------
     fun insertEarthquake(earthquake: Earthquake) {
-        eqDb!!.earthquakeDbDao().insertEarthquake(earthquake)
+        eqDb.earthquakeDbDao().insertEarthquake(earthquake)
     }
 
 
@@ -188,7 +188,7 @@ class EarthquakeRepository {
     //  UPDATE
     //----------------------------------------------------------------------------------------------
     fun updatedAllEqsDistFromUser(equakes: List<Earthquake>?, context: Context) {
-        executors!!.diskIO().execute {
+        executors.diskIO().execute {
             Log.d(TAG, "Updating eqs distances from current user location. ")
 
             /* // too slow
@@ -205,7 +205,7 @@ class EarthquakeRepository {
 
             if (equakes != null) { // workaround for #97
                 val equakes_array = equakes.toTypedArray()
-                eqDb!!.earthquakeDbDao().renewDataInsert(*equakes_array)
+                eqDb.earthquakeDbDao().renewDataInsert(*equakes_array)
                 Log.d(TAG, "Updating eqs distances from current user location. : New values inserted. ")
             }
         }
@@ -218,7 +218,7 @@ class EarthquakeRepository {
     //----------------------------------------------------------------------------------------------
     // drop table : delete all table content
     fun dropEarthquakeListTable() {
-        eqDb!!.earthquakeDbDao().dropEarthquakeListTable()
+        eqDb.earthquakeDbDao().dropEarthquakeListTable()
     }
 
     companion object {

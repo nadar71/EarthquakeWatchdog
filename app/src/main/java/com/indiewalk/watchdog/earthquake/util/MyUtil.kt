@@ -124,9 +124,11 @@ object MyUtil {
 
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Convert km to miles
      * @param km
      * @return
+     * ---------------------------------------------------------------------------------------------
      */
     fun fromKmToMiles(km: Double): Double {
         val MileInkm = 0.621371192
@@ -344,6 +346,8 @@ object MyUtil {
      * ---------------------------------------------------------------------------------------------
     </Earthquake> */
     fun setEqDistanceFromCurrentCoords(earthquakes: List<Earthquake>?, context: Context) {
+
+        // if (context == null) return
 
         // Check location coordinates from shared preferences.If not set, put default value
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
