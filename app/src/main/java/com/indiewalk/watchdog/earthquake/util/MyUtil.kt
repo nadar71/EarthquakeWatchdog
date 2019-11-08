@@ -40,7 +40,7 @@ object MyUtil {
     private val TAG = MyUtil::class.java.simpleName
 
     // URL to query the USGS dataset for earthquake information
-    private val USGS_REQUEST_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
+    val USGS_REQUEST_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
 
 
     /**
@@ -73,7 +73,7 @@ object MyUtil {
      * ---------------------------------------------------------------------------------------------
      */
     fun composeQueryUrl(dateFilter: String): String {
-        val rootUri = Uri.parse(USGS_REQUEST_URL)
+        var rootUri = Uri.parse(USGS_REQUEST_URL)
         val builder = rootUri.buildUpon()
 
         builder.appendQueryParameter("format", "geojson")
@@ -454,6 +454,21 @@ object MyUtil {
             }
         }
 
+    }
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Add a day in ol Date format
+     * @param date
+     * @return
+     * ---------------------------------------------------------------------------------------------
+     */
+    fun addDays(date: Date, numDays: Int): Date {
+        val cal = Calendar.getInstance()
+        cal.time = date
+        cal.add(Calendar.DATE, numDays)
+        return cal.time
     }
 
 

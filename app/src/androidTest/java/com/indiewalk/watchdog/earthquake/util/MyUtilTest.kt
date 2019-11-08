@@ -30,4 +30,12 @@ class MyUtilTest {
     @Test
     fun setEqDistanceFromCurrentCoords1() {
     }
+
+    @Test
+    fun getMagnitudeColor_test() {
+    }
+
+    @Test
+    fun getMagnitudeImg_test() {
+    }
 }

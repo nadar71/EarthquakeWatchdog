@@ -62,7 +62,6 @@ public class EarthquakeRepositoryTest {
         MockitoAnnotations.initMocks(this);
         repository = EarthquakeRepository.Companion.getInstance(mockDb);
         when(mockDb.earthquakeDbDao()).thenReturn(mockDao);
-
     }
 
 
