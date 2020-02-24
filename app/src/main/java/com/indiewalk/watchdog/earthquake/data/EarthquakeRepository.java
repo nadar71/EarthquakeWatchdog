@@ -112,7 +112,7 @@ public class EarthquakeRepository {
      * immediate sync is required, this method will take care of making sure that sync occurs.
      * ---------------------------------------------------------------------------------------------
      */
-    private synchronized void initializeData() {
+    public synchronized void initializeData() {
 
         // Db data initialized check : at every app start
         if (mInitialized) {
