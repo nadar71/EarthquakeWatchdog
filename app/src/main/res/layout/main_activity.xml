@@ -10,7 +10,7 @@
 
 
     <include
-        android:id="@+id/filter_summary"
+        android:id="@+id/filter_memo"
         layout="@layout/filter_info"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -30,15 +30,15 @@
         android:divider="@color/textColorEarthquakeDetails"
         android:dividerHeight="1dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/mAdView"
+        app:layout_constraintBottom_toTopOf="@+id/adView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/filter_summary" />
+        app:layout_constraintTop_toBottomOf="@+id/filter_memo" />
 
     <!-- Empty view is only visible when the list has no items. -->
     <TextView
-        android:id="@+id/emptyListText"
+        android:id="@+id/empty_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -54,7 +54,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
-        android:id="@+id/loadingInProgress"
+        android:id="@+id/loading_spinner"
         style="@style/Widget.AppCompat.ProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
 
 
     <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/mAdView"
+        android:id="@+id/adView"
         android:layout_width="match_parent"
         android:layout_height="49dp"
         android:layout_alignParentBottom="true"

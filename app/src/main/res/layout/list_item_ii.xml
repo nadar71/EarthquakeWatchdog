@@ -33,7 +33,7 @@
         android:textColor="@color/textColorEarthquakeLocation"
         android:textSize="12sp"
         app:layout_constraintStart_toEndOf="@+id/magnitudeText"
-        app:layout_constraintTop_toTopOf="@+id/magnitudeText" />
+        tools:layout_editor_absoluteY="0dp" />
 
     <TextView
         android:id="@+id/timeText"
