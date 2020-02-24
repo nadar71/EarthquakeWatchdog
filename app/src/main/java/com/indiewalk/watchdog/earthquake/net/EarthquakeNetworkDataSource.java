@@ -145,6 +145,7 @@ public class EarthquakeNetworkDataSource {
     public void fetchEarthquakeWrapper(){
         ArrayList<Earthquake> earthquakes;
         String queryUrl = MyUtil.composeQueryUrl(dateFilter);
+        // Here where remote data request happens and ends
         earthquakes = new EarthQuakeNetworkRequest().fetchEarthquakeData(queryUrl);
 
         // Update last update field in preferences
@@ -152,7 +153,7 @@ public class EarthquakeNetworkDataSource {
 
         Earthquake[] arrEarthquakes = earthquakes.toArray(new Earthquake[earthquakes.size()]);
 
-        // post data to livedata
+        // post data to mutable livedata : make observers aware then
         earthquakesDownloaded.postValue(arrEarthquakes);
     }
 

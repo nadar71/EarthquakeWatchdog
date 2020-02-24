@@ -44,7 +44,7 @@ public abstract class EarthquakeDatabase extends RoomDatabase {
             synchronized (LOCK){
                 Log.d(TAG, "Creating App db singleton instance...");
                 eqDbInstance = Room.databaseBuilder(context.getApplicationContext(), EarthquakeDatabase.class,EarthquakeDatabase.DBNAME)
-                        // .allowMainThreadQueries()
+                        // .allowMainThreadQueries()  // for quick debug
                         .addMigrations(MIGRATION_2_3)
                         .addMigrations(MIGRATION_3_4)
                         .build();

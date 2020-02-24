@@ -11,6 +11,7 @@ import com.indiewalk.watchdog.earthquake.util.AppExecutors;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 public class EarthquakeRepository {
 
@@ -58,6 +59,13 @@ public class EarthquakeRepository {
             );
         });
 
+
+    }
+
+
+
+    public void setExecutors(AppExecutors executors){
+        this.executors = executors;
 
     }
 
@@ -131,7 +139,8 @@ public class EarthquakeRepository {
         executors.diskIO().execute(()->{
             if (MyUtil.isConnectionOk()) {
                 if(isRequestDataNeeded()){
-                    Log.d(TAG, "initializeData: isFetchNeeded == true, run the intent from fetching data from remote");
+                    Log.d(TAG, "initializeData: isFetchNeeded == true, " +
+                            "run the intent from fetching data from remote");
                     startFetchEarthquakeService();
                 }
             } else {

@@ -14,10 +14,10 @@ import com.indiewalk.watchdog.earthquake.util.AppExecutors;
  * -------------------------------------------------------------------------------------------------
  * Class used for access classes singletons and application context wherever in the app.
  * Just like repository is an interface for all data operations.
- * Can be used dependency injection as well.
  * NB : registered in manifest in <Application  android:name=".SingletonProvider" >... </Application>
  * -------------------------------------------------------------------------------------------------
  */
+// TODO : Convert to dependency injection/dagger2
 public class SingletonProvider extends Application {
 
     private AppExecutors mAppExecutors;
@@ -28,7 +28,7 @@ public class SingletonProvider extends Application {
     public void onCreate() {
         super.onCreate();
         mAppExecutors = AppExecutors.getInstance();
-        sContext = getApplicationContext();
+        sContext      = getApplicationContext();
     }
 
     /**
@@ -48,6 +48,7 @@ public class SingletonProvider extends Application {
      * @return
      * ---------------------------------------------------------------------------------------------
      */
+
     // repo standard constructor
     public EarthquakeRepository getRepository() {
         return EarthquakeRepository.getInstance(getDatabase());
@@ -96,7 +97,7 @@ public class SingletonProvider extends Application {
      */
     public EarthquakeNetworkDataSource getNetworkDatasource() {
         // getRepository(); // the repository is not created if called from a intent service
-        // nedeed otherwise the repository is not created if called from a intent service
+        // needed otherwise the repository is not created if called from a intent service
         getRepositoryWithDataSource();
         return EarthquakeNetworkDataSource.getInstance(sContext,mAppExecutors);
     }

@@ -17,27 +17,22 @@ import java.util.List;
 
 /**
  * -------------------------------------------------------------------------------------------------
- * Class for loading async equake data using loader
+ * Loading async equakes data using loader, for refresh menu action (not for eqs list updates)
  * -------------------------------------------------------------------------------------------------
  */
+// TODO : this loader is temporary: will be replaced in main using new repository method
 public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
 
-    // log tag definition
     private static final String TAG = EarthquakeAsyncLoader.class.getName();
 
     private Context context;
 
-    // db instance reference
     private EarthquakeDatabase eqDb;
 
-    // query url
     private String queryUrl;
 
     // tmp list for getting the intermediate result in extractFeatureFromJson
     private ArrayList<Earthquake> earthquakes = null;
-
-    // Preferences value
-    private String lat_s, lng_s, dist_unit;
 
     /**
      * ---------------------------------------------------------------------------------------------
@@ -91,13 +86,6 @@ public class EarthquakeAsyncLoader extends AsyncTaskLoader<List<Earthquake>> {
 
         return earthquakes;
     }
-
-
-
-
-
-
-
 
 
 

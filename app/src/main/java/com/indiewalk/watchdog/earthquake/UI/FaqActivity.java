@@ -14,7 +14,6 @@ import com.indiewalk.watchdog.earthquake.util.ConsentSDK;
 
 public class FaqActivity extends AppCompatActivity {
 
-    // admob banner ref
     private AdView mAdView;
 
     @Override
@@ -22,16 +21,11 @@ public class FaqActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_faq);
 
-
-        // load ads banner
         mAdView = findViewById(R.id.adView);
-
-        // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
         mAdView.loadAd(ConsentSDK.getAdRequest(FaqActivity.this));
 
         // back btn
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         getSupportActionBar().setTitle(getString(R.string.faq_btn_title));
 
     }

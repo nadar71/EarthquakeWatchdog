@@ -94,16 +94,14 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
     private EarthquakeListAdapter adapter;
 
 
-    // Id for loader which retrieve data from remote source (not necessary there is only it!)
+    // Id for loader which retrieve data from remote source
     private static final int EARTHQUAKE_LOADER_ID = 1;
 
     // Preferences value
     String minMagnitude, orderBy, lat_s, lng_s, dateFilter, dateFilterLabel, location_address;
 
-    // SharePreferences ref
     SharedPreferences sharedPreferences;
 
-    // admob banner ref
     private AdView mAdView;
 
 
@@ -142,7 +140,6 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
             @Override
             public void onResult(boolean isRequestLocationInEeaOrUnknown) {
                 Log.i("gdpr_TAG", "onResult: isRequestLocationInEeaOrUnknown : " + isRequestLocationInEeaOrUnknown);
-                // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
                 mAdView.loadAd(ConsentSDK.getAdRequest(MainActivityEarthquakesList.this));
             }
         });
@@ -150,39 +147,24 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
 
         mAdView = findViewById(R.id.adView);
 
-        // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
         mAdView.loadAd(ConsentSDK.getAdRequest(MainActivityEarthquakesList.this));
 
 
         mAdView.setAdListener(new AdListener() {
             @Override
-            public void onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-                // Toast.makeText(MainActivityEarthquakesList.this, "Adloaded ok", Toast.LENGTH_SHORT).show();
-            }
+            public void onAdLoaded() {}
 
             @Override
-            public void onAdFailedToLoad(int errorCode) {
-                // Code to be executed when an ad request fails.
-                // Toast.makeText(MainActivityEarthquakesList.this, "Adloaded FAILED TO LOAD "+errorCode, Toast.LENGTH_LONG).show();
-            }
+            public void onAdFailedToLoad(int errorCode) {}
 
             @Override
-            public void onAdOpened() {
-                // Code to be executed when an ad opens an overlay that
-                // covers the screen.
-            }
+            public void onAdOpened() {}
 
             @Override
-            public void onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-            }
+            public void onAdLeftApplication() {}
 
             @Override
-            public void onAdClosed() {
-                // Code to be executed when when the user is about to return
-                // to the app after tapping on an ad.
-            }
+            public void onAdClosed() {}
         });
 
         setupActionBar();
@@ -246,6 +228,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
      */
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         // TODO : temporary, must be set in repository init
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
@@ -267,31 +250,16 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
      * ---------------------------------------------------------------------------------------------
      */
     private void initRecycleView(){
-        // Find a reference to the {@link ListView} in the layout : using listView because
-        // at the momento it has only tens of entry.
         earthquakeListView = findViewById(R.id.list);
 
-        // Set LinearLayout
         earthquakeListView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Create a new {@link EarthquakeAdapter} of {@link Earthquakes} objects
         adapter = new EarthquakeListAdapter(this, this);
 
-        // Set the adapter on the {@link ListView} so the list can be populated in the user interface
         earthquakeListView.setAdapter(adapter);
 
 
-        /*
-        // Clicking on item shows an action dialog
-        earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                showActionDialog(position);
-            }
-        });
-        */
-
-        // Divider decorator
+        // Divider
         DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
         earthquakeListView.addItemDecoration(decoration);
 
@@ -348,7 +316,8 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
      * ---------------------------------------------------------------------------------------------
      * Show Select action alert dialog
      *
-     * @param position ---------------------------------------------------------------------------------------------
+     * @param position
+     * ---------------------------------------------------------------------------------------------
      */
     private void showActionDialog(int position) {
         final Context context = MainActivityEarthquakesList.this;
@@ -412,8 +381,6 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
      */
     private void checkPreferences() {
 
-
-
         // get coords from preferences
         lat_s = sharedPreferences.getString(getString(R.string.device_lat), Double.toString(DEFAULT_LAT));
         lng_s = sharedPreferences.getString(getString(R.string.device_lng), Double.toString(DEFAULT_LNG));
@@ -475,7 +442,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
 
         else if ((dateFilter.equals(getString(R.string.settings_date_period_2_week_value))))
             dateFilterLabel = getString(R.string.settings_date_period_2_week_label);
-        /* #68
+        /* #68 :workaround
         else if ((dateFilter.equals(getString(R.string.settings_date_period_month_value))))
             dateFilterLabel = getString(R.string.settings_date_period_month_label);
         */
@@ -507,7 +474,8 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
      * not equals to none of the preferences stored values (e.g.  in case of key value change on code
      * but user saved with the previous one with previous app version )
      *
-     * @param editor ---------------------------------------------------------------------------------------------
+     * @param editor
+     * ---------------------------------------------------------------------------------------------
      */
     private void safePreferencesValue(SharedPreferences.Editor editor) {
 
@@ -612,7 +580,6 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
      * ---------------------------------------------------------------------------------------------
      */
     private void setFilterSummary() {
-        // set up filter summary
         // order by
         if (orderBy.equals(getString(R.string.settings_order_by_desc_magnitude_value)))
             order_value_tv.setText(getString(R.string.settings_order_by_desc_magnitude_label));
@@ -743,17 +710,19 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
      * ---------------------------------------------------------------------------------------------
      */
     private void filterDatafromRepository(MainViewModelFactory factory) {
-        // Get eq list through LiveData
-        // NB : Here it check if there are eqs at first start :
-        //
-        // 1 - The MainViewModel get repository instance, then
-        //     try to recover eqs list using it
-        // 2 - In each repository dao method, there is a call to repo initializeData :
-        //     Here it checks if there are data or need to be remote requested
-        //
-        // Moreover, getting repo instance with getRepositoryWithDataSource it activates
-        // an observerforever on networkData = networkDataSource.getEarthquakesData()
-        // in case of data change due to scheduled update
+         /* Get eq list through LiveData
+         NB : Here it check if there are eqs at first start :
+
+         1 - The MainViewModel get repository instance, then
+             try to recover eqs list using it
+
+         2 - In each repository dao method, there is a call to repo initializeData :
+             Here it checks if there are data or need to be remote requested
+
+         Moreover, getting repo instance with getRepositoryWithDataSource it activates
+         an observerforever on networkData = networkDataSource.getEarthquakesData()
+         in case of data change due to scheduled update
+         */
 
         final MainViewModel viewModel = ViewModelProviders
                 .of(this, factory)
@@ -801,11 +770,11 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
      * Check internet connection availability first
      * ---------------------------------------------------------------------------------------------
      */
+    // TODO : Loader must be replaced with a call to repository method for fetching remote data
     private void retrieveRemoteData() {
 
         if (MyUtil.isConnectionOk()) {
             showLoading();
-            // LoaderManager reference
             LoaderManager loaderManager = getLoaderManager();
             // Init loader : id above, bundle = null , this= current activity for LoaderCallbacks
             loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
@@ -845,7 +814,9 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
     }
 
     /**
+     * ---------------------------------------------------------------------------------------------
      * Show hearthquake list after loading/retrieving data completed
+     * ---------------------------------------------------------------------------------------------
      */
     private void showEarthquakeListView() {
         loadingInProgress.setVisibility(View.INVISIBLE);
@@ -1059,8 +1030,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // boolean restartActivity = false;   // need to restart the activity
-                // boolean updateList      = false;   // need to sort  the list without restarting activity
+
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
                 // check choices
@@ -1080,31 +1050,14 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
                     editor.putString(getString(R.string.settings_order_by_key),
                             spinner_order_by_choice);
                     editor.apply();
-                    // updateList = true;
                 }
 
                 if (!spinner_min_magn_choice.equalsIgnoreCase(getResources().getString(R.string.spinner_defaultchoice_value))) {
                     editor.putString(getString(R.string.settings_min_magnitude_key),
                             spinner_min_magn_choice);
                     editor.apply();
-                    // restartActivity = true;
                 }
 
-                Log.i(TAG, "onClick: ");
-                // process choices
-
-                /*
-                if (restartActivity == false){
-                    if (updateList == true) {
-                        dialog.dismiss();
-                        updateList();
-                    }
-                } else if (restartActivity == true){
-                    // restart activity
-                    dialog.dismiss();
-                    MyUtil.restartActivity(MainActivityEarthquakesList.this);
-                }
-                */
 
                 dialog.dismiss();
                 MyUtil.restartActivity(MainActivityEarthquakesList.this);

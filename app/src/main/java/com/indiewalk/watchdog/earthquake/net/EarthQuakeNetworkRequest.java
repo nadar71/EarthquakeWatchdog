@@ -27,8 +27,8 @@ import java.util.ArrayList;
 
 public class EarthQuakeNetworkRequest {
 
-    // log tag definition
     private static final String TAG = EarthQuakeNetworkRequest.class.getName();
+
     // tmp data structure for returning results
     private ArrayList<Earthquake> earthquakes = null;
 
@@ -43,7 +43,7 @@ public class EarthQuakeNetworkRequest {
      */
     public ArrayList<Earthquake> fetchEarthquakeData(String requestedUrl){
 
-        //decomment  simulate network latency for debugging
+        //decomment for debug : simulate network latency
         /*
         try {
             Thread.sleep(2000);
@@ -68,7 +68,7 @@ public class EarthQuakeNetworkRequest {
         }
 
         Log.i(TAG, "fetchEarthquakeData: calling extractFeatureFromJson");
-        // Extract relevant fields from the JSON response and create an {@link Event} object
+        // Extract relevant fields from the JSON response and create an list of earthquakes objects
         if ( (jsonResponse != null) && (!jsonResponse.isEmpty()) && (jsonResponse != "")   ) {
             earthquakes = extractFeatureFromJson(jsonResponse);
             return earthquakes;
@@ -113,10 +113,8 @@ public class EarthQuakeNetworkRequest {
             int responseCode = checkHttpResponse(urlConnection);
             if (responseCode==200) {
                 urlConnection.connect();
-                // get byte input stream
-                inputStream = urlConnection.getInputStream();
-                // convert input stream to json
-                jsonResponse = readFromStream(inputStream);
+                inputStream = urlConnection.getInputStream(); // get byte input stream
+                jsonResponse = readFromStream(inputStream);   // convert input stream to json
                 Log.e(TAG, "Json Response : "+jsonResponse);
             }else{
                 Log.e(TAG, "Response code not 200 : "+responseCode);
@@ -129,7 +127,6 @@ public class EarthQuakeNetworkRequest {
                 urlConnection.disconnect();
             }
             if (inputStream != null) {
-                // function must handle java.io.IOException here
                 inputStream.close();
             }
         }
@@ -138,7 +135,7 @@ public class EarthQuakeNetworkRequest {
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Convert the {@link InputStream} into a String which contains the
+     * Convert the InputStream into a String which contains the
      * whole JSON response from the server.
      * ---------------------------------------------------------------------------------------------
      */
@@ -164,7 +161,7 @@ public class EarthQuakeNetworkRequest {
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Return a ArrayList of  {@link Earthquake} objects by parsing out information
+     * Return a ArrayList of  Earthquake objects by parsing out information
      * about the first earthquake from the input earthquakeJSON string.
      *
      * Return the list of earthquake retrieved from remote
