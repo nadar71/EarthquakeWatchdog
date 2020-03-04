@@ -1,7 +1,7 @@
 
 <p align="center" >
 <a href="http://www.indie-walkabout.eu">
- <img src="http://www.indie-walkabout.eu/wp-content/themes/pinbin/images/logo.jpg" width="100" height="100"/>
+ <img src="http://www.indie-walkabout.eu/wp-content/themes/pinbin/images/logo.png" width="100" height="100"/>
  </a>
 </p>
 <br>
@@ -33,7 +33,7 @@ Check out it on [Google Play](https://play.google.com/store/apps/details?id=com.
 
 - feel it? get USGS aware with Feel it? link
 
-> <img src="/screenshots/1.jpg" width="200"> <img src="/screenshots/2.jpg" width="200"> <img src="/screenshots/3.jpg" width="200"> <img src="/screenshots/4.jpg" width="200"><img src="/screenshots/5.jpg" width="200"><img src="/screenshots/6.jpg" width="200">
+> <img src="/screenshots/screenshot_1.jpg" width="200"> <img src="/screenshots/screenshot_2.jpg" width="200"> <img src="/screenshots/screenshot_3.jpg" width="200"> <img src="/screenshots/screenshot_4.jpg" width="200"><img src="/screenshots/screenshot_5.jpg" width="200"><img src="/screenshots/screenshot_6.jpg" width="200">
 
 
 
