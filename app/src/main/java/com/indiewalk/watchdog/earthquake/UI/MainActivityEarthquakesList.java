@@ -756,7 +756,6 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
     /**
      * ---------------------------------------------------------------------------------------------
      * Notify and update adapter data
-     *
      * @param earthquakeEntries
      * ---------------------------------------------------------------------------------------------
      */

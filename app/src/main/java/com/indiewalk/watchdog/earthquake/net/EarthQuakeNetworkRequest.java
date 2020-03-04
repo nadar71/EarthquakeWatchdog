@@ -35,8 +35,7 @@ public class EarthQuakeNetworkRequest {
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Fetch data from remote service.
-     * Use createUrl, makeHttpRequest, extractFeatureFromJson
+     * Fetch data from remote service. Use createUrl, makeHttpRequest, extractFeatureFromJson
      * @param requestedUrl
      * @return ArrayList<Earthquake>
      * ---------------------------------------------------------------------------------------------
@@ -59,7 +58,7 @@ public class EarthQuakeNetworkRequest {
             return null;
         }
 
-        // Perform HTTP request to the URL and receive a JSON response back
+        // HTTP request
         String jsonResponse = "";
         try {
             jsonResponse = makeHttpRequest(url);
@@ -68,7 +67,7 @@ public class EarthQuakeNetworkRequest {
         }
 
         Log.i(TAG, "fetchEarthquakeData: calling extractFeatureFromJson");
-        // Extract relevant fields from the JSON response and create an list of earthquakes objects
+
         if ( (jsonResponse != null) && (!jsonResponse.isEmpty()) && (jsonResponse != "")   ) {
             earthquakes = extractFeatureFromJson(jsonResponse);
             return earthquakes;
@@ -135,8 +134,7 @@ public class EarthQuakeNetworkRequest {
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Convert the InputStream into a String which contains the
-     * whole JSON response from the server.
+     * Convert the InputStream into a String whith whole JSON response
      * ---------------------------------------------------------------------------------------------
      */
     private String readFromStream(InputStream inputStream) throws IOException {
@@ -161,20 +159,17 @@ public class EarthQuakeNetworkRequest {
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Return a ArrayList of  Earthquake objects by parsing out information
-     * about the first earthquake from the input earthquakeJSON string.
-     *
      * Return the list of earthquake retrieved from remote
      * ---------------------------------------------------------------------------------------------
      */
     private ArrayList<Earthquake> extractFeatureFromJson(String earthquakeJSON) {
-        // Create an empty ArrayList that we can start adding earthquakes to
+        // Empty ArrayList for return data
         earthquakes = new ArrayList<>();
 
         // Try to parse earthquakeJSON
         try {
 
-            // build up a list of Earthquake objects (from json "features" array) with the corresponding data.
+            // Earthquake objects (from json "features" array)
             JSONObject jsonObject = new JSONObject(earthquakeJSON);
 
             JSONArray features    = jsonObject.getJSONArray("features");
@@ -213,13 +208,10 @@ public class EarthQuakeNetworkRequest {
 
 
         } catch (JSONException e) {
-            // If an error is thrown when executing any of the above statements in the "try" block,
-            // catch the exception here, so the app doesn't crash. Print a log message
-            // with the message from the exception.
             Log.e(TAG, "Problem parsing the earthquake JSON results", e);
         }
 
-        // Return the list of earthquakes
+
         return earthquakes;
     }
 

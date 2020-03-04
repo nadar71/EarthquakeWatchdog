@@ -78,7 +78,7 @@ public class MainViewModel extends ViewModel {
         dMinMagnitude = Double.parseDouble(minMagnitude);
 
 
-        // choose the type of food list to load from db
+        // choose the type of Earthquakes list to load from db
         if (listType.equals(MainActivityEarthquakesList.ORDER_BY_DESC_MAGNITUDE)) {
             Log.d(TAG, "setupAdapter: ORDER_BY_DESC_MAGNITUDE : " + listType);
             earthquakesEntries = eqRepository.loadAll_orderby_desc_mag(dMinMagnitude);
@@ -112,7 +112,7 @@ public class MainViewModel extends ViewModel {
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Getter for LiveData<List<FoodEntry>> list
+     * Getter for LiveData<List<Earthquake>> list
      * @return
      * ---------------------------------------------------------------------------------------------
      */

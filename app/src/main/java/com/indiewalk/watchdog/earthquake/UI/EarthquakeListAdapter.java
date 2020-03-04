@@ -135,8 +135,7 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
 
     /**
      * ----------------------------------------------------------------------------------
-     * Set data for RecycleView as earthquakesEntries list.
-     * Used by calling activity to init/update the adapter
+     * Init/update the adapter withearthquakesEntries
      * @param earthquakesEntries
      * ----------------------------------------------------------------------------------
      */
