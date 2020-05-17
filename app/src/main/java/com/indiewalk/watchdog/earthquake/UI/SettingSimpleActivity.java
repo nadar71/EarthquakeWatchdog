@@ -36,8 +36,10 @@ public class SettingSimpleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_simple);
 
+        /* ADMOB DELETED
         mAdView = findViewById(R.id.adView);
         mAdView.loadAd(ConsentSDK.getAdRequest(SettingSimpleActivity.this));
+         */
 
 
     }
@@ -80,6 +82,7 @@ public class SettingSimpleActivity extends AppCompatActivity {
             Preference gdprConsentBtn = findPreference(getString(R.string.gdpr_btn_key));
             Preference faqBtn         = findPreference(getString(R.string.faq_btn_key));
 
+            /* ADMOB DELETED
             // Initialize ConsentSDK
             initConsentSDK(getActivity());
 
@@ -117,9 +120,10 @@ public class SettingSimpleActivity extends AppCompatActivity {
                 });
 
             } else {
-                preferenceScreen.removePreference(gdprConsentBtn);;
+                preferenceScreen.removePreference(gdprConsentBtn);
             }
-
+             */
+            preferenceScreen.removePreference(gdprConsentBtn);
 
 
 

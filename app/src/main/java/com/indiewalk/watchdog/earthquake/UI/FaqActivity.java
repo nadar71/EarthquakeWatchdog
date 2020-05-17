@@ -21,8 +21,10 @@ public class FaqActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_faq);
 
+        /* ADMOB DELETED
         mAdView = findViewById(R.id.adView);
         mAdView.loadAd(ConsentSDK.getAdRequest(FaqActivity.this));
+         */
 
         // back btn
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

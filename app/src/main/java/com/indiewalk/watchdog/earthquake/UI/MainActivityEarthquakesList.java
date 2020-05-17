@@ -124,7 +124,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
         fab                 = findViewById(R.id.info_filter_fb);
 
 
-
+        /* ADMOB DELETED
         // Initialize ConsentSDK
         ConsentSDK consentSDK = new ConsentSDK.Builder(this)
                 .addTestDeviceId("7DC1A1E8AEAD7908E42271D4B68FB270") // redminote 5 // Add your test device id "Remove addTestDeviceId on production!"
@@ -166,6 +166,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
             @Override
             public void onAdClosed() {}
         });
+        */
 
         setupActionBar();
 
@@ -232,7 +233,7 @@ public class MainActivityEarthquakesList extends AppCompatActivity implements
         // TODO : temporary, must be set in repository init
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
-        super.onStop();
+        // super.onStop();
     }
 
 
