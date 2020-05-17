@@ -60,7 +60,7 @@ public class EarthquakeRepositoryTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        repository = EarthquakeRepository.getInstance(mockDb);
+        repository = EarthquakeRepository.Companion.getInstance(mockDb);
         when(mockDb.earthquakeDbDao()).thenReturn(mockDao);
     }
 
@@ -131,7 +131,7 @@ public class EarthquakeRepositoryTest {
     @Test // OK ran single
     public void insertEarthquake_test() {
         Date today = new Date();
-        Long today_long = DateConverter.fromDate(today);
+        Long today_long = DateConverter.INSTANCE.fromDate(today);
         Earthquake earthquake = new Earthquake(2.0,"Nowhere",today_long,
                 "www.google.it",1.0,1.0,10.0, 100);
 
@@ -145,7 +145,7 @@ public class EarthquakeRepositoryTest {
         List<Earthquake> earthquakes= generateEqList(10);
         Earthquake[] eq_array = new Earthquake[earthquakes.size()];
         eq_array = earthquakes.toArray(eq_array);
-        AppExecutors executors = AppExecutors.getInstance();
+        AppExecutors executors = AppExecutors.Companion.getInstance();
 
         EarthquakeRepository spy_repository = spy(repository);
         doNothing().when(spy_repository).dropEarthquakeListTable();
@@ -175,7 +175,7 @@ public class EarthquakeRepositoryTest {
     private List<Earthquake> generateEqList(int quantity){
         List<Earthquake> earthquakes= new ArrayList<>();
         Date today = new Date();
-        Long today_long = DateConverter.fromDate(today);
+        Long today_long = DateConverter.INSTANCE.fromDate(today);
 
         for(int i=0; i<quantity; i++){
             earthquakes.add(new Earthquake(2.0,"Nowhere",today_long,

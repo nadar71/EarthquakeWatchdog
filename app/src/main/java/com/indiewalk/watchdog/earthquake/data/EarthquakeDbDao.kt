@@ -1,81 +1,76 @@
-package com.indiewalk.watchdog.earthquake.data;
+package com.indiewalk.watchdog.earthquake.data
 
-import android.arch.lifecycle.LiveData;
-import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Delete;
-import android.arch.persistence.room.Insert;
-import android.arch.persistence.room.OnConflictStrategy;
-import android.arch.persistence.room.Query;
-import android.arch.persistence.room.Update;
-
-import java.util.List;
+import android.arch.lifecycle.LiveData
+import android.arch.persistence.room.Dao
+import android.arch.persistence.room.Delete
+import android.arch.persistence.room.Insert
+import android.arch.persistence.room.OnConflictStrategy
+import android.arch.persistence.room.Query
+import android.arch.persistence.room.Update
 
 @Dao
-public interface EarthquakeDbDao {
+interface EarthquakeDbDao {
 
     //----------------------------------------------------------------------------------------------
     //  QUERY
     //----------------------------------------------------------------------------------------------
     // retrieve all the eqs
     @Query("SELECT * FROM EARTHQUAKE_LIST ")
-    LiveData<List<Earthquake>> loadAll();
+    fun loadAll(): LiveData<List<Earthquake>>
 
     @Query("SELECT * FROM EARTHQUAKE_LIST ")
-    List<Earthquake> loadAllNoLiveData();
+    fun loadAllNoLiveData(): List<Earthquake>
 
     // retrieve all the eqs order by desc magnitude
     @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY magnitude desc")
-    LiveData<List<Earthquake>> loadAll_orderby_desc_mag(double min_mag);
+    fun loadAll_orderby_desc_mag(min_mag: Double): LiveData<List<Earthquake>>
 
     // retrieve all the eqs order by asc magnitude
     @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY magnitude asc")
-    LiveData<List<Earthquake>> loadAll_orderby_asc_mag(double min_mag);
+    fun loadAll_orderby_asc_mag(min_mag: Double): LiveData<List<Earthquake>>
 
     // retrieve all the eqs order by min magnitude
     @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag")
-    LiveData<List<Earthquake>> loadAll_orderby_min_mag(double min_mag);
+    fun loadAll_orderby_min_mag(min_mag: Double): LiveData<List<Earthquake>>
 
     // retrieve all the eqs order by most recent (time desc)
     @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY timeInMillisec desc")
-    LiveData<List<Earthquake>> loadAll_orderby_most_recent(double min_mag);
+    fun loadAll_orderby_most_recent(min_mag: Double): LiveData<List<Earthquake>>
 
     // retrieve all the eqs order by oldest (time asc)
     @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY timeInMillisec asc")
-    LiveData<List<Earthquake>> loadAll_orderby_oldest(double min_mag);
+    fun loadAll_orderby_oldest(min_mag: Double): LiveData<List<Earthquake>>
 
     // retrieve all the eqs order by nearest to user
     @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY userDistance asc")
-    LiveData<List<Earthquake>> loadAll_orderby_nearest(double min_mag);
+    fun loadAll_orderby_nearest(min_mag: Double): LiveData<List<Earthquake>>
 
     // retrieve all the eqs order by furthest to user
     @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY userDistance desc")
-    LiveData<List<Earthquake>> loadAll_orderby_furthest(double min_mag);
-
-
-
+    fun loadAll_orderby_furthest(min_mag: Double): LiveData<List<Earthquake>>
 
 
     //----------------------------------------------------------------------------------------------
     //  INSERT
     //----------------------------------------------------------------------------------------------
     @Insert
-    void insertEarthquake(Earthquake earthquake);
+    fun insertEarthquake(earthquake: Earthquake)
 
     // Insert all the earthquakes info get from restful at a new update
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void renewDataInsert(Earthquake... earthquake);
+    fun renewDataInsert(vararg earthquake: Earthquake)
 
 
     //----------------------------------------------------------------------------------------------
     //  UPDATE
     //----------------------------------------------------------------------------------------------
     @Query("UPDATE EARTHQUAKE_LIST SET userDistance =:new_distance WHERE id =:tid")
-    void updatedEqDistanceFromUser(int new_distance, int tid);
+    fun updatedEqDistanceFromUser(new_distance: Int, tid: Int)
 
     //----------------------------------------------------------------------------------------------
     //  DROP TABLE
     //----------------------------------------------------------------------------------------------
     // drop table : delete all table content each loading
     @Query("DELETE FROM EARTHQUAKE_LIST")
-    public void dropEarthquakeListTable();
+    fun dropEarthquakeListTable()
 }

@@ -9,7 +9,7 @@
 
 
     <include
-        android:id="@+id/filter_memo"
+        android:id="@+id/btn_filter_details"
         layout="@layout/filter_info"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -30,18 +30,18 @@
         android:divider="@color/textColorEarthquakeDetails"
         android:dividerHeight="1dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/adView"
+        app:layout_constraintBottom_toTopOf="@+id/mAdView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/filter_memo">
+        app:layout_constraintTop_toBottomOf="@+id/btn_filter_details">
 
     </android.support.v7.widget.RecyclerView>
 
     <!-- Empty view is only visible when the list has no items. -->
 
     <TextView
-        android:id="@+id/empty_view"
+        android:id="@+id/emptyListText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -57,7 +57,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
-        android:id="@+id/loading_spinner"
+        android:id="@+id/loadingInProgress"
         style="@style/Widget.AppCompat.ProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/info_filter_fb"
+        android:id="@+id/info_filter_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -76,25 +76,24 @@
         android:focusable="true"
         app:backgroundTint="@color/colorPrimary"
         app:fabSize="mini"
-        app:layout_constraintBottom_toTopOf="@+id/adView"
+        app:layout_constraintBottom_toTopOf="@+id/mAdView"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_info_outline_white_50dp" />
 
     <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/adView"
+        android:id="@+id/mAdView"
         android:layout_width="match_parent"
         android:layout_height="49dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:visibility="gone"
         ads:adSize="BANNER"
         ads:adUnitId="@string/admob_key_bottom_banner"
         ads:layout_constraintBottom_toBottomOf="parent"
         ads:layout_constraintEnd_toEndOf="parent"
         ads:layout_constraintHorizontal_bias="0.0"
-        ads:layout_constraintStart_toStartOf="parent"></com.google.android.gms.ads.AdView>
+        ads:layout_constraintStart_toStartOf="parent" />
 
 
 

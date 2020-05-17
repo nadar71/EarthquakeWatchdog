@@ -89,7 +89,7 @@ public class EarthquakeDbDao_test {
     @Test
     public void loadAll_orderby_desc_mag_test() throws Exception {
         Date today = new Date();
-        Long today_long = DateConverter.fromDate(today);
+        Long today_long = DateConverter.INSTANCE.fromDate(today);
 
         earthquakeDbDao.insertEarthquake(new Earthquake(6.0,"Nowhere",today_long,
                 "www.google.it",1.0,1.0,10.0, 100));
@@ -113,7 +113,7 @@ public class EarthquakeDbDao_test {
     @Test
     public void loadAll_orderby_asc_mag_test() throws Exception {
         Date today = new Date();
-        Long today_long = DateConverter.fromDate(today);
+        Long today_long = DateConverter.INSTANCE.fromDate(today);
 
         earthquakeDbDao.insertEarthquake(new Earthquake(6.0,"Nowhere",today_long,
                 "www.google.it",1.0,1.0,10.0, 100));
@@ -137,7 +137,7 @@ public class EarthquakeDbDao_test {
     @Test
     public void loadAll_orderby_min_mag_test() throws Exception {
         Date today = new Date();
-        Long today_long = DateConverter.fromDate(today);
+        Long today_long = DateConverter.INSTANCE.fromDate(today);
 
         earthquakeDbDao.insertEarthquake(new Earthquake(6.0,"Nowhere",today_long,
                 "www.google.it",1.0,1.0,10.0, 100));
@@ -162,13 +162,13 @@ public class EarthquakeDbDao_test {
     @Test
     public void loadAll_orderby_most_recent_test() throws Exception {
         Date today = new Date();
-        Date yesterday      = MyUtil.addDays(today,-1);
-        Date daysAgo_2       = MyUtil.addDays(today,-2);
-        Date daysAgo_3       = MyUtil.addDays(today,-3);
+        Date yesterday      = MyUtil.INSTANCE.addDays(today,-1);
+        Date daysAgo_2       = MyUtil.INSTANCE.addDays(today,-2);
+        Date daysAgo_3       = MyUtil.INSTANCE.addDays(today,-3);
 
-        Long today_long = DateConverter.fromDate(today);
-        Long daysAgo_2_long = DateConverter.fromDate(daysAgo_2);
-        Long daysAgo_3_long  = DateConverter.fromDate(daysAgo_3);
+        Long today_long = DateConverter.INSTANCE.fromDate(today);
+        Long daysAgo_2_long = DateConverter.INSTANCE.fromDate(daysAgo_2);
+        Long daysAgo_3_long  = DateConverter.INSTANCE.fromDate(daysAgo_3);
 
         earthquakeDbDao.insertEarthquake(new Earthquake(6.0,"Nowhere",today_long,
                 "www.google.it",1.0,1.0,10.0, 100));
@@ -191,13 +191,13 @@ public class EarthquakeDbDao_test {
     @Test
     public void loadAll_orderby_oldest_test() throws Exception {
         Date today = new Date();
-        Date yesterday      = MyUtil.addDays(today,-1);
-        Date daysAgo_2       = MyUtil.addDays(today,-2);
-        Date daysAgo_3       = MyUtil.addDays(today,-3);
+        Date yesterday      = MyUtil.INSTANCE.addDays(today,-1);
+        Date daysAgo_2       = MyUtil.INSTANCE.addDays(today,-2);
+        Date daysAgo_3       = MyUtil.INSTANCE.addDays(today,-3);
 
-        Long today_long = DateConverter.fromDate(today);
-        Long daysAgo_2_long = DateConverter.fromDate(daysAgo_2);
-        Long daysAgo_3_long  = DateConverter.fromDate(daysAgo_3);
+        Long today_long = DateConverter.INSTANCE.fromDate(today);
+        Long daysAgo_2_long = DateConverter.INSTANCE.fromDate(daysAgo_2);
+        Long daysAgo_3_long  = DateConverter.INSTANCE.fromDate(daysAgo_3);
 
         earthquakeDbDao.insertEarthquake(new Earthquake(6.0,"Nowhere",today_long,
                 "www.google.it",1.0,1.0,10.0, 100));
@@ -221,7 +221,7 @@ public class EarthquakeDbDao_test {
     @Test
     public void loadAll_orderby_nearest_test() throws Exception {
         Date today = new Date();
-        Long today_long = DateConverter.fromDate(today);
+        Long today_long = DateConverter.INSTANCE.fromDate(today);
 
         earthquakeDbDao.insertEarthquake(new Earthquake(6.0,"Nowhere",today_long,
                 "www.google.it",1.0,1.0,10.0, 100));
@@ -245,7 +245,7 @@ public class EarthquakeDbDao_test {
     @Test
     public void loadAll_orderby_furthest_test() throws Exception {
         Date today = new Date();
-        Long today_long = DateConverter.fromDate(today);
+        Long today_long = DateConverter.INSTANCE.fromDate(today);
 
         earthquakeDbDao.insertEarthquake(new Earthquake(6.0,"Nowhere",today_long,
                 "www.google.it",1.0,1.0,10.0, 100));
@@ -270,7 +270,7 @@ public class EarthquakeDbDao_test {
     @Test
     public void insertEarthquake_test() throws Exception {
         Date today = new Date();
-        Long today_long = DateConverter.fromDate(today);
+        Long today_long = DateConverter.INSTANCE.fromDate(today);
 
         earthquakeDbDao.insertEarthquake(new Earthquake(6.0,"Nowhere",today_long,
                 "www.google.it",1.0,1.0,10.0, 100));
@@ -284,7 +284,7 @@ public class EarthquakeDbDao_test {
     @Test
     public void renewDataInsert_test() throws Exception {
         Date today = new Date();
-        Long today_long = DateConverter.fromDate(today);
+        Long today_long = DateConverter.INSTANCE.fromDate(today);
         Earthquake eq_01 = new Earthquake(6.0,"Nowhere",today_long,
                 "www.google.it",1.0,1.0,10.0, 100);
         Earthquake eq_02 = new Earthquake(4.0,"Nowhere",today_long,
@@ -318,7 +318,7 @@ public class EarthquakeDbDao_test {
     @Test
     public void updatedEqDistanceFromUser_test() throws Exception {
         Date today = new Date();
-        Long today_long = DateConverter.fromDate(today);
+        Long today_long = DateConverter.INSTANCE.fromDate(today);
         Earthquake eq_01 = new Earthquake(6.0,"Nowhere",today_long,
                 "www.google.it",1.0,1.0,10.0, 100);
         Earthquake eq_02 = new Earthquake(4.0,"Nowhere",today_long,
@@ -359,7 +359,7 @@ public class EarthquakeDbDao_test {
     // Generate a dummy eq
     private Earthquake createEarthquake(){
         Date today = new Date();
-        Long today_long = DateConverter.fromDate(today);
+        Long today_long = DateConverter.INSTANCE.fromDate(today);
         return new Earthquake(2.0,"Nowhere",today_long,
                     "www.google.it",1.0,1.0,10.0, 100);
 

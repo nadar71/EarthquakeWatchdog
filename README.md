@@ -33,7 +33,7 @@ Check out it on [Google Play](https://play.google.com/store/apps/details?id=com.
 
 - feel it? get USGS aware with Feel it? link
 
-> <img src="/screenshots/screenshot_1.jpg" width="200"> <img src="/screenshots/screenshot_2.jpg" width="200"> <img src="/screenshots/screenshot_3.jpg" width="200"> <img src="/screenshots/screenshot_4.jpg" width="200"><img src="/screenshots/screenshot_5.jpg" width="200"><img src="/screenshots/screenshot_6.jpg" width="200">
+> <img src="/screenshots/1.png" width="200"> <img src="/screenshots/2.png" width="200"> <img src="/screenshots/3.png" width="200"> <img src="/screenshots/4.png" width="200"><img src="/screenshots/5.png" width="200"><img src="/screenshots/6.png" width="200">
 
 
 
