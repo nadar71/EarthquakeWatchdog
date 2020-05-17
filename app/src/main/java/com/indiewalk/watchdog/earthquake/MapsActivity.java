@@ -185,6 +185,9 @@ public class MapsActivity extends AppCompatActivity
         if (mFusedLocationClient != null) {
             mFusedLocationClient.removeLocationUpdates(mLocationCallback);
         }
+
+        // dialog dismiss to avoid leaked windows pb
+        if (dialog != null) dialog.dismiss();
     }
 
     /**
