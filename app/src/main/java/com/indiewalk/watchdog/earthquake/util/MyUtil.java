@@ -472,4 +472,21 @@ public class MyUtil {
     }
 
 
+
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * Add a day in ol Date format
+     * @param date
+     * @return
+     * ---------------------------------------------------------------------------------------------
+     */
+    public static Date addDays(Date date, int numDays) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, numDays);
+        return cal.getTime();
+    }
+
+
 }

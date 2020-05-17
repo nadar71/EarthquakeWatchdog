@@ -28,7 +28,6 @@ public class SettingSimpleActivity extends AppCompatActivity {
 
     public static final String TAG = SettingSimpleActivity.class.getName();
 
-    // admob banner ref
     private AdView mAdView;
 
 
@@ -37,11 +36,10 @@ public class SettingSimpleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_simple);
 
-        // load ads banner
+        /* ADMOB DELETED
         mAdView = findViewById(R.id.adView);
-
-        // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
         mAdView.loadAd(ConsentSDK.getAdRequest(SettingSimpleActivity.this));
+         */
 
 
     }
@@ -55,7 +53,7 @@ public class SettingSimpleActivity extends AppCompatActivity {
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            // show and keep update the preferences
+            // show and keep updated the preferences
             addPreferencesFromResource(R.xml.settings_simple_main);
 
             // get preference Screen reference
@@ -72,11 +70,6 @@ public class SettingSimpleActivity extends AppCompatActivity {
             Preference minMagnitude = findPreference(getString(R.string.settings_min_magnitude_key));
             bindPreferenceSummaryToValue(minMagnitude);
 
-            // TODO : must delete this part
-            /*
-            Preference maxEquakesNum = findPreference(getString(R.string.settings_max_equakes_key));
-            bindPreferenceSummaryToValue(maxEquakesNum);
-            */
 
             Preference dateFilter = findPreference(getString(R.string.settings_date_filter_key));
             bindPreferenceSummaryToValue(dateFilter);
@@ -86,10 +79,10 @@ public class SettingSimpleActivity extends AppCompatActivity {
             bindPreferenceSummaryToValue(manualLoc);
             */
 
-            // gdprConsentBtn = findViewById(R.id.gdpr_withdraw_btn);
             Preference gdprConsentBtn = findPreference(getString(R.string.gdpr_btn_key));
             Preference faqBtn         = findPreference(getString(R.string.faq_btn_key));
 
+            /* ADMOB DELETED
             // Initialize ConsentSDK
             initConsentSDK(getActivity());
 
@@ -101,10 +94,8 @@ public class SettingSimpleActivity extends AppCompatActivity {
                 gdprConsentBtn.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                     @Override
                     public boolean onPreferenceClick(Preference preference) {
-                        // Check Consent SDK
-                        // Request the consent without callback
-                        // consentSDK.requestConsent(null);
-                        //To get the result of the consent
+                        // Check Consent SDK:Request the consent without callback
+                        // consentSDK.requestConsent(null); to get the result of the consent
                         consentSDK.requestConsent(new ConsentSDK.ConsentStatusCallback() {
                             @Override
                             public void onResult(boolean isRequestLocationInEeaOrUnknown, int isConsentPersonalized) {
@@ -129,12 +120,13 @@ public class SettingSimpleActivity extends AppCompatActivity {
                 });
 
             } else {
-                preferenceScreen.removePreference(gdprConsentBtn);;
+                preferenceScreen.removePreference(gdprConsentBtn);
             }
+             */
+            preferenceScreen.removePreference(gdprConsentBtn);
 
 
 
-            // Faq button
             faqBtn.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
@@ -191,7 +183,7 @@ public class SettingSimpleActivity extends AppCompatActivity {
 
         /**
          * -----------------------------------------------------------------------------------------
-         * Initialize consent
+         * Init consent
          * @param context
          * -----------------------------------------------------------------------------------------
          */

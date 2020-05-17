@@ -39,7 +39,6 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
     private String locationOffset ;
 
     private double magnitude;
-    private int    magnitudeColor;
 
     private String dist_unit;
 
@@ -99,15 +98,15 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
         // set proper image color for magnitude
         holder.magnitudeView.setBackground(MyUtil.getMagnitudeImg(magnitude, context));
 
-        // display locations formatted using {@link extractLocations}
+        // display locations formatted
         extractLocations(currentEartquakeItem.getLocation());
         holder.locationOffsetView.setText(locationOffset);
         holder.primaryLocationView.setText(primaryLocation );
 
-        // display date formatted using {@link formatDateFromMsec}
+        // display date formatted
         holder.dateView.setText(MyUtil.formatDateFromMsec(currentEartquakeItem.getTimeInMillisec()));
 
-        // display time formatted using {@link formatTimeFromMsec}
+        // display time formatted
         holder.timeView.setText(MyUtil.formatTimeFromMsec(currentEartquakeItem.getTimeInMillisec()));
 
         // set distance label based on user location type
@@ -136,8 +135,7 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
 
     /**
      * ----------------------------------------------------------------------------------
-     * Set data for RecycleView as earthquakesEntries list.
-     * Used by calling activity to init/update the adapter
+     * Init/update the adapter withearthquakesEntries
      * @param earthquakesEntries
      * ----------------------------------------------------------------------------------
      */
@@ -235,7 +233,8 @@ public class EarthquakeListAdapter extends RecyclerView.Adapter<EarthquakeListAd
      */
     private boolean checkPreferences() {
         // init shared preferences
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context.getApplicationContext());
 
         // set distance unit choosen
         dist_unit = sharedPreferences.getString(context.getString(R.string.settings_distance_unit_by_key),

@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 
 public class MainViewModelFactory extends ViewModelProvider.NewInstanceFactory{
 
-
         private final String listType;
 
         public MainViewModelFactory(String listType) {

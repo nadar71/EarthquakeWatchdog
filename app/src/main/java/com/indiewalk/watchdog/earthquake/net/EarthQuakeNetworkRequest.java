@@ -27,23 +27,22 @@ import java.util.ArrayList;
 
 public class EarthQuakeNetworkRequest {
 
-    // log tag definition
     private static final String TAG = EarthQuakeNetworkRequest.class.getName();
+
     // tmp data structure for returning results
     private ArrayList<Earthquake> earthquakes = null;
 
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Fetch data from remote service.
-     * Use createUrl, makeHttpRequest, extractFeatureFromJson
+     * Fetch data from remote service. Use createUrl, makeHttpRequest, extractFeatureFromJson
      * @param requestedUrl
      * @return ArrayList<Earthquake>
      * ---------------------------------------------------------------------------------------------
      */
     public ArrayList<Earthquake> fetchEarthquakeData(String requestedUrl){
 
-        //decomment  simulate network latency for debugging
+        //decomment for debug : simulate network latency
         /*
         try {
             Thread.sleep(2000);
@@ -59,7 +58,7 @@ public class EarthQuakeNetworkRequest {
             return null;
         }
 
-        // Perform HTTP request to the URL and receive a JSON response back
+        // HTTP request
         String jsonResponse = "";
         try {
             jsonResponse = makeHttpRequest(url);
@@ -68,7 +67,7 @@ public class EarthQuakeNetworkRequest {
         }
 
         Log.i(TAG, "fetchEarthquakeData: calling extractFeatureFromJson");
-        // Extract relevant fields from the JSON response and create an {@link Event} object
+
         if ( (jsonResponse != null) && (!jsonResponse.isEmpty()) && (jsonResponse != "")   ) {
             earthquakes = extractFeatureFromJson(jsonResponse);
             return earthquakes;
@@ -113,10 +112,8 @@ public class EarthQuakeNetworkRequest {
             int responseCode = checkHttpResponse(urlConnection);
             if (responseCode==200) {
                 urlConnection.connect();
-                // get byte input stream
-                inputStream = urlConnection.getInputStream();
-                // convert input stream to json
-                jsonResponse = readFromStream(inputStream);
+                inputStream = urlConnection.getInputStream(); // get byte input stream
+                jsonResponse = readFromStream(inputStream);   // convert input stream to json
                 Log.e(TAG, "Json Response : "+jsonResponse);
             }else{
                 Log.e(TAG, "Response code not 200 : "+responseCode);
@@ -129,7 +126,6 @@ public class EarthQuakeNetworkRequest {
                 urlConnection.disconnect();
             }
             if (inputStream != null) {
-                // function must handle java.io.IOException here
                 inputStream.close();
             }
         }
@@ -138,8 +134,7 @@ public class EarthQuakeNetworkRequest {
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Convert the {@link InputStream} into a String which contains the
-     * whole JSON response from the server.
+     * Convert the InputStream into a String whith whole JSON response
      * ---------------------------------------------------------------------------------------------
      */
     private String readFromStream(InputStream inputStream) throws IOException {
@@ -164,20 +159,17 @@ public class EarthQuakeNetworkRequest {
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Return a ArrayList of  {@link Earthquake} objects by parsing out information
-     * about the first earthquake from the input earthquakeJSON string.
-     *
      * Return the list of earthquake retrieved from remote
      * ---------------------------------------------------------------------------------------------
      */
     private ArrayList<Earthquake> extractFeatureFromJson(String earthquakeJSON) {
-        // Create an empty ArrayList that we can start adding earthquakes to
+        // Empty ArrayList for return data
         earthquakes = new ArrayList<>();
 
         // Try to parse earthquakeJSON
         try {
 
-            // build up a list of Earthquake objects (from json "features" array) with the corresponding data.
+            // Earthquake objects (from json "features" array)
             JSONObject jsonObject = new JSONObject(earthquakeJSON);
 
             JSONArray features    = jsonObject.getJSONArray("features");
@@ -216,13 +208,10 @@ public class EarthQuakeNetworkRequest {
 
 
         } catch (JSONException e) {
-            // If an error is thrown when executing any of the above statements in the "try" block,
-            // catch the exception here, so the app doesn't crash. Print a log message
-            // with the message from the exception.
             Log.e(TAG, "Problem parsing the earthquake JSON results", e);
         }
 
-        // Return the list of earthquakes
+
         return earthquakes;
     }
 

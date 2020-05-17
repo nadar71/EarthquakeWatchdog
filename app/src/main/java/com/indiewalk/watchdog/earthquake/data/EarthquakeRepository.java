@@ -11,6 +11,7 @@ import com.indiewalk.watchdog.earthquake.util.AppExecutors;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 public class EarthquakeRepository {
 
@@ -58,6 +59,13 @@ public class EarthquakeRepository {
             );
         });
 
+
+    }
+
+
+
+    public void setExecutors(AppExecutors executors){
+        this.executors = executors;
 
     }
 
@@ -112,7 +120,7 @@ public class EarthquakeRepository {
      * immediate sync is required, this method will take care of making sure that sync occurs.
      * ---------------------------------------------------------------------------------------------
      */
-    private synchronized void initializeData() {
+    public synchronized void initializeData() {
 
         // Db data initialized check : at every app start
         if (mInitialized) {
@@ -131,7 +139,8 @@ public class EarthquakeRepository {
         executors.diskIO().execute(()->{
             if (MyUtil.isConnectionOk()) {
                 if(isRequestDataNeeded()){
-                    Log.d(TAG, "initializeData: isFetchNeeded == true, run the intent from fetching data from remote");
+                    Log.d(TAG, "initializeData: isFetchNeeded == true, " +
+                            "run the intent from fetching data from remote");
                     startFetchEarthquakeService();
                 }
             } else {
@@ -214,8 +223,6 @@ public class EarthquakeRepository {
         initializeData();
         return eqDb.earthquakeDbDao().loadAll_orderby_furthest(min_mag);
     }
-
-
 
 
 

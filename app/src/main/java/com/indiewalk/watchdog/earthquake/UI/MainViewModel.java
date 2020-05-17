@@ -17,30 +17,25 @@ import java.util.List;
 
 public class MainViewModel extends ViewModel {
 
-    // tag for logging
     private static final String TAG = MainViewModel.class.getSimpleName();
 
 
-    // Livedata var on Earthquake List to populate through ViewModel
+    // Livedata on Earthquakes List to be populated by ViewModel
     private LiveData<List<Earthquake>> earthquakesEntries;
 
     // Livedata var on Earthquake obj to populate through ViewModel
     // ** not used for the moment
     private LiveData<Earthquake> earthquakeSingleEntry;
 
-    // repository ref
     private EarthquakeRepository eqRepository;
 
 
-    // Preferences value
-    private String minMagnitude;
+
 
     private static Context context;
 
-    // SharePreferences ref
     private SharedPreferences sharedPreferences;
-
-    // min mgnitudine value
+    private String minMagnitude;
     private double dMinMagnitude;
 
 
@@ -83,12 +78,12 @@ public class MainViewModel extends ViewModel {
         dMinMagnitude = Double.parseDouble(minMagnitude);
 
 
-        // choose the type of food list to load from db
+        // choose the type of Earthquakes list to load from db
         if (listType.equals(MainActivityEarthquakesList.ORDER_BY_DESC_MAGNITUDE)) {
             Log.d(TAG, "setupAdapter: ORDER_BY_DESC_MAGNITUDE : " + listType);
             earthquakesEntries = eqRepository.loadAll_orderby_desc_mag(dMinMagnitude);
 
-        }if (listType.equals(MainActivityEarthquakesList.ORDER_BY_ASC_MAGNITUDE)) {
+        }else if (listType.equals(MainActivityEarthquakesList.ORDER_BY_ASC_MAGNITUDE)) {
             Log.d(TAG, "setupAdapter: ORDER_BY_ASC_MAGNITUDE : " + listType);
             earthquakesEntries = eqRepository.loadAll_orderby_asc_mag(dMinMagnitude);
 
@@ -117,7 +112,7 @@ public class MainViewModel extends ViewModel {
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * Getter for LiveData<List<FoodEntry>> list
+     * Getter for LiveData<List<Earthquake>> list
      * @return
      * ---------------------------------------------------------------------------------------------
      */
@@ -158,7 +153,7 @@ public class MainViewModel extends ViewModel {
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        // minMagnitude safe
+        // minMagnitude for safe
         if (minMagnitude.isEmpty() || minMagnitude == null) {
             setMinMagDefault(editor);
         }

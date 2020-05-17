@@ -81,10 +81,8 @@ public class MapsActivity extends AppCompatActivity
 
     Context context = MapsActivity.this;
 
-    // Map references
     GoogleMap           mGoogleMap;
 
-    // Map frag
     SupportMapFragment  mapFrag;
 
     // Device location req references
@@ -113,7 +111,6 @@ public class MapsActivity extends AppCompatActivity
     // searching location progress dialog
     ProgressDialog dialog;
 
-    // SharedPrefences ref actvity global
     SharedPreferences sharedPreferences;
 
     // Manual Localization flag
@@ -125,7 +122,6 @@ public class MapsActivity extends AppCompatActivity
     // User location coords
     String lat_s, lng_s;
 
-    // admob banner ref
     private AdView mAdView;
 
 
@@ -140,10 +136,7 @@ public class MapsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        // load ads banner
         mAdView = findViewById(R.id.adView);
-
-        // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
         mAdView.loadAd(ConsentSDK.getAdRequest(MapsActivity.this));
 
 
