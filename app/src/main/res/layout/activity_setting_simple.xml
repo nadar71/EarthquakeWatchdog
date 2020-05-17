@@ -25,8 +25,6 @@
     </fragment>
 
 
-
-
     <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
         android:id="@+id/mAdView"
         android:layout_width="match_parent"
@@ -41,7 +39,7 @@
         ads:adUnitId="@string/admob_key_bottom_banner"
         ads:layout_constraintBottom_toBottomOf="parent"
         ads:layout_constraintEnd_toEndOf="parent"
-        ads:layout_constraintStart_toStartOf="parent"></com.google.android.gms.ads.AdView>
+        ads:layout_constraintStart_toStartOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>

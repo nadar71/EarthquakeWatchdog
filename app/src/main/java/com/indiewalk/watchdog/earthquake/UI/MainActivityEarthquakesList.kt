@@ -126,6 +126,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
     override fun onStart() {
         super.onStart()
 
+
         checkConsentActive = consentSDKNeed
 
         if (checkConsentActive) {
@@ -181,6 +182,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
         }
 
 
+
     }
 
 
@@ -222,8 +224,8 @@ class MainActivityEarthquakesList : AppCompatActivity(),
     private fun setupActionBar() {
         val actionBar = supportActionBar
         actionBar!!.title = getString(R.string.title_reduced)
-        actionBar!!.setIcon(R.mipmap.ic_launcher)
-        actionBar!!.setDisplayShowHomeEnabled(true)
+        actionBar.setIcon(R.mipmap.ic_launcher)
+        actionBar.setDisplayShowHomeEnabled(true)
     }
 
 
