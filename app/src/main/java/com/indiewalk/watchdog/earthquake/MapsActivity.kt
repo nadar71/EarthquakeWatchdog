@@ -101,7 +101,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     internal var eqRepository: EarthquakeRepository? = null
 
     // searching location progress dialog
-    internal lateinit var dialog: ProgressDialog
+    internal var dialog: ProgressDialog? = null
 
     // SharedPrefences ref actvity global
     internal lateinit var sharedPreferences: SharedPreferences
@@ -158,7 +158,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 eqRepository!!.updatedAllEqsDistFromUser(equakes_no_live, context)
 
                 // stop progress bar
-                dialog.dismiss()
+                dialog?.let{it.dismiss()}
 
                 // zoom on a particular equake if request came from main activity
                 zoomOnEquake()
@@ -228,6 +228,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         if (mFusedLocationClient != null) {
             mFusedLocationClient!!.removeLocationUpdates(mLocationCallback)
         }
+
+        // avoid leaked window problem
+        dialog?.let{it.dismiss()}
     }
 
     /**
@@ -241,8 +244,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Start your GPS Reading progress bar
         dialog = ProgressDialog(this)
-        dialog.setMessage("Please wait!")
-        dialog.show()
+        dialog?.let{it.setMessage("Please wait!"); it.show()}
     }
 
 
@@ -733,7 +735,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 } else {
 
                     // stop progress bar
-                    dialog.dismiss()
+                    dialog?.let{it.dismiss()}
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
@@ -777,7 +779,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 3 -> mGoogleMap.mapType = GoogleMap.MAP_TYPE_HYBRID
                 else -> mGoogleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
             }
-            dialog.dismiss()
+            dialog?.let{it.dismiss()}
         }
 
         // Build the dialog and show it.
