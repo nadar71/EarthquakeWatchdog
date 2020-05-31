@@ -17,7 +17,7 @@
 <!-- THIS APP REAL AdMob banner ID:  -->
 
 <string name="admob_key_bottom_banner" templateMergeStrategy="preserve" translatable="false">
-        ca-app-pub-8846176967909254/3114773807</string>
+        ca-app-pub-3940256099942544/6300978111</string>
 
 
 </resources>
