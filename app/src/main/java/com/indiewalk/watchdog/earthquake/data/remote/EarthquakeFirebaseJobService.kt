@@ -1,10 +1,10 @@
-package com.indiewalk.watchdog.earthquake.net
+package com.indiewalk.watchdog.earthquake.data.remote
 
 import android.util.Log
 
 import com.firebase.jobdispatcher.JobParameters
 import com.firebase.jobdispatcher.JobService
-import com.indiewalk.watchdog.earthquake.SingletonProvider
+import com.indiewalk.watchdog.earthquake.AppEarthquake
 
 
 class EarthquakeFirebaseJobService : JobService() {
@@ -19,7 +19,7 @@ class EarthquakeFirebaseJobService : JobService() {
     override fun onStartJob(jobParameters: JobParameters): Boolean {
         Log.d(TAG, "Earthquake remote fetching Job service started")
 
-        val networkDataSource = (SingletonProvider.getsContext() as SingletonProvider).networkDatasource
+        val networkDataSource = (AppEarthquake.getsContext() as AppEarthquake).networkDatasource
 
 
         networkDataSource?.startFetchEarthquakeService()

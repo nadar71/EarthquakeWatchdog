@@ -1,19 +1,17 @@
-package com.indiewalk.watchdog.earthquake.net
+package com.indiewalk.watchdog.earthquake.data.remote
 
-import android.app.IntentService
-import android.app.Notification
 import android.content.Context
 import android.content.Intent
 import android.support.v4.app.JobIntentService
 
-import com.indiewalk.watchdog.earthquake.SingletonProvider
+import com.indiewalk.watchdog.earthquake.AppEarthquake
 
 
 class EarthquakeSyncIntentService : JobIntentService() { // JobIntentService need for issue : #92
 
     override fun onHandleWork(intent: Intent) {
         // inject the network data source for using its fetching remote data method
-        val networkDataSource = (SingletonProvider.getsContext() as SingletonProvider).networkDatasource
+        val networkDataSource = (AppEarthquake.getsContext() as AppEarthquake).networkDatasource
         networkDataSource?.fetchEarthquakeWrapper()
     }
 

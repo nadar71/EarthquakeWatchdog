@@ -2,13 +2,10 @@ package com.indiewalk.watchdog.earthquake.util
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import android.net.Uri
 import android.os.Build
 import android.preference.PreferenceManager
@@ -23,14 +20,11 @@ import android.view.View
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.SingletonProvider
-import com.indiewalk.watchdog.earthquake.UI.MainActivityEarthquakesList
-import com.indiewalk.watchdog.earthquake.data.Earthquake
-import com.indiewalk.watchdog.earthquake.net.EarthquakeFirebaseJobService
+import com.indiewalk.watchdog.earthquake.AppEarthquake
+import com.indiewalk.watchdog.earthquake.ui.MainActivityEarthquakesList
+import com.indiewalk.watchdog.earthquake.data.model.Earthquake
 
-import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.ArrayList
 import java.util.Date
 import java.util.Calendar
 
@@ -53,7 +47,7 @@ object MyUtil {
     // network status retrieving
     val isConnectionOk: Boolean
         get() {
-            val connManager = (SingletonProvider.getsContext() as SingletonProvider)
+            val connManager = (AppEarthquake.getsContext() as AppEarthquake)
                     .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val netinfo = connManager.activeNetworkInfo
             if (netinfo != null && netinfo.isConnected) {

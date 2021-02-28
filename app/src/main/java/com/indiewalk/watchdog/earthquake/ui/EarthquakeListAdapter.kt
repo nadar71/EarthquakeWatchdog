@@ -1,8 +1,7 @@
-package com.indiewalk.watchdog.earthquake.UI
+package com.indiewalk.watchdog.earthquake.ui
 
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -12,10 +11,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.SingletonProvider
-import com.indiewalk.watchdog.earthquake.data.Earthquake
+import com.indiewalk.watchdog.earthquake.AppEarthquake
+import com.indiewalk.watchdog.earthquake.data.model.Earthquake
 import com.indiewalk.watchdog.earthquake.data.EarthquakeRepository
-import com.indiewalk.watchdog.earthquake.UI.MainActivityEarthquakesList
 import com.indiewalk.watchdog.earthquake.util.MyUtil
 
 
@@ -55,7 +53,7 @@ class EarthquakeListAdapter
         // set preferred distance unit
         checkPreferences()
 
-        repository = (SingletonProvider.getsContext() as SingletonProvider).repositoryWithDataSource
+        repository = (AppEarthquake.getsContext() as AppEarthquake).repositoryWithDataSource
     }
 
 

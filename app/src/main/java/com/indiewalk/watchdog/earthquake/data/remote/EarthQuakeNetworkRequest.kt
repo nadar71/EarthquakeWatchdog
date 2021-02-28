@@ -1,10 +1,9 @@
-package com.indiewalk.watchdog.earthquake.net
+package com.indiewalk.watchdog.earthquake.data.remote
 
 import android.util.Log
 
-import com.indiewalk.watchdog.earthquake.data.Earthquake
+import com.indiewalk.watchdog.earthquake.data.model.Earthquake
 
-import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 

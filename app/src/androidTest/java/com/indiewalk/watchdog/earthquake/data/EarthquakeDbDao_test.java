@@ -19,6 +19,10 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.indiewalk.watchdog.earthquake.data.local.DateConverter;
+import com.indiewalk.watchdog.earthquake.data.local.EarthquakeDatabase;
+import com.indiewalk.watchdog.earthquake.data.local.EarthquakeDbDao;
+import com.indiewalk.watchdog.earthquake.data.model.Earthquake;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
 import static org.junit.Assert.assertEquals;

@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.data
+package com.indiewalk.watchdog.earthquake.data.local
 
 import android.arch.persistence.db.SupportSQLiteDatabase
 import android.arch.persistence.room.Database
@@ -8,6 +8,7 @@ import android.arch.persistence.room.TypeConverters
 import android.arch.persistence.room.migration.Migration
 import android.content.Context
 import android.util.Log
+import com.indiewalk.watchdog.earthquake.data.model.Earthquake
 
 
 @Database(entities = [Earthquake::class], version = 4, exportSchema = false)
@@ -44,7 +45,7 @@ abstract class EarthquakeDatabase : RoomDatabase() {
             if (eqDbInstance == null) {
                 synchronized(LOCK) {
                     Log.d(TAG, "Creating App db singleton instance...")
-                    eqDbInstance = Room.databaseBuilder(context.applicationContext, EarthquakeDatabase::class.java, EarthquakeDatabase.DBNAME)
+                    eqDbInstance = Room.databaseBuilder(context.applicationContext, EarthquakeDatabase::class.java, DBNAME)
                             // .allowMainThreadQueries()
                             .addMigrations(MIGRATION_2_3)
                             .addMigrations(MIGRATION_3_4)

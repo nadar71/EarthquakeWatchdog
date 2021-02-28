@@ -1,11 +1,11 @@
-package com.indiewalk.watchdog.earthquake.net
+package com.indiewalk.watchdog.earthquake.data.remote
 
 import android.content.AsyncTaskLoader
 import android.content.Context
 import android.util.Log
 
-import com.indiewalk.watchdog.earthquake.data.Earthquake
-import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase
+import com.indiewalk.watchdog.earthquake.data.model.Earthquake
+import com.indiewalk.watchdog.earthquake.data.local.EarthquakeDatabase
 import com.indiewalk.watchdog.earthquake.util.MyUtil
 
 import java.util.ArrayList

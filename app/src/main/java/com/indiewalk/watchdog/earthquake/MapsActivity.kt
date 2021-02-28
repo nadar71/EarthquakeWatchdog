@@ -33,7 +33,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 
-import com.google.android.gms.ads.AdView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -48,12 +47,11 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.indiewalk.watchdog.earthquake.UI.MainActivityEarthquakesList
-import com.indiewalk.watchdog.earthquake.UI.MainViewModel
-import com.indiewalk.watchdog.earthquake.UI.MainViewModelFactory
-import com.indiewalk.watchdog.earthquake.data.Earthquake
+import com.indiewalk.watchdog.earthquake.ui.MainActivityEarthquakesList
+import com.indiewalk.watchdog.earthquake.ui.MainViewModel
+import com.indiewalk.watchdog.earthquake.ui.MainViewModelFactory
+import com.indiewalk.watchdog.earthquake.data.model.Earthquake
 import com.indiewalk.watchdog.earthquake.data.EarthquakeRepository
-import com.indiewalk.watchdog.earthquake.util.ConsentSDK
 import com.indiewalk.watchdog.earthquake.util.MyUtil
 import kotlinx.android.synthetic.main.main_activity_earthquakes_list.*
 
@@ -209,7 +207,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         // get repo. For issue #96,97 do not use getRepository()
-        eqRepository = (SingletonProvider.getsContext() as SingletonProvider)
+        eqRepository = (AppEarthquake.getsContext() as AppEarthquake)
                 .repositoryWithDataSource
 
     }

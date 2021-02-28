@@ -1,13 +1,15 @@
 package com.indiewalk.watchdog.earthquake.data;
 
 import android.content.Context;
-import android.util.Log;
 
 
+import com.indiewalk.watchdog.earthquake.data.local.DateConverter;
+import com.indiewalk.watchdog.earthquake.data.local.EarthquakeDatabase;
+import com.indiewalk.watchdog.earthquake.data.local.EarthquakeDbDao;
+import com.indiewalk.watchdog.earthquake.data.model.Earthquake;
 import com.indiewalk.watchdog.earthquake.util.AppExecutors;
 import com.indiewalk.watchdog.earthquake.util.MyUtil;
 
-import org.apache.tools.ant.taskdefs.Ear;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,13 +17,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;

@@ -20,14 +20,14 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
-        android:name=".SingletonProvider"
+        android:name=".AppEarthquake"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".UI.MainActivityEarthquakesList"
+            android:name=".ui.MainActivityEarthquakesList"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,13 +41,13 @@
             android:value="@string/admob_key_app_id" />
 
         <activity
-            android:name=".UI.SettingSimpleActivity"
+            android:name=".ui.SettingSimpleActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".UI.MainActivityEarthquakesList"
+            android:parentActivityName=".ui.MainActivityEarthquakesList"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.indiewalk.watchdog.earthquake.UI.MainActivityEarthquakesList" />
+                android:value="com.indiewalk.watchdog.earthquake.ui.MainActivityEarthquakesList" />
         </activity>
         <!--
         <meta-data
@@ -78,15 +78,15 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_my_position"
             android:screenOrientation="portrait" />
-        <activity android:name=".UI.FaqActivity" />
+        <activity android:name=".ui.FaqActivity" />
 
         <service
-            android:name=".net.EarthquakeSyncIntentService"
+            android:name=".data.remote.EarthquakeSyncIntentService"
             android:permission="android.permission.BIND_JOB_SERVICE"
             android:exported="false" />
 
         <service
-            android:name=".net.EarthquakeFirebaseJobService"
+            android:name=".data.remote.EarthquakeFirebaseJobService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />

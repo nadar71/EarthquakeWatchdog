@@ -1,12 +1,13 @@
 package com.indiewalk.watchdog.earthquake.data
 
 import android.arch.lifecycle.LiveData
-import android.arch.persistence.room.Query
 import android.content.Context
 import android.util.Log
 
-import com.indiewalk.watchdog.earthquake.SingletonProvider
-import com.indiewalk.watchdog.earthquake.net.EarthquakeNetworkDataSource
+import com.indiewalk.watchdog.earthquake.AppEarthquake
+import com.indiewalk.watchdog.earthquake.data.local.EarthquakeDatabase
+import com.indiewalk.watchdog.earthquake.data.model.Earthquake
+import com.indiewalk.watchdog.earthquake.data.remote.EarthquakeNetworkDataSource
 import com.indiewalk.watchdog.earthquake.util.AppExecutors
 import com.indiewalk.watchdog.earthquake.util.MyUtil
 
@@ -65,7 +66,7 @@ class EarthquakeRepository {
 
                 // update with distance from user, distance unit each earthquake
                 MyUtil.setEqDistanceFromCurrentCoords(newEqFromNetwork,
-                        SingletonProvider.getsContext() as SingletonProvider)
+                        AppEarthquake.getsContext() as AppEarthquake)
 
                 if (newEqFromNetwork != null) {
                     eqDb.earthquakeDbDao().renewDataInsert(*newEqFromNetwork)

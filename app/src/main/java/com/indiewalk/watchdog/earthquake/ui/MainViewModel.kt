@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.UI
+package com.indiewalk.watchdog.earthquake.ui
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.ViewModel
@@ -8,10 +8,9 @@ import android.preference.PreferenceManager
 import android.util.Log
 
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.SingletonProvider
-import com.indiewalk.watchdog.earthquake.data.Earthquake
+import com.indiewalk.watchdog.earthquake.AppEarthquake
+import com.indiewalk.watchdog.earthquake.data.model.Earthquake
 import com.indiewalk.watchdog.earthquake.data.EarthquakeRepository
-import com.indiewalk.watchdog.earthquake.UI.MainActivityEarthquakesList
 
 class MainViewModel : ViewModel {
 
@@ -50,10 +49,10 @@ class MainViewModel : ViewModel {
      * ---------------------------------------------------------------------------------------------
      */
     constructor() {
-        context = SingletonProvider.getsContext() as SingletonProvider?
+        context = AppEarthquake.getsContext() as AppEarthquake?
 
         // init repository
-        eqRepository = (SingletonProvider.getsContext() as SingletonProvider).repository
+        eqRepository = (AppEarthquake.getsContext() as AppEarthquake).repository
         eqList = eqRepository!!.earthquakesList
 
         // init shared preferences
@@ -71,11 +70,11 @@ class MainViewModel : ViewModel {
     constructor(listType: String) {
         Log.d(TAG, "Actively retrieving the collections from repository")
 
-        context = SingletonProvider.getsContext() as SingletonProvider?
+        context = AppEarthquake.getsContext() as AppEarthquake?
 
         // get repository instance
-        // eqRepository = ((SingletonProvider) SingletonProvider.getsContext()).getRepository();
-        eqRepository = (SingletonProvider.getsContext() as SingletonProvider).repositoryWithDataSource
+        // eqRepository = ((AppEarthquake) AppEarthquake.getsContext()).getRepository();
+        eqRepository = (AppEarthquake.getsContext() as AppEarthquake).repositoryWithDataSource
 
         // init shared preferences and get value
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)

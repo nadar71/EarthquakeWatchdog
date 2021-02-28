@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.data
+package com.indiewalk.watchdog.earthquake.data.local
 
 import android.arch.persistence.room.TypeConverter
 import android.util.Log

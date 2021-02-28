@@ -2,12 +2,11 @@ package com.indiewalk.watchdog.earthquake
 
 
 import android.support.test.espresso.intent.Intents
-import android.support.test.filters.LargeTest
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 
-import com.indiewalk.watchdog.earthquake.UI.MainActivityEarthquakesList
-import com.indiewalk.watchdog.earthquake.UI.SettingSimpleActivity
+import com.indiewalk.watchdog.earthquake.ui.MainActivityEarthquakesList
+import com.indiewalk.watchdog.earthquake.ui.SettingSimpleActivity
 
 import org.junit.Before
 import org.junit.Rule

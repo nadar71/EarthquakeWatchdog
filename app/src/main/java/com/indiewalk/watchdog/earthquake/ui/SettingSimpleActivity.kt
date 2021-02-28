@@ -1,19 +1,16 @@
-package com.indiewalk.watchdog.earthquake.UI
+package com.indiewalk.watchdog.earthquake.ui
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.preference.ListPreference
 import android.preference.Preference
 import android.preference.PreferenceFragment
 import android.preference.PreferenceManager
-import android.preference.PreferenceScreen
 import android.support.v7.app.AppCompatActivity
 // import android.support.v7.preference.PreferenceFragmentCompat;
 import android.os.Bundle
 import android.util.Log
 
-import com.google.android.gms.ads.AdView
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.util.ConsentSDK
 import kotlinx.android.synthetic.main.activity_setting_simple.*

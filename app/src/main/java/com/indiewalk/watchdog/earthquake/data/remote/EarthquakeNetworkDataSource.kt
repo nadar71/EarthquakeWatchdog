@@ -1,25 +1,20 @@
-package com.indiewalk.watchdog.earthquake.net
+package com.indiewalk.watchdog.earthquake.data.remote
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.os.Build
 import android.preference.PreferenceManager
-import android.support.v4.app.JobIntentService
-import android.support.v4.content.ContextCompat
 import android.util.Log
 
 import com.firebase.jobdispatcher.Constraint
-import com.firebase.jobdispatcher.Driver
 import com.firebase.jobdispatcher.FirebaseJobDispatcher
 import com.firebase.jobdispatcher.GooglePlayDriver
-import com.firebase.jobdispatcher.Job
 import com.firebase.jobdispatcher.Lifetime
 import com.firebase.jobdispatcher.Trigger
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.data.Earthquake
+import com.indiewalk.watchdog.earthquake.data.model.Earthquake
 import com.indiewalk.watchdog.earthquake.util.AppExecutors
 import com.indiewalk.watchdog.earthquake.util.MyUtil
 

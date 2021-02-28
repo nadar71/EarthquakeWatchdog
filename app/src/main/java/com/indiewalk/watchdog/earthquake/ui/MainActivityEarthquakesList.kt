@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.UI
+package com.indiewalk.watchdog.earthquake.ui
 
 import android.app.AlertDialog
 import android.app.LoaderManager
@@ -20,17 +20,15 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.ProgressBar
 import android.widget.Spinner
-import android.widget.TextView
 import android.widget.Toast
 
 
 import com.google.android.gms.ads.AdListener
 import com.indiewalk.watchdog.earthquake.MapsActivity
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.data.Earthquake
-import com.indiewalk.watchdog.earthquake.net.EarthquakeAsyncLoader
+import com.indiewalk.watchdog.earthquake.data.model.Earthquake
+import com.indiewalk.watchdog.earthquake.data.remote.EarthquakeAsyncLoader
 import com.indiewalk.watchdog.earthquake.util.ConsentSDK
 import com.indiewalk.watchdog.earthquake.util.MyUtil
 
@@ -38,7 +36,6 @@ import java.util.ArrayList
 import java.util.Arrays
 
 import android.support.v7.widget.DividerItemDecoration.VERTICAL
-import android.support.design.widget.FloatingActionButton
 import kotlinx.android.synthetic.main.filter_info.*
 import kotlinx.android.synthetic.main.main_activity_earthquakes_list.*
 import kotlinx.android.synthetic.main.main_activity_earthquakes_list.btn_filter_details
@@ -382,8 +379,6 @@ class MainActivityEarthquakesList : AppCompatActivity(),
      * ---------------------------------------------------------------------------------------------
      */
     private fun checkPreferences() {
-
-
         // get coords from preferences
         lat_s = sharedPreferences.getString(getString(R.string.device_lat), java.lang.Double.toString(DEFAULT_LAT))
         lng_s = sharedPreferences.getString(getString(R.string.device_lng), java.lang.Double.toString(DEFAULT_LNG))
@@ -760,6 +755,8 @@ class MainActivityEarthquakesList : AppCompatActivity(),
 
         if (MyUtil.isConnectionOk) {
             showLoading()
+
+            // TODO : change to coroutine call
             // LoaderManager reference
             val loaderManager = loaderManager
             // Init loader : id above, bundle = null , this= current activity for LoaderCallbacks
