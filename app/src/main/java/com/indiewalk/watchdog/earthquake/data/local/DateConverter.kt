@@ -1,6 +1,6 @@
 package com.indiewalk.watchdog.earthquake.data.local
 
-import android.arch.persistence.room.TypeConverter
+import androidx.room.TypeConverter
 import android.util.Log
 
 import java.util.Date

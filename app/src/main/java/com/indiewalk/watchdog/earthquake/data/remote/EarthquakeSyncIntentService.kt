@@ -2,7 +2,7 @@ package com.indiewalk.watchdog.earthquake.data.remote
 
 import android.content.Context
 import android.content.Intent
-import android.support.v4.app.JobIntentService
+import androidx.core.app.JobIntentService
 
 import com.indiewalk.watchdog.earthquake.AppEarthquake
 

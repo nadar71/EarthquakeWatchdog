@@ -1,8 +1,8 @@
 package com.indiewalk.watchdog.earthquake.data;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
-import android.arch.persistence.room.Room;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.room.Room;
 
 import org.junit.After;
 import org.junit.Before;
@@ -16,8 +16,8 @@ import java.util.Date;
 import java.util.List;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.indiewalk.watchdog.earthquake.data.local.DateConverter;
 import com.indiewalk.watchdog.earthquake.data.local.EarthquakeDatabase;

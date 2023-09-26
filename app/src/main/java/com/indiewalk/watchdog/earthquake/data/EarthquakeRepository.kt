@@ -1,6 +1,6 @@
 package com.indiewalk.watchdog.earthquake.data
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import android.content.Context
 import android.util.Log
 

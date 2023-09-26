@@ -2,8 +2,8 @@ package com.indiewalk.watchdog.earthquake.ui
 
 import android.app.AlertDialog
 import android.app.LoaderManager
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.Loader
 import android.content.SharedPreferences

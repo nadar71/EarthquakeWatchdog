@@ -2,9 +2,9 @@ package com.indiewalk.watchdog.earthquake
 
 import android.Manifest
 import android.app.ProgressDialog
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -18,9 +18,9 @@ import android.os.Build
 import android.os.Looper
 import android.preference.PreferenceManager
 import android.provider.Settings
-import android.support.v4.app.ActivityCompat
+import androidx.core.app.ActivityCompat
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.text.Html
 import android.util.Log
