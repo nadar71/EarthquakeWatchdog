@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.data.model
+package com.indiewalk.watchdog.earthquake.domain.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

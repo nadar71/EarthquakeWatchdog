@@ -1,11 +1,11 @@
-package com.indiewalk.watchdog.earthquake.ui
+package com.indiewalk.watchdog.earthquake.presentation.ui
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.util.ConsentSDK
+import com.indiewalk.watchdog.earthquake.core.util.ConsentSDK
 import kotlinx.android.synthetic.main.activity_faq.*
 
 class FaqActivity : AppCompatActivity() {

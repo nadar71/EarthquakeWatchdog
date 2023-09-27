@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.ui
+package com.indiewalk.watchdog.earthquake.presentation.ui
 
 import android.app.AlertDialog
 import android.app.LoaderManager
@@ -27,10 +27,10 @@ import android.widget.Toast
 import com.google.android.gms.ads.AdListener
 import com.indiewalk.watchdog.earthquake.MapsActivity
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.data.model.Earthquake
+import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
 import com.indiewalk.watchdog.earthquake.data.remote.EarthquakeAsyncLoader
-import com.indiewalk.watchdog.earthquake.util.ConsentSDK
-import com.indiewalk.watchdog.earthquake.util.MyUtil
+import com.indiewalk.watchdog.earthquake.core.util.ConsentSDK
+import com.indiewalk.watchdog.earthquake.core.util.MyUtil
 
 import java.util.ArrayList
 import java.util.Arrays
@@ -44,7 +44,7 @@ import kotlinx.android.synthetic.main.main_activity_earthquakes_list.btn_filter_
 class MainActivityEarthquakesList : AppCompatActivity(),
         LoaderManager.LoaderCallbacks<List<Earthquake>>,
         SharedPreferences.OnSharedPreferenceChangeListener,
-        EarthquakeListAdapter.ItemClickListener {
+    EarthquakeListAdapter.ItemClickListener {
 
     private var lastUpdate: String? = ""
 
@@ -380,8 +380,12 @@ class MainActivityEarthquakesList : AppCompatActivity(),
      */
     private fun checkPreferences() {
         // get coords from preferences
-        lat_s = sharedPreferences.getString(getString(R.string.device_lat), java.lang.Double.toString(DEFAULT_LAT))
-        lng_s = sharedPreferences.getString(getString(R.string.device_lng), java.lang.Double.toString(DEFAULT_LNG))
+        lat_s = sharedPreferences.getString(getString(R.string.device_lat), java.lang.Double.toString(
+            DEFAULT_LAT
+        ))
+        lng_s = sharedPreferences.getString(getString(R.string.device_lng), java.lang.Double.toString(
+            DEFAULT_LNG
+        ))
 
 
         // set default coord if there are no one
@@ -402,7 +406,8 @@ class MainActivityEarthquakesList : AppCompatActivity(),
         // recover last update from preferences
         lastUpdate = sharedPreferences.getString(
                 getString(R.string.last_update),
-                DEFAULT_LAST_UPDATE)
+                DEFAULT_LAST_UPDATE
+        )
 
         // recover min magnitude value from prefs or set a default from string value
         minMagnitude = sharedPreferences.getString(
@@ -446,7 +451,8 @@ class MainActivityEarthquakesList : AppCompatActivity(),
         // recover min magnitude value from prefs or set a default from string value
         location_address = sharedPreferences.getString(
                 getString(R.string.location_address),
-                DEFAULT_ADDRESS)
+                DEFAULT_ADDRESS
+        )
 
         /* left in case of debug
         // recover preferred equakes num to display

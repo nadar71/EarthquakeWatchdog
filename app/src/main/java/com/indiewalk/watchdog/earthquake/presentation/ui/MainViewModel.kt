@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.ui
+package com.indiewalk.watchdog.earthquake.presentation.ui
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -9,8 +9,8 @@ import android.util.Log
 
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.AppEarthquake
-import com.indiewalk.watchdog.earthquake.data.model.Earthquake
-import com.indiewalk.watchdog.earthquake.data.EarthquakeRepository
+import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
+import com.indiewalk.watchdog.earthquake.data.repository.EarthquakeRepository
 
 class MainViewModel : ViewModel {
 
@@ -174,7 +174,8 @@ class MainViewModel : ViewModel {
      */
     private fun setMinMagDefault(editor: SharedPreferences.Editor) {
         minMagnitude = context!!.getString(R.string.settings_min_magnitude_default)
-        editor.putString(context!!.getString(R.string.settings_min_magnitude_key),
+        editor.putString(
+            context!!.getString(R.string.settings_min_magnitude_key),
                 context!!.getString(R.string.settings_min_magnitude_default))
     }
 

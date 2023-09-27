@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.data.local
+package com.indiewalk.watchdog.earthquake.data.local.db
 
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.room.Database
@@ -8,7 +8,7 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import android.content.Context
 import android.util.Log
-import com.indiewalk.watchdog.earthquake.data.model.Earthquake
+import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
 
 
 @Database(entities = [Earthquake::class], version = 4, exportSchema = false)

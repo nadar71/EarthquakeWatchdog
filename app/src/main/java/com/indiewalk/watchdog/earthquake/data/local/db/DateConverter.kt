@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.data.local
+package com.indiewalk.watchdog.earthquake.data.local.db
 
 import androidx.room.TypeConverter
 import android.util.Log

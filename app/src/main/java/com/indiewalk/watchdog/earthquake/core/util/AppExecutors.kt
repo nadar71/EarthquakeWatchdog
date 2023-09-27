@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.util
+package com.indiewalk.watchdog.earthquake.core.util
 
 
 import android.os.Handler

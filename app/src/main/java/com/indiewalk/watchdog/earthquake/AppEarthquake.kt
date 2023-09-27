@@ -3,11 +3,11 @@ package com.indiewalk.watchdog.earthquake
 import android.app.Application
 import android.content.Context
 
-import com.indiewalk.watchdog.earthquake.data.local.EarthquakeDatabase
+import com.indiewalk.watchdog.earthquake.data.local.db.EarthquakeDatabase
 // import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase_Impl;
-import com.indiewalk.watchdog.earthquake.data.EarthquakeRepository
+import com.indiewalk.watchdog.earthquake.data.repository.EarthquakeRepository
 import com.indiewalk.watchdog.earthquake.data.remote.EarthquakeNetworkDataSource
-import com.indiewalk.watchdog.earthquake.util.AppExecutors
+import com.indiewalk.watchdog.earthquake.core.util.AppExecutors
 
 
 /**

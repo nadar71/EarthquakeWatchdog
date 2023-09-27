@@ -1,15 +1,15 @@
-package com.indiewalk.watchdog.earthquake.data
+package com.indiewalk.watchdog.earthquake.data.repository
 
 import androidx.lifecycle.LiveData
 import android.content.Context
 import android.util.Log
 
 import com.indiewalk.watchdog.earthquake.AppEarthquake
-import com.indiewalk.watchdog.earthquake.data.local.EarthquakeDatabase
-import com.indiewalk.watchdog.earthquake.data.model.Earthquake
+import com.indiewalk.watchdog.earthquake.data.local.db.EarthquakeDatabase
+import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
 import com.indiewalk.watchdog.earthquake.data.remote.EarthquakeNetworkDataSource
-import com.indiewalk.watchdog.earthquake.util.AppExecutors
-import com.indiewalk.watchdog.earthquake.util.MyUtil
+import com.indiewalk.watchdog.earthquake.core.util.AppExecutors
+import com.indiewalk.watchdog.earthquake.core.util.MyUtil
 
 class EarthquakeRepository {
     private lateinit var networkDataSource: EarthquakeNetworkDataSource
@@ -49,7 +49,8 @@ class EarthquakeRepository {
     // constructor with data source
     private constructor(earthquakeDatabase: EarthquakeDatabase,
                         networkDataSource: EarthquakeNetworkDataSource,
-                        executors: AppExecutors) {
+                        executors: AppExecutors
+    ) {
         this.eqDb = earthquakeDatabase
         this.networkDataSource = networkDataSource
         this.executors = executors
@@ -259,7 +260,8 @@ class EarthquakeRepository {
          */
         fun getInstanceWithDataSource(earthquakeDatabase: EarthquakeDatabase,
                                       networkDataSource: EarthquakeNetworkDataSource,
-                                      executors: AppExecutors): EarthquakeRepository? {
+                                      executors: AppExecutors
+        ): EarthquakeRepository? {
             if (sInstance == null) {
                 synchronized(EarthquakeRepository::class.java) {
                     if (sInstance == null) {

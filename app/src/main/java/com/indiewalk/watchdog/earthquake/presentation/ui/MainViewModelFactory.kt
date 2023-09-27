@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.ui
+package com.indiewalk.watchdog.earthquake.presentation.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

@@ -47,12 +47,12 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.indiewalk.watchdog.earthquake.ui.MainActivityEarthquakesList
-import com.indiewalk.watchdog.earthquake.ui.MainViewModel
-import com.indiewalk.watchdog.earthquake.ui.MainViewModelFactory
-import com.indiewalk.watchdog.earthquake.data.model.Earthquake
-import com.indiewalk.watchdog.earthquake.data.EarthquakeRepository
-import com.indiewalk.watchdog.earthquake.util.MyUtil
+import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList
+import com.indiewalk.watchdog.earthquake.presentation.ui.MainViewModel
+import com.indiewalk.watchdog.earthquake.presentation.ui.MainViewModelFactory
+import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
+import com.indiewalk.watchdog.earthquake.data.repository.EarthquakeRepository
+import com.indiewalk.watchdog.earthquake.core.util.MyUtil
 import kotlinx.android.synthetic.main.main_activity_earthquakes_list.*
 
 
@@ -313,8 +313,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             // -2- in case on MANUAL LOCALIZATION ON
         } else {
             // get previous set position
-            lat_s = sharedPreferences.getString(getString(R.string.device_lat), java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LAT))
-            lng_s = sharedPreferences.getString(getString(R.string.device_lng), java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LNG))
+            lat_s = sharedPreferences.getString(getString(R.string.device_lat), java.lang.Double.toString(
+                MainActivityEarthquakesList.DEFAULT_LAT))
+            lng_s = sharedPreferences.getString(getString(R.string.device_lng), java.lang.Double.toString(
+                MainActivityEarthquakesList.DEFAULT_LNG))
 
             val latLng = LatLng(java.lang.Double.parseDouble(lat_s), java.lang.Double.parseDouble(lng_s))
 
@@ -499,7 +501,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LNG))
 
         // if there is already user location different from default location
-        if (lat_s != java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LAT) && lng_s != java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LNG)) {
+        if (lat_s != java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LAT) && lng_s != java.lang.Double.toString(
+                MainActivityEarthquakesList.DEFAULT_LNG)) {
             // position the user location's marker
             userLocationMarker(java.lang.Double.parseDouble(lat_s), java.lang.Double.parseDouble(lng_s))
         }

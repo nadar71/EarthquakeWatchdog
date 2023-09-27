@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.util
+package com.indiewalk.watchdog.earthquake.core.util
 
 import android.app.Activity
 import android.content.Context
@@ -21,8 +21,8 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.AppEarthquake
-import com.indiewalk.watchdog.earthquake.ui.MainActivityEarthquakesList
-import com.indiewalk.watchdog.earthquake.data.model.Earthquake
+import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList
+import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
 
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -80,7 +80,7 @@ object MyUtil {
         // builder.appendQueryParameter("starttime",aMonthAgo);
 
         val offset = Integer.parseInt(dateFilter)
-        val rangeAgo = MyUtil.oldDate(offset)
+        val rangeAgo = oldDate(offset)
         builder.appendQueryParameter("starttime", rangeAgo)
 
         return builder.toString()
@@ -319,9 +319,9 @@ object MyUtil {
      */
     fun setLastUpdateField(context: Context): String {
         // store the last update time
-        val lastUpdate = MyUtil.formatDateFromMsec(System.currentTimeMillis()) +
+        val lastUpdate = formatDateFromMsec(System.currentTimeMillis()) +
                 " " +
-                MyUtil.formatTimeFromMsec(System.currentTimeMillis())
+                formatTimeFromMsec(System.currentTimeMillis())
 
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         val editor = sharedPreferences.edit()
@@ -347,25 +347,31 @@ object MyUtil {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
 
         //get preferences for check
-        var lat_s = sharedPreferences.getString(context.getString(R.string.device_lat), java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LAT))
-        var lng_s = sharedPreferences.getString(context.getString(R.string.device_lng), java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LNG))
+        var lat_s = sharedPreferences.getString(context.getString(R.string.device_lat), java.lang.Double.toString(
+            MainActivityEarthquakesList.DEFAULT_LAT))
+        var lng_s = sharedPreferences.getString(context.getString(R.string.device_lng), java.lang.Double.toString(
+            MainActivityEarthquakesList.DEFAULT_LNG))
 
 
         // set default coord if there are no one
         val editor = sharedPreferences.edit()
         if (lat_s!!.isEmpty() == true) {
-            editor.putString(context.getString(R.string.device_lat), java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LAT))
+            editor.putString(context.getString(R.string.device_lat), java.lang.Double.toString(
+                MainActivityEarthquakesList.DEFAULT_LAT))
             editor.apply()
         }
 
         if (lng_s!!.isEmpty() == true) {
-            editor.putString(context.getString(R.string.device_lng), java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LNG))
+            editor.putString(context.getString(R.string.device_lng), java.lang.Double.toString(
+                MainActivityEarthquakesList.DEFAULT_LNG))
             editor.apply()
         }
 
         // get user lat, lng
-        lat_s = sharedPreferences.getString(context.getString(R.string.device_lat), java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LAT))
-        lng_s = sharedPreferences.getString(context.getString(R.string.device_lng), java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LNG))
+        lat_s = sharedPreferences.getString(context.getString(R.string.device_lat), java.lang.Double.toString(
+            MainActivityEarthquakesList.DEFAULT_LAT))
+        lng_s = sharedPreferences.getString(context.getString(R.string.device_lng), java.lang.Double.toString(
+            MainActivityEarthquakesList.DEFAULT_LNG))
 
         // get distance unit choosen
         val dist_unit = sharedPreferences.getString(context.getString(R.string.settings_distance_unit_by_key),
@@ -376,11 +382,11 @@ object MyUtil {
             for (eq in earthquakes) {
                 val userLat = java.lang.Double.valueOf(lat_s)!!
                 val userLng = java.lang.Double.valueOf(lng_s)!!
-                var distance = MyUtil.haversineDistanceCalc(userLat, eq.latitude,
+                var distance = haversineDistanceCalc(userLat, eq.latitude,
                         userLng, eq.longitude).toInt()
                 // convert in miles if needed
                 if (dist_unit == context.getString(R.string.settings_mi_distance_unit_value)) {
-                    distance = MyUtil.fromKmToMiles(distance.toDouble()).toInt()
+                    distance = fromKmToMiles(distance.toDouble()).toInt()
                 }
 
                 Log.i(TAG, "setEqDistanceFromCurrentCoords: eq distance from user : $distance")
@@ -406,25 +412,31 @@ object MyUtil {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
 
         //get preferences for check
-        var lat_s = sharedPreferences.getString(context.getString(R.string.device_lat), java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LAT))
-        var lng_s = sharedPreferences.getString(context.getString(R.string.device_lng), java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LNG))
+        var lat_s = sharedPreferences.getString(context.getString(R.string.device_lat), java.lang.Double.toString(
+            MainActivityEarthquakesList.DEFAULT_LAT))
+        var lng_s = sharedPreferences.getString(context.getString(R.string.device_lng), java.lang.Double.toString(
+            MainActivityEarthquakesList.DEFAULT_LNG))
 
 
         // set default coord if there are no one
         val editor = sharedPreferences.edit()
         if (lat_s!!.isEmpty() == true) {
-            editor.putString(context.getString(R.string.device_lat), java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LAT))
+            editor.putString(context.getString(R.string.device_lat), java.lang.Double.toString(
+                MainActivityEarthquakesList.DEFAULT_LAT))
             editor.apply()
         }
 
         if (lng_s!!.isEmpty() == true) {
-            editor.putString(context.getString(R.string.device_lng), java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LNG))
+            editor.putString(context.getString(R.string.device_lng), java.lang.Double.toString(
+                MainActivityEarthquakesList.DEFAULT_LNG))
             editor.apply()
         }
 
         // get user lat, lng
-        lat_s = sharedPreferences.getString(context.getString(R.string.device_lat), java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LAT))
-        lng_s = sharedPreferences.getString(context.getString(R.string.device_lng), java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LNG))
+        lat_s = sharedPreferences.getString(context.getString(R.string.device_lat), java.lang.Double.toString(
+            MainActivityEarthquakesList.DEFAULT_LAT))
+        lng_s = sharedPreferences.getString(context.getString(R.string.device_lng), java.lang.Double.toString(
+            MainActivityEarthquakesList.DEFAULT_LNG))
 
         // get distance unit choosen
         val dist_unit = sharedPreferences.getString(context.getString(R.string.settings_distance_unit_by_key),
@@ -435,11 +447,11 @@ object MyUtil {
             for (eq in earthquakes) {
                 val userLat = java.lang.Double.valueOf(lat_s)!!
                 val userLng = java.lang.Double.valueOf(lng_s)!!
-                var distance = MyUtil.haversineDistanceCalc(userLat, eq.latitude,
+                var distance = haversineDistanceCalc(userLat, eq.latitude,
                         userLng, eq.longitude).toInt()
                 // convert in miles if needed
                 if (dist_unit == context.getString(R.string.settings_mi_distance_unit_value)) {
-                    distance = MyUtil.fromKmToMiles(distance.toDouble()).toInt()
+                    distance = fromKmToMiles(distance.toDouble()).toInt()
                 }
 
                 Log.i(TAG, "setEqDistanceFromCurrentCoords: eq distance from user : $distance")

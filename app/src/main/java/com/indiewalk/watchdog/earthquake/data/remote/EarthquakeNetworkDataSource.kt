@@ -14,9 +14,9 @@ import com.firebase.jobdispatcher.GooglePlayDriver
 import com.firebase.jobdispatcher.Lifetime
 import com.firebase.jobdispatcher.Trigger
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.data.model.Earthquake
-import com.indiewalk.watchdog.earthquake.util.AppExecutors
-import com.indiewalk.watchdog.earthquake.util.MyUtil
+import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
+import com.indiewalk.watchdog.earthquake.core.util.AppExecutors
+import com.indiewalk.watchdog.earthquake.core.util.MyUtil
 
 import java.util.ArrayList
 import java.util.concurrent.TimeUnit

@@ -37,7 +37,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 
 import com.indiewalk.watchdog.earthquake.data.model.Earthquake;
-import com.indiewalk.watchdog.earthquake.data.local.EarthquakeDatabase;
+import com.indiewalk.watchdog.earthquake.data.local.db.EarthquakeDatabase;
 import com.indiewalk.watchdog.earthquake.util.AppExecutors;
 
 import java.util.ArrayList;

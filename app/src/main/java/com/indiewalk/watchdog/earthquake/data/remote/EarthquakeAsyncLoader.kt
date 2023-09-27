@@ -4,9 +4,9 @@ import android.content.AsyncTaskLoader
 import android.content.Context
 import android.util.Log
 
-import com.indiewalk.watchdog.earthquake.data.model.Earthquake
-import com.indiewalk.watchdog.earthquake.data.local.EarthquakeDatabase
-import com.indiewalk.watchdog.earthquake.util.MyUtil
+import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
+import com.indiewalk.watchdog.earthquake.data.local.db.EarthquakeDatabase
+import com.indiewalk.watchdog.earthquake.core.util.MyUtil
 
 import java.util.ArrayList
 

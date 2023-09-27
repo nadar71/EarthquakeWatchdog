@@ -2,7 +2,7 @@ package com.indiewalk.watchdog.earthquake.data.remote
 
 import android.util.Log
 
-import com.indiewalk.watchdog.earthquake.data.model.Earthquake
+import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
 
 import org.json.JSONException
 import org.json.JSONObject

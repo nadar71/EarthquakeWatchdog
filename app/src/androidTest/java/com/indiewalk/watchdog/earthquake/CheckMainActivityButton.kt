@@ -5,8 +5,8 @@ import android.support.test.espresso.intent.Intents
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 
-import com.indiewalk.watchdog.earthquake.ui.MainActivityEarthquakesList
-import com.indiewalk.watchdog.earthquake.ui.SettingSimpleActivity
+import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList
+import com.indiewalk.watchdog.earthquake.presentation.ui.SettingSimpleActivity
 
 import org.junit.Before
 import org.junit.Rule

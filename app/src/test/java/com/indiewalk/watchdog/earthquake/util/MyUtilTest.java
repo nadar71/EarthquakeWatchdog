@@ -3,7 +3,7 @@ package com.indiewalk.watchdog.earthquake.util;
 
 import android.net.Uri;
 
-import com.indiewalk.watchdog.earthquake.util.MyUtil;
+import com.indiewalk.watchdog.earthquake.core.util.MyUtil;
 
 import junit.framework.Assert;
 

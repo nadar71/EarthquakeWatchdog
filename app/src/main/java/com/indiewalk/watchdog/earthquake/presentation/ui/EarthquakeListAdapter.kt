@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.ui
+package com.indiewalk.watchdog.earthquake.presentation.ui
 
 
 import android.content.Context
@@ -12,9 +12,9 @@ import android.widget.TextView
 
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.AppEarthquake
-import com.indiewalk.watchdog.earthquake.data.model.Earthquake
-import com.indiewalk.watchdog.earthquake.data.EarthquakeRepository
-import com.indiewalk.watchdog.earthquake.util.MyUtil
+import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
+import com.indiewalk.watchdog.earthquake.data.repository.EarthquakeRepository
+import com.indiewalk.watchdog.earthquake.core.util.MyUtil
 
 
 import java.text.DecimalFormat
@@ -28,7 +28,8 @@ class EarthquakeListAdapter
  * ----------------------------------------------------------------------------------
  */
 (private val context: Context, // Handle item clicks
- private val eqItemClickListener: ItemClickListener) : RecyclerView.Adapter<EarthquakeListAdapter.EarthquakeViewRowHolder>() {
+ private val eqItemClickListener: ItemClickListener
+) : RecyclerView.Adapter<EarthquakeListAdapter.EarthquakeViewRowHolder>() {
 
     private val TAG = EarthquakeListAdapter::class.java.name
 
@@ -231,7 +232,9 @@ class EarthquakeListAdapter
                 java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LNG))
 
         // if there is user location different from default location
-        return if (lat_s != java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LAT) && lng_s != java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LNG)) {
+        return if (lat_s != java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LAT) && lng_s != java.lang.Double.toString(
+                MainActivityEarthquakesList.DEFAULT_LNG
+            )) {
             true // custom location
         } else {
             false // default location, Google inc. Mountain view

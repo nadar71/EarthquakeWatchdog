@@ -17,6 +17,7 @@ android {
         versionName "2.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -52,6 +53,7 @@ android {
             unitTests.returnDefaultValues = true
         }
     }
+    namespace 'com.indiewalk.watchdog.earthquake'
 }
 
 dependencies {

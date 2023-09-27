@@ -1,11 +1,11 @@
-package com.indiewalk.watchdog.earthquake.data.local
+package com.indiewalk.watchdog.earthquake.data.local.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.indiewalk.watchdog.earthquake.data.model.Earthquake
+import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
 
 @Dao
 interface EarthquakeDbDao {

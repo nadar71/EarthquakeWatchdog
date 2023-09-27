@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.util
+package com.indiewalk.watchdog.earthquake.core.util
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -19,7 +19,7 @@ import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.util.ConsentSDK.Companion.nonPersonalizedAdsBundle
+import com.indiewalk.watchdog.earthquake.core.util.ConsentSDK.Companion.nonPersonalizedAdsBundle
 
 import java.net.MalformedURLException
 import java.net.URL

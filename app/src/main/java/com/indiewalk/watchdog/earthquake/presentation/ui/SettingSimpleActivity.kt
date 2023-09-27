@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.ui
+package com.indiewalk.watchdog.earthquake.presentation.ui
 
 import android.content.Context
 import android.content.Intent
@@ -12,7 +12,7 @@ import android.os.Bundle
 import android.util.Log
 
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.util.ConsentSDK
+import com.indiewalk.watchdog.earthquake.core.util.ConsentSDK
 import kotlinx.android.synthetic.main.activity_setting_simple.*
 
 class SettingSimpleActivity : AppCompatActivity() {

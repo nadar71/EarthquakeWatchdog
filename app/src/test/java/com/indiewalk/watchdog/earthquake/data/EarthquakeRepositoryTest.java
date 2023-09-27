@@ -3,12 +3,13 @@ package com.indiewalk.watchdog.earthquake.data;
 import android.content.Context;
 
 
-import com.indiewalk.watchdog.earthquake.data.local.DateConverter;
-import com.indiewalk.watchdog.earthquake.data.local.EarthquakeDatabase;
-import com.indiewalk.watchdog.earthquake.data.local.EarthquakeDbDao;
-import com.indiewalk.watchdog.earthquake.data.model.Earthquake;
-import com.indiewalk.watchdog.earthquake.util.AppExecutors;
-import com.indiewalk.watchdog.earthquake.util.MyUtil;
+import com.indiewalk.watchdog.earthquake.data.local.db.DateConverter;
+import com.indiewalk.watchdog.earthquake.data.local.db.EarthquakeDatabase;
+import com.indiewalk.watchdog.earthquake.data.local.db.EarthquakeDbDao;
+import com.indiewalk.watchdog.earthquake.data.repository.EarthquakeRepository;
+import com.indiewalk.watchdog.earthquake.domain.model.Earthquake;
+import com.indiewalk.watchdog.earthquake.core.util.AppExecutors;
+import com.indiewalk.watchdog.earthquake.core.util.MyUtil;
 
 import org.junit.Before;
 import org.junit.Test;
