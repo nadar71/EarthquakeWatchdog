@@ -21,7 +21,6 @@ import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import android.os.Bundle
 import androidx.core.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import android.text.Html
 import android.util.Log
 import android.view.Gravity
@@ -53,11 +52,11 @@ import com.indiewalk.watchdog.earthquake.presentation.ui.MainViewModelFactory
 import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
 import com.indiewalk.watchdog.earthquake.data.repository.EarthquakeRepository
 import com.indiewalk.watchdog.earthquake.core.util.MyUtil
-import kotlinx.android.synthetic.main.main_activity_earthquakes_list.*
 
 
 
 import android.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 
 import java.io.IOException
 import java.util.ArrayList
@@ -462,7 +461,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         // show dialog
-        val builder = android.support.v7.app.AlertDialog.Builder(this@MapsActivity)
+        val builder = AlertDialog.Builder(this@MapsActivity)
         val view = layoutInflater.inflate(R.layout.suggest_manual_loc_dialog, null)
         val dontaskagainFlag = view.findViewById<View>(R.id.dont_ask) as CheckBox
 

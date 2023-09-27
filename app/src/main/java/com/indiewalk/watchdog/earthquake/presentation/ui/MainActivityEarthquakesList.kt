@@ -34,9 +34,6 @@ import java.util.ArrayList
 import java.util.Arrays
 
 import com.indiewalk.watchdog.earthquake.presentation.components.adapter.EarthquakeListAdapter
-import kotlinx.android.synthetic.main.filter_info.*
-import kotlinx.android.synthetic.main.main_activity_earthquakes_list.*
-import kotlinx.android.synthetic.main.main_activity_earthquakes_list.btn_filter_details
 
 
 class MainActivityEarthquakesList : AppCompatActivity(),

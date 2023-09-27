@@ -26,6 +26,19 @@ android {
         }
     }
 
+    productFlavors {
+        production {
+            dimension "EarthquakeWatchdog"
+            resValue "string", "app_name", "EarthquakeWatchdog"
+        }
+
+        myTesting {
+            dimension "EarthquakeWatchdog"
+            resValue "string", "app_name", "EarthquakeWatchdog Test"
+            applicationIdSuffix ".testing"
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
