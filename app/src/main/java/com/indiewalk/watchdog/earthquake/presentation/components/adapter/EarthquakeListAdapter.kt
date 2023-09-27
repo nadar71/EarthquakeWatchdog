@@ -1,20 +1,21 @@
-package com.indiewalk.watchdog.earthquake.presentation.ui
+package com.indiewalk.watchdog.earthquake.presentation.components.adapter
 
 
 import android.content.Context
 import android.preference.PreferenceManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.AppEarthquake
 import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
 import com.indiewalk.watchdog.earthquake.data.repository.EarthquakeRepository
 import com.indiewalk.watchdog.earthquake.core.util.MyUtil
+import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList
 
 
 import java.text.DecimalFormat

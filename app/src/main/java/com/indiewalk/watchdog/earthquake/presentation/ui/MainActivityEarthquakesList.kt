@@ -10,10 +10,6 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.Gravity
 import android.view.Menu
@@ -22,6 +18,8 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
 
 
 import com.google.android.gms.ads.AdListener
@@ -35,7 +33,7 @@ import com.indiewalk.watchdog.earthquake.core.util.MyUtil
 import java.util.ArrayList
 import java.util.Arrays
 
-import android.support.v7.widget.DividerItemDecoration.VERTICAL
+import com.indiewalk.watchdog.earthquake.presentation.components.adapter.EarthquakeListAdapter
 import kotlinx.android.synthetic.main.filter_info.*
 import kotlinx.android.synthetic.main.main_activity_earthquakes_list.*
 import kotlinx.android.synthetic.main.main_activity_earthquakes_list.btn_filter_details
