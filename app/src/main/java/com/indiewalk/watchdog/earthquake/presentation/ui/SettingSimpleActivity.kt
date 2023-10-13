@@ -9,26 +9,28 @@ import android.preference.PreferenceManager
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.util.ConsentSDK
-import kotlinx.android.synthetic.main.activity_setting_simple.*
+import com.indiewalk.watchdog.earthquake.databinding.ActivitySettingSimpleBinding
+import it.abenergie.customerarea.core.utility.extensions.TAG
 
 class SettingSimpleActivity : AppCompatActivity() {
+    private lateinit var binding: ActivitySettingSimpleBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_setting_simple)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_setting_simple)
 
         // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
-        mAdView!!.loadAd(ConsentSDK.getAdRequest(this@SettingSimpleActivity))
+        binding.mAdView.loadAd(ConsentSDK.getAdRequest(this@SettingSimpleActivity))
 
     }
 
-    class EarthquakePreferenceFragment : PreferenceFragment(), Preference.OnPreferenceChangeListener {
-
+    class EarthquakePreferenceFragment : PreferenceFragment(),
+        Preference.OnPreferenceChangeListener {
         private var consentSDK: ConsentSDK? = null
-
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -38,7 +40,7 @@ class SettingSimpleActivity : AppCompatActivity() {
 
             // get preference Screen reference
             val preferenceScreen = preferenceManager
-                    .createPreferenceScreen(activity)
+                .createPreferenceScreen(activity)
 
             // bind prefs on changes
             val orderBy = findPreference(getString(R.string.settings_order_by_key))
@@ -73,7 +75,8 @@ class SettingSimpleActivity : AppCompatActivity() {
 
             // Checking the status of the user
             if (ConsentSDK.isUserLocationWithinEea(activity)) {
-                val choice = if (ConsentSDK.isConsentPersonalized(activity)) "Personalize" else "Non-Personalize"
+                val choice =
+                    if (ConsentSDK.isConsentPersonalized(activity)) "Personalize" else "Non-Personalize"
                 Log.i(TAG, "onCreate: consent choice : $choice")
 
                 gdprConsentBtn.onPreferenceClickListener = Preference.OnPreferenceClickListener {
@@ -82,7 +85,10 @@ class SettingSimpleActivity : AppCompatActivity() {
                     // consentSDK.requestConsent(null);
                     //To get the result of the consent
                     consentSDK!!.requestConsent(object : ConsentSDK.ConsentStatusCallback() {
-                        override fun onResult(isRequestLocationInEeaOrUnknown: Boolean, isConsentPersonalized: Int) {
+                        override fun onResult(
+                            isRequestLocationInEeaOrUnknown: Boolean,
+                            isConsentPersonalized: Int
+                        ) {
                             var choice = ""
                             when (isConsentPersonalized) {
                                 0 -> choice = "Non-Personalize"
@@ -112,16 +118,12 @@ class SettingSimpleActivity : AppCompatActivity() {
         }
 
 
-        /**
-         * -----------------------------------------------------------------------------------------
-         * Bind prefs text shown below label on prefs changes
-         * @param preference
-         * -----------------------------------------------------------------------------------------
-         */
+        // Bind prefs text shown below label on prefs changes
         private fun bindPreferenceSummaryToValue(preference: Preference) {
             preference.onPreferenceChangeListener = this  // bind
 
-            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(preference.context)
+            val sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(preference.context)
 
             // get new value to use for replacing old
             val sPreference = sharedPreferences.getString(preference.key, "")
@@ -151,29 +153,19 @@ class SettingSimpleActivity : AppCompatActivity() {
         }
 
 
-        /**
-         * -----------------------------------------------------------------------------------------
-         * Initialize consent
-         * @param context
-         * -----------------------------------------------------------------------------------------
-         */
+        // Initialize consent
         private fun initConsentSDK(context: Context) {
             // Initialize ConsentSDK
             consentSDK = ConsentSDK.Builder(context)
-                    .addTestDeviceId("7DC1A1E8AEAD7908E42271D4B68FB270") // Add your test device id "Remove addTestDeviceId on production!"
-                    .addCustomLogTag("gdpr_TAG") // Add custom tag default: ID_LOG
-                    .addPrivacyPolicy("http://www.indie-walkabout.eu/privacy-policy-app") // Add your privacy policy url
-                    .addPublisherId("pub-8846176967909254") // Add your admob publisher id
-                    .build()
+                .addTestDeviceId("7DC1A1E8AEAD7908E42271D4B68FB270") // Add your test device id "Remove addTestDeviceId on production!"
+                .addCustomLogTag("gdpr_TAG") // Add custom tag default: ID_LOG
+                .addPrivacyPolicy("http://www.indie-walkabout.eu/privacy-policy-app") // Add your privacy policy url
+                .addPublisherId("pub-8846176967909254") // Add your admob publisher id
+                .build()
         }
 
 
     } // Fragment
-
-    companion object {
-
-        val TAG = SettingSimpleActivity::class.java.name
-    }
 
 
 }

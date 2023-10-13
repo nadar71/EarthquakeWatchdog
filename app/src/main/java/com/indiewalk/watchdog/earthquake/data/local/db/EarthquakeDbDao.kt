@@ -13,6 +13,7 @@ interface EarthquakeDbDao {
     //----------------------------------------------------------------------------------------------
     //  QUERY
     //----------------------------------------------------------------------------------------------
+
     // retrieve all the eqs
     @Query("SELECT * FROM EARTHQUAKE_LIST ")
     fun loadAll(): LiveData<List<Earthquake>>

@@ -51,46 +51,44 @@ import com.indiewalk.watchdog.earthquake.presentation.ui.MainViewModel
 import com.indiewalk.watchdog.earthquake.presentation.ui.MainViewModelFactory
 import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
 import com.indiewalk.watchdog.earthquake.data.repository.EarthquakeRepository
-import com.indiewalk.watchdog.earthquake.core.util.MyUtil
-
+import com.indiewalk.watchdog.earthquake.core.util.GenericUtils
 
 
 import android.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import com.indiewalk.watchdog.earthquake.databinding.ActivityMapsBinding
+import it.abenergie.customerarea.core.utility.extensions.TAG
 
 import java.io.IOException
 import java.util.ArrayList
 import java.util.Locale
 
 
-/**
- * -------------------------------------------------------------------------------------------------
- * Show earthquakes positions, as well user's one.
- * -------------------------------------------------------------------------------------------------
- */
+// Show earthquakes positions, as well user's one.
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
-
+    private lateinit var binding: ActivityMapsBinding
     internal var context: Context = this@MapsActivity
 
     // Map references
-    internal lateinit var mGoogleMap: GoogleMap
+    private lateinit var mGoogleMap: GoogleMap
 
     // Map frag
-    internal lateinit var mapFrag: SupportMapFragment
+    private lateinit var mapFrag: SupportMapFragment
 
     // Device location req references
-    internal lateinit var mLocationRequest: LocationRequest
+    private lateinit var mLocationRequest: LocationRequest
     internal lateinit var mLastLocation: Location
-    internal var mFusedLocationClient: FusedLocationProviderClient? = null
+    private var mFusedLocationClient: FusedLocationProviderClient? = null
 
     // Marker for my current position by gps
-    internal var myCurrentPositionMarker: Marker? = null
+    private var myCurrentPositionMarker: Marker? = null
 
     // Markers associated with earthquake on map
-    internal lateinit var earthquakesMarkersList: MutableList<Marker>
+    private lateinit var earthquakesMarkersList: MutableList<Marker>
 
     // eqs list with livedata
-    internal lateinit var equakes: LiveData<List<Earthquake>>
+    private lateinit var equakes: LiveData<List<Earthquake>>
 
     // eqs list WITHOUT livedata
     internal var equakes_no_live: List<Earthquake>? = null
@@ -101,25 +99,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     internal var dialog: ProgressDialog? = null
 
     // SharedPrefences ref actvity global
-    internal lateinit var sharedPreferences: SharedPreferences
+    private lateinit var sharedPreferences: SharedPreferences
 
     // Manual Localization flag
-    internal var manualLocIsOn = false
+    private var manualLocIsOn = false
 
     // Manual localization menu item ref
-    internal lateinit var locCheckbox: MenuItem
+    private lateinit var locCheckbox: MenuItem
 
     // User location coords
-    internal var lat_s: String? = null
-    internal var lng_s: String? = null
+    private var lat_s: String? = null
+    private var lng_s: String? = null
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Set user locations coordinates in case of MANUAL LOCALIZATION OFF
-     * ---------------------------------------------------------------------------------------------
-     */
-    internal var mLocationCallback: LocationCallback = object : LocationCallback() {
+    // Set user locations coordinates in case of MANUAL LOCALIZATION OFF
+    private var mLocationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
 
             val locationList = locationResult.locations
@@ -155,7 +149,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 eqRepository!!.updatedAllEqsDistFromUser(equakes_no_live, context)
 
                 // stop progress bar
-                dialog?.let{it.dismiss()}
+                dialog?.let { it.dismiss() }
 
                 // zoom on a particular equake if request came from main activity
                 zoomOnEquake()
@@ -167,17 +161,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Load equakes list, set up ma and position
-     * @param savedInstanceState
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Load equakes list, set up ma and position
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_maps)
-
-
+        // setContentView(R.layout.activity_maps)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_maps)
 
         // init shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
@@ -192,7 +180,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // check if there was a previous user location manual setted
         checkManualLocation()
 
-        if (manualLocIsOn == false) {
+        if (!manualLocIsOn) {
             // standard title
             supportActionBar!!.title = getString(R.string.title_activity_maps_standard)
 
@@ -201,21 +189,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         } else {
             // manual loc on title
-            supportActionBar!!.title = Html.fromHtml("<font color='#66ff66'>" +
-                    getString(R.string.title_activity_maps_manual_localization_on) + "</font>")
+            supportActionBar!!.title = Html.fromHtml(
+                "<font color='#66ff66'>" +
+                        getString(R.string.title_activity_maps_manual_localization_on) + "</font>"
+            )
         }
 
         // get repo. For issue #96,97 do not use getRepository()
         eqRepository = (AppEarthquake.getsContext() as AppEarthquake)
-                .repositoryWithDataSource
+            .repositoryWithDataSource
 
     }
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Stop locating device when activity is on pause for battery saving
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Stop locating device when activity is on pause for battery saving
     public override fun onPause() {
         super.onPause()
 
@@ -225,32 +211,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         // avoid leaked window problem
-        dialog?.let{it.dismiss()}
+        dialog?.let { it.dismiss() }
     }
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Launch User localization
-     * ---------------------------------------------------------------------------------------------
-     */
+
+    // Launch User localization
     private fun localizeUser() {
         // retrieve position and show it on map
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         // Start your GPS Reading progress bar
         dialog = ProgressDialog(this)
-        dialog?.let{it.setMessage("Please wait!"); it.show()}
+        dialog?.let { it.setMessage("Please wait!"); it.show() }
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Callback when map is available.
-     * Show map, equakes markers, device marker.
-     * When {@localizeUser()} ended
-     * @param googleMap
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Callback when map is available.
+    // Show map, equakes markers, device marker.
+    // When {@localizeUser()} ended
+    // @param googleMap
     override fun onMapReady(googleMap: GoogleMap) {
         mGoogleMap = googleMap
         mGoogleMap.mapType = GoogleMap.MAP_TYPE_HYBRID
@@ -276,13 +255,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mLocationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
 
         // -1- localize user only if MANUAL LOCALIZATION OFF
-        if (manualLocIsOn == false) {
+        if (!manualLocIsOn) {
             // support for os version newer and older
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (ContextCompat.checkSelfPermission(this,
-                                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
                     //Location Permission already granted
-                    mFusedLocationClient!!.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper())
+                    mFusedLocationClient!!.requestLocationUpdates(
+                        mLocationRequest,
+                        mLocationCallback,
+                        Looper.myLooper()
+                    )
                     mGoogleMap.isMyLocationEnabled = true
 
                     // set user marker in case of previous coordinates not default
@@ -298,7 +284,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     showGpsRequestAlert()
                 }
             } else {
-                mFusedLocationClient!!.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper())
+                mFusedLocationClient!!.requestLocationUpdates(
+                    mLocationRequest,
+                    mLocationCallback,
+                    Looper.myLooper()
+                )
                 mGoogleMap.isMyLocationEnabled = true
 
 
@@ -312,25 +302,42 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             // -2- in case on MANUAL LOCALIZATION ON
         } else {
             // get previous set position
-            lat_s = sharedPreferences.getString(getString(R.string.device_lat), java.lang.Double.toString(
-                MainActivityEarthquakesList.DEFAULT_LAT))
-            lng_s = sharedPreferences.getString(getString(R.string.device_lng), java.lang.Double.toString(
-                MainActivityEarthquakesList.DEFAULT_LNG))
+            lat_s = sharedPreferences.getString(
+                getString(R.string.device_lat), java.lang.Double.toString(
+                    MainActivityEarthquakesList.DEFAULT_LAT
+                )
+            )
+            lng_s = sharedPreferences.getString(
+                getString(R.string.device_lng), java.lang.Double.toString(
+                    MainActivityEarthquakesList.DEFAULT_LNG
+                )
+            )
 
-            val latLng = LatLng(java.lang.Double.parseDouble(lat_s), java.lang.Double.parseDouble(lng_s))
+            val latLng =
+                LatLng(java.lang.Double.parseDouble(lat_s), java.lang.Double.parseDouble(lng_s))
 
             // set marker
-            myCurrentPositionMarker = mGoogleMap.addMarker(MarkerOptions()
+            myCurrentPositionMarker = mGoogleMap.addMarker(
+                MarkerOptions()
                     .position(latLng)
                     .title("Your Manual position")
-                    .snippet("Latitude : $lat_s\nLongitude : $lng_s"))
-            myCurrentPositionMarker!!.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                    .snippet("Latitude : $lat_s\nLongitude : $lng_s")
+            )
+            myCurrentPositionMarker!!.setIcon(
+                BitmapDescriptorFactory.defaultMarker(
+                    BitmapDescriptorFactory.HUE_GREEN
+                )
+            )
 
             // allow to change location
             manualLocalizationAlert()
 
             // fly to the new location
-            animateCameraTo(java.lang.Double.parseDouble(lat_s), java.lang.Double.parseDouble(lng_s), 3f)
+            animateCameraTo(
+                java.lang.Double.parseDouble(lat_s),
+                java.lang.Double.parseDouble(lng_s),
+                3f
+            )
         }
 
         // zoom on a particular equake if request came from main activity
@@ -339,32 +346,32 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Set marker and details on click for each eq on map
-     * @param earthquakeList
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Set marker and details on click for each eq on map
     private fun setMarkerForEachEq(earthquakeList: List<Earthquake>?) {
-        val minMagnitude = java.lang.Double.parseDouble(sharedPreferences.getString(
-                getString(R.string.settings_min_magnitude_key),
-                getString(R.string.settings_min_magnitude_default)))
+        val minMagnitude = sharedPreferences.getString(
+            getString(R.string.settings_min_magnitude_key),
+            getString(R.string.settings_min_magnitude_default)
+        )
+            ?.let { java.lang.Double.parseDouble(it) }
 
         for (earthquake in earthquakeList!!) {
 
-            if (earthquake.getMagnitude()!! < minMagnitude) continue
+            if (earthquake.getMagnitude()!! < minMagnitude!!) continue
 
             // convert eq position icon to bitmap
-            val eqMarkerIcon = MyUtil.getBitmapFromVector(context,
-                    R.drawable.ic_earthquake_pointer,
-                    MyUtil.getMagnitudeColor(earthquake.getMagnitude()!!, context))
+            val eqMarkerIcon = GenericUtils.getBitmapFromVector(
+                context,
+                R.drawable.ic_earthquake_pointer,
+                GenericUtils.getMagnitudeColor(earthquake.getMagnitude()!!, context)
+            )
 
-            earthquakesMarkersList.add(mGoogleMap.addMarker(MarkerOptions()
+            mGoogleMap.addMarker(
+                MarkerOptions()
                     .position(LatLng(earthquake.latitude, earthquake.longitude))
                     .title("Location : " + earthquake.location!!)
                     .snippet("Magnitude : " + earthquake.getMagnitude()!!)
                     .icon(eqMarkerIcon)
-            ))
+            )?.let { earthquakesMarkersList.add(it) }
 
             mGoogleMap.setInfoWindowAdapter(object : GoogleMap.InfoWindowAdapter {
 
@@ -395,19 +402,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             })
 
 
-            Log.d(TAG, "onMapReady: latitude : " + earthquake.latitude + " longitude : " + earthquake.longitude)
+            Log.d(
+                TAG,
+                "onMapReady: latitude : " + earthquake.latitude + " longitude : " + earthquake.longitude
+            )
         }
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Ask for activating gps if not active.
-     * NB : use only after localization permissions are granted
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Ask for activating gps if not active.
+    // NB : use only after localization permissions are granted
     fun showGpsRequestAlert() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        )
             return
 
         val locationManager: LocationManager
@@ -416,12 +426,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             val alertDialog = AlertDialog.Builder(context)
             alertDialog.setTitle("GPS setting!")
-                    .setCancelable(false)
-                    .setMessage("GPS is not enabled, Do you want to go to settings menu? ")
-                    .setPositiveButton("Setting") { dialog, which ->
-                        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                        context.startActivity(intent)
-                    }
+                .setCancelable(false)
+                .setMessage("GPS is not enabled, Do you want to go to settings menu? ")
+                .setPositiveButton("Setting") { dialog, which ->
+                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                    context.startActivity(intent)
+                }
             alertDialog.setNegativeButton("Cancel") { dialog, which -> dialog.cancel() }
             alertDialog.show()
         }
@@ -446,15 +456,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     */
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Suggest manual localization in case localization permission are not allowed
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Suggest manual localization in case localization permission are not allowed
     private fun suggestManualLocalization() {
         // check if I can show the dialog
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val allowShow = sharedPreferences.getString(getString(R.string.settings_dontshow_me_again), "false")
+        val allowShow =
+            sharedPreferences.getString(getString(R.string.settings_dontshow_me_again), "false")
 
         if (allowShow == "true") {
             return
@@ -466,16 +473,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val dontaskagainFlag = view.findViewById<View>(R.id.dont_ask) as CheckBox
 
         builder.setTitle(getString(R.string.sugges_manual_loc_title))
-                .setCancelable(false)
-                .setPositiveButton("Cancel") { dialog, which ->
-                    if (dontaskagainFlag.isChecked) {
-                        val editor = sharedPreferences.edit()
-                        editor.putString(getString(R.string.settings_dontshow_me_again),
-                                "true")
-                        editor.apply()
-                    }
-                    dialog.cancel()
+            .setCancelable(false)
+            .setPositiveButton("Cancel") { dialog, which ->
+                if (dontaskagainFlag.isChecked) {
+                    val editor = sharedPreferences.edit()
+                    editor.putString(
+                        getString(R.string.settings_dontshow_me_again),
+                        "true"
+                    )
+                    editor.apply()
                 }
+                dialog.cancel()
+            }
 
         builder.setView(view)
         val dialog = builder.create()
@@ -484,26 +493,31 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Check if there is already a user location set from previous access to avoid delay while
-     * the gps is connecting
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Check if there is already a user location set from previous access to avoid delay while
+    // the gps is connecting
     private fun checkPrevious() {
         // init shared preferences
         // SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        lat_s = sharedPreferences.getString(getString(R.string.device_lat),
-                java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LAT))
-        lng_s = sharedPreferences.getString(getString(R.string.device_lng),
-                java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LNG))
+        lat_s = sharedPreferences.getString(
+            getString(R.string.device_lat),
+            java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LAT)
+        )
+        lng_s = sharedPreferences.getString(
+            getString(R.string.device_lng),
+            java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LNG)
+        )
 
         // if there is already user location different from default location
         if (lat_s != java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LAT) && lng_s != java.lang.Double.toString(
-                MainActivityEarthquakesList.DEFAULT_LNG)) {
+                MainActivityEarthquakesList.DEFAULT_LNG
+            )
+        ) {
             // position the user location's marker
-            userLocationMarker(java.lang.Double.parseDouble(lat_s), java.lang.Double.parseDouble(lng_s))
+            userLocationMarker(
+                java.lang.Double.parseDouble(lat_s),
+                java.lang.Double.parseDouble(lng_s)
+            )
         }
 
         // save in preferences
@@ -512,31 +526,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Check if there is a location manually set
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Check if there is a location manually set
     private fun checkManualLocation() {
 
-        val manualLocFlag = sharedPreferences.getString(getString(R.string.manual_Localization_On),
-                "false")
+        val manualLocFlag = sharedPreferences.getString(
+            getString(R.string.manual_Localization_On),
+            "false"
+        )
 
         // if there is already user location different from default location
-        if (manualLocFlag == "true") {
-            manualLocIsOn = true
-        } else {
-            manualLocIsOn = false
-        }
+        manualLocIsOn = manualLocFlag == "true"
 
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Zoom on an equake
-     * ---------------------------------------------------------------------------------------------
-     */
+    //  Zoom on an equake
     private fun zoomOnEquake() {
 
         val mainIntent = intent
@@ -554,13 +558,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Recover and save location address in preferences
-     * @param userLat
-     * @param userLng
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Recover and save location address in preferences
     private fun setLocationAddress(userLat: Double, userLng: Double) {
         //Set Address
         val address: String
@@ -600,13 +598,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Position User location marker
-     * @param userLat
-     * @param userLng
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Position User location marker
     private fun userLocationMarker(userLat: Double, userLng: Double) {
 
         val latLng = LatLng(userLat, userLng)
@@ -617,32 +609,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         // convert user position icon to bitmap
-        val locationMarkerIcon = MyUtil.getBitmapFromVector(context, R.drawable.ic_home_white_24dp,
-                ContextCompat.getColor(context, R.color.marker_color))
+        val locationMarkerIcon = GenericUtils.getBitmapFromVector(
+            context, R.drawable.ic_home_white_24dp,
+            ContextCompat.getColor(context, R.color.marker_color)
+        )
 
-        myCurrentPositionMarker = mGoogleMap.addMarker(MarkerOptions()
+        myCurrentPositionMarker = mGoogleMap.addMarker(
+            MarkerOptions()
                 .position(latLng)
                 .title("Your Current Position : latitude : $userLat longitude : $userLng")
-                .icon(locationMarkerIcon))
+                .icon(locationMarkerIcon)
+        )
 
         //move map camera
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 1f))
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Animating camera to a target point
-     * @param lat
-     * @param lon
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Animating camera to a target point
     private fun animateCameraTo(lat: Double, lon: Double, z: Float) {
         val target = CameraPosition.Builder().target(LatLng(lat, lon))
-                .zoom(z)
-                .bearing(0f)
-                .tilt(25f)
-                .build()
+            .zoom(z)
+            .bearing(0f)
+            .tilt(25f)
+            .build()
 
         /*
         m_handler = new Handler();
@@ -652,78 +642,90 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         */
 
         mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(target),
-                object : GoogleMap.CancelableCallback {
-                    override fun onFinish() {
-                        // Toast.makeText(getBaseContext(), "Animation to target complete",
-                        // Toast.LENGTH_SHORT).show();
-                    }
+            object : GoogleMap.CancelableCallback {
+                override fun onFinish() {
+                    // Toast.makeText(getBaseContext(), "Animation to target complete",
+                    // Toast.LENGTH_SHORT).show();
+                }
 
-                    override fun onCancel() {
-                        // Toast.makeText(getBaseContext(), "Animation to target canceled",
-                        // Toast.LENGTH_SHORT).show();
-                    }
-                })
+                override fun onCancel() {
+                    // Toast.makeText(getBaseContext(), "Animation to target canceled",
+                    // Toast.LENGTH_SHORT).show();
+                }
+            })
 
         // }},500);
 
     }
 
-    private fun checkLocationPermission() {
 
+    private fun checkLocationPermission() {
         if (manualLocIsOn == false) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
 
                 // Should we show an explanation?
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                                Manifest.permission.ACCESS_FINE_LOCATION)) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    )
+                ) {
 
                     // Show an explanation to the user *asynchronously* -- don't block
                     // this thread waiting for the user's response! After the user
                     // sees the explanation, try again to request the permission.
                     AlertDialog.Builder(this)
-                            .setTitle("Location Permission Needed")
-                            .setMessage("This app needs the Location permission, please accept to use location functionality")
-                            .setPositiveButton("OK") { dialogInterface, i ->
-                                //Prompt the user once explanation has been shown
-                                ActivityCompat.requestPermissions(this@MapsActivity,
-                                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                                        MY_PERMISSIONS_REQUEST_LOCATION)
-                            }
-                            .create()
-                            .show()
-
-
+                        .setTitle("Location Permission Needed")
+                        .setMessage("This app needs the Location permission, please accept to use location functionality")
+                        .setPositiveButton("OK") { dialogInterface, i ->
+                            //Prompt the user once explanation has been shown
+                            ActivityCompat.requestPermissions(
+                                this@MapsActivity,
+                                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                                MY_PERMISSIONS_REQUEST_LOCATION
+                            )
+                        }
+                        .create()
+                        .show()
                 } else {
                     // No explanation needed, we can request the permission.
-                    ActivityCompat.requestPermissions(this,
-                            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                            MY_PERMISSIONS_REQUEST_LOCATION)
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                        MY_PERMISSIONS_REQUEST_LOCATION
+                    )
                 }
             }
         }
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * @param requestCode
-     * @param permissions
-     * @param grantResults
-     * ---------------------------------------------------------------------------------------------
-     */
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             MY_PERMISSIONS_REQUEST_LOCATION -> {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                     // permission was granted, yay! Do the
                     // location-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(this,
-                                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(
+                            this,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
 
-                        mFusedLocationClient!!.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper())
+                        mFusedLocationClient!!.requestLocationUpdates(
+                            mLocationRequest,
+                            mLocationCallback,
+                            Looper.myLooper()
+                        )
                         mGoogleMap.isMyLocationEnabled = true
 
                         // request gps if is off
@@ -733,7 +735,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 } else {
 
                     // stop progress bar
-                    dialog?.let{it.dismiss()}
+                    dialog?.dismiss()
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
@@ -749,11 +751,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Choose the map type
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Choose the map type
     private fun showMapTypeSelectorDialog() {
         // Prepare the dialog by setting up a Builder.
         val fDialogTitle = "Select Map Type"
@@ -765,8 +763,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Add an OnClickListener to the dialog, so that the selection will be handled.
         builder.setSingleChoiceItems(
-                MAP_TYPE_ITEMS,
-                checkItem
+            MAP_TYPE_ITEMS,
+            checkItem
         ) { dialog, item ->
             // Locally create a finalised object.
 
@@ -777,7 +775,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 3 -> mGoogleMap.mapType = GoogleMap.MAP_TYPE_HYBRID
                 else -> mGoogleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
             }
-            dialog?.let{it.dismiss()}
+            dialog?.dismiss()
         }
 
         // Build the dialog and show it.
@@ -787,11 +785,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Set user costum location manually by long pressing
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Set user costum location manually by long pressing
     private fun setManualLocalization() {
 
         //stop location updates, doing manually
@@ -820,14 +814,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 myCurrentPositionMarker!!.remove()
             }
 
-            myCurrentPositionMarker = mGoogleMap.addMarker(MarkerOptions()
+            myCurrentPositionMarker = mGoogleMap.addMarker(
+                MarkerOptions()
                     .position(latLng)
                     .title("Your Manual position")
-                    .snippet("Latitude : " + latLng.latitude + "\n" + "Longitude : " + latLng.longitude))
+                    .snippet("Latitude : " + latLng.latitude + "\n" + "Longitude : " + latLng.longitude)
+            )
 
 
 
-            myCurrentPositionMarker!!.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+            myCurrentPositionMarker!!.setIcon(
+                BitmapDescriptorFactory.defaultMarker(
+                    BitmapDescriptorFactory.HUE_GREEN
+                )
+            )
 
             // set flag for manual_Localization_On
             val editor = sharedPreferences.edit()
@@ -835,10 +835,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             editor.apply()
 
 
-            editor.putString(getString(R.string.device_lat), java.lang.Double.toString(latLng.latitude))
+            editor.putString(
+                getString(R.string.device_lat),
+                java.lang.Double.toString(latLng.latitude)
+            )
             editor.apply()
 
-            editor.putString(getString(R.string.device_lng), java.lang.Double.toString(latLng.longitude))
+            editor.putString(
+                getString(R.string.device_lng),
+                java.lang.Double.toString(latLng.longitude)
+            )
             editor.apply()
 
 
@@ -854,18 +860,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             manualLocIsOn = true
 
             // change title
-            supportActionBar!!.title = Html.fromHtml("<font color='#66ff66'>" +
-                    getString(R.string.title_activity_maps_manual_localization_on) + "</font>")
+            supportActionBar!!.title = Html.fromHtml(
+                "<font color='#66ff66'>" +
+                        getString(R.string.title_activity_maps_manual_localization_on) + "</font>"
+            )
         }
 
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Unset user manual location
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Unset user manual location
     private fun unSetManualLocalization() {
 
         // reset manual position marker
@@ -894,23 +898,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         supportActionBar!!.title = ""
 
         // restart activity
-        MyUtil.restartActivity(this@MapsActivity)
+        GenericUtils.restartActivity(this@MapsActivity)
 
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Show alert with instruction for manual localization
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Show alert with instruction for manual localization
     private fun manualLocalizationAlert() {
         AlertDialog.Builder(this)
-                .setTitle(this.resources.getString(R.string.dialog_manual_loc_title))
-                .setMessage(this.resources.getString(R.string.dialog_manual_loc_msg))
-                .setPositiveButton("OK") { dialogInterface, i -> setManualLocalization() }
-                .create()
-                .show()
+            .setTitle(this.resources.getString(R.string.dialog_manual_loc_title))
+            .setMessage(this.resources.getString(R.string.dialog_manual_loc_msg))
+            .setPositiveButton("OK") { dialogInterface, i -> setManualLocalization() }
+            .create()
+            .show()
 
     }
 
@@ -923,18 +923,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         locCheckbox = menu.findItem(R.id.overridePosition_cb)
 
         // in case of previous manual loc setting, check and open menu
-        if (manualLocIsOn == true) {
+        if (manualLocIsOn) {
             // set checkbox manual loc set checked
             locCheckbox.isChecked = true
 
         }
-
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        when (id) {
+        when (item.itemId) {
             R.id.overridePosition_cb -> {
                 if (item.isChecked) {
                     item.isChecked = false
@@ -981,18 +979,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     companion object {
-
-        private val TAG = MapsActivity::class.java.simpleName
-
         // Maps type list
-        private val MAP_TYPE_ITEMS = arrayOf<CharSequence>("Road Map", "Hybrid", "Satellite", "Terrain")
+        private val MAP_TYPE_ITEMS =
+            arrayOf<CharSequence>("Road Map", "Hybrid", "Satellite", "Terrain")
 
-
-        /**
-         * ---------------------------------------------------------------------------------------------
-         * Ask for user location permissions
-         * ---------------------------------------------------------------------------------------------
-         */
+        // Ask for user location permissions
         val MY_PERMISSIONS_REQUEST_LOCATION = 99
     }
 

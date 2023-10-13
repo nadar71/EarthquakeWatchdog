@@ -10,42 +10,18 @@ import com.indiewalk.watchdog.earthquake.data.remote.EarthquakeNetworkDataSource
 import com.indiewalk.watchdog.earthquake.core.util.AppExecutors
 
 
-/**
- * -------------------------------------------------------------------------------------------------
- * Class used for access classes singletons and application context wherever in the app.
- * Just like repository is an interface for all data operations.
- * Can be used dependency injection as well.
- * NB : registered in manifest in <Application android:name=".AppEarthquake">... </Application>
- * -------------------------------------------------------------------------------------------------
- */
+// Class used for access classes singletons and application context wherever in the app.
 class AppEarthquake : Application() {
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Return AppExecutors singleton instance
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
-    var appExecutorsInstance: AppExecutors? = null
-        private set
+    // Return AppExecutors singleton instance
+    private var appExecutorsInstance: AppExecutors? = null
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Return singleton db instance
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
-    val database: EarthquakeDatabase?
+    // Return singleton db instance
+    private val database: EarthquakeDatabase?
         get() = EarthquakeDatabase.getDbInstance(this)
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Return depository singleton instance
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
-    // repo standard constructor
+    // Return depository singleton instance
     val repository: EarthquakeRepository?
         get() = database?.let { EarthquakeRepository.getInstance(it) }
 
@@ -55,24 +31,37 @@ class AppEarthquake : Application() {
         get() {
             val db = database
             val executors = AppExecutors.instance
-            val networkDataSource = executors?.let { EarthquakeNetworkDataSource.getInstance(this.applicationContext, it) }
+            val networkDataSource = executors?.let {
+                EarthquakeNetworkDataSource.getInstance(
+                    this.applicationContext,
+                    it
+                )
+            }
 
-            return networkDataSource?.let { EarthquakeRepository.getInstanceWithDataSource(db!!, it, executors!!) }
+            return networkDataSource?.let {
+                EarthquakeRepository.getInstanceWithDataSource(
+                    db!!,
+                    it,
+                    executors!!
+                )
+            }
         }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Return EarthquakeDatasource singleton instance
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Return EarthquakeDatasource singleton instance
     // getRepository(); // the repository is not created if called from a intent service
-    // nedeed otherwise the repository is not created if called from a intent service
+    // needed otherwise the repository is not created if called from a intent service
     val networkDatasource: EarthquakeNetworkDataSource?
         get() {
             repositoryWithDataSource
-            return sContext?.let { appExecutorsInstance?.let { it1 -> EarthquakeNetworkDataSource.getInstance(it, it1) } }
+            return sContext?.let {
+                appExecutorsInstance?.let { it1 ->
+                    EarthquakeNetworkDataSource.getInstance(
+                        it,
+                        it1
+                    )
+                }
+            }
         }
 
     override fun onCreate() {
@@ -82,16 +71,9 @@ class AppEarthquake : Application() {
     }
 
     companion object {
-
         private var sContext: Context? = null
 
-
-        /**
-         * ---------------------------------------------------------------------------------------------
-         * Return application context wherever we are in the app
-         * @return
-         * ---------------------------------------------------------------------------------------------
-         */
+        // Return application context wherever we are in the app
         fun getsContext(): Context? {
             return sContext
         }

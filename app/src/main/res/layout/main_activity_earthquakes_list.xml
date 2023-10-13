@@ -1,100 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?><!-- Layout for a list of earthquakes -->
-<androidx.constraintlayout.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/relativeLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".presentation.ui.MainActivityEarthquakesList">
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
 
-    <include
-        android:id="@+id/btn_filter_details"
-        layout="@layout/filter_info"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:textColor="@color/common_google_signin_btn_text_dark_pressed"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/list"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    </data>
 
-
-    <androidx.appcompat.widget.RecyclerView
-        android:id="@+id/list"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:divider="@color/textColorEarthquakeDetails"
-        android:dividerHeight="1dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/mAdView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_filter_details">
-
-    </androidx.appcompat.widget.RecyclerView>
-
-    <!-- Empty view is only visible when the list has no items. -->
-
-    <TextView
-        android:id="@+id/emptyListText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:text="@string/no_earthquakes"
-        android:textAllCaps="false"
-        android:textAppearance="?android:textAppearanceMedium"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ProgressBar
-        android:id="@+id/loadingInProgress"
-        style="@style/Widget.AppCompat.ProgressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/info_filter_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:clickable="true"
-        android:focusable="true"
-        app:backgroundTint="@color/colorPrimary"
-        app:fabSize="mini"
-        app:layout_constraintBottom_toTopOf="@+id/mAdView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_info_outline_white_50dp" />
-
-    <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/mAdView"
-        android:layout_width="match_parent"
-        android:layout_height="49dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        ads:adSize="BANNER"
-        ads:adUnitId="@string/admob_key_bottom_banner"
-        ads:layout_constraintBottom_toBottomOf="parent"
-        ads:layout_constraintEnd_toEndOf="parent"
-        ads:layout_constraintHorizontal_bias="0.0"
-        ads:layout_constraintStart_toStartOf="parent" />
+        android:layout_height="match_parent"
+        tools:context=".presentation.ui.MainActivityEarthquakesList">
 
 
+        <include
+            android:id="@+id/btn_filter_details"
+            layout="@layout/filter_info"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/common_google_signin_btn_text_dark_pressed"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@+id/list"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.constraintlayout.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:divider="@color/textColorEarthquakeDetails"
+            android:dividerHeight="1dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/mAdView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_filter_details">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <!-- Empty view is only visible when the list has no items. -->
+
+        <TextView
+            android:id="@+id/emptyListText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/no_earthquakes"
+            android:textAllCaps="false"
+            android:textAppearance="?android:textAppearanceMedium"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/loadingInProgress"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/info_filter_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:backgroundTint="@color/colorPrimary"
+            app:fabSize="mini"
+            app:layout_constraintBottom_toTopOf="@+id/mAdView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_info_outline_white_50dp" />
+
+        <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/mAdView"
+            android:layout_width="match_parent"
+            android:layout_height="49dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            ads:adSize="BANNER"
+            ads:adUnitId="@string/admob_key_bottom_banner"
+            ads:layout_constraintBottom_toBottomOf="parent"
+            ads:layout_constraintEnd_toEndOf="parent"
+            ads:layout_constraintHorizontal_bias="0.0"
+            ads:layout_constraintStart_toStartOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -3,6 +3,7 @@ package com.indiewalk.watchdog.earthquake.data.remote
 import android.util.Log
 
 import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
+import it.abenergie.customerarea.core.utility.extensions.TAG
 
 import org.json.JSONException
 import org.json.JSONObject
@@ -17,28 +18,18 @@ import java.net.URL
 import java.nio.charset.Charset
 import java.util.ArrayList
 
-/**
- * ---------------------------------------------------------------------------------------------
- * Class which do all the stuff for remote request to RESTFul service
- * USED INSIDE LOADER CALLBACK and...
- * ---------------------------------------------------------------------------------------------
- */
 
+// ---------------------------------------------------------------------------------------------
+// Class which do all the stuff for remote request to RESTFul service
+// USED INSIDE LOADER CALLBACK and...
+// ---------------------------------------------------------------------------------------------
 class EarthQuakeNetworkRequest {
     // tmp data structure for returning results
     private var earthquakes: ArrayList<Earthquake>? = null
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Fetch data from remote service.
-     * Use createUrl, makeHttpRequest, extractFeatureFromJson
-     * @param requestedUrl
-     * @return ArrayList<Earthquake>
-     * ---------------------------------------------------------------------------------------------
-    </Earthquake> */
+    // Fetch data from remote service (createUrl, makeHttpRequest, extractFeatureFromJson)
     fun fetchEarthquakeData(requestedUrl: String): ArrayList<Earthquake>? {
-
         //decomment  simulate network latency for debugging
         /*
         try {
@@ -47,9 +38,7 @@ class EarthQuakeNetworkRequest {
             e.printStackTrace();
         }
         */
-
         val url = createUrl(requestedUrl)
-
         if (url == null) {
             Log.e(TAG, "Empty url ")
             return null
@@ -65,19 +54,15 @@ class EarthQuakeNetworkRequest {
 
         Log.i(TAG, "fetchEarthquakeData: calling extractFeatureFromJson")
         // Extract relevant fields from the JSON response and create an {@link Event} object
-        if (jsonResponse != null && !jsonResponse.isEmpty() && jsonResponse !== "") {
+        return if (!jsonResponse.isNullOrEmpty() && jsonResponse !== "") {
             earthquakes = extractFeatureFromJson(jsonResponse)
-            return earthquakes
+            earthquakes
         } else {
-            return null
+            null
         }
     }
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Returns new URL object from the given string URL.
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Returns new URL object from the given string URL.
     private fun createUrl(stringUrl: String): URL? {
         var url: URL? = null
         try {
@@ -86,15 +71,10 @@ class EarthQuakeNetworkRequest {
             Log.e(TAG, "Error with creating URL", e)
             return null
         }
-
         return url
     }
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Make an HTTP request to the given URL and return a String as the response.
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Make an HTTP request to the given URL and return a String as the response.
     @Throws(IOException::class)
     private fun makeHttpRequest(url: URL): String {
         var jsonResponse = ""
@@ -129,18 +109,13 @@ class EarthQuakeNetworkRequest {
         return jsonResponse
     }
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Convert the [InputStream] into a String which contains the
-     * whole JSON response from the server.
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Convert the [InputStream] into a String which contains the
+    // whole JSON response from the server.
     @Throws(IOException::class)
     private fun readFromStream(inputStream: InputStream?): String {
         val output = StringBuilder()
 
         if (inputStream != null) {
-
             val inputStreamReader = InputStreamReader(inputStream, Charset.forName("UTF-8"))
             val reader = BufferedReader(inputStreamReader)
             var line: String? = reader.readLine()
@@ -155,14 +130,9 @@ class EarthQuakeNetworkRequest {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Return a ArrayList of  [Earthquake] objects by parsing out information
-     * about the first earthquake from the input earthquakeJSON string.
-     *
-     * Return the list of earthquake retrieved from remote
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Return a ArrayList of  [Earthquake] objects by parsing out information
+    // about the first earthquake from the input earthquakeJSON string.
+    // Return the list of earthquake retrieved from remote
     private fun extractFeatureFromJson(earthquakeJSON: String): ArrayList<Earthquake> {
         // Create an empty ArrayList that we can start adding earthquakes to
         earthquakes = ArrayList()
@@ -218,13 +188,7 @@ class EarthQuakeNetworkRequest {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Return http response code
-     * @param urlConnection
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Return http response code
     private fun checkHttpResponse(urlConnection: HttpURLConnection): Int {
         var responseCode = 0
         try {
@@ -232,14 +196,8 @@ class EarthQuakeNetworkRequest {
         } catch (e: IOException) {
             Log.e("$TAG.checkHttpResponse", "Problem getting HTTP response.", e)
         }
-
         return responseCode
     }
 
-    companion object {
-
-        // log tag definition
-        private val TAG = EarthQuakeNetworkRequest::class.java.name
-    }
 
 }

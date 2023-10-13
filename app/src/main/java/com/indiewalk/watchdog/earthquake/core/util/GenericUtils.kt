@@ -23,28 +23,22 @@ import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.AppEarthquake
 import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList
 import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
+import it.abenergie.customerarea.core.utility.extensions.TAG
 
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Calendar
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
-object MyUtil {
-
-
-    private val TAG = MyUtil::class.java.simpleName
-
+object GenericUtils {
     // URL to query the USGS dataset for earthquake information
-    val USGS_REQUEST_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
+    const val USGS_REQUEST_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Check if internet connection is on
-     * ---------------------------------------------------------------------------------------------
-     */
-    // check connection
-    // reference to connection manager
-    // network status retrieving
+    // Check if internet connection is on
     val isConnectionOk: Boolean
         get() {
             val connManager = (AppEarthquake.getsContext() as AppEarthquake)
@@ -60,12 +54,7 @@ object MyUtil {
     // "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&minmag=6&limit=10"; // debug
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Compose a query url starting from preferences parameters
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Compose a query url starting from preferences parameters
     fun composeQueryUrl(dateFilter: String): String {
         var rootUri = Uri.parse(USGS_REQUEST_URL)
         val builder = rootUri.buildUpon()
@@ -86,115 +75,68 @@ object MyUtil {
         return builder.toString()
     }
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Convert degree angle in radiant
-     * @param deg_angle
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
-    fun fromDegreeToRadiant(deg_angle: Double): Double {
+    // Convert degree angle in radiant
+    private fun fromDegreeToRadiant(deg_angle: Double): Double {
         return deg_angle * Math.PI / 180
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Returning the distance between 2 points on a sphere throught the Haversine formula
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
-    fun haversineDistanceCalc(p1Lat: Double, p2Lat: Double, p1Lng: Double, p2Lng: Double): Double {
+    // Returning the distance between 2 points on a sphere throught the Haversine formula
+    private fun haversineDistanceCalc(p1Lat: Double, p2Lat: Double, p1Lng: Double, p2Lng: Double): Double {
         val R = 6378137 // Earth’s mean radius in meter
         val dLat = fromDegreeToRadiant(p2Lat - p1Lat)
         val dLng = fromDegreeToRadiant(p2Lng - p1Lng)
-        val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(fromDegreeToRadiant(p1Lat)) *
-                Math.cos(fromDegreeToRadiant(p2Lat)) *
-                Math.sin(dLng / 2) * Math.sin(dLng / 2)
-        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+        val a = sin(dLat / 2) * sin(dLat / 2) + cos(fromDegreeToRadiant(p1Lat)) *
+                cos(fromDegreeToRadiant(p2Lat)) *
+                sin(dLng / 2) * sin(dLng / 2)
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
         val d = R * c
         return d / 1000 // returns the distance in Km
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Convert km to miles
-     * @param km
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Convert km to miles
     fun fromKmToMiles(km: Double): Double {
         val MileInkm = 0.621371192
         return km * MileInkm
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Format date in a specific way and millisec  format
-     * @param dateMillisec
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Format date in a specific way and millisec  format
     fun formatDateFromMsec(dateMillisec: Long): String {
         // Date
         val date = Date(dateMillisec)
         println("date : $date")
-
         // Format Date
         val dateFormatter = SimpleDateFormat("MMM dd, yyyy")
         return dateFormatter.format(date)
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Format time in a specific way and millisec  format
-     * @param dateMillisec
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Format time in a specific way and millisec  format
     fun formatTimeFromMsec(dateMillisec: Long): String {
         // Time
         val time = Date(dateMillisec)
         println("time : $time")
-
         // Format Time
         val timeFormatter = SimpleDateFormat("h:mm a")
         return timeFormatter.format(time)
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Extract only the digit with "." from a String
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Extract only the digit with "." from a String
     fun returnDigit(s: String): String {
         return s.replace("[^0-9?!\\.]+".toRegex(), "")
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Extract only the char from a String
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Extract only the char from a String
     fun returnChar(s: String): String {
         return s.replace("[0-9]+".toRegex(), "")
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Converting vector icon to bitmap one, to get used as marker icon (allow bitmap only)
-     * @param context
-     * @param vectorResourceId
-     * @param tintColor
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Converting vector icon to bitmap one, to get used as marker icon (allow bitmap only)
     fun getBitmapFromVector(context: Context,
                             @DrawableRes vectorResourceId: Int,
                             @ColorInt tintColor: Int): BitmapDescriptor {
@@ -213,12 +155,7 @@ object MyUtil {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Hide nav bar total
-     * @param activity
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Hide nav bar total
     fun hideNavBar(activity: Activity) {
         if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
             activity.window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -232,11 +169,7 @@ object MyUtil {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Return Past date by daysOffset
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Return Past date by daysOffset
     fun oldDate(daysOffset: Int): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd ")
         val calReturn = Calendar.getInstance()
@@ -244,11 +177,7 @@ object MyUtil {
         return dateFormat.format(calReturn.time)
     }
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Restart current activity
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Restart current activity
     fun restartActivity(activity: Activity) {
         val mIntent = activity.intent
         activity.finish()
@@ -256,13 +185,7 @@ object MyUtil {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Return specific color value for specific magnitude values
-     * @param magnitude
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Return specific color value for specific magnitude values
     fun getMagnitudeColor(magnitude: Double, context: Context): Int {
         val mag = magnitude.toInt()
         Log.i("getMagnitudeColor", "Color: $mag")
@@ -284,13 +207,7 @@ object MyUtil {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Return specific vector image for specific magnitude values
-     * @param magnitude
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Return specific vector image for specific magnitude values
     fun getMagnitudeImg(magnitude: Double, context: Context): Drawable? {
         val mag = magnitude.toInt()
         Log.i("getMagnitudeColor", "Color: $mag")
@@ -312,11 +229,7 @@ object MyUtil {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Update last update field in preferences
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Update last update field in preferences
     fun setLastUpdateField(context: Context): String {
         // store the last update time
         val lastUpdate = formatDateFromMsec(System.currentTimeMillis()) +
@@ -332,13 +245,7 @@ object MyUtil {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Update each equakes info with custom distance from user if any.
-     * Update with distance unit preferred.
-     * Using List<Earthquake> earthquakes
-     * ---------------------------------------------------------------------------------------------
-    </Earthquake> */
+    // Update each equakes info with custom distance from user if any,with distance unit preferred.
     fun setEqDistanceFromCurrentCoords(earthquakes: List<Earthquake>?, context: Context) {
 
         // if (context == null) return
@@ -355,13 +262,13 @@ object MyUtil {
 
         // set default coord if there are no one
         val editor = sharedPreferences.edit()
-        if (lat_s!!.isEmpty() == true) {
+        if (lat_s!!.isEmpty()) {
             editor.putString(context.getString(R.string.device_lat), java.lang.Double.toString(
                 MainActivityEarthquakesList.DEFAULT_LAT))
             editor.apply()
         }
 
-        if (lng_s!!.isEmpty() == true) {
+        if (lng_s!!.isEmpty()) {
             editor.putString(context.getString(R.string.device_lng), java.lang.Double.toString(
                 MainActivityEarthquakesList.DEFAULT_LNG))
             editor.apply()
@@ -380,8 +287,8 @@ object MyUtil {
 
         if (earthquakes != null) { // workaround for #97
             for (eq in earthquakes) {
-                val userLat = java.lang.Double.valueOf(lat_s)!!
-                val userLng = java.lang.Double.valueOf(lng_s)!!
+                val userLat = java.lang.Double.valueOf(lat_s)
+                val userLng = java.lang.Double.valueOf(lng_s)
                 var distance = haversineDistanceCalc(userLat, eq.latitude,
                         userLng, eq.longitude).toInt()
                 // convert in miles if needed
@@ -400,15 +307,9 @@ object MyUtil {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Overloaded version of setEqDistanceFromCurrentCoords, now using Earthquake[] earthquakes
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Overloaded version of setEqDistanceFromCurrentCoords, now using Earthquake[] earthquakes
     fun setEqDistanceFromCurrentCoords(earthquakes: Array<Earthquake>?, context: Context) {
-
         // Check location coordinates from shared preferences.If not set, put default value
-
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
 
         //get preferences for check
@@ -420,13 +321,13 @@ object MyUtil {
 
         // set default coord if there are no one
         val editor = sharedPreferences.edit()
-        if (lat_s!!.isEmpty() == true) {
+        if (lat_s!!.isEmpty()) {
             editor.putString(context.getString(R.string.device_lat), java.lang.Double.toString(
                 MainActivityEarthquakesList.DEFAULT_LAT))
             editor.apply()
         }
 
-        if (lng_s!!.isEmpty() == true) {
+        if (lng_s!!.isEmpty()) {
             editor.putString(context.getString(R.string.device_lng), java.lang.Double.toString(
                 MainActivityEarthquakesList.DEFAULT_LNG))
             editor.apply()
@@ -463,13 +364,7 @@ object MyUtil {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Add a day in ol Date format
-     * @param date
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Add a day in ol Date format
     fun addDays(date: Date, numDays: Int): Date {
         val cal = Calendar.getInstance()
         cal.time = date

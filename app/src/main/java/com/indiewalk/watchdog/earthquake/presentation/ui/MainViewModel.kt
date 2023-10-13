@@ -2,7 +2,6 @@ package com.indiewalk.watchdog.earthquake.presentation.ui
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.util.Log
@@ -11,17 +10,10 @@ import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.AppEarthquake
 import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
 import com.indiewalk.watchdog.earthquake.data.repository.EarthquakeRepository
+import it.abenergie.customerarea.core.utility.extensions.TAG
 
 class MainViewModel : ViewModel {
-
-
-    // Livedata var on Earthquake List to populate through ViewModel
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Getter for LiveData<List></List><FoodEntry>> list
-     * @return
-     * ---------------------------------------------------------------------------------------------
-    </FoodEntry> */
+    var context: AppEarthquake? = null
     var eqList: LiveData<List<Earthquake>>? = null
         private set
 
@@ -32,7 +24,6 @@ class MainViewModel : ViewModel {
     // repository ref
     private var eqRepository: EarthquakeRepository? = null
 
-
     // Preferences value
     private var minMagnitude: String? = null
 
@@ -40,14 +31,9 @@ class MainViewModel : ViewModel {
     private var sharedPreferences: SharedPreferences? = null
 
     // min mgnitudine value
-    private var dMinMagnitude: Double  = 0.0
+    private var dMinMagnitude: Double = 0.0
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Standard MainViewModel constructor
-     * ---------------------------------------------------------------------------------------------
-     */
     constructor() {
         context = AppEarthquake.getsContext() as AppEarthquake?
 
@@ -60,13 +46,6 @@ class MainViewModel : ViewModel {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Constructor with parameter used by [MainViewModelFactory]
-     * : init the attributes with LiveData<List></List><Earthquake>>
-     * @param listType
-     * ---------------------------------------------------------------------------------------------
-    </Earthquake> */
     constructor(listType: String) {
         Log.d(TAG, "Actively retrieving the collections from repository")
 
@@ -116,19 +95,13 @@ class MainViewModel : ViewModel {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Set and check location coordinates from shared preferences.
-     * If not set, put default value
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Set and check location coordinates from shared preferences.If not set, put default value
     private fun checkPreferences() {
-
         // recover min magnitude value from prefs or set a default from string value
         minMagnitude = sharedPreferences!!.getString(
-                context!!.getString(R.string.settings_min_magnitude_key),
-                context!!.getString(R.string.settings_min_magnitude_default))
-
+            context!!.getString(R.string.settings_min_magnitude_key),
+            context!!.getString(R.string.settings_min_magnitude_default)
+        )
 
         // check preferences safety
         safePreferencesValue()
@@ -136,13 +109,9 @@ class MainViewModel : ViewModel {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * making code more robust checking if for same reasons the defaut value stored are null or
-     * not equals to none of the preferences stored values (e.g.  in case of key value change on code
-     * but user saved with the previous one with previous app version )
-     * ---------------------------------------------------------------------------------------------
-     */
+    // making code more robust checking if for same reasons the default value stored are null or
+    // not equals to none of the preferences stored values (e.g.  in case of key value change on code
+    // but user saved with the previous one with previous app version )
     private fun safePreferencesValue() {
 
         val editor = sharedPreferences!!.edit()
@@ -153,38 +122,27 @@ class MainViewModel : ViewModel {
         }
 
         if (minMagnitude != context!!.getString(R.string.settings_1_0_min_magnitude_value) &&
-                minMagnitude != context!!.getString(R.string.settings_2_0_min_magnitude_value) &&
-                minMagnitude != context!!.getString(R.string.settings_3_0_min_magnitude_value) &&
-                minMagnitude != context!!.getString(R.string.settings_4_0_min_magnitude_value) &&
-                minMagnitude != context!!.getString(R.string.settings_4_5_min_magnitude_value) &&
-                minMagnitude != context!!.getString(R.string.settings_5_0_min_magnitude_value) &&
-                minMagnitude != context!!.getString(R.string.settings_5_5_min_magnitude_value) &&
-                minMagnitude != context!!.getString(R.string.settings_6_0_min_magnitude_value) &&
-                minMagnitude != context!!.getString(R.string.settings_6_5_min_magnitude_value)) {
+            minMagnitude != context!!.getString(R.string.settings_2_0_min_magnitude_value) &&
+            minMagnitude != context!!.getString(R.string.settings_3_0_min_magnitude_value) &&
+            minMagnitude != context!!.getString(R.string.settings_4_0_min_magnitude_value) &&
+            minMagnitude != context!!.getString(R.string.settings_4_5_min_magnitude_value) &&
+            minMagnitude != context!!.getString(R.string.settings_5_0_min_magnitude_value) &&
+            minMagnitude != context!!.getString(R.string.settings_5_5_min_magnitude_value) &&
+            minMagnitude != context!!.getString(R.string.settings_6_0_min_magnitude_value) &&
+            minMagnitude != context!!.getString(R.string.settings_6_5_min_magnitude_value)
+        ) {
             setMinMagDefault(editor)
         }
 
     }
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Set min_magnitude to default
-     * @param editor
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Set min_magnitude to default
     private fun setMinMagDefault(editor: SharedPreferences.Editor) {
         minMagnitude = context!!.getString(R.string.settings_min_magnitude_default)
         editor.putString(
             context!!.getString(R.string.settings_min_magnitude_key),
-                context!!.getString(R.string.settings_min_magnitude_default))
-    }
-
-    companion object {
-
-        // tag for logging
-        private val TAG = MainViewModel::class.java.simpleName
-
-        private var context: Context? = null
+            context!!.getString(R.string.settings_min_magnitude_default)
+        )
     }
 
 

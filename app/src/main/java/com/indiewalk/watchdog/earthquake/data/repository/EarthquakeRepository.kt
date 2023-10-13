@@ -9,7 +9,7 @@ import com.indiewalk.watchdog.earthquake.data.local.db.EarthquakeDatabase
 import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
 import com.indiewalk.watchdog.earthquake.data.remote.EarthquakeNetworkDataSource
 import com.indiewalk.watchdog.earthquake.core.util.AppExecutors
-import com.indiewalk.watchdog.earthquake.core.util.MyUtil
+import com.indiewalk.watchdog.earthquake.core.util.GenericUtils
 
 class EarthquakeRepository {
     private lateinit var networkDataSource: EarthquakeNetworkDataSource
@@ -19,12 +19,7 @@ class EarthquakeRepository {
     private var eqDb: EarthquakeDatabase
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Checks if there are eqs data in db, otherwise return true to request remote data
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Checks if there are eqs data in db, otherwise return true to request remote data
     private val isRequestDataNeeded: Boolean
         get() {
             val eqs = eqDb.earthquakeDbDao().loadAllNoLiveData()
@@ -32,12 +27,7 @@ class EarthquakeRepository {
         }
 
 
-    /**
-     * ----------------------------------------------------------------------------------------------
-     * Return  the non-empty list of earthquake if any
-     * @return
-     * ----------------------------------------------------------------------------------------------
-     */
+    // Return  the non-empty list of earthquake if any
     val earthquakesList: LiveData<List<Earthquake>>
         get() = loadAll()
 
@@ -47,9 +37,10 @@ class EarthquakeRepository {
     }
 
     // constructor with data source
-    private constructor(earthquakeDatabase: EarthquakeDatabase,
-                        networkDataSource: EarthquakeNetworkDataSource,
-                        executors: AppExecutors
+    private constructor(
+        earthquakeDatabase: EarthquakeDatabase,
+        networkDataSource: EarthquakeNetworkDataSource,
+        executors: AppExecutors
     ) {
         this.eqDb = earthquakeDatabase
         this.networkDataSource = networkDataSource
@@ -61,13 +52,18 @@ class EarthquakeRepository {
         // observe data from data source; in case of change, update all the db
         networkData.observeForever { newEqFromNetwork ->
             executors.diskIO().execute {
-                Log.d(TAG, "EarthquakeRepository observer : " + "New values found, deletes previous and insert new ones. ")
+                Log.d(
+                    TAG,
+                    "EarthquakeRepository observer : " + "New values found, deletes previous and insert new ones. "
+                )
                 // Delete old and insert new data
                 dropEarthquakeListTable()
 
                 // update with distance from user, distance unit each earthquake
-                MyUtil.setEqDistanceFromCurrentCoords(newEqFromNetwork,
-                        AppEarthquake.getsContext() as AppEarthquake)
+                GenericUtils.setEqDistanceFromCurrentCoords(
+                    newEqFromNetwork,
+                    AppEarthquake.getsContext() as AppEarthquake
+                )
 
                 if (newEqFromNetwork != null) {
                     eqDb.earthquakeDbDao().renewDataInsert(*newEqFromNetwork)
@@ -80,12 +76,8 @@ class EarthquakeRepository {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Creates periodic sync tasks and checks to see if an immediate sync is required. If an
-     * immediate sync is required, this method will take care of making sure that sync occurs.
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Creates periodic sync tasks and checks to see if an immediate sync is required. If an
+    // immediate sync is required, this method will take care of making sure that sync occurs.
     @Synchronized
     fun initializeData() {
 
@@ -104,9 +96,12 @@ class EarthquakeRepository {
 
         // try to fetch earthquakes remote data if needed
         executors.diskIO().execute {
-            if (MyUtil.isConnectionOk) {
+            if (GenericUtils.isConnectionOk) {
                 if (isRequestDataNeeded) {
-                    Log.d(TAG, "initializeData: isFetchNeeded == true, run the intent from fetching data from remote")
+                    Log.d(
+                        TAG,
+                        "initializeData: isFetchNeeded == true, run the intent from fetching data from remote"
+                    )
                     startFetchEarthquakeService()
                 }
             }/* else {
@@ -117,11 +112,7 @@ class EarthquakeRepository {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Start IntentService of EarthquakeNetworkDataSource
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Start IntentService of EarthquakeNetworkDataSource
     private fun startFetchEarthquakeService() {
         // call the intent service for retrieving network data daemon
         networkDataSource.startFetchEarthquakeService()
@@ -131,6 +122,7 @@ class EarthquakeRepository {
     //----------------------------------------------------------------------------------------------
     //  QUERY
     //----------------------------------------------------------------------------------------------
+
     // retrieve all the eqs
     fun loadAll(): LiveData<List<Earthquake>> {
         initializeData()
@@ -203,12 +195,15 @@ class EarthquakeRepository {
             dropEarthquakeListTable()
 
             // update with distance from user, distance unit each earthquake
-            MyUtil.setEqDistanceFromCurrentCoords(equakes, context)
+            GenericUtils.setEqDistanceFromCurrentCoords(equakes, context)
 
             if (equakes != null) { // workaround for #97
                 val equakes_array = equakes.toTypedArray()
                 eqDb.earthquakeDbDao().renewDataInsert(*equakes_array)
-                Log.d(TAG, "Updating eqs distances from current user location. : New values inserted. ")
+                Log.d(
+                    TAG,
+                    "Updating eqs distances from current user location. : New values inserted. "
+                )
             }
         }
 
@@ -218,6 +213,7 @@ class EarthquakeRepository {
     //----------------------------------------------------------------------------------------------
     //  DELETE
     //----------------------------------------------------------------------------------------------
+
     // drop table : delete all table content
     fun dropEarthquakeListTable() {
         eqDb.earthquakeDbDao().dropEarthquakeListTable()
@@ -230,13 +226,7 @@ class EarthquakeRepository {
         private var sInstance: EarthquakeRepository? = null
 
 
-        /**
-         * ---------------------------------------------------------------------------------------------
-         * Get repo singleton instance for standard constructor
-         * @param database
-         * @return
-         * ---------------------------------------------------------------------------------------------
-         */
+        // Get repo singleton instance for standard constructor
         fun getInstance(database: EarthquakeDatabase): EarthquakeRepository? {
             if (sInstance == null) {
                 synchronized(EarthquakeRepository::class.java) {
@@ -249,23 +239,17 @@ class EarthquakeRepository {
         }
 
 
-        /**
-         * ---------------------------------------------------------------------------------------------
-         * Get repo singleton instance for constructor with data source support
-         * @param earthquakeDatabase
-         * @param networkDataSource
-         * @param executors
-         * @return
-         * ---------------------------------------------------------------------------------------------
-         */
-        fun getInstanceWithDataSource(earthquakeDatabase: EarthquakeDatabase,
-                                      networkDataSource: EarthquakeNetworkDataSource,
-                                      executors: AppExecutors
+        // Get repo singleton instance for constructor with data source support
+        fun getInstanceWithDataSource(
+            earthquakeDatabase: EarthquakeDatabase,
+            networkDataSource: EarthquakeNetworkDataSource,
+            executors: AppExecutors
         ): EarthquakeRepository? {
             if (sInstance == null) {
                 synchronized(EarthquakeRepository::class.java) {
                     if (sInstance == null) {
-                        sInstance = EarthquakeRepository(earthquakeDatabase, networkDataSource, executors)
+                        sInstance =
+                            EarthquakeRepository(earthquakeDatabase, networkDataSource, executors)
                     }
                 }
             }

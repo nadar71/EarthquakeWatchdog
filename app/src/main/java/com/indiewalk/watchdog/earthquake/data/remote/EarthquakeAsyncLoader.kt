@@ -6,24 +6,17 @@ import android.util.Log
 
 import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
 import com.indiewalk.watchdog.earthquake.data.local.db.EarthquakeDatabase
-import com.indiewalk.watchdog.earthquake.core.util.MyUtil
+import com.indiewalk.watchdog.earthquake.core.util.GenericUtils
+import it.abenergie.customerarea.core.utility.extensions.TAG
 
 import java.util.ArrayList
 
-/**
- * -------------------------------------------------------------------------------------------------
- * Class for loading async equake data using loader
- * -------------------------------------------------------------------------------------------------
- */
-class EarthquakeAsyncLoader
-/**
- * ---------------------------------------------------------------------------------------------
- * Loader constructor, pass the
- * @param localContext  : localContext of the activity
- * @param url           : url to be queried for
- * ---------------------------------------------------------------------------------------------
- */
-(private val localContext: Context, // query url
+
+// -------------------------------------------------------------------------------------------------
+// Loading async equake data using loader
+// -------------------------------------------------------------------------------------------------
+
+class EarthquakeAsyncLoader(private val localContext: Context, // query url
  private val queryUrl: String?) : AsyncTaskLoader<List<Earthquake>>(localContext) {
 
     // db instance reference
@@ -38,7 +31,6 @@ class EarthquakeAsyncLoader
     private val dist_unit: String? = null
 
     init {
-
         // init db instance to save data
         eqDb = EarthquakeDatabase.getDbInstance(localContext.applicationContext)
     }
@@ -49,12 +41,7 @@ class EarthquakeAsyncLoader
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Background thread
-     * @return
-     * ---------------------------------------------------------------------------------------------
-     */
+    // Background thread
     override fun loadInBackground(): List<Earthquake>? {
         if (queryUrl == null) {
             return null
@@ -65,7 +52,7 @@ class EarthquakeAsyncLoader
         Log.i(TAG, "loadInBackground: loadInBackground ended, returning data requested.")
 
         // update with distance from user, distance unit each earthquake
-        MyUtil.setEqDistanceFromCurrentCoords(earthquakes, localContext)
+        GenericUtils.setEqDistanceFromCurrentCoords(earthquakes, localContext)
 
         // delete previous results in db, only newest are valid
         eqDb!!.earthquakeDbDao().dropEarthquakeListTable()
@@ -74,14 +61,7 @@ class EarthquakeAsyncLoader
         for (earthquake in earthquakes!!) {
             eqDb.earthquakeDbDao().insertEarthquake(earthquake)
         }
-
         return earthquakes
-    }
-
-    companion object {
-
-        // log tag definition
-        private val TAG = EarthquakeAsyncLoader::class.java.name
     }
 
 

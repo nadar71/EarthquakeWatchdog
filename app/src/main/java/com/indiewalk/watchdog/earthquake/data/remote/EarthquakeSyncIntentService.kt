@@ -21,7 +21,12 @@ class EarthquakeSyncIntentService : JobIntentService() { // JobIntentService nee
         private val JOB_ID = 2
 
         fun enqueueWork(context: Context, intent: Intent) {
-            JobIntentService.enqueueWork(context, EarthquakeSyncIntentService::class.java, JOB_ID, intent)
+            JobIntentService.enqueueWork(
+                context,
+                EarthquakeSyncIntentService::class.java,
+                JOB_ID,
+                intent
+            )
         }
     }
 }

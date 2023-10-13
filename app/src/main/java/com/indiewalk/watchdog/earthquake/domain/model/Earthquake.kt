@@ -1,20 +1,11 @@
 package com.indiewalk.watchdog.earthquake.domain.model
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
 
-import java.util.Date
-
-/**
- * [class Earthquake ][public] Represent a single eq event.
- * Properties :
- * - magnitude
- * - location
- * - date
- */
+// Represent a single eq event.
 @Entity(tableName = "EARTHQUAKE_LIST")
 class Earthquake {
 
@@ -49,22 +40,12 @@ class Earthquake {
     var userDistance: Int = 0
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Create a new plain Earthquake
-     * ---------------------------------------------------------------------------------------------
-     * @param magnitude
-     * @param location
-     * @param timeInMillisec
-     * @param url
-     * @param longitude
-     * @param latitude
-     * @param depth
-     * @param userDistance
-     */
+    // Create a new plain Earthquake
     @Ignore
-    constructor(magnitude: Double, location: String, timeInMillisec: Long, url: String,
-                longitude: Double, latitude: Double, depth: Double, userDistance: Int) {
+    constructor(
+        magnitude: Double, location: String, timeInMillisec: Long, url: String,
+        longitude: Double, latitude: Double, depth: Double, userDistance: Int
+    ) {
         this.magnitude = magnitude
         this.location = location
         this.timeInMillisec = timeInMillisec
@@ -76,22 +57,11 @@ class Earthquake {
     }
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Create a new plain Earthquake for db insert
-     * ---------------------------------------------------------------------------------------------
-     * @param id
-     * @param magnitude
-     * @param location
-     * @param timeInMillisec
-     * @param url
-     * @param longitude
-     * @param latitude
-     * @param depth
-     * @param userDistance
-     */
-    constructor(id: Int, magnitude: Double, location: String, timeInMillisec: Long, url: String,
-                longitude: Double, latitude: Double, depth: Double, userDistance: Int) {
+    // Create a new plain Earthquake for db insert
+    constructor(
+        id: Int, magnitude: Double, location: String, timeInMillisec: Long, url: String,
+        longitude: Double, latitude: Double, depth: Double, userDistance: Int
+    ) {
         this.id = id
         this.magnitude = magnitude
         this.location = location
@@ -104,7 +74,7 @@ class Earthquake {
     }
 
 
-    fun getMagnitude(): Double? {
+    fun getMagnitude(): Double {
         return magnitude
     }
 
