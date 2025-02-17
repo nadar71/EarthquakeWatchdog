@@ -24,8 +24,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
-
 import com.google.android.gms.ads.AdListener
 import com.indiewalk.watchdog.earthquake.MapsActivity
 import com.indiewalk.watchdog.earthquake.R
@@ -88,7 +86,6 @@ class MainActivityEarthquakesList : AppCompatActivity(),
             editor.putBoolean(APP_CONSENT_NEED, isNeeded)
             editor.apply()
         }
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -774,7 +771,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
         // loadingInProgress.setVisibility(View.GONE);
 
         // Set empty state text to display "No earthquakes found."
-        binding.emptyListText!!.setText(R.string.no_earthquakes)
+        binding.emptyListText.setText(R.string.no_earthquakes)
 
         // --> update UI when loader finished
         if (setEartquakesList(earthquakesReturnedByLoader)) {
