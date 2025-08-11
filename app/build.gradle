@@ -34,6 +34,7 @@ android {
             unitTests.returnDefaultValues = true
         }
     }
+    namespace 'com.indiewalk.watchdog.earthquake'
 }
 
 dependencies {
