@@ -5,7 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
+import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeDTO
 
 @Dao
 interface EarthquakeDbDao {
@@ -16,49 +16,49 @@ interface EarthquakeDbDao {
 
     // retrieve all the eqs
     @Query("SELECT * FROM EARTHQUAKE_LIST ")
-    fun loadAll(): LiveData<List<Earthquake>>
+    fun loadAll(): LiveData<List<EarthquakeDTO>>
 
     @Query("SELECT * FROM EARTHQUAKE_LIST ")
-    fun loadAllNoLiveData(): List<Earthquake>
+    fun loadAllNoLiveData(): List<EarthquakeDTO>
 
     // retrieve all the eqs order by desc magnitude
     @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY magnitude desc")
-    fun loadAll_orderby_desc_mag(min_mag: Double): LiveData<List<Earthquake>>
+    fun loadAll_orderby_desc_mag(min_mag: Double): LiveData<List<EarthquakeDTO>>
 
     // retrieve all the eqs order by asc magnitude
     @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY magnitude asc")
-    fun loadAll_orderby_asc_mag(min_mag: Double): LiveData<List<Earthquake>>
+    fun loadAll_orderby_asc_mag(min_mag: Double): LiveData<List<EarthquakeDTO>>
 
     // retrieve all the eqs order by min magnitude
     @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag")
-    fun loadAll_orderby_min_mag(min_mag: Double): LiveData<List<Earthquake>>
+    fun loadAll_orderby_min_mag(min_mag: Double): LiveData<List<EarthquakeDTO>>
 
     // retrieve all the eqs order by most recent (time desc)
     @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY timeInMillisec desc")
-    fun loadAll_orderby_most_recent(min_mag: Double): LiveData<List<Earthquake>>
+    fun loadAll_orderby_most_recent(min_mag: Double): LiveData<List<EarthquakeDTO>>
 
     // retrieve all the eqs order by oldest (time asc)
     @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY timeInMillisec asc")
-    fun loadAll_orderby_oldest(min_mag: Double): LiveData<List<Earthquake>>
+    fun loadAll_orderby_oldest(min_mag: Double): LiveData<List<EarthquakeDTO>>
 
     // retrieve all the eqs order by nearest to user
     @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY userDistance asc")
-    fun loadAll_orderby_nearest(min_mag: Double): LiveData<List<Earthquake>>
+    fun loadAll_orderby_nearest(min_mag: Double): LiveData<List<EarthquakeDTO>>
 
     // retrieve all the eqs order by furthest to user
     @Query("SELECT * FROM EARTHQUAKE_LIST WHERE magnitude >=:min_mag ORDER BY userDistance desc")
-    fun loadAll_orderby_furthest(min_mag: Double): LiveData<List<Earthquake>>
+    fun loadAll_orderby_furthest(min_mag: Double): LiveData<List<EarthquakeDTO>>
 
 
     //----------------------------------------------------------------------------------------------
     //  INSERT
     //----------------------------------------------------------------------------------------------
     @Insert
-    fun insertEarthquake(earthquake: Earthquake)
+    fun insertEarthquake(earthquakeDTO: EarthquakeDTO)
 
     // Insert all the earthquakes info get from restful at a new update
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun renewDataInsert(vararg earthquake: Earthquake)
+    fun renewDataInsert(vararg earthquakeDTO: EarthquakeDTO)
 
 
     //----------------------------------------------------------------------------------------------

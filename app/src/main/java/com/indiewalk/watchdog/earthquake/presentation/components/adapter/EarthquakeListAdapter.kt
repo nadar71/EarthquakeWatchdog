@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.AppEarthquake
-import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
+import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeDTO
 import com.indiewalk.watchdog.earthquake.data.repository.EarthquakeRepository
 import com.indiewalk.watchdog.earthquake.core.util.GenericUtils
 import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList
@@ -27,7 +27,7 @@ class EarthquakeListAdapter(
 ) : RecyclerView.Adapter<EarthquakeListAdapter.EarthquakeViewRowHolder>() {
 
     private val repository: EarthquakeRepository?
-    internal var earthquakesEntries: MutableList<Earthquake>? = null
+    internal var earthquakesEntries: MutableList<EarthquakeDTO>? = null
     private var primaryLocation: String? = null
     private var locationOffset: String? = null
     private var magnitude: Double = 0.toDouble()
@@ -68,21 +68,21 @@ class EarthquakeListAdapter(
         holder.primaryLocationView.text = primaryLocation
 
         // display date formatted using {@link formatDateFromMsec}
-        holder.dateView.text = GenericUtils.formatDateFromMsec(currentEartquakeItem.timeInMillisec)
+        holder.dateView.text = GenericUtils.formatDateFromMsec(currentEartquakeItem.occurenceDateTime)
 
         // display time formatted using {@link formatTimeFromMsec}
-        holder.timeView.text = GenericUtils.formatTimeFromMsec(currentEartquakeItem.timeInMillisec)
+        holder.timeView.text = GenericUtils.formatTimeFromMsec(currentEartquakeItem.occurenceDateTime)
 
         // set distance label based on user location type
         val check = checkPreferences()
         if (check) { // custom location
             holder.distanceFromUser.text =
-                "            " + currentEartquakeItem.userDistance + " " + dist_unit
+                "            " + currentEartquakeItem.distanceFromUser + " " + dist_unit
             holder.distanceFromUser_label.text =
                 context.getString(R.string.distance_from_user_location)
         } else if (check == false) {
             holder.distanceFromUser.text =
-                currentEartquakeItem.userDistance.toString() + " " + dist_unit
+                currentEartquakeItem.distanceFromUser.toString() + " " + dist_unit
             holder.distanceFromUser_label.text =
                 context.getString(R.string.distance_from_default_location)
         }
@@ -98,7 +98,7 @@ class EarthquakeListAdapter(
     }
 
 
-    fun setEarthquakesEntries(earthquakesEntries: MutableList<Earthquake>) {
+    fun setEarthquakesEntries(earthquakesEntries: MutableList<EarthquakeDTO>) {
         this.earthquakesEntries = earthquakesEntries
         notifyDataSetChanged()
     }
@@ -114,12 +114,12 @@ class EarthquakeListAdapter(
     }
 
 
-    fun getEqItemAtPosition(position: Int): Earthquake {
+    fun getEqItemAtPosition(position: Int): EarthquakeDTO {
         return earthquakesEntries!![position]
     }
 
 
-    fun getEarthquakesEntries(): List<Earthquake>? {
+    fun getEarthquakesEntries(): List<EarthquakeDTO>? {
         return earthquakesEntries
     }
 

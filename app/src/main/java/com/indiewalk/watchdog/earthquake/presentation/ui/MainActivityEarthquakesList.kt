@@ -27,7 +27,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.ads.AdListener
 import com.indiewalk.watchdog.earthquake.MapsActivity
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
+import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeDTO
 import com.indiewalk.watchdog.earthquake.data.remote.EarthquakeAsyncLoader
 import com.indiewalk.watchdog.earthquake.core.util.ConsentSDK
 import com.indiewalk.watchdog.earthquake.core.util.GenericUtils
@@ -41,14 +41,14 @@ import it.abenergie.customerarea.core.utility.extensions.TAG
 
 
 class MainActivityEarthquakesList : AppCompatActivity(),
-    LoaderManager.LoaderCallbacks<List<Earthquake>>,
+    LoaderManager.LoaderCallbacks<List<EarthquakeDTO>>,
     SharedPreferences.OnSharedPreferenceChangeListener,
     EarthquakeListAdapter.ItemClickListener {
 
     private lateinit var binding: MainActivityEarthquakesListBinding
     private var lastUpdate: String? = ""
     private lateinit var earthquakeListView: RecyclerView
-    private var earthquakes: List<Earthquake>? = null
+    private var earthquakeDTOS: List<EarthquakeDTO>? = null
     private var adapter: EarthquakeListAdapter? = null
 
     // Preferences value
@@ -279,7 +279,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
                 if (item == 0) {       // Show on Map
                     val nDays = Integer.parseInt(dateFilter)
                     if (nDays <= DAYS_LIMIT) {
-                        val earthquake = earthquakes!![position]
+                        val earthquake = earthquakeDTOS!![position]
                         val showEqOnMap = Intent(context, MapsActivity::class.java)
                         showEqOnMap.putExtra("ShowEquake", "true")
                         showEqOnMap.putExtra(
@@ -299,8 +299,8 @@ class MainActivityEarthquakesList : AppCompatActivity(),
                     }
 
                 } else if (item == 1) {  // USGS site Details
-                    val earthquake = earthquakes!![position]
-                    val url = earthquake.url
+                    val earthquake = earthquakeDTOS!![position]
+                    val url = earthquake.urlDetails
                     Log.i("setOnItemClickListener", "onItemClick: " + url!!)
 
                     // Open the related url page of the eq clicked
@@ -309,8 +309,8 @@ class MainActivityEarthquakesList : AppCompatActivity(),
                     startActivity(Intent.createChooser(webIntent, "Open details"))
 
                 } else if (item == 2) {  // Feel it?
-                    val earthquake = earthquakes!![position]
-                    val url = earthquake.url!! + "/tellus"
+                    val earthquake = earthquakeDTOS!![position]
+                    val url = earthquake.urlDetails!! + "/tellus"
                     Log.i("setOnItemClickListener", "onItemClick: $url")
 
                     // Open the related url page of the eq clicked
@@ -680,7 +680,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
         val equakes = viewModel.eqList
         equakes?.observe(this, Observer { earthquakeEntries ->
             if (earthquakeEntries != null && !earthquakeEntries.isEmpty()) { // data ready in db
-                earthquakes = earthquakeEntries
+                earthquakeDTOS = earthquakeEntries
                 updateAdapter(earthquakeEntries)
                 // used to update the last update field, updated by datasource at 1st start
                 checkPreferences()
@@ -699,8 +699,8 @@ class MainActivityEarthquakesList : AppCompatActivity(),
 
 
     // Notify and update adapter data
-    private fun updateAdapter(earthquakeEntries: List<Earthquake>?) {
-        adapter!!.earthquakesEntries = earthquakeEntries as MutableList<Earthquake>?
+    private fun updateAdapter(earthquakeDTOEntries: List<EarthquakeDTO>?) {
+        adapter!!.earthquakesEntries = earthquakeDTOEntries as MutableList<EarthquakeDTO>?
     }
 
     // Retrieve Remote Data. Internet connection availability first
@@ -750,7 +750,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
     }
 
     // Create loader
-    override fun onCreateLoader(id: Int, args: Bundle): Loader<List<Earthquake>> {
+    override fun onCreateLoader(id: Int, args: Bundle): Loader<List<EarthquakeDTO>> {
         Log.i(TAG, "onCreateLoader: Create a new Loader")
         val urlReq = GenericUtils.composeQueryUrl(dateFilter!!)
         Log.i(TAG, "onCreateLoader: urlReq : $urlReq")
@@ -762,8 +762,8 @@ class MainActivityEarthquakesList : AppCompatActivity(),
     // Loader finished
     // it has been already stored in db; must only return
     override fun onLoadFinished(
-        loader: Loader<List<Earthquake>>,
-        earthquakesReturnedByLoader: List<Earthquake>
+        loader: Loader<List<EarthquakeDTO>>,
+        earthquakesReturnedByLoader: List<EarthquakeDTO>
     ) {
         Log.i(TAG, "onLoadFinished: Loader return back with data")
 
@@ -801,7 +801,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
 
 
     // Loader reset
-    override fun onLoaderReset(loader: Loader<List<Earthquake>>?) {
+    override fun onLoaderReset(loader: Loader<List<EarthquakeDTO>>?) {
         Log.i(TAG, "onLoaderReset: Reset Loader previous data")
         // reset loader to clean up previous data
         adapter!!.resetEarthquakesEntries()
@@ -809,8 +809,8 @@ class MainActivityEarthquakesList : AppCompatActivity(),
 
 
     // Used by onLoadFinished to populate the ArrayList fetched
-    protected fun setEartquakesList(earthquakes: List<Earthquake>?): Boolean {
-        if (!earthquakes.isNullOrEmpty()) {
+    protected fun setEartquakesList(earthquakeDTOS: List<EarthquakeDTO>?): Boolean {
+        if (!earthquakeDTOS.isNullOrEmpty()) {
             // this.earthquakes = earthquakes;
             // updateList();
             return true

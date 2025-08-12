@@ -14,7 +14,7 @@ import com.firebase.jobdispatcher.GooglePlayDriver
 import com.firebase.jobdispatcher.Lifetime
 import com.firebase.jobdispatcher.Trigger
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
+import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeDTO
 import com.indiewalk.watchdog.earthquake.core.util.AppExecutors
 import com.indiewalk.watchdog.earthquake.core.util.GenericUtils
 import it.abenergie.customerarea.core.utility.extensions.TAG
@@ -33,10 +33,10 @@ class EarthquakeNetworkDataSource private constructor(
     private var dateFilter: String? = null
 
     // Livedata for earthquake downloaded
-    private val earthquakesDownloaded: MutableLiveData<Array<Earthquake>> = MutableLiveData()
+    private val earthquakesDownloaded: MutableLiveData<Array<EarthquakeDTO>> = MutableLiveData()
 
     // ---------------------------------------------------------------------------------------------
-    val earthquakesData: LiveData<Array<Earthquake>>
+    val earthquakesData: LiveData<Array<EarthquakeDTO>>
         get() = earthquakesDownloaded
 
     init {
@@ -85,14 +85,14 @@ class EarthquakeNetworkDataSource private constructor(
 
 
     fun fetchEarthquakeWrapper() {
-        val earthquakes: ArrayList<Earthquake>?
+        val earthquakeDTOS: ArrayList<EarthquakeDTO>?
         val queryUrl = GenericUtils.composeQueryUrl(dateFilter!!)
-        earthquakes = EarthQuakeNetworkRequest().fetchEarthquakeData(queryUrl)
+        earthquakeDTOS = EarthQuakeNetworkRequest().fetchEarthquakeData(queryUrl)
 
         // Update last update field in preferences
         GenericUtils.setLastUpdateField(context)
 
-        val arrEarthquakes = earthquakes!!.toTypedArray()
+        val arrEarthquakes = earthquakeDTOS!!.toTypedArray()
 
         // post data to livedata
         earthquakesDownloaded.postValue(arrEarthquakes)

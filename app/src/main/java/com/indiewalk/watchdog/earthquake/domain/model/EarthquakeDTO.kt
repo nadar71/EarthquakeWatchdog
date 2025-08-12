@@ -1,59 +1,41 @@
 package com.indiewalk.watchdog.earthquake.domain.model
 
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
-
 // Represent a single eq event.
-@Entity(tableName = "EARTHQUAKE_LIST")
-class Earthquake {
+@Entity(tableName = "EARTHQUAKES")
+data class EarthquakeDTO(
 
 
     // Getter and setter
     @PrimaryKey(autoGenerate = true)
-    var id: Int = 0
+    var id: Int = 0,
+    var magnitude: Double = 0.toDouble(),
+    var location: String? = null,
+    var occurenceDateTime: Long = 0,  // date and time of occurrence in millisec
+    var urlDetails: String? = null,   // url to details
+    var longitude: Double = 0.toDouble(),
+    var latitude: Double = 0.toDouble(),
+    var depth: Double = 0.toDouble(),
+    var distanceFromUser: Int = 0    // distance from user location
 
-    // eq's magnitude
-    private var magnitude: Double = 0.toDouble()
-
-    // eq location
-    var location: String? = null
-
-    // eq date and time of occurence
-    // @ColumnInfo(name = "time_ms")
-    var timeInMillisec: Long = 0
-
-    // eq url page for details
-    var url: String? = null
-
-    // longitude
-    var longitude: Double = 0.toDouble()
-
-    // latitude
-    var latitude: Double = 0.toDouble()
-
-    // depth
-    var depth: Double = 0.toDouble()
-
-    //equake distance from user
-    var userDistance: Int = 0
 
 
     // Create a new plain Earthquake
-    @Ignore
+    /*@Ignore
     constructor(
         magnitude: Double, location: String, timeInMillisec: Long, url: String,
         longitude: Double, latitude: Double, depth: Double, userDistance: Int
     ) {
         this.magnitude = magnitude
         this.location = location
-        this.timeInMillisec = timeInMillisec
-        this.url = url
+        this.occurenceDateTime = timeInMillisec
+        this.urlDetails = url
         this.longitude = longitude
         this.latitude = latitude
         this.depth = depth
-        this.userDistance = userDistance
+        this.distanceFromUser = userDistance
     }
 
 
@@ -65,21 +47,15 @@ class Earthquake {
         this.id = id
         this.magnitude = magnitude
         this.location = location
-        this.timeInMillisec = timeInMillisec
-        this.url = url
+        this.occurenceDateTime = timeInMillisec
+        this.urlDetails = url
         this.longitude = longitude
         this.latitude = latitude
         this.depth = depth
-        this.userDistance = userDistance
-    }
+        this.distanceFromUser = userDistance
+    }*/
 
 
-    fun getMagnitude(): Double {
-        return magnitude
-    }
 
-    fun setMagnitude(magnitude: Double) {
-        this.magnitude = magnitude
-    }
 
-}
+)

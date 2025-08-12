@@ -2,7 +2,7 @@ package com.indiewalk.watchdog.earthquake.data.remote
 
 import android.util.Log
 
-import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
+import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeDTO
 import it.abenergie.customerarea.core.utility.extensions.TAG
 
 import org.json.JSONException
@@ -25,11 +25,11 @@ import java.util.ArrayList
 // ---------------------------------------------------------------------------------------------
 class EarthQuakeNetworkRequest {
     // tmp data structure for returning results
-    private var earthquakes: ArrayList<Earthquake>? = null
+    private var earthquakeDTOS: ArrayList<EarthquakeDTO>? = null
 
 
     // Fetch data from remote service (createUrl, makeHttpRequest, extractFeatureFromJson)
-    fun fetchEarthquakeData(requestedUrl: String): ArrayList<Earthquake>? {
+    fun fetchEarthquakeData(requestedUrl: String): ArrayList<EarthquakeDTO>? {
         //decomment  simulate network latency for debugging
         /*
         try {
@@ -55,8 +55,8 @@ class EarthQuakeNetworkRequest {
         Log.i(TAG, "fetchEarthquakeData: calling extractFeatureFromJson")
         // Extract relevant fields from the JSON response and create an {@link Event} object
         return if (!jsonResponse.isNullOrEmpty() && jsonResponse !== "") {
-            earthquakes = extractFeatureFromJson(jsonResponse)
-            earthquakes
+            earthquakeDTOS = extractFeatureFromJson(jsonResponse)
+            earthquakeDTOS
         } else {
             null
         }
@@ -133,9 +133,9 @@ class EarthQuakeNetworkRequest {
     // Return a ArrayList of  [Earthquake] objects by parsing out information
     // about the first earthquake from the input earthquakeJSON string.
     // Return the list of earthquake retrieved from remote
-    private fun extractFeatureFromJson(earthquakeJSON: String): ArrayList<Earthquake> {
+    private fun extractFeatureFromJson(earthquakeJSON: String): ArrayList<EarthquakeDTO> {
         // Create an empty ArrayList that we can start adding earthquakes to
-        earthquakes = ArrayList()
+        earthquakeDTOS = ArrayList()
 
         // Try to parse earthquakeJSON
         try {
@@ -169,10 +169,10 @@ class EarthQuakeNetworkRequest {
 
                 // tmp earthquake obj for single item
                 Log.d(TAG, "extractFeatureFromJson: longitude : $longitude latitude : $latitude depth : $depth")
-                val tmp = Earthquake(mag, place, time, url, longitude, latitude, depth, 0)
+                val tmp = EarthquakeDTO(mag, place, time, url, longitude, latitude, depth, 0)
 
                 // add to list of all earthquakes
-                earthquakes!!.add(tmp)
+                earthquakeDTOS!!.add(tmp)
             }
 
 
@@ -184,7 +184,7 @@ class EarthQuakeNetworkRequest {
         }
 
         // Return the list of earthquakes
-        return earthquakes as ArrayList<Earthquake>
+        return earthquakeDTOS as ArrayList<EarthquakeDTO>
     }
 
 

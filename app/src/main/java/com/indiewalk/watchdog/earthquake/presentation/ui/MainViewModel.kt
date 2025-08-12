@@ -8,18 +8,18 @@ import android.util.Log
 
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.AppEarthquake
-import com.indiewalk.watchdog.earthquake.domain.model.Earthquake
+import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeDTO
 import com.indiewalk.watchdog.earthquake.data.repository.EarthquakeRepository
 import it.abenergie.customerarea.core.utility.extensions.TAG
 
 class MainViewModel : ViewModel {
     var context: AppEarthquake? = null
-    var eqList: LiveData<List<Earthquake>>? = null
+    var eqList: LiveData<List<EarthquakeDTO>>? = null
         private set
 
     // Livedata var on Earthquake obj to populate through ViewModel
     // ** not used for the moment
-    private val earthquakeSingleEntry: LiveData<Earthquake>? = null
+    private val earthquakeDTOSingleEntry: LiveData<EarthquakeDTO>? = null
 
     // repository ref
     private var eqRepository: EarthquakeRepository? = null

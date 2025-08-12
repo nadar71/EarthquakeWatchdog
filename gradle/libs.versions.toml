@@ -136,12 +136,6 @@ user-messaging-platform = { module = "com.google.android.ump:user-messaging-plat
 
 
 
-
-
-
-
-
-
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
