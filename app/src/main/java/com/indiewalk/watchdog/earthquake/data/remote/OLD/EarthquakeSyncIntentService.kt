@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.data.remote
+package com.indiewalk.watchdog.earthquake.data.remote.OLD
 
 import android.content.Context
 import android.content.Intent
@@ -21,7 +21,7 @@ class EarthquakeSyncIntentService : JobIntentService() { // JobIntentService nee
         private val JOB_ID = 2
 
         fun enqueueWork(context: Context, intent: Intent) {
-            JobIntentService.enqueueWork(
+            enqueueWork(
                 context,
                 EarthquakeSyncIntentService::class.java,
                 JOB_ID,

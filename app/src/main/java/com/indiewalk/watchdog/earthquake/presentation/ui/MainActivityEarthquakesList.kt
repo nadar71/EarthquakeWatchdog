@@ -27,8 +27,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.ads.AdListener
 import com.indiewalk.watchdog.earthquake.MapsActivity
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeDTO
-import com.indiewalk.watchdog.earthquake.data.remote.EarthquakeAsyncLoader
+import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeUI
+import com.indiewalk.watchdog.earthquake.data.remote.OLD.EarthquakeAsyncLoader
 import com.indiewalk.watchdog.earthquake.core.util.ConsentSDK
 import com.indiewalk.watchdog.earthquake.core.util.GenericUtils
 import com.indiewalk.watchdog.earthquake.databinding.MainActivityEarthquakesListBinding
@@ -41,14 +41,14 @@ import it.abenergie.customerarea.core.utility.extensions.TAG
 
 
 class MainActivityEarthquakesList : AppCompatActivity(),
-    LoaderManager.LoaderCallbacks<List<EarthquakeDTO>>,
+    LoaderManager.LoaderCallbacks<List<EarthquakeUI>>,
     SharedPreferences.OnSharedPreferenceChangeListener,
     EarthquakeListAdapter.ItemClickListener {
 
     private lateinit var binding: MainActivityEarthquakesListBinding
     private var lastUpdate: String? = ""
     private lateinit var earthquakeListView: RecyclerView
-    private var earthquakeDTOS: List<EarthquakeDTO>? = null
+    private var earthquakeUIS: List<EarthquakeUI>? = null
     private var adapter: EarthquakeListAdapter? = null
 
     // Preferences value
@@ -62,39 +62,15 @@ class MainActivityEarthquakesList : AppCompatActivity(),
 
     // SharePreferences ref
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var consentSDK: ConsentSDK
 
 
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Get if consent gdpr must be asked or not
-     * ---------------------------------------------------------------------------------------------
-     */
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * Set if consent gdpr must be asked or not
-     * ---------------------------------------------------------------------------------------------
-     */
-    private var consentSDKNeed: Boolean
-        get() {
-            val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-            return prefs.getBoolean(APP_CONSENT_NEED, DEFAULT_CONSENT_NEED)
-        }
-        set(isNeeded) {
-            val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-            val editor = prefs.edit()
-            editor.putBoolean(APP_CONSENT_NEED, isNeeded)
-            editor.apply()
-        }
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // setContentView(R.layout.main_activity_earthquakes_list)
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity_earthquakes_list)
 
-        // set consent sdk for gdpr true by default
-        // setConsentSDKNeed(true);
 
         setupActionBar()
 
@@ -119,52 +95,6 @@ class MainActivityEarthquakesList : AppCompatActivity(),
 
     override fun onStart() {
         super.onStart()
-        checkConsentActive = consentSDKNeed
-
-        if (checkConsentActive) {
-            // Initialize ConsentSDK
-            consentSDK = ConsentSDK.Builder(this)
-                .addTestDeviceId("7DC1A1E8AEAD7908E42271D4B68FB270") // redminote 5 // Add your test device id "Remove addTestDeviceId on production!"
-                // .addTestDeviceId("9978A5F791A259430A0156313ED9C6A2")
-                .addCustomLogTag("gdpr_TAG") // Add custom tag default: ID_LOG
-                .addPrivacyPolicy("http://www.indie-walkabout.eu/privacy-policy-app") // Add your privacy policy url
-                .addPublisherId("pub-8846176967909254") // Add your admob publisher id
-                .build()
-
-
-            // To check the consent and load ads
-            consentSDK.checkConsent(object : ConsentSDK.ConsentCallback() {
-                override fun onResult(isRequestLocationInEeaOrUnknown: Boolean) {
-                    Log.i(
-                        "gdpr_TAG",
-                        "onResult: isRequestLocationInEeaOrUnknown : $isRequestLocationInEeaOrUnknown"
-                    )
-                    // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
-                    binding.mAdView.loadAd(ConsentSDK.getAdRequest(this@MainActivityEarthquakesList))
-                }
-            })
-
-
-            // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
-            binding.mAdView.loadAd(ConsentSDK.getAdRequest(this@MainActivityEarthquakesList))
-
-            binding.mAdView.adListener = object : AdListener() {
-                override fun onAdLoaded() {
-                    // Code to be executed when an ad finishes loading.
-                    // Toast.makeText(MainActivityEarthquakesList.this, "Adloaded ok", Toast.LENGTH_SHORT).show();
-                }
-
-                override fun onAdOpened() {
-                    // Code to be executed when an ad opens an overlay that
-                    // covers the screen.
-                }
-
-                override fun onAdClosed() {
-                    // Code to be executed when when the user is about to return
-                    // to the app after tapping on an ad.
-                }
-            }
-        }
 
     }
 
@@ -279,7 +209,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
                 if (item == 0) {       // Show on Map
                     val nDays = Integer.parseInt(dateFilter)
                     if (nDays <= DAYS_LIMIT) {
-                        val earthquake = earthquakeDTOS!![position]
+                        val earthquake = earthquakeUIS!![position]
                         val showEqOnMap = Intent(context, MapsActivity::class.java)
                         showEqOnMap.putExtra("ShowEquake", "true")
                         showEqOnMap.putExtra(
@@ -299,7 +229,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
                     }
 
                 } else if (item == 1) {  // USGS site Details
-                    val earthquake = earthquakeDTOS!![position]
+                    val earthquake = earthquakeUIS!![position]
                     val url = earthquake.urlDetails
                     Log.i("setOnItemClickListener", "onItemClick: " + url!!)
 
@@ -309,7 +239,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
                     startActivity(Intent.createChooser(webIntent, "Open details"))
 
                 } else if (item == 2) {  // Feel it?
-                    val earthquake = earthquakeDTOS!![position]
+                    val earthquake = earthquakeUIS!![position]
                     val url = earthquake.urlDetails!! + "/tellus"
                     Log.i("setOnItemClickListener", "onItemClick: $url")
 
@@ -680,7 +610,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
         val equakes = viewModel.eqList
         equakes?.observe(this, Observer { earthquakeEntries ->
             if (earthquakeEntries != null && !earthquakeEntries.isEmpty()) { // data ready in db
-                earthquakeDTOS = earthquakeEntries
+                earthquakeUIS = earthquakeEntries
                 updateAdapter(earthquakeEntries)
                 // used to update the last update field, updated by datasource at 1st start
                 checkPreferences()
@@ -699,8 +629,8 @@ class MainActivityEarthquakesList : AppCompatActivity(),
 
 
     // Notify and update adapter data
-    private fun updateAdapter(earthquakeDTOEntries: List<EarthquakeDTO>?) {
-        adapter!!.earthquakesEntries = earthquakeDTOEntries as MutableList<EarthquakeDTO>?
+    private fun updateAdapter(earthquakeUIEntries: List<EarthquakeUI>?) {
+        adapter!!.earthquakesEntries = earthquakeUIEntries as MutableList<EarthquakeUI>?
     }
 
     // Retrieve Remote Data. Internet connection availability first
@@ -750,7 +680,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
     }
 
     // Create loader
-    override fun onCreateLoader(id: Int, args: Bundle): Loader<List<EarthquakeDTO>> {
+    override fun onCreateLoader(id: Int, args: Bundle): Loader<List<EarthquakeUI>> {
         Log.i(TAG, "onCreateLoader: Create a new Loader")
         val urlReq = GenericUtils.composeQueryUrl(dateFilter!!)
         Log.i(TAG, "onCreateLoader: urlReq : $urlReq")
@@ -762,8 +692,8 @@ class MainActivityEarthquakesList : AppCompatActivity(),
     // Loader finished
     // it has been already stored in db; must only return
     override fun onLoadFinished(
-        loader: Loader<List<EarthquakeDTO>>,
-        earthquakesReturnedByLoader: List<EarthquakeDTO>
+        loader: Loader<List<EarthquakeUI>>,
+        earthquakesReturnedByLoader: List<EarthquakeUI>
     ) {
         Log.i(TAG, "onLoadFinished: Loader return back with data")
 
@@ -801,7 +731,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
 
 
     // Loader reset
-    override fun onLoaderReset(loader: Loader<List<EarthquakeDTO>>?) {
+    override fun onLoaderReset(loader: Loader<List<EarthquakeUI>>?) {
         Log.i(TAG, "onLoaderReset: Reset Loader previous data")
         // reset loader to clean up previous data
         adapter!!.resetEarthquakesEntries()
@@ -809,8 +739,8 @@ class MainActivityEarthquakesList : AppCompatActivity(),
 
 
     // Used by onLoadFinished to populate the ArrayList fetched
-    protected fun setEartquakesList(earthquakeDTOS: List<EarthquakeDTO>?): Boolean {
-        if (!earthquakeDTOS.isNullOrEmpty()) {
+    protected fun setEartquakesList(earthquakeUIS: List<EarthquakeUI>?): Boolean {
+        if (!earthquakeUIS.isNullOrEmpty()) {
             // this.earthquakes = earthquakes;
             // updateList();
             return true

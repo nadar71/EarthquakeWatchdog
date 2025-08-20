@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.AppEarthquake
-import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeDTO
+import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeUI
 import com.indiewalk.watchdog.earthquake.data.repository.EarthquakeRepository
 import com.indiewalk.watchdog.earthquake.core.util.GenericUtils
 import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList
@@ -27,7 +27,7 @@ class EarthquakeListAdapter(
 ) : RecyclerView.Adapter<EarthquakeListAdapter.EarthquakeViewRowHolder>() {
 
     private val repository: EarthquakeRepository?
-    internal var earthquakesEntries: MutableList<EarthquakeDTO>? = null
+    internal var earthquakesEntries: MutableList<EarthquakeUI>? = null
     private var primaryLocation: String? = null
     private var locationOffset: String? = null
     private var magnitude: Double = 0.toDouble()
@@ -98,7 +98,7 @@ class EarthquakeListAdapter(
     }
 
 
-    fun setEarthquakesEntries(earthquakesEntries: MutableList<EarthquakeDTO>) {
+    fun setEarthquakesEntries(earthquakesEntries: MutableList<EarthquakeUI>) {
         this.earthquakesEntries = earthquakesEntries
         notifyDataSetChanged()
     }
@@ -114,12 +114,12 @@ class EarthquakeListAdapter(
     }
 
 
-    fun getEqItemAtPosition(position: Int): EarthquakeDTO {
+    fun getEqItemAtPosition(position: Int): EarthquakeUI {
         return earthquakesEntries!![position]
     }
 
 
-    fun getEarthquakesEntries(): List<EarthquakeDTO>? {
+    fun getEarthquakesEntries(): List<EarthquakeUI>? {
         return earthquakesEntries
     }
 

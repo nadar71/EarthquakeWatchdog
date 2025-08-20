@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.data.remote
+package com.indiewalk.watchdog.earthquake.data.remote.OLD
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,7 +14,7 @@ import com.firebase.jobdispatcher.GooglePlayDriver
 import com.firebase.jobdispatcher.Lifetime
 import com.firebase.jobdispatcher.Trigger
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeDTO
+import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeUI
 import com.indiewalk.watchdog.earthquake.core.util.AppExecutors
 import com.indiewalk.watchdog.earthquake.core.util.GenericUtils
 import it.abenergie.customerarea.core.utility.extensions.TAG
@@ -33,10 +33,10 @@ class EarthquakeNetworkDataSource private constructor(
     private var dateFilter: String? = null
 
     // Livedata for earthquake downloaded
-    private val earthquakesDownloaded: MutableLiveData<Array<EarthquakeDTO>> = MutableLiveData()
+    private val earthquakesDownloaded: MutableLiveData<Array<EarthquakeUI>> = MutableLiveData()
 
     // ---------------------------------------------------------------------------------------------
-    val earthquakesData: LiveData<Array<EarthquakeDTO>>
+    val earthquakesData: LiveData<Array<EarthquakeUI>>
         get() = earthquakesDownloaded
 
     init {
@@ -85,14 +85,14 @@ class EarthquakeNetworkDataSource private constructor(
 
 
     fun fetchEarthquakeWrapper() {
-        val earthquakeDTOS: ArrayList<EarthquakeDTO>?
+        val earthquakeUIS: ArrayList<EarthquakeUI>?
         val queryUrl = GenericUtils.composeQueryUrl(dateFilter!!)
-        earthquakeDTOS = EarthQuakeNetworkRequest().fetchEarthquakeData(queryUrl)
+        earthquakeUIS = EarthQuakeNetworkRequest().fetchEarthquakeData(queryUrl)
 
         // Update last update field in preferences
         GenericUtils.setLastUpdateField(context)
 
-        val arrEarthquakes = earthquakeDTOS!!.toTypedArray()
+        val arrEarthquakes = earthquakeUIS!!.toTypedArray()
 
         // post data to livedata
         earthquakesDownloaded.postValue(arrEarthquakes)

@@ -6,7 +6,7 @@ import android.content.Context
 import com.indiewalk.watchdog.earthquake.data.local.db.EarthquakeDatabase
 // import com.indiewalk.watchdog.earthquake.data.EarthquakeDatabase_Impl;
 import com.indiewalk.watchdog.earthquake.data.repository.EarthquakeRepository
-import com.indiewalk.watchdog.earthquake.data.remote.EarthquakeNetworkDataSource
+import com.indiewalk.watchdog.earthquake.data.remote.OLD.EarthquakeNetworkDataSource
 import com.indiewalk.watchdog.earthquake.core.util.AppExecutors
 
 

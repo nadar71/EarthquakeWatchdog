@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.data.remote
+package com.indiewalk.watchdog.earthquake.data.remote.OLD
 
 import android.util.Log
 import com.firebase.jobdispatcher.JobParameters

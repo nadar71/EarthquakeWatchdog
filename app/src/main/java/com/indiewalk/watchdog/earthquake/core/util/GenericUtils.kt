@@ -22,7 +22,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.AppEarthquake
 import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList
-import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeDTO
+import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeUI
 import it.abenergie.customerarea.core.utility.extensions.TAG
 
 import java.text.SimpleDateFormat
@@ -246,7 +246,7 @@ object GenericUtils {
 
 
     // Update each equakes info with custom distance from user if any,with distance unit preferred.
-    fun setEqDistanceFromCurrentCoords(earthquakeDTOS: List<EarthquakeDTO>?, context: Context) {
+    fun setEqDistanceFromCurrentCoords(earthquakeUIS: List<EarthquakeUI>?, context: Context) {
 
         // if (context == null) return
 
@@ -285,8 +285,8 @@ object GenericUtils {
                 java.lang.Double.toString(R.string.settings_distance_unit_by_default.toDouble()))
 
 
-        if (earthquakeDTOS != null) { // workaround for #97
-            for (eq in earthquakeDTOS) {
+        if (earthquakeUIS != null) { // workaround for #97
+            for (eq in earthquakeUIS) {
                 val userLat = java.lang.Double.valueOf(lat_s)
                 val userLng = java.lang.Double.valueOf(lng_s)
                 var distance = haversineDistanceCalc(userLat, eq.latitude,
@@ -308,7 +308,7 @@ object GenericUtils {
 
 
     // Overloaded version of setEqDistanceFromCurrentCoords, now using Earthquake[] earthquakes
-    fun setEqDistanceFromCurrentCoords(earthquakeDTOS: Array<EarthquakeDTO>?, context: Context) {
+    fun setEqDistanceFromCurrentCoords(earthquakeUIS: Array<EarthquakeUI>?, context: Context) {
         // Check location coordinates from shared preferences.If not set, put default value
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
 
@@ -344,8 +344,8 @@ object GenericUtils {
                 java.lang.Double.toString(R.string.settings_distance_unit_by_default.toDouble()))
 
 
-        if (earthquakeDTOS != null) {
-            for (eq in earthquakeDTOS) {
+        if (earthquakeUIS != null) {
+            for (eq in earthquakeUIS) {
                 val userLat = java.lang.Double.valueOf(lat_s)!!
                 val userLng = java.lang.Double.valueOf(lng_s)!!
                 var distance = haversineDistanceCalc(userLat, eq.latitude,

@@ -6,8 +6,8 @@ import android.util.Log
 
 import com.indiewalk.watchdog.earthquake.AppEarthquake
 import com.indiewalk.watchdog.earthquake.data.local.db.EarthquakeDatabase
-import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeDTO
-import com.indiewalk.watchdog.earthquake.data.remote.EarthquakeNetworkDataSource
+import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeUI
+import com.indiewalk.watchdog.earthquake.data.remote.OLD.EarthquakeNetworkDataSource
 import com.indiewalk.watchdog.earthquake.core.util.AppExecutors
 import com.indiewalk.watchdog.earthquake.core.util.GenericUtils
 
@@ -28,7 +28,7 @@ class EarthquakeRepository {
 
 
     // Return  the non-empty list of earthquake if any
-    val earthquakesList: LiveData<List<EarthquakeDTO>>
+    val earthquakesList: LiveData<List<EarthquakeUI>>
         get() = loadAll()
 
     // standard constructor
@@ -124,47 +124,47 @@ class EarthquakeRepository {
     //----------------------------------------------------------------------------------------------
 
     // retrieve all the eqs
-    fun loadAll(): LiveData<List<EarthquakeDTO>> {
+    fun loadAll(): LiveData<List<EarthquakeUI>> {
         initializeData()
         return eqDb.earthquakeDbDao().loadAll()
     }
 
     // retrieve all the eqs order by desc magnitude
-    fun loadAll_orderby_desc_mag(min_mag: Double): LiveData<List<EarthquakeDTO>> {
+    fun loadAll_orderby_desc_mag(min_mag: Double): LiveData<List<EarthquakeUI>> {
         initializeData()
         return eqDb.earthquakeDbDao().loadAll_orderby_desc_mag(min_mag)
     }
 
 
     // retrieve all the eqs order by asc magnitude
-    fun loadAll_orderby_asc_mag(min_mag: Double): LiveData<List<EarthquakeDTO>> {
+    fun loadAll_orderby_asc_mag(min_mag: Double): LiveData<List<EarthquakeUI>> {
         initializeData()
         return eqDb.earthquakeDbDao().loadAll_orderby_asc_mag(min_mag)
     }
 
 
     // retrieve all the eqs order by most recent (time desc)
-    fun loadAll_orderby_most_recent(min_mag: Double): LiveData<List<EarthquakeDTO>> {
+    fun loadAll_orderby_most_recent(min_mag: Double): LiveData<List<EarthquakeUI>> {
         initializeData()
         return eqDb.earthquakeDbDao().loadAll_orderby_most_recent(min_mag)
     }
 
 
     // retrieve all the eqs order by oldest (time asc)
-    fun loadAll_orderby_oldest(min_mag: Double): LiveData<List<EarthquakeDTO>> {
+    fun loadAll_orderby_oldest(min_mag: Double): LiveData<List<EarthquakeUI>> {
         initializeData()
         return eqDb.earthquakeDbDao().loadAll_orderby_oldest(min_mag)
     }
 
 
     // retrieve all the eqs order by nearest to user
-    fun loadAll_orderby_nearest(min_mag: Double): LiveData<List<EarthquakeDTO>> {
+    fun loadAll_orderby_nearest(min_mag: Double): LiveData<List<EarthquakeUI>> {
         initializeData()
         return eqDb.earthquakeDbDao().loadAll_orderby_nearest(min_mag)
     }
 
     // retrieve all the eqs order by furthest to user
-    fun loadAll_orderby_furthest(min_mag: Double): LiveData<List<EarthquakeDTO>> {
+    fun loadAll_orderby_furthest(min_mag: Double): LiveData<List<EarthquakeUI>> {
         initializeData()
         return eqDb.earthquakeDbDao().loadAll_orderby_furthest(min_mag)
     }
@@ -173,15 +173,15 @@ class EarthquakeRepository {
     //----------------------------------------------------------------------------------------------
     //  INSERT
     //----------------------------------------------------------------------------------------------
-    fun insertEarthquake(earthquakeDTO: EarthquakeDTO) {
-        eqDb.earthquakeDbDao().insertEarthquake(earthquakeDTO)
+    fun insertEarthquake(earthquakeUI: EarthquakeUI) {
+        eqDb.earthquakeDbDao().insertEarthquake(earthquakeUI)
     }
 
 
     //----------------------------------------------------------------------------------------------
     //  UPDATE
     //----------------------------------------------------------------------------------------------
-    fun updatedAllEqsDistFromUser(equakes: List<EarthquakeDTO>?, context: Context) {
+    fun updatedAllEqsDistFromUser(equakes: List<EarthquakeUI>?, context: Context) {
         executors.diskIO().execute {
             Log.d(TAG, "Updating eqs distances from current user location. ")
 

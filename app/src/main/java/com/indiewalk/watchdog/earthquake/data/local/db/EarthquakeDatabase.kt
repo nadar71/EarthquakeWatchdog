@@ -8,10 +8,10 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import android.content.Context
 import android.util.Log
-import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeDTO
+import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeUI
 
 
-@Database(entities = [EarthquakeDTO::class], version = 4, exportSchema = false)
+@Database(entities = [EarthquakeUI::class], version = 4, exportSchema = false)
 @TypeConverters(DateConverter::class)
 abstract class EarthquakeDatabase : RoomDatabase() {
 

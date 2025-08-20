@@ -49,7 +49,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList
 import com.indiewalk.watchdog.earthquake.presentation.ui.MainViewModel
 import com.indiewalk.watchdog.earthquake.presentation.ui.MainViewModelFactory
-import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeDTO
+import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeUI
 import com.indiewalk.watchdog.earthquake.data.repository.EarthquakeRepository
 import com.indiewalk.watchdog.earthquake.core.util.GenericUtils
 
@@ -88,10 +88,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var earthquakesMarkersList: MutableList<Marker>
 
     // eqs list with livedata
-    private lateinit var equakes: LiveData<List<EarthquakeDTO>>
+    private lateinit var equakes: LiveData<List<EarthquakeUI>>
 
     // eqs list WITHOUT livedata
-    internal var equakes_no_live: List<EarthquakeDTO>? = null
+    internal var equakes_no_live: List<EarthquakeUI>? = null
 
     internal var eqRepository: EarthquakeRepository? = null
 
@@ -347,14 +347,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     // Set marker and details on click for each eq on map
-    private fun setMarkerForEachEq(earthquakeDTOList: List<EarthquakeDTO>?) {
+    private fun setMarkerForEachEq(earthquakeUIList: List<EarthquakeUI>?) {
         val minMagnitude = sharedPreferences.getString(
             getString(R.string.settings_min_magnitude_key),
             getString(R.string.settings_min_magnitude_default)
         )
             ?.let { java.lang.Double.parseDouble(it) }
 
-        for (earthquake in earthquakeDTOList!!) {
+        for (earthquake in earthquakeUIList!!) {
 
             if (earthquake.getMagnitude()!! < minMagnitude!!) continue
 

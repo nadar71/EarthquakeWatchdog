@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 // Represent a single eq event.
 @Entity(tableName = "EARTHQUAKES")
-data class EarthquakeDTO(
+data class EarthquakeUI(
 
 
     // Getter and setter
