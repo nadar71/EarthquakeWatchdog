@@ -1,7 +1,7 @@
-package com.indiewalk.watchdog.earthquake.domain.model.geojson
+package com.indiewalk.watchdog.earthquake.domain.model.remote
 
-// Earthquake properties. Many can be null depending on the event.
-data class Properties(
+// Earthquake properties. Many can be null depending on the event, network/dto.
+data class PropertiesDTO(
     val mag: Double?,                // magnitude
     val place: String?,
     val time: Long?,                 // epoch millis

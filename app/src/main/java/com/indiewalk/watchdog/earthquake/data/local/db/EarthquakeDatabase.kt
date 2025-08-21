@@ -8,24 +8,26 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import android.content.Context
 import android.util.Log
+import androidx.work.impl.WorkDatabaseMigrations.MIGRATION_1_2
+import androidx.work.impl.WorkDatabaseMigrations.MIGRATION_4_5
 import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeUI
+import kotlin.jvm.java
 
 
-@Database(entities = [EarthquakeUI::class], version = 4, exportSchema = false)
+@Database(
+    entities = [EarthquakeUI::class],
+    version = 4,
+    exportSchema = true
+)
 @TypeConverters(DateConverter::class)
 abstract class EarthquakeDatabase : RoomDatabase() {
-
     abstract fun earthquakeDbDao(): EarthquakeDbDao
 
     companion object {
-        private val TAG = EarthquakeDatabase::class.java.simpleName
-        // lock for synchro
-        private val LOCK = Any()
         private val DBNAME = "EarthquakeDB"
-        private var eqDbInstance: EarthquakeDatabase? = null
 
 
-        internal val MIGRATION_2_3: Migration = object : Migration(2, 3) {
+        /*internal val MIGRATION_2_3: Migration = object : Migration(2, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE EARTHQUAKE_LIST " + "ADD COLUMN longitude REAL NOT NULL DEFAULT 0.0")
                 database.execSQL("ALTER TABLE EARTHQUAKE_LIST " + "ADD COLUMN latitude  REAL NOT NULL DEFAULT 0.0")
@@ -55,6 +57,15 @@ abstract class EarthquakeDatabase : RoomDatabase() {
             }
             Log.d(TAG, "Db created")
             return eqDbInstance
+        }*/
+
+        fun getDbInstance(context: Context): EarthquakeDatabase {
+            return Room.databaseBuilder(
+                context.applicationContext,
+                EarthquakeDatabase::class.java,
+                DBNAME
+            )
+                .build()
         }
     }
 
