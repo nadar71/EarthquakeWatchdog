@@ -4,13 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 // Represent a single eq event.
-@Entity(tableName = "EARTHQUAKES")
 data class EarthquakeUI(
-
-
-    // Getter and setter
-    @PrimaryKey(autoGenerate = true)
-    var id: Int = 0,
     var magnitude: Double = 0.toDouble(),
     var location: String? = null,
     var occurenceDateTime: Long = 0,  // date and time of occurrence in millisec

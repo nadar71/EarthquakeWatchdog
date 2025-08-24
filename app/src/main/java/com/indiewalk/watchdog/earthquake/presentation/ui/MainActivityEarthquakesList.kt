@@ -27,6 +27,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.ads.AdListener
 import com.indiewalk.watchdog.earthquake.MapsActivity
 import com.indiewalk.watchdog.earthquake.R
+import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_ADDRESS
+import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAST_UPDATE
+import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
+import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
 import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeUI
 import com.indiewalk.watchdog.earthquake.data.remote.OLD.EarthquakeAsyncLoader
 import com.indiewalk.watchdog.earthquake.core.util.ConsentSDK
@@ -469,7 +473,28 @@ class MainActivityEarthquakesList : AppCompatActivity(),
     }
 
 
-    // Summarize the filter settings for the eq list shown
+    // Filter settings for the eq list shown
+    // 1 - ordered by (from db, not need to call api):
+    // desc magnitude
+    // asc magnitude
+    // most recent
+    // oldest
+    // nearest
+    // furthest
+
+    // 2 - min magnitude filter :
+    // from 1.0+ to 6.5+ (from db, not need to call api):
+
+    // 3 - date filter : at start retrieved last 24h, from settings can be set to:
+    // today
+    // 24h
+    // 48h
+    // 3 days
+    // 4 days
+    // week
+    // 2 weeks
+    // -> it relaunches the api and update db
+
     private fun setFilterSummary() {
         // set up filter summary
         // order by
@@ -542,7 +567,7 @@ class MainActivityEarthquakesList : AppCompatActivity(),
         // TODO : temporary, data must be updated setting an observer in repository on specific preference
         // check if date filter or other preferences which need remote update has been changed
         if (NEED_REMOTE_UPDATE) {
-            retrieveRemoteData()
+            retrieveRemoteData() // get data from remote : with limit 24h before
             NEED_REMOTE_UPDATE = false
         } else {
             updateList()
@@ -944,12 +969,6 @@ class MainActivityEarthquakesList : AppCompatActivity(),
     }
 
     companion object {
-        // this is the default position, google at mountain view
-        const val DEFAULT_LAT = 37.4219999
-        const val DEFAULT_LNG = -122.0862515
-        const val DEFAULT_ADDRESS = "Mountain View,CA"
-        const val DEFAULT_LAST_UPDATE = ""
-
         // Key constant for view model parameters
         const val LOAD_ALL_NO_ORDER = "load_all_no_order"
         const val ORDER_BY_DESC_MAGNITUDE = "magnitude_desc_ordering"

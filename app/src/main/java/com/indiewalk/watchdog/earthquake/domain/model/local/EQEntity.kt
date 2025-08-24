@@ -27,7 +27,7 @@ import androidx.room.Index
         Index(value = ["latitude", "longitude"]) // helps bbox queries
     ]
 )
-data class EarthquakeEntity(
+data class EQEntity(
     @PrimaryKey val id: String,                     // feature.properties.id
     @ColumnInfo(name = "feed_generated") val feedGenerated: Long?, // FK links to FeedSnapshotEntity.generated
 
@@ -63,5 +63,8 @@ data class EarthquakeEntity(
     val geometryType: String = "Point",
     val longitude: Double?,
     val latitude: Double?,
-    @ColumnInfo(name = "depth_km") val depthKm: Double?
+    @ColumnInfo(name = "depth_km") val depthKm: Double?,
+
+    // custom
+    val distanceFromUser: Int?
 )

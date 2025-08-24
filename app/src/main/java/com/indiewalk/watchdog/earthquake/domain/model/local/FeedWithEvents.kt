@@ -10,5 +10,5 @@ data class FeedWithEvents(
         parentColumn = "generated",
         entityColumn = "feed_generated"
     )
-    val events: List<EarthquakeEntity>
+    val events: List<EQEntity>
 )

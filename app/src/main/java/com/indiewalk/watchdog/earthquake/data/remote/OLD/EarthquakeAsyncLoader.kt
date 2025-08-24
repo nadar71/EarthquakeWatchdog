@@ -61,7 +61,7 @@ class EarthquakeAsyncLoader(
 
         // save it in db for later use
         for (earthquake in earthquakeUIS!!) {
-            eqDb.earthquakeDbDao().insertEarthquake(earthquake)
+            eqDb.earthquakeDbDao().upsertEarthquake(earthquake)
         }
         return earthquakeUIS
     }

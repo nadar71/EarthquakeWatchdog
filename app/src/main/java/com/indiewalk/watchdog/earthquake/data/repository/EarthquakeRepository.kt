@@ -126,13 +126,13 @@ class EarthquakeRepository {
     // retrieve all the eqs
     fun loadAll(): LiveData<List<EarthquakeUI>> {
         initializeData()
-        return eqDb.earthquakeDbDao().loadAll()
+        return eqDb.earthquakeDbDao().loadAllEQs()
     }
 
     // retrieve all the eqs order by desc magnitude
     fun loadAll_orderby_desc_mag(min_mag: Double): LiveData<List<EarthquakeUI>> {
         initializeData()
-        return eqDb.earthquakeDbDao().loadAll_orderby_desc_mag(min_mag)
+        return eqDb.earthquakeDbDao().loadAllEQs_orderby_desc_mag(min_mag)
     }
 
 
@@ -174,7 +174,7 @@ class EarthquakeRepository {
     //  INSERT
     //----------------------------------------------------------------------------------------------
     fun insertEarthquake(earthquakeUI: EarthquakeUI) {
-        eqDb.earthquakeDbDao().insertEarthquake(earthquakeUI)
+        eqDb.earthquakeDbDao().upsertEarthquake(earthquakeUI)
     }
 
 

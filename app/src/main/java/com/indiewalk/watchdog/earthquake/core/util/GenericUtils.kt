@@ -21,8 +21,13 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.AppEarthquake
+import com.indiewalk.watchdog.earthquake.core.data.Constants.USGS_REQUEST_URL
+import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.fromKmToMiles
 import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList
 import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeUI
+import com.indiewalk.watchdog.earthquake.domain.model.remote.GeometryDTO
+import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList.Companion.DEFAULT_LAT
+import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList.Companion.DEFAULT_LNG
 import it.abenergie.customerarea.core.utility.extensions.TAG
 
 import java.text.SimpleDateFormat
@@ -34,9 +39,6 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 object GenericUtils {
-    // URL to query the USGS dataset for earthquake information
-    const val USGS_REQUEST_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query"
-
 
     // Check if internet connection is on
     val isConnectionOk: Boolean
@@ -75,31 +77,12 @@ object GenericUtils {
         return builder.toString()
     }
 
-    // Convert degree angle in radiant
-    private fun fromDegreeToRadiant(deg_angle: Double): Double {
-        return deg_angle * Math.PI / 180
-    }
 
 
-    // Returning the distance between 2 points on a sphere throught the Haversine formula
-    private fun haversineDistanceCalc(p1Lat: Double, p2Lat: Double, p1Lng: Double, p2Lng: Double): Double {
-        val R = 6378137 // Earth’s mean radius in meter
-        val dLat = fromDegreeToRadiant(p2Lat - p1Lat)
-        val dLng = fromDegreeToRadiant(p2Lng - p1Lng)
-        val a = sin(dLat / 2) * sin(dLat / 2) + cos(fromDegreeToRadiant(p1Lat)) *
-                cos(fromDegreeToRadiant(p2Lat)) *
-                sin(dLng / 2) * sin(dLng / 2)
-        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
-        val d = R * c
-        return d / 1000 // returns the distance in Km
-    }
 
 
-    // Convert km to miles
-    fun fromKmToMiles(km: Double): Double {
-        val MileInkm = 0.621371192
-        return km * MileInkm
-    }
+
+
 
 
     // Format date in a specific way and millisec  format
@@ -243,6 +226,9 @@ object GenericUtils {
 
         return lastUpdate
     }
+
+
+
 
 
     // Update each equakes info with custom distance from user if any,with distance unit preferred.

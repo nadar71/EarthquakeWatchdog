@@ -1,6 +1,6 @@
 package eu.indiewalkabout.fridgemanager.core.di
 
-import com.indiewalk.watchdog.earthquake.data.local.db.EarthquakeDbDao
+import com.indiewalk.watchdog.earthquake.data.local.db.EarthquakeDao
 import com.indiewalk.watchdog.earthquake.data.repository.EarthquakeRepository
 import dagger.Module
 import dagger.Provides
@@ -15,8 +15,9 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideFridgeManagerRepository(
-        earthquakeDbDao: EarthquakeDbDao
+        earthquakeDao: EarthquakeDao,
+        feedSnapshotDao: EarthquakeDao
     ): EarthquakeRepository {
-        return EarthquakeRepositoryImpl(earthquakeDbDao)
+        return EarthquakeRepositoryImpl(earthquakeDao, feedSnapshotDao)
     }
 }
