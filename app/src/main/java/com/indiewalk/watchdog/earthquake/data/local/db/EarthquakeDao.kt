@@ -61,16 +61,12 @@ interface EarthquakeDao {
     //----------------------------------------------------------------------------------------------
 
     // insert all the eqs from feed snapshot
-    @Upsert
+    /*@Upsert
     suspend  fun upsertAllEarthquakesInFeed(eqEntityList: List<EQEntity>)
-
+*/
     // insert or update the eq
     @Upsert
     suspend  fun upsertEarthquake(eqEntity: EQEntity)
-
-    /*// Insert all the earthquakes info get from restful at a new update
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend  fun renewDataInsert(vararg earthquakeUI: EQFeaturesCollection)*/
 
 
     //----------------------------------------------------------------------------------------------

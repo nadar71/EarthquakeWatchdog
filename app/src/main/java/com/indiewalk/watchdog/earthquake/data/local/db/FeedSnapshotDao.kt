@@ -7,8 +7,8 @@ import com.indiewalk.watchdog.earthquake.domain.model.local.FeedSnapshotEntity
 
 interface FeedSnapshotDao {
 
-    @Upsert
-    suspend fun upsert(feedSnapshotEntity: FeedSnapshotEntity)
+    /*@Upsert
+    suspend fun upsert(feedSnapshotEntity: FeedSnapshotEntity)*/
 
     @Delete
     suspend fun delete(feedSnapshotEntity: FeedSnapshotEntity)

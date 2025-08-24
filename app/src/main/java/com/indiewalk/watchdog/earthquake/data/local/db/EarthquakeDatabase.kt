@@ -20,7 +20,9 @@ import kotlin.jvm.java
 )
 @TypeConverters(DateConverter::class)
 abstract class EarthquakeDatabase : RoomDatabase() {
-    abstract fun earthquakeDbDao(): EarthquakeDao
+    abstract fun feedSnapshotDao(): FeedSnapshotDao
+    abstract fun earthquakeDao(): EarthquakeDao
+    abstract fun feedWriterDao(): FeedWriterDao
 
     companion object {
         private val DBNAME = "EarthquakesDB"
