@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.indiewalk.watchdog.earthquake.presentation.ui.SettingSimpleActivity">
+        tools:context="com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui.SettingSimpleActivity">
 
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:map="http://schemas.android.com/apk/res-auto"
@@ -19,7 +19,7 @@
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context="com.indiewalk.watchdog.earthquake.MapsActivity" />
+            tools:context="com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui.MapsActivity" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

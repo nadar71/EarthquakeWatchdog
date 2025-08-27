@@ -7,7 +7,7 @@ import com.indiewalk.watchdog.earthquake.core.data.AppPreferences.unitSystem
 import com.indiewalk.watchdog.earthquake.core.data.Constants.KM_TO_MILES
 import com.indiewalk.watchdog.earthquake.core.data.Constants.MILES_TO_KM
 import com.indiewalk.watchdog.earthquake.core.data.enums.UnitSystems
-import com.indiewalk.watchdog.earthquake.domain.model.dtos.GeometryDTO
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.GeometryDTO
 import it.abenergie.customerarea.core.utility.extensions.TAG
 import kotlin.math.atan2
 import kotlin.math.cos

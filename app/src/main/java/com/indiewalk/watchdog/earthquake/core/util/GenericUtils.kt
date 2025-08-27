@@ -20,13 +20,13 @@ import android.view.View
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.AppEarthquake
+import com.indiewalk.watchdog.earthquake.EarthquakeApp
 import com.indiewalk.watchdog.earthquake.core.data.Constants.USGS_REQUEST_URL
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.fromKmToMiles
-import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList
-import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeUI
-import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList.Companion.DEFAULT_LAT
-import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList.Companion.DEFAULT_LNG
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivityEarthquakesList
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivityEarthquakesList.Companion.DEFAULT_LAT
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivityEarthquakesList.Companion.DEFAULT_LNG
 import it.abenergie.customerarea.core.utility.extensions.TAG
 
 import java.text.SimpleDateFormat
@@ -38,7 +38,7 @@ object GenericUtils {
     // Check if internet connection is on
     val isConnectionOk: Boolean
         get() {
-            val connManager = (AppEarthquake.getsContext() as AppEarthquake)
+            val connManager = (EarthquakeApp.getsContext() as EarthquakeApp)
                     .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val netinfo = connManager.activeNetworkInfo
             if (netinfo != null && netinfo.isConnected) {

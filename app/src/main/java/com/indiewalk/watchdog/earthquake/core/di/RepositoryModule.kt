@@ -1,12 +1,12 @@
 package eu.indiewalkabout.fridgemanager.core.di
 
-import com.indiewalk.watchdog.earthquake.data.local.db.EarthquakeDao
-import com.indiewalk.watchdog.earthquake.data.local.db.FeedWriterDao
-import com.indiewalk.watchdog.earthquake.data.remote.EarthquakeApi
-import com.indiewalk.watchdog.earthquake.data.remote.provideHttpClient
-import com.indiewalk.watchdog.earthquake.data.repository.EQRepositoryImpl
-import com.indiewalk.watchdog.earthquake.data.repository.EarthquakeRepository
-import com.indiewalk.watchdog.earthquake.domain.repository.EQRepository
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.EarthquakeDao
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.FeedSnapshotDao
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.FeedWriterDao
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.remote.EarthquakeApi
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.remote.provideHttpClient
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.repository.EQRepositoryImpl
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.repository.EQRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,11 +22,10 @@ object RepositoryModule {
     @Singleton
     fun provideFridgeManagerRepository(
         earthquakeDao: EarthquakeDao,
-        feedSnapshotDao: EarthquakeDao,
+        feedSnapshotDao: FeedSnapshotDao,
         feedWriterDao: FeedWriterDao,
-        eerthquakeApi: EarthquakeApi,
-        httpClient: HttpClient
+        earthquakeApi: EarthquakeApi
     ): EQRepository {
-        return EQRepositoryImpl(earthquakeDao, feedSnapshotDao, feedWriterDao, provideHttpClient())
+        return EQRepositoryImpl(earthquakeDao, feedSnapshotDao, feedWriterDao, earthquakeApi)
     }
 }

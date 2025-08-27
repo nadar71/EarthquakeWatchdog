@@ -11,7 +11,7 @@
         android:entries="@array/settings_order_by_labels"
         android:entryValues="@array/settings_order_by_values"
         android:key="@string/settings_order_by_key"
-        android:title="@string/settings_order_by_label" />
+        android:title="@string/order_by_label" />
 
 
     <ListPreference
@@ -42,7 +42,7 @@
         android:entries="@array/settings_array_date_filter_labels"
         android:entryValues="@array/settings_array_date_filter_values"
         android:key="@string/settings_date_filter_key"
-        android:title="@string/settings_date_filter_label" />
+        android:title="@string/settings_time_period_filter_label" />
     </PreferenceCategory>
 
 

@@ -1,72 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- - - - - - - - - - - - - - - - - - - - Generale - - - - - - - - - - - - - - - - - - - - -->
     <string name="app_name">EarthQuake Watchdog</string>
-    <string name="searching">Carico gli ultimi dati sui terremoti&#8230;</string>
-    <string name="my_position_ic_title">La mia posizione</string>
-    <string name="refresh_ic_title">Aggiorna</string>
-    <string name="spinner_title">Tipo Mappa</string>
-    <string name="title_activity_my_position">Mappa</string>
-    <string name="sugges_manual_loc_title">Nel caso tu preferisca geolocalizzazione Manuale SENZA GPS</string>
-    <string name="sugges_manual_loc_text">In Impostazioni, in alto a destra, spunta
-        \'Usa localizzatione Manuale\' e segui le istruzioni.\nNon usa il servizio automatico di geolocalizzazione né il gps.
-    </string>
-    <string name="save_label">Salva</string>
-    <string name="dont_ask_more">Non mostrare di nuovo</string>
-    <string name="distance_from_default_location">dalla posizione di default</string>
-    <string name="distance_from_user_location">da te</string>
-    <string name="no_earthquakes">Nessun terremoto trovato. Prova un altro filtro.</string>
-    <string name="no_internet_connection">Nessuna connessione a internet.Devi effettuare almeno una connessione per scaricare i dati relativi ai terremoti!</string>
+    <string name="title_reduced" translatable="false">EQWatchdog</string>
+    <string name="searching_label">Caricamento dati ultimi terremoti</string>
+    <string name="show_no_more_label">Non mostrarmi più</string>
+    <string name="generic_yes">Sì</string>
+    <string name="generic_no">No</string>
+    <string name="generic_ok">Ok</string>
+    <string name="generic_cancel">Annulla</string>
+    <string name="generic_save_label">Salva</string>
+    <string name="generic_confirm_label">Conferma</string>
+    <string name="update_btn_label">Aggiorna</string>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - Home - - - - - - - - - - - - - - - - - - - - - - -->
+    <string name="quick_settings_title">Impostazioni rapide</string>
+    <string name="last_update_label">Ultimo aggiornamento: </string>
+    <string name="time_range_label">Intervallo di tempo: </string>
+    <string name="your_position_label">La tua posizione: </string>
+    <string name="settings_menu_item_quick">Impostazioni rapide</string>
+    <string name="settings_menu_item_general">Impostazioni generali</string>
+
+    <string name="order_by_label">Ordinato per: </string>
+    <string name="order_by_desc_magnitude">Magnitudo (da alta a bassa)</string>
+    <string name="order_by_asc_magnitude">Magnitudo (da bassa ad alta)</string>
+    <string name="order_by_most_recent">Più recente</string>
+    <string name="order_by_oldest">Più vecchio</string>
+    <string name="order_by_nearest">Più vicino</string>
+    <string name="order_by_furthest">Più lontano</string>
+
+    <!-- - - - - - - - - - - Mappe - - - - - - - - - - - - - - - - - - -->
+    <string name="maps_title">Osservatorio Terremoti</string>
+    <string name="maps_my_position_label">La mia posizione</string>
+    <string name="maps_refresh_label">Aggiorna</string>
+    <string name="maps_spinner_title">Tipo di mappa</string>
+    <string name="maps_manual_loc_title">Se preferisci la localizzazione manuale SENZA GPS.</string>
+    <string name="maps_manual_loc_text">Nelle impostazioni, in alto a destra, seleziona \'Usa localizzazione manuale\'
+e segui le istruzioni.\nNon utilizza alcun servizio di localizzazione né GPS.</string>
+    <string name="maps_locationOffset_label">Vicino a</string>
+    <string name="maps_markers_hide_label">Nascondi i marcatori dei terremoti</string>
+    <string name="maps_dialog_manual_loc_title">Impostazione di posizione manuale attiva (senza GPS)</string>
+    <string name="maps_dialog_manual_loc_msg">Per impostare/sovrascrivere manualmente la posizione, premi a lungo su un punto della mappa.</string>
+    <string name="maps_forbidden_label">Spiacenti, impossibile Visualizza i terremoti sulla mappa
+    con un intervallo di tempo massimo di 24 ore. Modifica le impostazioni del filtro nelle
+    Impostazioni Generali.</string>
+
+    <string name="maps_manual_localization_on_label">Localizzazione Manuale Attivata</string>
+    <string name="maps_dis_from_default_location_label">dalla posizione predefinita</string>
+    <string name="maps_dis_from_user_location_label">da te</string>
+
+    <!-- - - - - - - - - - - - Stringhe per il menu Impostazioni - - - - - - - - - - - - - - - - - - - - - - - - -->
     <string name="title_activity_settings">Impostazioni</string>
-    <string name="title_activity_maps_manual_localization_on">Localizzazione Manuale On</string>
-    <string name="dialog_check_box_label">Salva</string>
-    <string name="settings_title">Impostazioni</string>
+    <string name="settings_title">Impostazioni Terremoto</string>
     <string name="settings_menu_item">Impostazioni</string>
-    <string name="settings_menu_item_quick">Impostazioni Veloci</string>
-    <string name="settings_menu_item_general">Impostazioni Generali</string>
-    <string name="category_settings_title">"Impostazioni "</string>
-    <string name="category_help_title">Aiuto</string>
-    <string name="settings_order_by_label">Ordinato per :</string>
-    <string name="settings_order_by_desc_magnitude_label">Magnitudo (dalla più alta)</string>
-    <string name="settings_order_by_most_recent_label">Più recente</string>
-    <string name="settings_order_by_nearest_label">Il più vicino a te</string>
-    <string name="settings_order_by_furthest_label">Il più lontano da te</string>
-    <string name="settings_distance_unit_label">Unità di misura per la Distanza</string>
+    <string name="settings_order_by_label">Ordinato per: </string>
+    <string name="settings_distance_unit_label">Sistema di unità di misura della distanza</string>
     <string name="settings_km_distance_unit_label">Km</string>
     <string name="settings_mi_distance_unit_label">Mi</string>
-    <string name="settings_min_magnitude_label">Magnitudo minima</string>
-    <string name="settings_max_equakes_label">Quanti terremoti vuoi visualizzare ?</string>
-    <string name="gdpr_btn_title">GDPR</string>
-    <string name="gdpr_btn_summary">Impostazioni GDPR</string>
-    <string name="faq_btn_title">Faq &amp; Disclaimer</string>
-    <string name="faq_btn_summary">Che cosa l\'app può e non può fare</string>
-    <string name="faq_text">"         <b>FAQ &amp; DISCLAIMER</b>\\n         La presente app mostra i dati relativi ai terremoti (fino a 120 terremoti) presi dal servizio online di         <a href="https://earthquake.usgs.gov/earthquakes/"> USGS.gov </a>.         Non è in nessun modo collegata a USGS nè è un\'app di questa organizzazione.\\n\\n          L\'app ha solo scopi informativi, le date rigurdanti i terremoti non sono in tempo reale         (controlla su <a href="https://earthquake.usgs.gov/earthquakes/"> USGS.gov site </a> per i dettagli al riguardo)         Non ha perciò l\'intento di essere un\'alert in tempo reale sui terremoti e         non va perciò utilizzata come app salva vita, non sono perciò responsabile di un suo eventuale uso improprio.\\n\\n          Nella mappa vengono richiesti i permessi di geolocalizzazione solo per calcolare la distanza dei         terremoti dall\'utente, e le coordinate dell\'utente sono immagazzinate soltanto a questo scopo.\\n         Se vengono negati i permessi di geolocalizzazione, l\'app permette comunque il posizionamento manuale         tenendo premuto il dito nella posizione desiderata sulla mappa, senza usare gps nè qualsiasi altro servizio di geolocalizzazione,         controllare nella impostazioni delle schermata mappa.\\n         Se vengono negati i permessi di geolocalizzazione e non viene fatta la localizzazione manuale, l\'app utilizzerà         la posizione di default di Google map (Google Company location) e calcolerà la distanza dei terremoti rispetto ad essa.         \\n\\n          Spero che troverai la mia app utile, scopri le mie altre app e giochi sul mio sito\\n         <a href="http://www.indie-walkabout.eu">http://www.indie-walkabout.eu</a>.\\n          Per suggerimenti, informazioni o errori per favore contattami qui : \\n         <a href="mailto:indie.walkabout.1971@gmail.com">indie.walkabout.1971@gmail.com</a>\\n      "</string>
-    <string name="manual_localization_label">Usa localizzaz. manuale (no gps)</string>
-    <string name="locationOffset_label">Vicino a</string>
-    <string name="earthquake_markers_label">Nascondi posizione terremoti</string>
-    <string name="dialog_manual_loc_title">Localizzazione manuale attiva (no gps)</string>
-    <string name="dialog_manual_loc_msg">Per impostare la tua posizione manualmente, premi a lungo su un punto della mappa.</string>
-    <string name="quick_settings_title">Impostazioni Veloci</string>
-    <string name="spinner_defaultchoice_label">Scegli</string>
-    <string name="settings_order_by_asc_magnitude_label">Magnitudo (dalla più bassa)</string>
-    <string name="settings_date_filter_label">Filtro data :</string>
+
+    <string name="settings_min_magnitude_label">Magnitudo minima: </string>
+    <string name="settings_1_0_min_magnitude_label">1,0+</string>
+    <string name="settings_2_0_min_magnitude_label">2,0+</string>
+    <string name="settings_3_0_min_magnitude_label">3,0+</string>
+    <string name="settings_4_0_min_magnitude_label">4,0+</string>
+    <string name="settings_4_5_min_magnitude_label">4,5+</string>
+    <string name="settings_5_0_min_magnitude_label">5,0+</string>
+    <string name="settings_5_5_min_magnitude_label">5,5+</string>
+    <string name="settings_6_0_min_magnitude_label">6,0+</string>
+    <string name="settings_6_5_min_magnitude_label">6,5+</string>
+
+    <string name="settings_time_period_filter_label">Filtro periodo di tempo: </string>
     <string name="settings_date_period_today_label">Oggi</string>
-    <string name="settings_date_period_24h_label">24h</string>
-    <string name="settings_date_period_48h_label">48h</string>
+    <string name="settings_date_period_24h_label">24 ore</string>
+    <string name="settings_date_period_48h_label">48 ore</string>
     <string name="settings_date_period_week_label">Ultima settimana</string>
-    <string name="settings_date_period_month_label">Ultimo mese</string>
-    <string name="data_update_toast">"Dati aggiornati nell\'intervallo di : "</string>
-    <string name="last_update_label">Ultimo aggiornamento :</string>
-    <string name="time_range_label">Intervallo di tempo :</string>
-    <string name="your_position_label">La tua posizione :</string>
     <string name="settings_date_period_2_week_label">Ultime 2 settimane</string>
-    <string name="settings_order_by_oldest_label">Più vecchio</string>
-    <string name="use_of_map_forbidden">Mi spiace, non è possibile visualizzare i terremoti sulla mappa per un intervallo di tempo superiore alle 24h, cambia per favore le impostazioni del filtro nelle Impostazioni Generali</string>
-    <string name="settings_date_period_3_days_label">3 giorni fa</string>
-    <string name="settings_date_period_4_days_label">4 giorni fa</string>
-    <!--
-    <string name="settings_order_by_desc_magnitude_value">magnitudo</string>
-    <string name="settings_order_by_most_recent_value">data</string>
-    <string name="settings_order_by_nearest_value">più vicino</string>
-    <string name="settings_order_by_furthest_value">più lontano</string>
-    -->
+
+    <string name="settings_gdpr_btn_title">GDPR</string>
+    <string name="settings_gdpr_btn_summary">Ritiro del consenso al GDPR.</string>
+
+    <string name="settings_faq_btn_title">Domande frequenti e disclaimer</string>
+    <string name="settings_faq_btn_key" translatable="false">Domande frequenti</string>
+    <string name="settings_faq_btn_summary">Cosa può fare e cosa non può fare l\'app.</string>
+    <string name="settings_faq_text">" <b>FAQ E DISCLAIMER</b> Questa app scarica e mostra dati sui terremoti (fino agli ultimi 120 terremoti) tratti dal servizio online <a href="https://earthquake.usgs.gov/earthquakes/">USGS.gov</a>. Non è in alcun modo correlata a USGS né è un'app di quest'ultimo. Ha solo scopo informativo, i dati sui terremoti non sono in tempo reale (consultare il <a href="https://earthquake.usgs.gov/earthquakes/">sito USGS.gov</a> per i dettagli). Pertanto, non intende essere un'app di allerta terremoti in tempo reale, né utilizzarla come app per salvare vite umane. Non sono responsabile di alcun uso improprio di questa app. Nella mappa, richiede all'utente I permessi di localizzazione sono validi solo per il calcolo della distanza del terremoto dall'utente e le coordinate dell'utente vengono memorizzate solo a questo scopo. Se i permessi di localizzazione vengono negati, è comunque possibile il posizionamento manuale premendo a lungo sulla mappa, senza utilizzare il GPS o altri sistemi di localizzazione (verificare nelle impostazioni della mappa). Se i permessi non sono consentiti né viene effettuata una localizzazione manuale, viene utilizzata la posizione predefinita (posizione di Google) e calcolata la distanza del terremoto da lì. Spero che la mia app vi piaccia e la troviate utile, date un'occhiata alle altre mie app e giochi sul mio sito <a href="http://www.indie-walkabout.eu">http://www.indie-walkabout.eu</a>. Per suggerimenti, informazioni o bug, contattatemi all'indirizzo <a href="mailto:indie.walkabout.1971@gmail.com">indie.walkabout.1971@gmail.com</a> "</string>
+
+    <!-- - - - - - - - - - - - - - - - - - - Messaggi di errore - - - - - - - - - - - - - - - - - - - - - -->
+    <string name="no_earthquakes">Nessun terremoto trovato. Prova un altro filtro.</string>
+    <string name="no_internet_connection">Nessuna connessione Internet. Devi connetterti almeno la prima volta per scaricare i dati sui terremoti.</string>
 </resources>
