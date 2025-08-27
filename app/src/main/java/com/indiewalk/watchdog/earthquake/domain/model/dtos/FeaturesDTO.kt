@@ -1,15 +1,13 @@
-package com.indiewalk.watchdog.earthquake.domain.model.remote
+package com.indiewalk.watchdog.earthquake.domain.model.dtos
 
-import androidx.compose.material3.ModalBottomSheetDefaults.properties
-import androidx.room.Embedded
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getEQDistanceFromUser
-import com.indiewalk.watchdog.earthquake.domain.model.local.EQEntity
+import com.indiewalk.watchdog.earthquake.domain.model.EQEntity
 
 // A single EQ Feature with properties + geometry + id, network/dto.
 data class FeaturesDTO(
-    val type: String,                       // "Feature"
-    @Embedded val properties: PropertiesDTO,
-    @Embedded val geometry: GeometryDTO,      // may be null
+    val type: String,                   // "Feature"
+    val properties: PropertiesDTO,
+    val geometry: GeometryDTO,
     val id: String
 )
 

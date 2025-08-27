@@ -1,7 +1,7 @@
 package com.indiewalk.watchdog.earthquake.data.local.db
 
-import com.indiewalk.watchdog.earthquake.domain.model.local.EQEntity
-import com.indiewalk.watchdog.earthquake.domain.model.local.FeedSnapshotEntity
+import com.indiewalk.watchdog.earthquake.domain.model.EQEntity
+import com.indiewalk.watchdog.earthquake.domain.model.FeedSnapshotEntity
 import androidx.room.Dao
 import androidx.room.Transaction
 import androidx.room.Upsert
@@ -10,10 +10,8 @@ import androidx.room.Upsert
 interface FeedWriterDao {
     @Upsert
     suspend fun upsertSnapshot(snapshot: FeedSnapshotEntity)
-
     @Upsert
     suspend fun upsertAllEvents(events: List<EQEntity>)
-
     // Atomic write of snapshot + events.
     @Transaction
     suspend fun saveSnapshotAndEvents(

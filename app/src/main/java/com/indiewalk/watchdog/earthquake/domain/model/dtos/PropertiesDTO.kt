@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.domain.model.remote
+package com.indiewalk.watchdog.earthquake.domain.model.dtos
 
 // Earthquake properties. Many can be null depending on the event, network/dto.
 data class PropertiesDTO(

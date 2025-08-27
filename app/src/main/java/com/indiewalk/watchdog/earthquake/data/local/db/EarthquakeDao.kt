@@ -1,16 +1,15 @@
 package com.indiewalk.watchdog.earthquake.data.local.db
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
-import com.indiewalk.watchdog.earthquake.domain.model.local.EQEntity
+import com.indiewalk.watchdog.earthquake.domain.model.EQEntity
 
 @Dao
 interface EarthquakeDao {
 
-    //----------------------------------------------------------------------------------------------
-    //  QUERY
-    //----------------------------------------------------------------------------------------------
+    //------------------------------------------- QUERY --------------------------------------------
 
     // retrieve all the eqs
     @Query("SELECT * FROM earthquakes ")
@@ -56,31 +55,22 @@ interface EarthquakeDao {
         west: Double, south: Double, east: Double, north: Double, limit: Int = 200
     ): MutableList<EQEntity>
 
-    //----------------------------------------------------------------------------------------------
-    //  INSERT/UPDATE
-    //----------------------------------------------------------------------------------------------
+    //----------------------------------- INSERT/UPDATE --------------------------------------------
 
-    // insert all the eqs from feed snapshot
-    /*@Upsert
-    suspend  fun upsertAllEarthquakesInFeed(eqEntityList: List<EQEntity>)
-*/
-    // insert or update the eq
+    // insert/update the eq
     @Upsert
     suspend  fun upsertEarthquake(eqEntity: EQEntity)
 
-
-    //----------------------------------------------------------------------------------------------
-    //  UPDATE
-    //----------------------------------------------------------------------------------------------
     @Query("UPDATE earthquakes SET distanceFromUser =:new_distance WHERE id =:id")
     suspend  fun updatedEqDistanceFromUser(new_distance: Int, id: Int)
 
-    //----------------------------------------------------------------------------------------------
-    //  DROP TABLE
-    //----------------------------------------------------------------------------------------------
+    //----------------------------------------- DROP TABLE -----------------------------------------
     // drop table : delete all table content each loading
     @Query("DELETE FROM earthquakes")
     suspend  fun dropEarthquakeListTable()
+
+    @Delete
+    suspend fun delete(eqEntity: EQEntity)
 
     // delete all the eqs older than cutoff date/time
     @Query("DELETE FROM earthquakes WHERE time IS NOT NULL AND time < :cutoff")

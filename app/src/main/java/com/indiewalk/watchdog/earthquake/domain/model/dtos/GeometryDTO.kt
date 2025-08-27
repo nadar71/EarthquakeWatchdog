@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.domain.model.remote
+package com.indiewalk.watchdog.earthquake.domain.model.dtos
 
 // Geometry describing the location. Coordinates are [lon, lat, depth(km)], network/dto.
 data class GeometryDTO(

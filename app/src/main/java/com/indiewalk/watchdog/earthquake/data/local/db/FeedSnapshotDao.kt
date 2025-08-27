@@ -2,18 +2,11 @@ package com.indiewalk.watchdog.earthquake.data.local.db
 
 import androidx.room.Delete
 import androidx.room.Query
-import androidx.room.Upsert
-import com.indiewalk.watchdog.earthquake.domain.model.local.FeedSnapshotEntity
+import com.indiewalk.watchdog.earthquake.domain.model.FeedSnapshotEntity
 
 interface FeedSnapshotDao {
-
-    /*@Upsert
-    suspend fun upsert(feedSnapshotEntity: FeedSnapshotEntity)*/
-
     @Delete
-    suspend fun delete(feedSnapshotEntity: FeedSnapshotEntity)
-
-    @Query("DELETE FROM earthquakes")
-    suspend  fun dropEarthquakeListTable()
-
+    suspend fun deleteSnapshot(feedSnapshotEntity: FeedSnapshotEntity)
+    @Query("DELETE FROM feed_snapshot")
+    suspend  fun dropSnapshotTable()
 }

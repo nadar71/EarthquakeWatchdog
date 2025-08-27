@@ -25,7 +25,6 @@ import com.indiewalk.watchdog.earthquake.core.data.Constants.USGS_REQUEST_URL
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.fromKmToMiles
 import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList
 import com.indiewalk.watchdog.earthquake.domain.model.EarthquakeUI
-import com.indiewalk.watchdog.earthquake.domain.model.remote.GeometryDTO
 import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList.Companion.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList.Companion.DEFAULT_LNG
 import it.abenergie.customerarea.core.utility.extensions.TAG
@@ -33,10 +32,6 @@ import it.abenergie.customerarea.core.utility.extensions.TAG
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Calendar
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
 
 object GenericUtils {
 

@@ -1,24 +1,18 @@
 package com.indiewalk.watchdog.earthquake.core.util
 
 import android.util.Log
-import com.google.maps.android.data.Geometry
-import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.data.AppPreferences.device_lat
 import com.indiewalk.watchdog.earthquake.core.data.AppPreferences.device_lng
 import com.indiewalk.watchdog.earthquake.core.data.AppPreferences.unitSystem
 import com.indiewalk.watchdog.earthquake.core.data.Constants.KM_TO_MILES
 import com.indiewalk.watchdog.earthquake.core.data.Constants.MILES_TO_KM
 import com.indiewalk.watchdog.earthquake.core.data.enums.UnitSystems
-import com.indiewalk.watchdog.earthquake.domain.model.remote.GeometryDTO
-import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList.Companion.DEFAULT_LAT
-import com.indiewalk.watchdog.earthquake.presentation.ui.MainActivityEarthquakesList.Companion.DEFAULT_LNG
+import com.indiewalk.watchdog.earthquake.domain.model.dtos.GeometryDTO
 import it.abenergie.customerarea.core.utility.extensions.TAG
-import kotlin.div
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
-import kotlin.text.toInt
 
 object MapsUtils {
 

@@ -5,9 +5,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import android.content.Context
-import com.indiewalk.watchdog.earthquake.data.local.db.EarthquakeDao
-import com.indiewalk.watchdog.earthquake.domain.model.local.EQEntity
-import com.indiewalk.watchdog.earthquake.domain.model.local.FeedSnapshotEntity
+import com.indiewalk.watchdog.earthquake.domain.model.EQEntity
+import com.indiewalk.watchdog.earthquake.domain.model.FeedSnapshotEntity
 import kotlin.jvm.java
 
 

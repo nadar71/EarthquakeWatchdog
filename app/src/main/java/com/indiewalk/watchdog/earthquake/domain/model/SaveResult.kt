@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.domain.model.local
+package com.indiewalk.watchdog.earthquake.domain.model
 
 data class SaveResult(
     val snapshotGenerated: Long,

@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.domain.model.remote
+package com.indiewalk.watchdog.earthquake.domain.model.dtos
 
 // Metadata about the feed generation and counts, network/dto.
 data class MetadataDTO(
