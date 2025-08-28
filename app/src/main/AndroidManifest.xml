@@ -27,7 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".feat_eqslist.presentation.ui.MainActivityEarthquakesList"
+            android:name=".feat_eqslist.presentation.ui.MainActivity"
             android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
@@ -43,11 +43,11 @@
         <activity
             android:name=".feat_settings.presentation.ui.SettingSimpleActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".feat_eqslist.presentation.ui.MainActivityEarthquakesList"
+            android:parentActivityName=".feat_eqslist.presentation.ui.MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivityEarthquakesList" />
+                android:value="com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivity" />
         </activity>
         <!--
         <meta-data

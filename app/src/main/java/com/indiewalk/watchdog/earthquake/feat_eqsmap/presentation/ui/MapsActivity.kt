@@ -51,7 +51,7 @@ import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.util.GenericUtils
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.repository.EarthquakeRepository
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
-import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivityEarthquakesList
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainViewModel
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainViewModelFactory
 import it.abenergie.customerarea.core.utility.extensions.TAG
@@ -231,7 +231,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         earthquakesMarkersList = ArrayList()
 
         // Get eq list through LiveData
-        val factory = MainViewModelFactory(MainActivityEarthquakesList.Companion.LOAD_ALL_NO_ORDER)
+        val factory = MainViewModelFactory(MainActivity.Companion.LOAD_ALL_NO_ORDER)
         val viewModel = ViewModelProviders.of(this, factory).get(MainViewModel::class.java)
 
         equakes = viewModel.eqList!!
@@ -297,12 +297,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             // get previous set position
             lat_s = sharedPreferences.getString(
                 getString(R.string.device_lat), java.lang.Double.toString(
-                    MainActivityEarthquakesList.DEFAULT_LAT
+                    MainActivity.DEFAULT_LAT
                 )
             )
             lng_s = sharedPreferences.getString(
                 getString(R.string.device_lng), java.lang.Double.toString(
-                    MainActivityEarthquakesList.DEFAULT_LNG
+                    MainActivity.DEFAULT_LNG
                 )
             )
 
@@ -494,16 +494,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         lat_s = sharedPreferences.getString(
             getString(R.string.device_lat),
-            java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LAT)
+            java.lang.Double.toString(MainActivity.DEFAULT_LAT)
         )
         lng_s = sharedPreferences.getString(
             getString(R.string.device_lng),
-            java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LNG)
+            java.lang.Double.toString(MainActivity.DEFAULT_LNG)
         )
 
         // if there is already user location different from default location
-        if (lat_s != java.lang.Double.toString(MainActivityEarthquakesList.DEFAULT_LAT) && lng_s != java.lang.Double.toString(
-                MainActivityEarthquakesList.DEFAULT_LNG
+        if (lat_s != java.lang.Double.toString(MainActivity.DEFAULT_LAT) && lng_s != java.lang.Double.toString(
+                MainActivity.DEFAULT_LNG
             )
         ) {
             // position the user location's marker

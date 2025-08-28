@@ -12,29 +12,29 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.repository.EarthquakeRepository
 import it.abenergie.customerarea.core.utility.extensions.TAG
 
-class MainViewModel : ViewModel {
-    var context: EarthquakeApp? = null
-    var eqList: LiveData<List<EarthquakeUI>>? = null
-        private set
+class MainViewModel : ViewModel() {
+    // var context: EarthquakeApp? = null
+    // var eqList: LiveData<List<EarthquakeUI>>? = null
+        // private set
 
     // Livedata var on Earthquake obj to populate through ViewModel
     // ** not used for the moment
-    private val earthquakeUISingleEntry: LiveData<EarthquakeUI>? = null
+    // private val earthquakeUISingleEntry: LiveData<EarthquakeUI>? = null
 
     // repository ref
-    private var eqRepository: EarthquakeRepository? = null
+    // private var eqRepository: EarthquakeRepository? = null
 
     // Preferences value
-    private var minMagnitude: String? = null
+    // private var minMagnitude: String? = null
 
     // SharePreferences ref
-    private var sharedPreferences: SharedPreferences? = null
+    // private var sharedPreferences: SharedPreferences? = null
 
     // min mgnitudine value
-    private var dMinMagnitude: Double = 0.0
+    // private var dMinMagnitude: Double = 0.0
 
 
-    constructor() {
+    /*constructor() {
         context = EarthquakeApp.getsContext() as EarthquakeApp?
 
         // init repository
@@ -43,10 +43,10 @@ class MainViewModel : ViewModel {
 
         // init shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-    }
+    }*/
 
 
-    constructor(listType: String) {
+    /*constructor(listType: String) {
         Log.d(TAG, "Actively retrieving the collections from repository")
 
         context = EarthquakeApp.getsContext() as EarthquakeApp?
@@ -62,41 +62,41 @@ class MainViewModel : ViewModel {
 
 
         // choose the type of food list to load from db
-        if (listType == MainActivityEarthquakesList.ORDER_BY_DESC_MAGNITUDE) {
+        if (listType == MainActivity.ORDER_BY_DESC_MAGNITUDE) {
             Log.d(TAG, "setupAdapter: ORDER_BY_DESC_MAGNITUDE : $listType")
             eqList = eqRepository!!.loadAll_orderby_desc_mag(dMinMagnitude)
 
         }
-        if (listType == MainActivityEarthquakesList.ORDER_BY_ASC_MAGNITUDE) {
+        if (listType == MainActivity.ORDER_BY_ASC_MAGNITUDE) {
             Log.d(TAG, "setupAdapter: ORDER_BY_ASC_MAGNITUDE : $listType")
             eqList = eqRepository!!.loadAll_orderby_asc_mag(dMinMagnitude)
 
-        } else if (listType == MainActivityEarthquakesList.ORDER_BY_MOST_RECENT) {
+        } else if (listType == MainActivity.ORDER_BY_MOST_RECENT) {
             Log.d(TAG, "setupAdapter: ORDER_BY_MOST_RECENT : $listType")
             eqList = eqRepository!!.loadAll_orderby_most_recent(dMinMagnitude)
 
-        } else if (listType == MainActivityEarthquakesList.ORDER_BY_OLDEST) {
+        } else if (listType == MainActivity.ORDER_BY_OLDEST) {
             Log.d(TAG, "setupAdapter: ORDER_BY_OLDEST : $listType")
             eqList = eqRepository!!.loadAll_orderby_oldest(dMinMagnitude)
 
-        } else if (listType == MainActivityEarthquakesList.ORDER_BY_NEAREST) {
+        } else if (listType == MainActivity.ORDER_BY_NEAREST) {
             Log.d(TAG, "setupAdapter: ORDER_BY_NEAREST : $listType")
             eqList = eqRepository!!.loadAll_orderby_nearest(dMinMagnitude)
 
-        } else if (listType == MainActivityEarthquakesList.ORDER_BY_FURTHEST) {
+        } else if (listType == MainActivity.ORDER_BY_FURTHEST) {
             Log.d(TAG, "setupAdapter: ORDER_BY_FURTHEST : $listType")
             eqList = eqRepository!!.loadAll_orderby_furthest(dMinMagnitude)
 
-        } else if (listType == MainActivityEarthquakesList.LOAD_ALL_NO_ORDER) {
+        } else if (listType == MainActivity.LOAD_ALL_NO_ORDER) {
             Log.d(TAG, "setupAdapter: LOAD_ALL_NO_ORDER : $listType")
             eqList = eqRepository!!.loadAll()
         }
 
-    }
+    }*/
 
 
     // Set and check location coordinates from shared preferences.If not set, put default value
-    private fun checkPreferences() {
+    /*private fun checkPreferences() {
         // recover min magnitude value from prefs or set a default from string value
         minMagnitude = sharedPreferences!!.getString(
             context!!.getString(R.string.settings_min_magnitude_key),
@@ -106,13 +106,13 @@ class MainViewModel : ViewModel {
         // check preferences safety
         safePreferencesValue()
 
-    }
+    }*/
 
 
     // making code more robust checking if for same reasons the default value stored are null or
     // not equals to none of the preferences stored values (e.g.  in case of key value change on code
     // but user saved with the previous one with previous app version )
-    private fun safePreferencesValue() {
+    /*private fun safePreferencesValue() {
 
         val editor = sharedPreferences!!.edit()
 
@@ -134,16 +134,16 @@ class MainViewModel : ViewModel {
             setMinMagDefault(editor)
         }
 
-    }
+    }*/
 
     // Set min_magnitude to default
-    private fun setMinMagDefault(editor: SharedPreferences.Editor) {
+    /*private fun setMinMagDefault(editor: SharedPreferences.Editor) {
         minMagnitude = context!!.getString(R.string.settings_min_magnitude_default)
         editor.putString(
             context!!.getString(R.string.settings_min_magnitude_key),
             context!!.getString(R.string.settings_min_magnitude_default)
         )
-    }
+    }*/
 
 
 }

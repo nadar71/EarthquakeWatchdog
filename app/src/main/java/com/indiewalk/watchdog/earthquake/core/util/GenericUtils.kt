@@ -23,10 +23,10 @@ import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.EarthquakeApp
 import com.indiewalk.watchdog.earthquake.core.data.Constants.USGS_REQUEST_URL
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.fromKmToMiles
-import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivityEarthquakesList
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
-import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivityEarthquakesList.Companion.DEFAULT_LAT
-import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivityEarthquakesList.Companion.DEFAULT_LNG
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivity.Companion.DEFAULT_LAT
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivity.Companion.DEFAULT_LNG
 import it.abenergie.customerarea.core.utility.extensions.TAG
 
 import java.text.SimpleDateFormat
@@ -236,30 +236,30 @@ object GenericUtils {
 
         //get preferences for check
         var lat_s = sharedPreferences.getString(context.getString(R.string.device_lat), java.lang.Double.toString(
-            MainActivityEarthquakesList.DEFAULT_LAT))
+            MainActivity.DEFAULT_LAT))
         var lng_s = sharedPreferences.getString(context.getString(R.string.device_lng), java.lang.Double.toString(
-            MainActivityEarthquakesList.DEFAULT_LNG))
+            MainActivity.DEFAULT_LNG))
 
 
         // set default coord if there are no one
         val editor = sharedPreferences.edit()
         if (lat_s!!.isEmpty()) {
             editor.putString(context.getString(R.string.device_lat), java.lang.Double.toString(
-                MainActivityEarthquakesList.DEFAULT_LAT))
+                MainActivity.DEFAULT_LAT))
             editor.apply()
         }
 
         if (lng_s!!.isEmpty()) {
             editor.putString(context.getString(R.string.device_lng), java.lang.Double.toString(
-                MainActivityEarthquakesList.DEFAULT_LNG))
+                MainActivity.DEFAULT_LNG))
             editor.apply()
         }
 
         // get user lat, lng
         lat_s = sharedPreferences.getString(context.getString(R.string.device_lat), java.lang.Double.toString(
-            MainActivityEarthquakesList.DEFAULT_LAT))
+            MainActivity.DEFAULT_LAT))
         lng_s = sharedPreferences.getString(context.getString(R.string.device_lng), java.lang.Double.toString(
-            MainActivityEarthquakesList.DEFAULT_LNG))
+            MainActivity.DEFAULT_LNG))
 
         // get distance unit choosen
         val dist_unit = sharedPreferences.getString(context.getString(R.string.settings_distance_unit_by_key),
@@ -295,30 +295,30 @@ object GenericUtils {
 
         //get preferences for check
         var lat_s = sharedPreferences.getString(context.getString(R.string.device_lat), java.lang.Double.toString(
-            MainActivityEarthquakesList.DEFAULT_LAT))
+            MainActivity.DEFAULT_LAT))
         var lng_s = sharedPreferences.getString(context.getString(R.string.device_lng), java.lang.Double.toString(
-            MainActivityEarthquakesList.DEFAULT_LNG))
+            MainActivity.DEFAULT_LNG))
 
 
         // set default coord if there are no one
         val editor = sharedPreferences.edit()
         if (lat_s!!.isEmpty()) {
             editor.putString(context.getString(R.string.device_lat), java.lang.Double.toString(
-                MainActivityEarthquakesList.DEFAULT_LAT))
+                MainActivity.DEFAULT_LAT))
             editor.apply()
         }
 
         if (lng_s!!.isEmpty()) {
             editor.putString(context.getString(R.string.device_lng), java.lang.Double.toString(
-                MainActivityEarthquakesList.DEFAULT_LNG))
+                MainActivity.DEFAULT_LNG))
             editor.apply()
         }
 
         // get user lat, lng
         lat_s = sharedPreferences.getString(context.getString(R.string.device_lat), java.lang.Double.toString(
-            MainActivityEarthquakesList.DEFAULT_LAT))
+            MainActivity.DEFAULT_LAT))
         lng_s = sharedPreferences.getString(context.getString(R.string.device_lng), java.lang.Double.toString(
-            MainActivityEarthquakesList.DEFAULT_LNG))
+            MainActivity.DEFAULT_LNG))
 
         // get distance unit choosen
         val dist_unit = sharedPreferences.getString(context.getString(R.string.settings_distance_unit_by_key),

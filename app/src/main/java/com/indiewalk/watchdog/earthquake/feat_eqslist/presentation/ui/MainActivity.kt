@@ -1,6 +1,5 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -8,7 +7,7 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.adapter.EarthquakeListAdapter
 
 
-class MainActivityEarthquakesList : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     // private lateinit var binding: MainActivityEarthquakesListBinding
     private var lastUpdate: String? = ""

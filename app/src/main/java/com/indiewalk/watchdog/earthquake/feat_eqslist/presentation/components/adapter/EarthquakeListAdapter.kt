@@ -13,7 +13,7 @@ import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.util.GenericUtils
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.repository.EarthquakeRepository
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
-import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivityEarthquakesList
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivity
 import it.abenergie.customerarea.core.utility.extensions.TAG
 import java.lang.Float
 import java.text.DecimalFormat
@@ -170,15 +170,15 @@ class EarthquakeListAdapter(
 
         val lat_s = sharedPreferences.getString(
             context.getString(R.string.device_lat),
-            MainActivityEarthquakesList.DEFAULT_LAT.toString()
+            MainActivity.DEFAULT_LAT.toString()
         )
         val lng_s = sharedPreferences.getString(
             context.getString(R.string.device_lng),
-            MainActivityEarthquakesList.DEFAULT_LNG.toString()
+            MainActivity.DEFAULT_LNG.toString()
         )
 
         // if there is user location different from default location
-        return lat_s != MainActivityEarthquakesList.DEFAULT_LAT.toString() && lng_s != MainActivityEarthquakesList.DEFAULT_LNG.toString()
+        return lat_s != MainActivity.DEFAULT_LAT.toString() && lng_s != MainActivity.DEFAULT_LNG.toString()
 
     }
 
