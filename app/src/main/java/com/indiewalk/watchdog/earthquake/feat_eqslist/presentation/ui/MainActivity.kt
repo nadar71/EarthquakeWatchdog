@@ -1,12 +1,15 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui
 
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.adapter.EarthquakeListAdapter
+import dagger.hilt.android.AndroidEntryPoint
 
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     // private lateinit var binding: MainActivityEarthquakesListBinding
@@ -30,6 +33,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContent { EarthquakeListScreen() }
+
+
         //binding = DataBindingUtil.setContentView(this, R.layout.main_activity_earthquakes_list)
 
 

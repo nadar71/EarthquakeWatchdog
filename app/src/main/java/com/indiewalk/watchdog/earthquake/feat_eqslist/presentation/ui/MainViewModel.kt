@@ -1,18 +1,56 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import android.content.SharedPreferences
-import android.preference.PreferenceManager
-import android.util.Log
+import androidx.lifecycle.viewModelScope
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.EQFeaturesCollectionDTO
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.repository.EQRepository
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.use_cases.FetchAndSaveDefaultUseCase
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
+import eu.indiewalkabout.fridgemanager.core.domain.model.ApiResponse
+import eu.indiewalkabout.fridgemanager.core.domain.model.ErrorResponse
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.EarthquakeApp
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
-import com.indiewalk.watchdog.earthquake.feat_eqslist.data.repository.EarthquakeRepository
-import it.abenergie.customerarea.core.utility.extensions.TAG
 
-class MainViewModel : ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val eqRepository: EQRepository,
+    private val fetchAndSaveDefaultUseCase: FetchAndSaveDefaultUseCase
+) : ViewModel() {
+
+
+    private val _eqsUIState = MutableStateFlow<EQsListUiState<EQFeaturesCollectionDTO>>(
+        EQsListUiState.Idle)
+    val eqsUIState: StateFlow<EQsListUiState<EQFeaturesCollectionDTO>> = _eqsUIState.asStateFlow()
+
+
+    fun refreshEQsList() {
+        viewModelScope.launch {
+            _eqsUIState.value = EQsListUiState.Loading
+            try {
+                val response = fetchAndSaveDefaultUseCase()
+                when (response) {
+                    is ApiResponse.Success -> {
+                        EQsListUiState.Success(response.data)
+                    }
+                    is ApiResponse.Error -> {
+                        EQsListUiState.Error(response.error)
+                    }
+                }
+            } catch (e: Exception) {
+                _eqsUIState.value = EQsListUiState.Error(
+                    ErrorResponse(0, emptyList(), e.message ?: "Unknown error")
+                )
+            }
+        }
+    }
+
+
+
     // var context: EarthquakeApp? = null
     // var eqList: LiveData<List<EarthquakeUI>>? = null
         // private set

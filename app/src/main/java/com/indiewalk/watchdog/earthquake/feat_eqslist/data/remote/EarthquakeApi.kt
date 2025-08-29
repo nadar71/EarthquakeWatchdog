@@ -1,5 +1,6 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.data.remote
 
+import com.indiewalk.watchdog.earthquake.core.di.UsgsClient
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.EarthquakeQueryParams
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -13,7 +14,9 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 
-class EarthquakeApi @Inject constructor(private val client: HttpClient) {
+class EarthquakeApi @Inject constructor(
+    @UsgsClient private val client: HttpClient
+) {
 
     // Fetches a GeoJSON feed from USGS and deserializes into EQFeaturesCollectionDTO.
     // API docs: https://earthquake.usgs.gov/fdsnws/event/1/

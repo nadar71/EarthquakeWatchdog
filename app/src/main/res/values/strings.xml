@@ -90,6 +90,10 @@
     <!-- - - - - - - - - - - - - - - - - - Error Messages - - - - - -  - - - - - - - - - - - - - -->
     <string name="no_earthquakes">No earthquakes found. Try another filter.</string>
     <string name="no_internet_connection">No internet connection.You need to connect at last the first time to download earthquakes data.</string>
+    <!-- Generic error shown when loading earthquakes fails -->
+    <string name="error_loading_earthquakes">Error loading earthquakes data</string>
+    <string name="api_generic_error">Error performing remote request</string>
+    <string name="db_generic_error">Error performing database operation</string>
 
 
     <!-- - - - - - - - - - - Strings For how many equakes load  Preference  - - - - - - - - - - - - - -->

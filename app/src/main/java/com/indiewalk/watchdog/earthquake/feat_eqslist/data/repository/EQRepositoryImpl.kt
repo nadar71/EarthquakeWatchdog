@@ -30,7 +30,7 @@ class EQRepositoryImpl @Inject constructor(
     // - min mag 1
     // - order by time desc ( default from remote)
     // - no start/date time: retrieve the last month ( ~170kb average )
-    override suspend fun fetchAndSaveDefault() {
+    override suspend fun fetchAndSaveDefault(): EQFeaturesCollectionDTO {
         val params = EarthquakeQueryParams(
             format = "geojson",
             eventType = "earthquake",

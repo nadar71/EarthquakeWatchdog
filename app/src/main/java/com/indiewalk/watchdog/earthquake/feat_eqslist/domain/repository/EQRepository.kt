@@ -8,7 +8,8 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.Earthqua
 interface EQRepository {
     //------------------------------------------- API ----------------------------------------------
     // get earthquakes from api and save to db
-    suspend fun fetchAndSaveDefault()
+    suspend fun fetchAndSaveDefault(): EQFeaturesCollectionDTO
+
     suspend fun getEarthquakesDefault(
         min_mag: Double,
         limit: Int = 200

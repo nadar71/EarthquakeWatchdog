@@ -87,4 +87,8 @@ e segui le istruzioni.\nNon utilizza alcun servizio di localizzazione né GPS.</
     <!-- - - - - - - - - - - - - - - - - - - Messaggi di errore - - - - - - - - - - - - - - - - - - - - - -->
     <string name="no_earthquakes">Nessun terremoto trovato. Prova un altro filtro.</string>
     <string name="no_internet_connection">Nessuna connessione Internet. Devi connetterti almeno la prima volta per scaricare i dati sui terremoti.</string>
+    <!-- Generic error shown when loading earthquakes fails -->
+    <string name="error_loading_earthquakes">Errore nel caricamento dei dati dei terremoti</string>
+    <string name="api_generic_error">Errore durante la richiesta remota</string>
+    <string name="db_generic_error">Errore durante l\'operazione sul database</string>
 </resources>

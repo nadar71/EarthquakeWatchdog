@@ -23,7 +23,18 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideFoodDao(foodDatabase: FoodDatabase) = foodDatabase.foodDbDao()
+    fun provideEarthquakeDao(earthquakeDatabase: EarthquakeDatabase) =
+        earthquakeDatabase.earthquakeDao()
+
+    @Provides
+    @Singleton
+    fun provideFeedSnapshotDao(earthquakeDatabase: EarthquakeDatabase) =
+        earthquakeDatabase.feedSnapshotDao()
+
+    @Provides
+    @Singleton
+    fun provideFeedWriterDao(earthquakeDatabase: EarthquakeDatabase) =
+        earthquakeDatabase.feedWriterDao()
 
 }
 
