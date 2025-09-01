@@ -5,7 +5,6 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
-import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.adapter.EarthquakeListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -16,7 +15,6 @@ class MainActivity : AppCompatActivity() {
     private var lastUpdate: String? = ""
     private lateinit var earthquakeListView: RecyclerView
     private var earthquakeUIS: List<EarthquakeUI>? = null
-    private var adapter: EarthquakeListAdapter? = null
 
     // Preferences value
     private var minMagnitude: String? = null

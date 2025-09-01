@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="@string/settings_title">
 
+    <!--
     <PreferenceCategory
         android:title="@string/category_settings_title">
 
@@ -28,14 +29,14 @@
         android:key="@string/settings_min_magnitude_key"
         android:title="@string/settings_min_magnitude_label" />
 
-    <!--
+
     <ListPreference
         android:defaultValue="@string/settings_max_equakes_default"
         android:entries="@array/settings_max_earthquakes_labels"
         android:entryValues="@array/settings_max_earthquakes_values"
         android:key="@string/settings_max_equakes_key"
         android:title="@string/settings_max_equakes_label" />
-    -->
+
 
     <ListPreference
         android:defaultValue="@string/settings_date_filter_default"
@@ -59,22 +60,22 @@
             android:summary="@string/faq_btn_summary"
             android:title="@string/faq_btn_title" />
     </PreferenceCategory>
-    <!--
+
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/manual_Localization_key"
             android:title="@string/manual_localization_label" />
-    -->
 
 
-    <!--
+
+
         <EditTextPreference
             android:defaultValue="@string/settings_min_magnitude_default"
             android:inputType="numberDecimal"
             android:key="@string/settings_min_magnitude_key"
             android:selectAllOnFocus="true"
             android:title="@string/settings_min_magnitude_label" />
-    -->
 
 
+-->
 </PreferenceScreen>

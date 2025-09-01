@@ -1,34 +1,21 @@
 package com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui
 
-import android.content.Context
-import android.content.Intent
-import android.preference.ListPreference
-import android.preference.Preference
-import android.preference.PreferenceFragment
-import android.preference.PreferenceManager
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
-
-import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.util.ConsentSDK
-import com.indiewalk.watchdog.earthquake.databinding.ActivitySettingSimpleBinding
-import it.abenergie.customerarea.core.utility.extensions.TAG
 
 class SettingSimpleActivity : AppCompatActivity() {
-    private lateinit var binding: ActivitySettingSimpleBinding
+    // private lateinit var binding: ActivitySettingSimpleBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_setting_simple)
+        /*binding = DataBindingUtil.setContentView(this, R.layout.activity_setting_simple)
 
         // You have to pass the AdRequest from ConsentSDK.getAdRequest(this) because it handle the right way to load the ad
         binding.mAdView.loadAd(ConsentSDK.getAdRequest(this@SettingSimpleActivity))
-
+*/
     }
 
-    class EarthquakePreferenceFragment : PreferenceFragment(),
+    /*class EarthquakePreferenceFragment : PreferenceFragment(),
         Preference.OnPreferenceChangeListener {
         private var consentSDK: ConsentSDK? = null
 
@@ -53,18 +40,18 @@ class SettingSimpleActivity : AppCompatActivity() {
             bindPreferenceSummaryToValue(minMagnitude)
 
             // TODO : must delete this part
-            /*
+            *//*
             Preference maxEquakesNum = findPreference(getString(R.string.settings_max_equakes_key));
             bindPreferenceSummaryToValue(maxEquakesNum);
-            */
+            *//*
 
             val dateFilter = findPreference(getString(R.string.settings_date_filter_key))
             bindPreferenceSummaryToValue(dateFilter)
 
-            /*
+            *//*
             Preference manualLoc = findPreference(getString(R.string.manual_Localization_key));
             bindPreferenceSummaryToValue(manualLoc);
-            */
+            *//*
 
             // gdprConsentBtn = findViewById(R.id.gdpr_withdraw_btn);
             val gdprConsentBtn = findPreference(getString(R.string.gdpr_btn_key))
@@ -165,7 +152,7 @@ class SettingSimpleActivity : AppCompatActivity() {
         }
 
 
-    } // Fragment
+    } // Fragment*/
 
 
 }

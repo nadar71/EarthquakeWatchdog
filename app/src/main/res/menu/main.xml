@@ -29,13 +29,13 @@
     <item
         android:id="@+id/set_myposition_action"
         android:icon="@drawable/ic_my_location_white_24dp"
-        android:title="@string/my_position_ic_title"
+        android:title="TITOLO"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/refresh_action"
         android:icon="@drawable/ic_refresh_white_24dp"
-        android:title="@string/my_position_ic_title"
+        android:title="TITOLO"
         app:showAsAction="always" />
 
 

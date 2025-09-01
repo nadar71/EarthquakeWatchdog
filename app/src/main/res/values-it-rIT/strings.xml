@@ -35,15 +35,12 @@
     <string name="maps_refresh_label">Aggiorna</string>
     <string name="maps_spinner_title">Tipo di mappa</string>
     <string name="maps_manual_loc_title">Se preferisci la localizzazione manuale SENZA GPS.</string>
-    <string name="maps_manual_loc_text">Nelle impostazioni, in alto a destra, seleziona \'Usa localizzazione manuale\'
-e segui le istruzioni.\nNon utilizza alcun servizio di localizzazione né GPS.</string>
+    <string name="maps_manual_loc_text">Nelle impostazioni, in alto a destra, seleziona \'Usa localizzazione manuale\'e segui le istruzioni.\nNon utilizza alcun servizio di localizzazione né GPS.</string>
     <string name="maps_locationOffset_label">Vicino a</string>
     <string name="maps_markers_hide_label">Nascondi i marcatori dei terremoti</string>
     <string name="maps_dialog_manual_loc_title">Impostazione di posizione manuale attiva (senza GPS)</string>
     <string name="maps_dialog_manual_loc_msg">Per impostare/sovrascrivere manualmente la posizione, premi a lungo su un punto della mappa.</string>
-    <string name="maps_forbidden_label">Spiacenti, impossibile Visualizza i terremoti sulla mappa
-    con un intervallo di tempo massimo di 24 ore. Modifica le impostazioni del filtro nelle
-    Impostazioni Generali.</string>
+    <string name="maps_forbidden_label">Spiacenti, impossibile Visualizza i terremoti sulla mappa con un intervallo di tempo massimo di 24 ore. Modifica le impostazioni del filtro nelle Impostazioni Generali.</string>
 
     <string name="maps_manual_localization_on_label">Localizzazione Manuale Attivata</string>
     <string name="maps_dis_from_default_location_label">dalla posizione predefinita</string>
@@ -82,7 +79,9 @@ e segui le istruzioni.\nNon utilizza alcun servizio di localizzazione né GPS.</
     <string name="settings_faq_btn_title">Domande frequenti e disclaimer</string>
     <string name="settings_faq_btn_key" translatable="false">Domande frequenti</string>
     <string name="settings_faq_btn_summary">Cosa può fare e cosa non può fare l\'app.</string>
-    <string name="settings_faq_text">" <b>FAQ E DISCLAIMER</b> Questa app scarica e mostra dati sui terremoti (fino agli ultimi 120 terremoti) tratti dal servizio online <a href="https://earthquake.usgs.gov/earthquakes/">USGS.gov</a>. Non è in alcun modo correlata a USGS né è un'app di quest'ultimo. Ha solo scopo informativo, i dati sui terremoti non sono in tempo reale (consultare il <a href="https://earthquake.usgs.gov/earthquakes/">sito USGS.gov</a> per i dettagli). Pertanto, non intende essere un'app di allerta terremoti in tempo reale, né utilizzarla come app per salvare vite umane. Non sono responsabile di alcun uso improprio di questa app. Nella mappa, richiede all'utente I permessi di localizzazione sono validi solo per il calcolo della distanza del terremoto dall'utente e le coordinate dell'utente vengono memorizzate solo a questo scopo. Se i permessi di localizzazione vengono negati, è comunque possibile il posizionamento manuale premendo a lungo sulla mappa, senza utilizzare il GPS o altri sistemi di localizzazione (verificare nelle impostazioni della mappa). Se i permessi non sono consentiti né viene effettuata una localizzazione manuale, viene utilizzata la posizione predefinita (posizione di Google) e calcolata la distanza del terremoto da lì. Spero che la mia app vi piaccia e la troviate utile, date un'occhiata alle altre mie app e giochi sul mio sito <a href="http://www.indie-walkabout.eu">http://www.indie-walkabout.eu</a>. Per suggerimenti, informazioni o bug, contattatemi all'indirizzo <a href="mailto:indie.walkabout.1971@gmail.com">indie.walkabout.1971@gmail.com</a> "</string>
+<!--
+    <string name="settings_faq_text"><![CDATA[<b>FAQ E DISCLAIMER</b> Questa app scarica e mostra dati sui terremoti (fino agli ultimi 120 terremoti) tratti dal servizio online <a href="https://earthquake.usgs.gov/earthquakes/">USGS.gov</a>. Non è in alcun modo correlata a USGS né è un'app di quest'ultimo. Ha solo scopo informativo, i dati sui terremoti non sono in tempo reale (consultare il <a href="https://earthquake.usgs.gov/earthquakes/">sito USGS.gov</a> per i dettagli). Pertanto, non intende essere un'allerta terremoti.]]></string>
+-->
 
     <!-- - - - - - - - - - - - - - - - - - - Messaggi di errore - - - - - - - - - - - - - - - - - - - - - -->
     <string name="no_earthquakes">Nessun terremoto trovato. Prova un altro filtro.</string>

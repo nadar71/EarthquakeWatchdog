@@ -7,7 +7,7 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <!--<androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui.SettingSimpleActivity">
@@ -23,7 +23,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:context="com.indiewalk.watchdog.earthquake.SettingSimpleActivity">
-            <!-- tools:layout="@layout/main_activity" -->
+            &lt;!&ndash; tools:layout="@layout/main_activity" &ndash;&gt;
 
 
         </fragment>
@@ -46,5 +46,5 @@
             ads:layout_constraintStart_toStartOf="parent" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>-->
 </layout>

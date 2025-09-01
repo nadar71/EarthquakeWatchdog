@@ -18,7 +18,7 @@ object DateConverter {
     @TypeConverter
     fun fromDate(date: Date): Long? {
         Log.d(TAG, "to millisecfromepoch from date: " + date + " is " + date.time)
-        return date?.time
+        return date.time
 
     }
 }

@@ -25,8 +25,6 @@ import com.indiewalk.watchdog.earthquake.core.data.Constants.USGS_REQUEST_URL
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.fromKmToMiles
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
-import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivity.Companion.DEFAULT_LAT
-import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivity.Companion.DEFAULT_LNG
 import it.abenergie.customerarea.core.utility.extensions.TAG
 
 import java.text.SimpleDateFormat
@@ -36,7 +34,7 @@ import java.util.Calendar
 object GenericUtils {
 
     // Check if internet connection is on
-    val isConnectionOk: Boolean
+    /*val isConnectionOk: Boolean
         get() {
             val connManager = (EarthquakeApp.getsContext() as EarthquakeApp)
                     .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -47,7 +45,7 @@ object GenericUtils {
             } else
                 return false
 
-        }
+        }*/
     // "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time&minmag=6&limit=10"; // debug
 
 
@@ -208,7 +206,7 @@ object GenericUtils {
 
 
     // Update last update field in preferences
-    fun setLastUpdateField(context: Context): String {
+    /*fun setLastUpdateField(context: Context): String {
         // store the last update time
         val lastUpdate = formatDateFromMsec(System.currentTimeMillis()) +
                 " " +
@@ -220,14 +218,14 @@ object GenericUtils {
         editor.apply()
 
         return lastUpdate
-    }
+    }*/
 
 
 
 
 
     // Update each equakes info with custom distance from user if any,with distance unit preferred.
-    fun setEqDistanceFromCurrentCoords(earthquakeUIS: List<EarthquakeUI>?, context: Context) {
+    /*fun setEqDistanceFromCurrentCoords(earthquakeUIS: List<EarthquakeUI>?, context: Context) {
 
         // if (context == null) return
 
@@ -342,7 +340,7 @@ object GenericUtils {
             }
         }
 
-    }
+    }*/
 
 
     // Add a day in ol Date format

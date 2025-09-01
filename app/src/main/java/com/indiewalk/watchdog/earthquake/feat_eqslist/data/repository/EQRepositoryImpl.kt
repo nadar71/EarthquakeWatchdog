@@ -42,6 +42,7 @@ class EQRepositoryImpl @Inject constructor(
         )
         val feed = earthquakeApi.fetchFeed(params)
         refreshDB(feed)
+        return feed
     }
 
 

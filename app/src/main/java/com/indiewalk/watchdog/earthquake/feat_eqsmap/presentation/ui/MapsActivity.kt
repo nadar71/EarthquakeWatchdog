@@ -7,60 +7,25 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.graphics.Typeface
-import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
-import android.os.Build
 import android.os.Bundle
-import android.os.Looper
-import android.preference.PreferenceManager
 import android.provider.Settings
-import android.text.Html
-import android.util.Log
-import android.view.Gravity
-import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.CheckBox
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
-import com.indiewalk.watchdog.earthquake.EarthquakeApp
-import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.util.GenericUtils
-import com.indiewalk.watchdog.earthquake.feat_eqslist.data.repository.EarthquakeRepository
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
-import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivity
-import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainViewModel
-import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainViewModelFactory
-import it.abenergie.customerarea.core.utility.extensions.TAG
-import java.io.IOException
-import java.util.Locale
 
 // Show earthquakes positions, as well user's one.
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
-    private lateinit var binding: ActivityMapsBinding
+class MapsActivity : AppCompatActivity()/*, OnMapReadyCallback*/ {
+    // private lateinit var binding: ActivityMapsBinding
     internal var context: Context = this@MapsActivity
 
     // Map references
@@ -86,7 +51,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     // eqs list WITHOUT livedata
     internal var equakes_no_live: List<EarthquakeUI>? = null
 
-    internal var eqRepository: EarthquakeRepository? = null
+    // internal var eqRepository: EarthquakeRepository? = null
 
     // searching location progress dialog
     internal var dialog: ProgressDialog? = null
@@ -106,7 +71,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     // Set user locations coordinates in case of MANUAL LOCALIZATION OFF
-    private var mLocationCallback: LocationCallback = object : LocationCallback() {
+    /*private var mLocationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
 
             val locationList = locationResult.locations
@@ -151,14 +116,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
 
-    }
+    }*/
 
 
     // Load equakes list, set up ma and position
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // setContentView(R.layout.activity_maps)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_maps)
+        /*binding = DataBindingUtil.setContentView(this, R.layout.activity_maps)
 
         // init shared preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
@@ -190,7 +155,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // get repo. For issue #96,97 do not use getRepository()
         eqRepository = (EarthquakeApp.Companion.getsContext() as EarthquakeApp)
-            .repositoryWithDataSource
+            .repositoryWithDataSource*/
 
     }
 
@@ -198,13 +163,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     public override fun onPause() {
         super.onPause()
 
-        //stop location updates when Activity is no longer active
+        /*//stop location updates when Activity is no longer active
         if (mFusedLocationClient != null) {
             mFusedLocationClient!!.removeLocationUpdates(mLocationCallback)
         }
 
         // avoid leaked window problem
-        dialog?.let { it.dismiss() }
+        dialog?.let { it.dismiss() }*/
     }
 
 
@@ -223,7 +188,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     // Show map, equakes markers, device marker.
     // When {@localizeUser()} ended
     // @param googleMap
-    override fun onMapReady(googleMap: GoogleMap) {
+    /*override fun onMapReady(googleMap: GoogleMap) {
         mGoogleMap = googleMap
         mGoogleMap.mapType = GoogleMap.MAP_TYPE_HYBRID
 
@@ -336,11 +301,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // zoom on a particular equake if request came from main activity
         zoomOnEquake()
 
-    }
+    }*/
 
 
     // Set marker and details on click for each eq on map
-    private fun setMarkerForEachEq(earthquakeUIList: List<EarthquakeUI>?) {
+    /*private fun setMarkerForEachEq(earthquakeUIList: List<EarthquakeUI>?) {
         val minMagnitude = sharedPreferences.getString(
             getString(R.string.settings_min_magnitude_key),
             getString(R.string.settings_min_magnitude_default)
@@ -400,7 +365,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 "onMapReady: latitude : " + earthquake.latitude + " longitude : " + earthquake.longitude
             )
         }
-    }
+    }*/
 
 
     // Ask for activating gps if not active.
@@ -450,7 +415,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     // Suggest manual localization in case localization permission are not allowed
-    private fun suggestManualLocalization() {
+    /*private fun suggestManualLocalization() {
         // check if I can show the dialog
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val allowShow =
@@ -483,12 +448,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val dialog = builder.create()
         dialog.show()
 
-    }
+    }*/
 
 
     // Check if there is already a user location set from previous access to avoid delay while
     // the gps is connecting
-    private fun checkPrevious() {
+    /*private fun checkPrevious() {
         // init shared preferences
         // SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -516,11 +481,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // save in preferences
         setLocationAddress(java.lang.Double.parseDouble(lat_s), java.lang.Double.parseDouble(lng_s))
 
-    }
+    }*/
 
 
     // Check if there is a location manually set
-    private fun checkManualLocation() {
+    /*private fun checkManualLocation() {
 
         val manualLocFlag = sharedPreferences.getString(
             getString(R.string.manual_Localization_On),
@@ -530,11 +495,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // if there is already user location different from default location
         manualLocIsOn = manualLocFlag == "true"
 
-    }
+    }*/
 
 
     //  Zoom on an equake
-    private fun zoomOnEquake() {
+    /*private fun zoomOnEquake() {
 
         val mainIntent = intent
         val flag = mainIntent.getStringExtra("ShowEquake")
@@ -548,11 +513,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         }
 
-    }
+    }*/
 
 
     // Recover and save location address in preferences
-    private fun setLocationAddress(userLat: Double, userLng: Double) {
+    /*private fun setLocationAddress(userLat: Double, userLng: Double) {
         //Set Address
         val address: String
         try {
@@ -627,12 +592,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .tilt(25f)
             .build()
 
-        /*
+        *//*
         m_handler = new Handler();
         m_handler.postDelayed(new Runnable(){ // delay to allow load tiles
             @Override
             public void run() {
-        */
+        *//*
 
         mGoogleMap.animateCamera(
             CameraUpdateFactory.newCameraPosition(target),
@@ -789,7 +754,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // set position by long press
         mGoogleMap.setOnMapLongClickListener { latLng ->
-            /*
+            *//*
                 // First check if myMarker is null
                 if (myCurrentPositionMarker == null) {
                     // Marker was not set yet. Add marker:
@@ -801,7 +766,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     // Marker already exists, just update it's position
                     myCurrentPositionMarker.setPosition(latLng);
                 }
-                */
+                *//*
 
             // reset manual position marker
             if (myCurrentPositionMarker != null) {
@@ -878,7 +843,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         manualLocIsOn = false
 
-        /*
+        *//*
         // try to set user localization by gps
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -886,7 +851,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         dialog = new ProgressDialog(this);
         dialog.setMessage("Please wait!");
         dialog.show();
-        */
+        *//*
 
         // change title
         supportActionBar!!.title = ""
@@ -906,13 +871,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .create()
             .show()
 
-    }
+    }*/
 
 
     // ---------------------------------------------------------------------------------------------
     //                                          MENU STUFF
     // ---------------------------------------------------------------------------------------------
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    /*override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.map_action, menu)
         locCheckbox = menu.findItem(R.id.overridePosition_cb)
 
@@ -979,7 +944,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Ask for user location permissions
         val MY_PERMISSIONS_REQUEST_LOCATION = 99
-    }
+    }*/
 
 
 }
