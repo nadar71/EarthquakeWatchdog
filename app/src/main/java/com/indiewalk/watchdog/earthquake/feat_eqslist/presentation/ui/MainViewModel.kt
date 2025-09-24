@@ -1,5 +1,6 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.EQFeaturesCollectionDTO
@@ -22,7 +23,7 @@ class MainViewModel @Inject constructor(
     private val fetchAndSaveDefaultUseCase: FetchAndSaveDefaultUseCase
 ) : ViewModel() {
 
-
+    private val TAG = "MainViewModel"
     private val _eqsUIState = MutableStateFlow<EQsListUiState<EQFeaturesCollectionDTO>>(
         EQsListUiState.Idle)
     val eqsUIState: StateFlow<EQsListUiState<EQFeaturesCollectionDTO>> = _eqsUIState.asStateFlow()
@@ -30,18 +31,22 @@ class MainViewModel @Inject constructor(
 
     fun refreshEQsList() {
         viewModelScope.launch {
+            Log.d(TAG, "refreshEQsList: called")
             _eqsUIState.value = EQsListUiState.Loading
             try {
                 val response = fetchAndSaveDefaultUseCase()
-                when (response) {
+                _eqsUIState.value = when (response) {
                     is ApiResponse.Success -> {
+                        Log.d(TAG, "refreshEQsList: success")
                         EQsListUiState.Success(response.data)
                     }
                     is ApiResponse.Error -> {
+                        Log.d(TAG, "refreshEQsList: error")
                         EQsListUiState.Error(response.error)
                     }
                 }
             } catch (e: Exception) {
+                Log.d(TAG, "refreshEQsList: exception error: ${e.message}")
                 _eqsUIState.value = EQsListUiState.Error(
                     ErrorResponse(0, emptyList(), e.message ?: "Unknown error")
                 )

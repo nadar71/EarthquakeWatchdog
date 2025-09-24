@@ -8,7 +8,7 @@ data class EQFeaturesCollectionDTO(
     val type: String,                // "FeatureCollection"
     val metadata: MetadataDTO,
     val bbox: List<Double>?,         // [minLon, minLat, minDepth, maxLon, maxLat, maxDepth]
-    val features: List<FeaturesDTO>
+    val features: List<FeatureDTO>
 )
 
 

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
@@ -23,9 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.EQFeaturesCollectionDTO
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.FeaturesDTO
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.FeatureDTO
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,11 +33,13 @@ fun EarthquakeListScreen(
 ) {
     val TAG = "EarthquakeListScreen"
     var eqsCollection by remember { mutableStateOf<EQFeaturesCollectionDTO?>(null) }
-    var eqsList by remember { mutableStateOf<List<FeaturesDTO>?>(null) }
+    var eqsList by remember { mutableStateOf<List<FeatureDTO>?>(null) }
 
     val earthquakesUIState by mainViewModel.eqsUIState.collectAsState()
 
-    LaunchedEffect(Unit) { mainViewModel.refreshEQsList() }
+    LaunchedEffect(Unit) {
+        mainViewModel.refreshEQsList()
+    }
 
     LaunchedEffect(earthquakesUIState) {
         when (earthquakesUIState) {
@@ -52,14 +52,17 @@ fun EarthquakeListScreen(
             }
 
             is EQsListUiState.Success -> {
-                Log.d(TAG, "EarthquakeListScreen: eqs loaded")
+                Log.d(TAG, "EarthquakeListScreen: SUCCESS, eqs loaded")
                 // showProgressBar = false
                 eqsCollection =
                     (earthquakesUIState as EQsListUiState.Success<EQFeaturesCollectionDTO>).data
                 eqsList = eqsCollection?.features
+                Log.d(TAG, "EarthquakeListScreen: eqsList: $eqsList")
             }
 
             is EQsListUiState.Error -> {
+                Log.d(TAG, "EarthquakeListScreen: ERROR!")
+
                 // showProgressBar = false
 
                 // TODO: rewrite error handling

@@ -1,6 +1,6 @@
 import org.gradle.kotlin.dsl.implementation
 
-plugins {
+plugins { // plugin application
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
@@ -33,11 +33,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material3.android)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.material)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -82,8 +83,8 @@ dependencies {
     ksp(libs.hilt.android.compiler)
 
     // Accompanist lib for compose integration
-    implementation(libs.accompanist.pager)
-    implementation(libs.accompanist.permissions)
+    // implementation(libs.accompanist.pager)
+    // implementation(libs.accompanist.permissions)
 
     // Core library desugaring
     coreLibraryDesugaring(libs.desugar.jdk.libs)
@@ -142,11 +143,18 @@ dependencies {
     implementation(libs.preference.screen.dsl)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
-    // Ktor Client (Android)
+    // Ktor Client - Android
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.gson)
     implementation(libs.ktor.client.logging)
+
+    // Accompanist
+    // implementation (libs.accompanist.systemuicontroller)
+
+    // DataStore (preferences)
+    implementation (libs.androidx.datastore.preferences)
+
 
     // testing
     testImplementation(libs.junit)

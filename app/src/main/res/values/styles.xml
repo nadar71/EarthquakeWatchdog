@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
+    <!-- App theme used by the Application/Activity in the manifest -->
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- for edge-to-edge handled in code, keep system bars transparent -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:fontFamily">@font/quicksand</item>
+        <!-- Optional: keep splash screen styled via theme if you use it -->
+        <!-- <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item> -->
+        <!-- <item name="android:windowSplashScreenBackground">@color/white</item> -->
+
+        <!-- global font from XML (Compose -> Typography): -->
+        <item name="fontFamily">@font/quicksand</item>
     </style>
-
 </resources>

@@ -4,7 +4,7 @@ import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getEQDistanceFromUs
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EQEntity
 
 // A single EQ Feature with properties + geometry + id, network/dto.
-data class FeaturesDTO(
+data class FeatureDTO(
     val type: String,                   // "Feature"
     val properties: PropertiesDTO,
     val geometry: GeometryDTO,
@@ -13,7 +13,7 @@ data class FeaturesDTO(
 
 
 
-fun FeaturesDTO.toEntity(feedGenerated: Long?): EQEntity =
+fun FeatureDTO.toEntity(feedGenerated: Long?): EQEntity =
     EQEntity(
         id = id,
         feedGenerated = feedGenerated,

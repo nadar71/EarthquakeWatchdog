@@ -48,6 +48,7 @@ object MapsUtils {
 
     // Update each equakes info with custom distance from user if any,with distance unit preferred.
     fun getEQDistanceFromUser(eqCoords: GeometryDTO): Int? {
+        Log.d(TAG, "getEQDistanceFromUser: eqCoords: $eqCoords")
         if (eqCoords == null || eqCoords.latitude == null || eqCoords.longitude == null) {
             return null
         } else {
