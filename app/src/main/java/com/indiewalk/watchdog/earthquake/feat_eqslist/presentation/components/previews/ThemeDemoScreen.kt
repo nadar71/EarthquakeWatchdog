@@ -1,5 +1,6 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.previews
 
+import android.R.attr.onClick
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -103,7 +104,7 @@ private fun ModeSegmentedButtons(
 
         SegmentedButton(
             selected = mode == ThemeMode.Light,
-            shape = RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp),
+            shape = RoundedCornerShape(topEnd = 0.dp, bottomEnd = 0.dp),
             onClick = { onModeChange(ThemeMode.Light) }
         ) {
             Text("Light")

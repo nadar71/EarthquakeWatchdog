@@ -22,8 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.EQFeaturesCollectionDTO
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.FeatureDTO
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.EarthquakeCard
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,14 +37,14 @@ fun EarthquakeListScreen(
     var eqsCollection by remember { mutableStateOf<EQFeaturesCollectionDTO?>(null) }
     var eqsList by remember { mutableStateOf<List<FeatureDTO>?>(null) }
 
-    val earthquakesUIState by mainViewModel.eqsUIState.collectAsState()
+    val eqsUIState by mainViewModel.eqsUIState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         mainViewModel.refreshEQsList()
     }
 
-    LaunchedEffect(earthquakesUIState) {
-        when (earthquakesUIState) {
+    LaunchedEffect(eqsUIState) {
+        when (eqsUIState) {
             is EQsListUiState.Idle -> {
                 // showProgressBar = false
             }
@@ -55,7 +57,7 @@ fun EarthquakeListScreen(
                 Log.d(TAG, "EarthquakeListScreen: SUCCESS, eqs loaded")
                 // showProgressBar = false
                 eqsCollection =
-                    (earthquakesUIState as EQsListUiState.Success<EQFeaturesCollectionDTO>).data
+                    (eqsUIState as EQsListUiState.Success<EQFeaturesCollectionDTO>).data
                 eqsList = eqsCollection?.features
                 Log.d(TAG, "EarthquakeListScreen: eqsList: $eqsList")
             }
@@ -96,6 +98,7 @@ fun EarthquakeListScreen(
                 Column(modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)) {
+                    EarthquakeCard(eq = eq)
                     Text(text = eq.properties.place ?: "Unknown")
                     Text(text = "M ${eq.properties.mag ?: 0.0}")
                 }

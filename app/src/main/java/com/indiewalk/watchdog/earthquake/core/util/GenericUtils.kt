@@ -28,10 +28,27 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
 import it.abenergie.customerarea.core.utility.extensions.TAG
 
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Calendar
+import java.util.Locale
 
 object GenericUtils {
+
+    private fun formatMag(mag: Double): String {
+        return String.format(Locale.US, "%.1f", mag)
+    }
+
+    // @SuppressLint("NewApi")
+    private fun formatDate(epochMs: Long?): String {
+        if (epochMs == null) return ""
+        val instant = Instant.ofEpochMilli(epochMs)
+        val dtf = DateTimeFormatter.ofPattern("MMM dd, yyyy h:mm a", Locale.getDefault())
+            .withZone(ZoneId.systemDefault())
+        return dtf.format(instant).replace("AM", "am").replace("PM", "pm")
+    }
 
     // Check if internet connection is on
     /*val isConnectionOk: Boolean

@@ -7,16 +7,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.indiewalk.watchdog.earthquake.core.data.ThemeMode
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.ThemeViewModel
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.previews.ThemeDemoScreen
 import dagger.hilt.android.AndroidEntryPoint
-import eu.indiewalkabout.fridgemanager.core.presentation.theme.EQWatchdogTheme
+import com.indiewalk.watchdog.earthquake.core.presentation.theme.EQWatchdogTheme
 
 
 @AndroidEntryPoint

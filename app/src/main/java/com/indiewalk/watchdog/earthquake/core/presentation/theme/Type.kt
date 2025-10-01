@@ -1,7 +1,7 @@
-package eu.indiewalkabout.fridgemanager.core.presentation.theme
+package com.indiewalk.watchdog.earthquake.core.presentation.theme
 
 
-import android.R.attr.text
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -10,21 +10,21 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.indiewalk.watchdog.earthquake.R
-import java.lang.ProcessBuilder.Redirect.to
 
 
 // fonts
 // Font families
 
 val QuickSand = FontFamily(
-    Font(R.font.quicksand, FontWeight.Normal),
-    Font(R.font.quicksand, FontWeight.Medium),
-    Font(R.font.quicksand,FontWeight.Bold),
+    Font(R.font.quicksand_regular, FontWeight.Normal),
+    Font(R.font.quicksand_medium, FontWeight.Medium),
+    Font(R.font.quicksand_bold, FontWeight.Bold),
+    Font(R.font.quicksand_semibold, FontWeight.SemiBold),
     Font(R.font.quicksand, FontWeight.Light),
 )
 
 // Set of Material typography styles to start with
-val Typography = androidx.compose.material3.Typography(
+val Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = QuickSand,
         fontWeight = FontWeight.Normal,
@@ -34,10 +34,9 @@ val Typography = androidx.compose.material3.Typography(
     ),
     labelLarge = TextStyle(
         fontFamily = QuickSand,
-        fontWeight = FontWeight.Medium,  //W500 is roughly equivalent to Medium
+        fontWeight = FontWeight.Medium,  // W500 is roughly equivalent to Medium
         fontSize = 14.sp
     ),
-    // Other default text styles to override
     titleLarge = TextStyle(
         fontFamily = QuickSand,
         fontWeight = FontWeight.Normal,

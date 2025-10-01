@@ -1,73 +1,244 @@
-package eu.indiewalkabout.fridgemanager.core.presentation.theme
+package com.indiewalk.watchdog.earthquake.core.presentation.theme
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 
 // Fallback palette when dynamic color not available
-val md_seed = Color(0xFF6750A4) // brand seed
+val md_seed = Color(0xFF23303D) // brand seed
 
-// Light scheme
-val LightColors = lightColorScheme(
-    primary = Color(0xFF6750A4),
-    onPrimary = Color.White,
-    primaryContainer = Color(0xFFEADDFF),
-    onPrimaryContainer = Color(0xFF21005D),
+val extraGreen_light = Color(0xFF2E7D32)
+val extraGreen_dark = Color(0xFF66BB6A)
+val extraYellow_light = Color(0xFFF9A825)
+val extraYellow_dark = Color(0xFFFFD54F)
+val extraOrange_light = Color(0xFFF57C00)
+val extraOrange_dark = Color(0xFFFFB74D)
+val extraRed_light = Color(0xFFD32F2F)
+val extraRed_dark = Color(0xFFEF5350)
+val extraDeepRed_light = Color(0xFFB71C1C)
+val extraDeepRed_dark = Color(0xFFE57373)
 
-    secondary = Color(0xFF625B71),
-    onSecondary = Color.White,
-    secondaryContainer = Color(0xFFE8DEF8),
-    onSecondaryContainer = Color(0xFF1D192B),
 
-    tertiary = Color(0xFF7D5260),
-    onTertiary = Color.White,
-    tertiaryContainer = Color(0xFFFFD8E4),
-    onTertiaryContainer = Color(0xFF31111D),
 
-    error = Color(0xFFB3261E),
-    onError = Color.White,
-    errorContainer = Color(0xFFF9DEDC),
-    onErrorContainer = Color(0xFF410E0B),
+val primaryLight = Color(0xFF3C4A54)
+val onPrimaryLight = Color(0xFFFFFFFF)
+val primaryContainerLight = Color(0xFF54626C)
+val onPrimaryContainerLight = Color(0xFFCFDDE9)
+val secondaryLight = Color(0xFF5A5F63)
+val onSecondaryLight = Color(0xFFFFFFFF)
+val secondaryContainerLight = Color(0xFFDEE3E8)
+val onSecondaryContainerLight = Color(0xFF606569)
+val tertiaryLight = Color(0xFF514553)
+val onTertiaryLight = Color(0xFFFFFFFF)
+val tertiaryContainerLight = Color(0xFF695C6B)
+val onTertiaryContainerLight = Color(0xFFE8D6E8)
+val errorLight = Color(0xFFBA1A1A)
+val onErrorLight = Color(0xFFFFFFFF)
+val errorContainerLight = Color(0xFFFFDAD6)
+val onErrorContainerLight = Color(0xFF93000A)
+val backgroundLight = Color(0xFFFBF9F9)
+val onBackgroundLight = Color(0xFF1B1C1C)
+val surfaceLight = Color(0xFFFBF9F9)
+val onSurfaceLight = Color(0xFF1B1C1C)
+val surfaceVariantLight = Color(0xFFE0E3E7)
+val onSurfaceVariantLight = Color(0xFF43474B)
+val outlineLight = Color(0xFF74777B)
+val outlineVariantLight = Color(0xFFC3C7CB)
+val scrimLight = Color(0xFF000000)
+val inverseSurfaceLight = Color(0xFF303031)
+val inverseOnSurfaceLight = Color(0xFFF2F0F1)
+val inversePrimaryLight = Color(0xFFBAC8D4)
+val surfaceDimLight = Color(0xFFDBD9DA)
+val surfaceBrightLight = Color(0xFFFBF9F9)
+val surfaceContainerLowestLight = Color(0xFFFFFFFF)
+val surfaceContainerLowLight = Color(0xFFF5F3F3)
+val surfaceContainerLight = Color(0xFFF0EDEE)
+val surfaceContainerHighLight = Color(0xFFEAE8E8)
+val surfaceContainerHighestLight = Color(0xFFE4E2E2)
 
-    background = Color(0xFFFFFBFE),
-    onBackground = Color(0xFF1C1B1F),
-    surface = Color(0xFFFFFBFE),
-    onSurface = Color(0xFF1C1B1F),
-    surfaceVariant = Color(0xFFE7E0EC),
-    onSurfaceVariant = Color(0xFF49454F),
-    outline = Color(0xFF79747E)
-)
+val primaryLightMediumContrast = Color(0xFF2A3841)
+val onPrimaryLightMediumContrast = Color(0xFFFFFFFF)
+val primaryContainerLightMediumContrast = Color(0xFF54626C)
+val onPrimaryContainerLightMediumContrast = Color(0xFFFFFFFF)
+val secondaryLightMediumContrast = Color(0xFF32373B)
+val onSecondaryLightMediumContrast = Color(0xFFFFFFFF)
+val secondaryContainerLightMediumContrast = Color(0xFF696E72)
+val onSecondaryContainerLightMediumContrast = Color(0xFFFFFFFF)
+val tertiaryLightMediumContrast = Color(0xFF3E3240)
+val onTertiaryLightMediumContrast = Color(0xFFFFFFFF)
+val tertiaryContainerLightMediumContrast = Color(0xFF695C6B)
+val onTertiaryContainerLightMediumContrast = Color(0xFFFFFFFF)
+val errorLightMediumContrast = Color(0xFF740006)
+val onErrorLightMediumContrast = Color(0xFFFFFFFF)
+val errorContainerLightMediumContrast = Color(0xFFCF2C27)
+val onErrorContainerLightMediumContrast = Color(0xFFFFFFFF)
+val backgroundLightMediumContrast = Color(0xFFFBF9F9)
+val onBackgroundLightMediumContrast = Color(0xFF1B1C1C)
+val surfaceLightMediumContrast = Color(0xFFFBF9F9)
+val onSurfaceLightMediumContrast = Color(0xFF111112)
+val surfaceVariantLightMediumContrast = Color(0xFFE0E3E7)
+val onSurfaceVariantLightMediumContrast = Color(0xFF33373A)
+val outlineLightMediumContrast = Color(0xFF4F5356)
+val outlineVariantLightMediumContrast = Color(0xFF6A6D71)
+val scrimLightMediumContrast = Color(0xFF000000)
+val inverseSurfaceLightMediumContrast = Color(0xFF303031)
+val inverseOnSurfaceLightMediumContrast = Color(0xFFF2F0F1)
+val inversePrimaryLightMediumContrast = Color(0xFFBAC8D4)
+val surfaceDimLightMediumContrast = Color(0xFFC8C6C6)
+val surfaceBrightLightMediumContrast = Color(0xFFFBF9F9)
+val surfaceContainerLowestLightMediumContrast = Color(0xFFFFFFFF)
+val surfaceContainerLowLightMediumContrast = Color(0xFFF5F3F3)
+val surfaceContainerLightMediumContrast = Color(0xFFEAE8E8)
+val surfaceContainerHighLightMediumContrast = Color(0xFFDEDCDD)
+val surfaceContainerHighestLightMediumContrast = Color(0xFFD3D1D2)
 
-// Dark scheme
-val DarkColors = darkColorScheme(
-    primary = Color(0xFFD0BCFF),
-    onPrimary = Color(0xFF371E73),
-    primaryContainer = Color(0xFF4F378B),
-    onPrimaryContainer = Color(0xFFEADDFF),
+val primaryLightHighContrast = Color(0xFF202E37)
+val onPrimaryLightHighContrast = Color(0xFFFFFFFF)
+val primaryContainerLightHighContrast = Color(0xFF3D4B54)
+val onPrimaryContainerLightHighContrast = Color(0xFFFFFFFF)
+val secondaryLightHighContrast = Color(0xFF282D31)
+val onSecondaryLightHighContrast = Color(0xFFFFFFFF)
+val secondaryContainerLightHighContrast = Color(0xFF454A4E)
+val onSecondaryContainerLightHighContrast = Color(0xFFFFFFFF)
+val tertiaryLightHighContrast = Color(0xFF332936)
+val onTertiaryLightHighContrast = Color(0xFFFFFFFF)
+val tertiaryContainerLightHighContrast = Color(0xFF514553)
+val onTertiaryContainerLightHighContrast = Color(0xFFFFFFFF)
+val errorLightHighContrast = Color(0xFF600004)
+val onErrorLightHighContrast = Color(0xFFFFFFFF)
+val errorContainerLightHighContrast = Color(0xFF98000A)
+val onErrorContainerLightHighContrast = Color(0xFFFFFFFF)
+val backgroundLightHighContrast = Color(0xFFFBF9F9)
+val onBackgroundLightHighContrast = Color(0xFF1B1C1C)
+val surfaceLightHighContrast = Color(0xFFFBF9F9)
+val onSurfaceLightHighContrast = Color(0xFF000000)
+val surfaceVariantLightHighContrast = Color(0xFFE0E3E7)
+val onSurfaceVariantLightHighContrast = Color(0xFF000000)
+val outlineLightHighContrast = Color(0xFF282D30)
+val outlineVariantLightHighContrast = Color(0xFF464A4D)
+val scrimLightHighContrast = Color(0xFF000000)
+val inverseSurfaceLightHighContrast = Color(0xFF303031)
+val inverseOnSurfaceLightHighContrast = Color(0xFFFFFFFF)
+val inversePrimaryLightHighContrast = Color(0xFFBAC8D4)
+val surfaceDimLightHighContrast = Color(0xFFBAB8B9)
+val surfaceBrightLightHighContrast = Color(0xFFFBF9F9)
+val surfaceContainerLowestLightHighContrast = Color(0xFFFFFFFF)
+val surfaceContainerLowLightHighContrast = Color(0xFFF2F0F1)
+val surfaceContainerLightHighContrast = Color(0xFFE4E2E2)
+val surfaceContainerHighLightHighContrast = Color(0xFFD6D4D4)
+val surfaceContainerHighestLightHighContrast = Color(0xFFC8C6C6)
 
-    secondary = Color(0xFFCCC2DC),
-    onSecondary = Color(0xFF332D41),
-    secondaryContainer = Color(0xFF4A4458),
-    onSecondaryContainer = Color(0xFFE8DEF8),
+val primaryDark = Color(0xFFBAC8D4)
+val onPrimaryDark = Color(0xFF24323B)
+val primaryContainerDark = Color(0xFF54626C)
+val onPrimaryContainerDark = Color(0xFFCFDDE9)
+val secondaryDark = Color(0xFFC2C7CC)
+val onSecondaryDark = Color(0xFF2C3135)
+val secondaryContainerDark = Color(0xFF42474C)
+val onSecondaryContainerDark = Color(0xFFB1B6BA)
+val tertiaryDark = Color(0xFFD2C1D3)
+val onTertiaryDark = Color(0xFF382D3A)
+val tertiaryContainerDark = Color(0xFF695C6B)
+val onTertiaryContainerDark = Color(0xFFE8D6E8)
+val errorDark = Color(0xFFFFB4AB)
+val onErrorDark = Color(0xFF690005)
+val errorContainerDark = Color(0xFF93000A)
+val onErrorContainerDark = Color(0xFFFFDAD6)
+val backgroundDark = Color(0xFF131314)
+val onBackgroundDark = Color(0xFFE4E2E2)
+val surfaceDark = Color(0xFF131314)
+val onSurfaceDark = Color(0xFFE4E2E2)
+val surfaceVariantDark = Color(0xFF43474B)
+val onSurfaceVariantDark = Color(0xFFC3C7CB)
+val outlineDark = Color(0xFF8D9195)
+val outlineVariantDark = Color(0xFF43474B)
+val scrimDark = Color(0xFF000000)
+val inverseSurfaceDark = Color(0xFFE4E2E2)
+val inverseOnSurfaceDark = Color(0xFF303031)
+val inversePrimaryDark = Color(0xFF52606A)
+val surfaceDimDark = Color(0xFF131314)
+val surfaceBrightDark = Color(0xFF39393A)
+val surfaceContainerLowestDark = Color(0xFF0E0E0F)
+val surfaceContainerLowDark = Color(0xFF1B1C1C)
+val surfaceContainerDark = Color(0xFF1F2020)
+val surfaceContainerHighDark = Color(0xFF2A2A2B)
+val surfaceContainerHighestDark = Color(0xFF343535)
 
-    tertiary = Color(0xFFEFB8C8),
-    onTertiary = Color(0xFF492532),
-    tertiaryContainer = Color(0xFF633B48),
-    onTertiaryContainer = Color(0xFFFFD8E4),
+val primaryDarkMediumContrast = Color(0xFFD0DEEA)
+val onPrimaryDarkMediumContrast = Color(0xFF1A2730)
+val primaryContainerDarkMediumContrast = Color(0xFF84939D)
+val onPrimaryContainerDarkMediumContrast = Color(0xFF000000)
+val secondaryDarkMediumContrast = Color(0xFFD8DDE2)
+val onSecondaryDarkMediumContrast = Color(0xFF21262A)
+val secondaryContainerDarkMediumContrast = Color(0xFF8C9196)
+val onSecondaryContainerDarkMediumContrast = Color(0xFF000000)
+val tertiaryDarkMediumContrast = Color(0xFFE8D7E9)
+val onTertiaryDarkMediumContrast = Color(0xFF2C222F)
+val tertiaryContainerDarkMediumContrast = Color(0xFF9B8C9C)
+val onTertiaryContainerDarkMediumContrast = Color(0xFF000000)
+val errorDarkMediumContrast = Color(0xFFFFD2CC)
+val onErrorDarkMediumContrast = Color(0xFF540003)
+val errorContainerDarkMediumContrast = Color(0xFFFF5449)
+val onErrorContainerDarkMediumContrast = Color(0xFF000000)
+val backgroundDarkMediumContrast = Color(0xFF131314)
+val onBackgroundDarkMediumContrast = Color(0xFFE4E2E2)
+val surfaceDarkMediumContrast = Color(0xFF131314)
+val onSurfaceDarkMediumContrast = Color(0xFFFFFFFF)
+val surfaceVariantDarkMediumContrast = Color(0xFF43474B)
+val onSurfaceVariantDarkMediumContrast = Color(0xFFD9DDE1)
+val outlineDarkMediumContrast = Color(0xFFAFB2B6)
+val outlineVariantDarkMediumContrast = Color(0xFF8D9195)
+val scrimDarkMediumContrast = Color(0xFF000000)
+val inverseSurfaceDarkMediumContrast = Color(0xFFE4E2E2)
+val inverseOnSurfaceDarkMediumContrast = Color(0xFF2A2A2B)
+val inversePrimaryDarkMediumContrast = Color(0xFF3C4A53)
+val surfaceDimDarkMediumContrast = Color(0xFF131314)
+val surfaceBrightDarkMediumContrast = Color(0xFF444445)
+val surfaceContainerLowestDarkMediumContrast = Color(0xFF070708)
+val surfaceContainerLowDarkMediumContrast = Color(0xFF1D1E1E)
+val surfaceContainerDarkMediumContrast = Color(0xFF272828)
+val surfaceContainerHighDarkMediumContrast = Color(0xFF323233)
+val surfaceContainerHighestDarkMediumContrast = Color(0xFF3D3E3E)
 
-    error = Color(0xFFF2B8B5),
-    onError = Color(0xFF601410),
-    errorContainer = Color(0xFF8C1D18),
-    onErrorContainer = Color(0xFFF9DEDC),
+val primaryDarkHighContrast = Color(0xFFE3F2FE)
+val onPrimaryDarkHighContrast = Color(0xFF000000)
+val primaryContainerDarkHighContrast = Color(0xFFB6C5D0)
+val onPrimaryContainerDarkHighContrast = Color(0xFF010D15)
+val secondaryDarkHighContrast = Color(0xFFECF0F5)
+val onSecondaryDarkHighContrast = Color(0xFF000000)
+val secondaryContainerDarkHighContrast = Color(0xFFBEC3C8)
+val onSecondaryContainerDarkHighContrast = Color(0xFF070C0F)
+val tertiaryDarkHighContrast = Color(0xFFFDEAFD)
+val onTertiaryDarkHighContrast = Color(0xFF000000)
+val tertiaryContainerDarkHighContrast = Color(0xFFCEBDCF)
+val onTertiaryContainerDarkHighContrast = Color(0xFF110814)
+val errorDarkHighContrast = Color(0xFFFFECE9)
+val onErrorDarkHighContrast = Color(0xFF000000)
+val errorContainerDarkHighContrast = Color(0xFFFFAEA4)
+val onErrorContainerDarkHighContrast = Color(0xFF220001)
+val backgroundDarkHighContrast = Color(0xFF131314)
+val onBackgroundDarkHighContrast = Color(0xFFE4E2E2)
+val surfaceDarkHighContrast = Color(0xFF131314)
+val onSurfaceDarkHighContrast = Color(0xFFFFFFFF)
+val surfaceVariantDarkHighContrast = Color(0xFF43474B)
+val onSurfaceVariantDarkHighContrast = Color(0xFFFFFFFF)
+val outlineDarkHighContrast = Color(0xFFEDF0F4)
+val outlineVariantDarkHighContrast = Color(0xFFBFC3C7)
+val scrimDarkHighContrast = Color(0xFF000000)
+val inverseSurfaceDarkHighContrast = Color(0xFFE4E2E2)
+val inverseOnSurfaceDarkHighContrast = Color(0xFF000000)
+val inversePrimaryDarkHighContrast = Color(0xFF3C4A53)
+val surfaceDimDarkHighContrast = Color(0xFF131314)
+val surfaceBrightDarkHighContrast = Color(0xFF505051)
+val surfaceContainerLowestDarkHighContrast = Color(0xFF000000)
+val surfaceContainerLowDarkHighContrast = Color(0xFF1F2020)
+val surfaceContainerDarkHighContrast = Color(0xFF303031)
+val surfaceContainerHighDarkHighContrast = Color(0xFF3B3B3C)
+val surfaceContainerHighestDarkHighContrast = Color(0xFF474747)
 
-    background = Color(0xFF1C1B1F),
-    onBackground = Color(0xFFE6E1E5),
-    surface = Color(0xFF1C1B1F),
-    onSurface = Color(0xFFE6E1E5),
-    surfaceVariant = Color(0xFF49454F),
-    onSurfaceVariant = Color(0xFFCAC4D0),
-    outline = Color(0xFF938F99)
-)
+
+
+
+
+
 
 
 
