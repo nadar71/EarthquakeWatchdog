@@ -1,14 +1,14 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.data.remote
 
 import com.indiewalk.watchdog.earthquake.core.di.UsgsClient
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.EarthquakeQueryParams
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EarthquakeQueryParams
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.http.URLProtocol
 import io.ktor.http.path
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.EQFeaturesCollectionDTO
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQFeaturesCollectionDTO
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject

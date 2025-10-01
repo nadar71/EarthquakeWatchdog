@@ -3,10 +3,10 @@ package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.EQFeaturesCollectionDTO
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQFeaturesCollectionDTO
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.repository.EQRepository
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.use_cases.FetchAndSaveDefaultUseCase
-import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiState
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromRemoteState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import eu.indiewalkabout.fridgemanager.core.domain.model.ApiResponse
 import eu.indiewalkabout.fridgemanager.core.domain.model.ErrorResponse
@@ -21,36 +21,46 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val eqRepository: EQRepository,
     private val fetchAndSaveDefaultUseCase: FetchAndSaveDefaultUseCase
+    // private val getEQsListFromDBUseCase: GetEQsListFromDBUseCase
 ) : ViewModel() {
 
     private val TAG = "MainViewModel"
-    private val _eqsUIState = MutableStateFlow<EQsListUiState<EQFeaturesCollectionDTO>>(
-        EQsListUiState.Idle)
-    val eqsUIState: StateFlow<EQsListUiState<EQFeaturesCollectionDTO>> = _eqsUIState.asStateFlow()
+    private val _eqsUIFromRemoteState = MutableStateFlow<EQsListUiFromRemoteState<EQFeaturesCollectionDTO>>(
+        EQsListUiFromRemoteState.Idle)
+    val eqsUIFromRemoteState: StateFlow<EQsListUiFromRemoteState<EQFeaturesCollectionDTO>> = _eqsUIFromRemoteState.asStateFlow()
 
 
+    // request eqs list from remote and save to db
     fun refreshEQsList() {
         viewModelScope.launch {
             Log.d(TAG, "refreshEQsList: called")
-            _eqsUIState.value = EQsListUiState.Loading
+            _eqsUIFromRemoteState.value = EQsListUiFromRemoteState.Loading
             try {
                 val response = fetchAndSaveDefaultUseCase()
-                _eqsUIState.value = when (response) {
+                _eqsUIFromRemoteState.value = when (response) {
                     is ApiResponse.Success -> {
                         Log.d(TAG, "refreshEQsList: success")
-                        EQsListUiState.Success(response.data)
+                        EQsListUiFromRemoteState.Success(response.data)
                     }
                     is ApiResponse.Error -> {
                         Log.d(TAG, "refreshEQsList: error")
-                        EQsListUiState.Error(response.error)
+                        EQsListUiFromRemoteState.Error(response.error)
                     }
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "refreshEQsList: exception error: ${e.message}")
-                _eqsUIState.value = EQsListUiState.Error(
+                _eqsUIFromRemoteState.value = EQsListUiFromRemoteState.Error(
                     ErrorResponse(0, emptyList(), e.message ?: "Unknown error")
                 )
             }
+        }
+    }
+
+    // get eqs list from db
+    fun getEQsListFromDB() {
+        viewModelScope.launch {
+            _eqsUIFromRemoteState.value = EQsListUiFromRemoteState.Loading
+
         }
     }
 
@@ -104,7 +114,6 @@ class MainViewModel @Inject constructor(
         dMinMagnitude = java.lang.Double.parseDouble(minMagnitude)
 
 
-        // choose the type of food list to load from db
         if (listType == MainActivity.ORDER_BY_DESC_MAGNITUDE) {
             Log.d(TAG, "setupAdapter: ORDER_BY_DESC_MAGNITUDE : $listType")
             eqList = eqRepository!!.loadAll_orderby_desc_mag(dMinMagnitude)

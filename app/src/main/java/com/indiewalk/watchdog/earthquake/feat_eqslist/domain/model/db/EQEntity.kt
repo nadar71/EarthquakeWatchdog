@@ -1,18 +1,20 @@
-package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model
+package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.ForeignKey
 import androidx.room.Index
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
 
+// DB entity for eq event.
 // 1 row per Feature (earthquake).
 // Linked to its feed snapshot by feedGenerated (FK to FeedSnapshotEntity.generated).
 @Entity(
     tableName = "earthquakes",
     foreignKeys = [
         ForeignKey(
-            entity = FeedSnapshotEntity::class,
+            entity = EQFeedSnapshotEntity::class,
             parentColumns = ["generated"],
             childColumns = ["feed_generated"],
             onUpdate = ForeignKey.CASCADE,
@@ -68,3 +70,16 @@ data class EQEntity(
     // custom
     val distanceFromUser: Int?
 )
+
+fun EQEntity.toEarthquakeUI(distanceFromUserCustom: Int? = null): EarthquakeUI {
+    return EarthquakeUI(
+        magnitude = mag,
+        location = place,
+        occurenceDateTime = time,
+        urlDetails = url,
+        longitude = longitude,
+        latitude = latitude,
+        depth = depthKm,
+        distanceFromUser = distanceFromUserCustom ?:distanceFromUser
+    )
+}

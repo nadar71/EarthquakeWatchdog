@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EQEntity
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 
 @Dao
 interface EarthquakeDao {

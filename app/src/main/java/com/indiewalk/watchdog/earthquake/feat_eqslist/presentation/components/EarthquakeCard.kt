@@ -47,24 +47,25 @@ import com.indiewalk.watchdog.earthquake.core.presentation.theme.onBackgroundLig
 import com.indiewalk.watchdog.earthquake.core.util.formatUtils.formatDate
 import com.indiewalk.watchdog.earthquake.core.util.formatUtils.formatDistanceToInt
 import com.indiewalk.watchdog.earthquake.core.util.formatUtils.formatMag
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.FeatureDTO
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.GeometryDTO
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.PropertiesDTO
-import java.text.NumberFormat
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.toEarthquakeUI
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQFeatureDTO
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQGeometryDTO
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQPropertiesDTO
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.toEQEntity
 import java.util.Locale
-import kotlin.math.roundToInt
 
 @Composable
 fun EarthquakeCard(
-    eq: FeatureDTO,
-    distanceKm: Double?,                 // pass precomputed distance if you have it; else null to hide
+    eq: EarthquakeUI,
+    // distanceKm: Double?,                 // pass precomputed distance if you have it; else null to hide
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     bubbleSize: Dp = 44.dp
 ) {
+
+    val distanceKm = eq.distanceFromUser
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -81,7 +82,7 @@ fun EarthquakeCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             MagnitudeBubble(
-                mag = eq.properties.mag,
+                mag = eq.magnitude,
                 size = bubbleSize
             )
             Spacer(Modifier.width(12.dp))
@@ -89,14 +90,14 @@ fun EarthquakeCard(
             Column(modifier = Modifier.weight(1f)) {
                 // Date/time
                 Text(
-                    text = formatDate(eq.properties.time),
+                    text = formatDate(eq.occurenceDateTime),
                     style = MaterialTheme.typography.labelSmall.copy(
                         color = MaterialTheme.colorScheme.secondary
                     )
                 )
 
                 // Place line: prefix + name
-                val (prefix, placeName) = splitPlace(eq.properties.place)
+                val (prefix, placeName) = splitPlace(eq.location)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (prefix.isNotEmpty()) {
                         Text(
@@ -129,7 +130,7 @@ fun EarthquakeCard(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "${formatDistanceToInt(distanceKm)} km",
+                        text = distanceKm.toString(), // "${formatDistanceToInt(distanceKm)} km",
                         style = MaterialTheme.typography.labelLarge.copy(
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Medium
@@ -256,12 +257,10 @@ fun EarthquakeCardPreviewLight() {
             Column {
                 EarthquakeCard(
                     eq = sampleFeature1(),
-                    distanceKm = 15236.0,
                     modifier = Modifier.padding(horizontal = 8.dp)
                 )
                 EarthquakeCard(
                     eq = sampleFeature2(),
-                    distanceKm = 7826.0,
                     modifier = Modifier.padding(horizontal = 8.dp)
                 )
             }
@@ -283,10 +282,10 @@ fun EarthquakeCardPreviewDark() {
 
 /* ------------------ sample data ------------------ */
 
-private fun sampleFeature1() = FeatureDTO(
+private fun sampleFeature1() = EQFeatureDTO(
     type = "Feature",
     id = "sample-ci-001",
-    properties = PropertiesDTO(
+    properties = EQPropertiesDTO(
         mag = 5.0,
         place = "76 km West of Macquarie Island",
         time = 1583196360000,  // Mar 03, 2020 2:06 am (example)
@@ -313,16 +312,16 @@ private fun sampleFeature1() = FeatureDTO(
         magType = "mb",
         type = "earthquake"
     ),
-    geometry = GeometryDTO(
+    geometry = EQGeometryDTO(
         type = "Point",
         coordinates = listOf(158.95, -54.5, 10.0) // lon, lat, depth(km)
     )
-)
+).toEQEntity(124124124).toEarthquakeUI(distanceFromUserCustom = 123456789)
 
-private fun sampleFeature2() = FeatureDTO(
+private fun sampleFeature2() = EQFeatureDTO(
     type = "Feature",
     id = "sample-us-002",
-    properties = PropertiesDTO(
+    properties = EQPropertiesDTO(
         mag = 4.9,
         place = "Near the Chagos Archipelago region",
         time = 1583267460000,  // Mar 03, 2020 6:31 pm (example)
@@ -349,8 +348,8 @@ private fun sampleFeature2() = FeatureDTO(
         magType = "mb",
         type = "earthquake"
     ),
-    geometry = GeometryDTO(
+    geometry = EQGeometryDTO(
         type = "Point",
         coordinates = listOf(72.0, -6.0, 12.0)
     )
-)
+).toEQEntity(124124124).toEarthquakeUI(distanceFromUserCustom = 7826 )

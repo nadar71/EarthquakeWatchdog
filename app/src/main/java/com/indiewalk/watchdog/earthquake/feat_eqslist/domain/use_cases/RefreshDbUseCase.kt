@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.SaveResult
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.EQFeaturesCollectionDTO
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQFeaturesCollectionDTO
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.repository.EQRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import eu.indiewalkabout.fridgemanager.core.domain.model.DbResponse

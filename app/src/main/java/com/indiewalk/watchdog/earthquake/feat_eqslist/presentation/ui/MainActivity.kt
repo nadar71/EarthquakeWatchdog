@@ -46,11 +46,11 @@ class MainActivity() : AppCompatActivity() {
                 ThemeMode.Light -> false
                 ThemeMode.Dark  -> true
             }
-            /*EQWatchdogTheme {
+            EQWatchdogTheme {
                 EarthquakeListScreen()
-            }*/
+            }
 
-            EQWatchdogTheme(darkTheme = isDark, dynamicColor = settings.dynamicColor) {
+            /*EQWatchdogTheme(darkTheme = isDark, dynamicColor = settings.dynamicColor) {
                 Surface {
                     ThemeDemoScreen(
                         mode = settings.mode,
@@ -59,7 +59,7 @@ class MainActivity() : AppCompatActivity() {
                         onDynamicChange = themeViewModel::setDynamic
                     )
                 }
-            }
+            }*/
         }
 
     }

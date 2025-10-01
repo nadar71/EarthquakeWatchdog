@@ -1,7 +1,7 @@
-package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos
+package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto
 
 // Geometry describing the location. Coordinates are [lon, lat, depth(km)], network/dto.
-data class GeometryDTO(
+data class EQGeometryDTO(
     val type: String,                // "Point" fro earthquake
     val coordinates: List<Double>    // [longitude, latitude, depthKm]
 ) {

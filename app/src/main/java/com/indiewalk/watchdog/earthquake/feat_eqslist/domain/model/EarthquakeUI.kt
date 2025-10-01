@@ -1,15 +1,15 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model
 
-// Represent a single eq event.
+// Represent a single eq event for UI presentation.
 data class EarthquakeUI(
-    var magnitude: Double = 0.toDouble(),
+    var magnitude: Double? = 0.0,
     var location: String? = null,
-    var occurenceDateTime: Long = 0,  // date and time of occurrence in millisec
+    var occurenceDateTime: Long? = 0,  // date and time of occurrence in millisec
     var urlDetails: String? = null,   // url to details
-    var longitude: Double = 0.toDouble(),
-    var latitude: Double = 0.toDouble(),
-    var depth: Double = 0.toDouble(),
-    var distanceFromUser: Int = 0    // distance from user location
+    var longitude: Double? = 0.0,
+    var latitude: Double? = 0.0,
+    var depth: Double? = 0.0,
+    var distanceFromUser: Int? = null    // distance from user location
 
 
 

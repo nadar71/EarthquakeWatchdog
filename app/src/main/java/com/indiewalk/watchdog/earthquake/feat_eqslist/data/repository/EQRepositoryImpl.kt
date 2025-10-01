@@ -4,14 +4,13 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.EarthquakeDa
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.FeedSnapshotDao
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.FeedWriterDao
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.remote.EarthquakeApi
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EQEntity
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.SaveResult
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.EQFeaturesCollectionDTO
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.EarthquakeQueryParams
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.toEntity
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.toFeedSnapshot
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQFeaturesCollectionDTO
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EarthquakeQueryParams
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.toEQEntity
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.toFeedSnapshot
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.repository.EQRepository
-import io.ktor.client.HttpClient
 import javax.inject.Inject
 
 class EQRepositoryImpl @Inject constructor(
@@ -128,7 +127,7 @@ class EQRepositoryImpl @Inject constructor(
 
     override suspend fun refreshDB(feed: EQFeaturesCollectionDTO): SaveResult {
         val snapshot = feed.toFeedSnapshot()
-        val events = feed.features.map { it.toEntity(feedGenerated = snapshot.generated) }
+        val events = feed.features.map { it.toEQEntity(feedGenerated = snapshot.generated) }
         // clear tables
         feedSnapshotDao.dropSnapshotTable()
         eqDao.dropEarthquakeListTable()

@@ -1,14 +1,15 @@
-package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model
+package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-// Entity from object Geojson https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php
-// One row per feed Geojson fetch
+// DB entity with feed metadata and bbox, Derived from EQFeaturesCollectionDTO.toFeedSnapshot()
+// from object Geojson https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php
+// One row per each Geojson feed fetch
 // (which has 1 or more EarthquakeEntity derived from EQFeaturesCollectionDTO.features).
 // BBox flattened for easy querying.
 @Entity(tableName = "feed_snapshot")
-data class FeedSnapshotEntity(
+data class EQFeedSnapshotEntity(
     @PrimaryKey val generated: Long, // epoch ms (acts as snapshot id)
     val url: String,
     val title: String,

@@ -1,19 +1,19 @@
-package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos
+package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto
 
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getEQDistanceFromUser
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EQEntity
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 
 // A single EQ Feature with properties + geometry + id, network/dto.
-data class FeatureDTO(
+data class EQFeatureDTO(
     val type: String,                   // "Feature"
-    val properties: PropertiesDTO,
-    val geometry: GeometryDTO,
+    val properties: EQPropertiesDTO,
+    val geometry: EQGeometryDTO,
     val id: String
 )
 
 
 
-fun FeatureDTO.toEntity(feedGenerated: Long?): EQEntity =
+fun EQFeatureDTO.toEQEntity(feedGenerated: Long?): EQEntity =
     EQEntity(
         id = id,
         feedGenerated = feedGenerated,

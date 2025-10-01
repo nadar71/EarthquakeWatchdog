@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos
+package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto
 
 import java.time.Instant
 

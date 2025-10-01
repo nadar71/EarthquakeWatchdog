@@ -5,15 +5,15 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import android.content.Context
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EQEntity
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.FeedSnapshotEntity
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQFeedSnapshotEntity
 import kotlin.jvm.java
 
 
 @Database(
     entities = [
         EQEntity::class,
-        FeedSnapshotEntity::class],
+        EQFeedSnapshotEntity::class],
     version = 4,
     exportSchema = true
 )

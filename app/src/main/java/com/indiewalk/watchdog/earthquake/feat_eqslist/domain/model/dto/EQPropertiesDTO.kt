@@ -1,7 +1,7 @@
-package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos
+package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto
 
 // Earthquake properties. Many can be null depending on the event, network/dto.
-data class PropertiesDTO(
+data class EQPropertiesDTO(
     val mag: Double?,                // magnitude
     val place: String?,
     val time: Long?,                 // epoch millis

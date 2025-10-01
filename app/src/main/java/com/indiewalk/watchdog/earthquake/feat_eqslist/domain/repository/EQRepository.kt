@@ -1,9 +1,9 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.repository
 
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EQEntity
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.SaveResult
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.EQFeaturesCollectionDTO
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos.EarthquakeQueryParams
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQFeaturesCollectionDTO
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EarthquakeQueryParams
 
 interface EQRepository {
     //------------------------------------------- API ----------------------------------------------

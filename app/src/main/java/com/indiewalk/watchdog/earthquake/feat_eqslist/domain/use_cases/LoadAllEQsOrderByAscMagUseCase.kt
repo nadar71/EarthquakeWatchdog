@@ -3,7 +3,7 @@ package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.use_cases
 import android.content.Context
 import android.util.Log
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EQEntity
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.repository.EQRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import eu.indiewalkabout.fridgemanager.core.domain.model.DbResponse

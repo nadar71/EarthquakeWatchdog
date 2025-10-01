@@ -1,19 +1,19 @@
-package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dtos
+package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto
 
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.FeedSnapshotEntity
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQFeedSnapshotEntity
 
 // top-level GeoJSON container for earthquake feeds as received from the USGS network/dto.
 // DTO from object Geojson https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php
 data class EQFeaturesCollectionDTO(
     val type: String,                // "FeatureCollection"
-    val metadata: MetadataDTO,
+    val metadata: EQMetadataDTO,
     val bbox: List<Double>?,         // [minLon, minLat, minDepth, maxLon, maxLat, maxDepth]
-    val features: List<FeatureDTO>
+    val features: List<EQFeatureDTO>
 )
 
 
-fun EQFeaturesCollectionDTO.toFeedSnapshot(): FeedSnapshotEntity =
-    FeedSnapshotEntity(
+fun EQFeaturesCollectionDTO.toFeedSnapshot(): EQFeedSnapshotEntity =
+    EQFeedSnapshotEntity(
         generated = metadata.generated,
         url = metadata.url,
         title = metadata.title,

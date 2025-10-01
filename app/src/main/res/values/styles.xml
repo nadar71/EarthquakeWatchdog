@@ -12,6 +12,6 @@
         <!-- <item name="android:windowSplashScreenBackground">@color/white</item> -->
 
         <!-- global font from XML (Compose -> Typography): -->
-        <item name="fontFamily">@font/quicksand</item>
+        <item name="fontFamily">@font/quicksand_regular</item>
     </style>
 </resources>
