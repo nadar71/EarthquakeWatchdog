@@ -16,7 +16,7 @@ import com.indiewalk.watchdog.earthquake.R
 fun LogoAnimationForward(
     modifier: Modifier = Modifier,
     size: Dp = 100.dp,
-    frameDurationMs: Long = 120L // adjust speed here
+    frameDurationMs: Long = 80L // adjust speed here
 ) {
     val frames = listOf(
         /*R.drawable.logo_frame_001,
