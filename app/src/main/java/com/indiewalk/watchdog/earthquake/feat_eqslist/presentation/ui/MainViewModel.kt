@@ -3,12 +3,16 @@ package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQFeaturesCollectionDTO
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.repository.EQRepository
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.use_cases.FetchAndSaveDefaultUseCase
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.use_cases.LoadAllEQsUseCase
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromDBState
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromRemoteState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import eu.indiewalkabout.fridgemanager.core.domain.model.ApiResponse
+import eu.indiewalkabout.fridgemanager.core.domain.model.DbResponse
 import eu.indiewalkabout.fridgemanager.core.domain.model.ErrorResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,14 +24,21 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val eqRepository: EQRepository,
-    private val fetchAndSaveDefaultUseCase: FetchAndSaveDefaultUseCase
-    // private val getEQsListFromDBUseCase: GetEQsListFromDBUseCase
+    private val fetchAndSaveDefaultUseCase: FetchAndSaveDefaultUseCase,
+    private val loadAllEQsUseCase: LoadAllEQsUseCase
 ) : ViewModel() {
-
     private val TAG = "MainViewModel"
+
     private val _eqsUIFromRemoteState = MutableStateFlow<EQsListUiFromRemoteState<EQFeaturesCollectionDTO>>(
         EQsListUiFromRemoteState.Idle)
-    val eqsUIFromRemoteState: StateFlow<EQsListUiFromRemoteState<EQFeaturesCollectionDTO>> = _eqsUIFromRemoteState.asStateFlow()
+    val eqsUIFromRemoteState: StateFlow<EQsListUiFromRemoteState<EQFeaturesCollectionDTO>> =
+        _eqsUIFromRemoteState.asStateFlow()
+
+    private val _eqsUIFromDBState = MutableStateFlow<EQsListUiFromDBState<List<EQEntity>?>>(
+        EQsListUiFromDBState.Idle)
+    val eqsUIFromDBState: StateFlow<EQsListUiFromDBState<List<EQEntity>?>> =
+        _eqsUIFromDBState.asStateFlow()
+
 
 
     // request eqs list from remote and save to db
@@ -57,9 +68,21 @@ class MainViewModel @Inject constructor(
     }
 
     // get eqs list from db
-    fun getEQsListFromDB() {
+    fun loadAllEQsDB() {
         viewModelScope.launch {
-            _eqsUIFromRemoteState.value = EQsListUiFromRemoteState.Loading
+            _eqsUIFromDBState.value = EQsListUiFromDBState.Loading
+            try {
+                val response = loadAllEQsUseCase()
+                _eqsUIFromDBState.value = when (response) {
+                    is DbResponse.Success -> EQsListUiFromDBState.Success(response.data)
+                    is DbResponse.Error -> EQsListUiFromDBState.Error(response.error)
+                }
+            } catch (e: Exception) {
+                Log.d(TAG, "loadAllEQsDB: exception error: ${e.message}")
+                _eqsUIFromDBState.value = EQsListUiFromDBState.Error(
+                    ErrorResponse(0, emptyList(), e.message ?: "Unknown error")
+                )
+            }
 
         }
     }

@@ -46,7 +46,7 @@ class EQRepositoryImpl @Inject constructor(
 
 
 
-    override suspend fun getEarthquakesDefault(min_mag: Double, limit: Int): EQFeaturesCollectionDTO {
+    override suspend fun getEQsRemoteDefault(min_mag: Double, limit: Int): EQFeaturesCollectionDTO {
         val params = EarthquakeQueryParams(
             format = "geojson",
             eventType = "earthquake",
@@ -61,7 +61,7 @@ class EQRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun getEarthquakesWithParams(params: EarthquakeQueryParams): EQFeaturesCollectionDTO {
+    override suspend fun getEQsRemoteWithParams(params: EarthquakeQueryParams): EQFeaturesCollectionDTO {
         val params = EarthquakeQueryParams(
             format = params.format,
             eventType = params.eventType,

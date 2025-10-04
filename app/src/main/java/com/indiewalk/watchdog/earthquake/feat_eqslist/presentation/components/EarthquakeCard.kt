@@ -149,7 +149,7 @@ fun EarthquakeCard(
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 12.dp),
             thickness = 1.dp,
-            color = MaterialTheme.colorScheme.secondaryContainer
+            color = MaterialTheme.colorScheme.surfaceContainerHigh
         )
     }
 }
@@ -163,25 +163,47 @@ private fun MagnitudeBubble(
 ) {
     val m = (mag ?: 0.0).coerceAtLeast(0.0)
     val colors = magnitudeColors(m)
+
     Box(
-        modifier = Modifier
-            .size(size)
-            .clip(CircleShape)
-            .background(
-                Brush.radialGradient(
-                    colors = listOf(colors.first, colors.second),
-                    center = Offset.Unspecified,
-                    radius = 60f
-                )
-            ),
+        modifier = Modifier.size(size + 8.dp), // Outer container to hold all layers
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = formatMag(m),
-            style = MaterialTheme.typography.labelLarge.copy(
-                color = Color.White,
+        Box(
+            modifier = Modifier
+                .size(size + 4.dp)
+                .clip(CircleShape)
+                .background(colors.second),
+            contentAlignment = Alignment.Center
+        ) {}
+
+        Box(
+            modifier = Modifier
+                .size(size + 2.dp)
+                .clip(CircleShape)
+                .background(Color.White),
+            contentAlignment = Alignment.Center
+        ) {}
+
+        Box(
+            modifier = Modifier
+                .size(size)
+                .clip(CircleShape)
+                .background(
+                    Brush.radialGradient(
+                        colors = listOf(colors.first, colors.second),
+                        center = Offset.Unspecified,
+                        radius = 60f
+                    )
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = formatMag(m),
+                style = MaterialTheme.typography.labelLarge.copy(
+                    color = Color.White,
+                )
             )
-        )
+        }
     }
 }
 
@@ -247,11 +269,11 @@ private fun magnitudeColors(mag: Double): Pair<Color, Color> {
 )
 @Composable
 fun EarthquakeCardPreviewLight() {
-    EQWatchdogTheme {
+    EQWatchdogTheme(/*dynamicColor = false*/) {
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .background(onBackgroundLight/*Color(0xFFF7F9FC)*/)
+                .background(MaterialTheme.colorScheme.onBackground/*Color(0xFFF7F9FC)*/)
                 .padding(vertical = 8.dp)
         ) {
             Column {
@@ -275,14 +297,52 @@ fun EarthquakeCardPreviewLight() {
     backgroundColor = 0xFF000000,
     widthDp = 360
 )
+
 @Composable
 fun EarthquakeCardPreviewDark() {
-    EarthquakeCardPreviewLight()
+    EQWatchdogTheme(/*dynamicColor = false*/) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(onBackgroundLight)
+                .padding(vertical = 8.dp)
+        ) {
+            Column {
+                EarthquakeCard(
+                    eq = sampleFeature1(),
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+                EarthquakeCard(
+                    eq = sampleFeature2(),
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+            }
+        }
+    }
 }
 
 /* ------------------ sample data ------------------ */
 
-private fun sampleFeature1() = EQFeatureDTO(
+
+private fun sampleFeature1() = EarthquakeUI(
+    magnitude = 5.0,
+    location = "76 km West of Macquarie Island",
+    occurenceDateTime = 1_583_196_360_000L, // Mar 03, 2020 2:06 am
+    distanceFromUser = 123_456,           // stubbed for preview
+    longitude = 158.95,
+    latitude = -54.5
+)
+
+private fun sampleFeature2() = EarthquakeUI(
+    magnitude = 4.9,
+    location = "Near the Chagos Archipelago region",
+    occurenceDateTime = 1_583_267_460_000L, // Mar 03, 2020 6:31 pm
+    distanceFromUser = 7_826,             // stubbed for preview
+    longitude = 72.0,
+    latitude = -6.0
+)
+
+/*private fun sampleFeature1() = EQFeatureDTO(
     type = "Feature",
     id = "sample-ci-001",
     properties = EQPropertiesDTO(
@@ -352,4 +412,4 @@ private fun sampleFeature2() = EQFeatureDTO(
         type = "Point",
         coordinates = listOf(72.0, -6.0, 12.0)
     )
-).toEQEntity(124124124).toEarthquakeUI(distanceFromUserCustom = 7826 )
+).toEQEntity(124124124).toEarthquakeUI(distanceFromUserCustom = 7826 )*/

@@ -8,7 +8,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.indiewalk.watchdog.earthquake.core.data.ThemeMode
+import com.indiewalk.watchdog.earthquake.core.data.enums.ThemeMode
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.ThemeViewModel
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.previews.ThemeDemoScreen

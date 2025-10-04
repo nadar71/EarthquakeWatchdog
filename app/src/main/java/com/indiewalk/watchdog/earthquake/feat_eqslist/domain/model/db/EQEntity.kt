@@ -71,7 +71,7 @@ data class EQEntity(
     val distanceFromUser: Int?
 )
 
-fun EQEntity.toEarthquakeUI(distanceFromUserCustom: Int? = null): EarthquakeUI {
+fun EQEntity.toEarthquakeUI(): EarthquakeUI {
     return EarthquakeUI(
         magnitude = mag,
         location = place,
@@ -80,6 +80,6 @@ fun EQEntity.toEarthquakeUI(distanceFromUserCustom: Int? = null): EarthquakeUI {
         longitude = longitude,
         latitude = latitude,
         depth = depthKm,
-        distanceFromUser = distanceFromUserCustom ?:distanceFromUser
+        distanceFromUser = distanceFromUser
     )
 }

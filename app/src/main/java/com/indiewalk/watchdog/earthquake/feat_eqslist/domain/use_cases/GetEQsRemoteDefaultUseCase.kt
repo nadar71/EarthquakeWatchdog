@@ -10,7 +10,7 @@ import eu.indiewalkabout.fridgemanager.core.domain.model.ApiResponse
 import eu.indiewalkabout.fridgemanager.core.domain.model.ErrorResponse
 import javax.inject.Inject
 
-class GetEarthquakesDefaultUseCase @Inject constructor(
+class GetEQsRemoteDefaultUseCase @Inject constructor(
     private val repository: EQRepository,
     @ApplicationContext private val context: Context
 ) {
@@ -18,7 +18,7 @@ class GetEarthquakesDefaultUseCase @Inject constructor(
 
     suspend operator fun invoke(minMag: Double, limit: Int): ApiResponse<EQFeaturesCollectionDTO> {
         return try {
-            val result = repository.getEarthquakesDefault(minMag, limit)
+            val result = repository.getEQsRemoteDefault(minMag, limit)
             ApiResponse.Success(result)
         } catch (e: Exception) {
             Log.e(TAG, e.localizedMessage ?: context.getString(R.string.api_generic_error))

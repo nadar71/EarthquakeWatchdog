@@ -1,6 +1,7 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -18,13 +19,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.toEarthquakeUI
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQFeaturesCollectionDTO
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQFeatureDTO
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.toEQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.EarthquakeCard
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromDBState
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromRemoteState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,30 +40,36 @@ fun EarthquakeListScreen(
 ) {
     val TAG = "EarthquakeListScreen"
     var eqsCollection by remember { mutableStateOf<EQFeaturesCollectionDTO?>(null) }
-    var eqsList by remember { mutableStateOf<List<EQFeatureDTO>?>(null) }
+    var eqsList by remember { mutableStateOf<List<EQEntity>?>(null) }
+    var eqListLoadedFromDb by remember { mutableStateOf(false) }
 
-    val eqsUIState by mainViewModel.eqsUIFromRemoteState.collectAsStateWithLifecycle()
+    val eqsUIFromRemoteState by mainViewModel.eqsUIFromRemoteState.collectAsStateWithLifecycle()
+    val eqsUIFromDBState by mainViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         mainViewModel.refreshEQsList()
     }
 
-    LaunchedEffect(eqsUIState) {
-        when (eqsUIState) {
+    LaunchedEffect(eqsUIFromRemoteState) {
+        when (eqsUIFromRemoteState) {
             is EQsListUiFromRemoteState.Idle -> {
+                // TODO :
                 // showProgressBar = false
             }
 
             is EQsListUiFromRemoteState.Loading -> {
+                // TODO :
                 // showProgressBar = true
             }
 
             is EQsListUiFromRemoteState.Success -> {
                 Log.d(TAG, "EarthquakeListScreen: SUCCESS, eqs loaded")
+                // TODO :
                 // showProgressBar = false
                 eqsCollection =
-                    (eqsUIState as EQsListUiFromRemoteState.Success<EQFeaturesCollectionDTO>).data
+                    (eqsUIFromRemoteState as EQsListUiFromRemoteState.Success<EQFeaturesCollectionDTO>).data
                 // eqsList = eqsCollection?.features
+                mainViewModel.loadAllEQsDB()
                 Log.d(TAG, "EarthquakeListScreen: eqsList: $eqsList")
             }
 
@@ -81,37 +93,80 @@ fun EarthquakeListScreen(
         }
     }
 
+
+
+    LaunchedEffect(eqsUIFromDBState) {
+        when (eqsUIFromDBState) {
+            is EQsListUiFromDBState.Idle -> {
+                // showProgressBar = false
+            }
+            is EQsListUiFromDBState.Loading -> {
+                // showProgressBar = true
+            }
+            is EQsListUiFromDBState.Success -> {
+                // showProgressBar = false
+                eqsList = (eqsUIFromDBState as EQsListUiFromDBState.Success<List<EQEntity>?>).data
+                Log.d(TAG, "Eq list loaded from db : $eqsList")
+                eqListLoadedFromDb = true
+            }
+            is EQsListUiFromDBState.Error -> {
+                // showProgressBar = false
+                Log.e(TAG, "Error recovering foodList from db")
+                eqListLoadedFromDb = true
+            }
+        }
+    }
+
+
     // TODO: adding recovering eqs data from db all the time in main screen after refresh db is success
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Earthquakes") }
+                title = {
+                    Text(
+                        text = "Earthquakes",
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    )
+                        },
+                navigationIcon = {
+                    LogoAnimationForward(
+                        // modifier = Modifier.padding(start = 8.dp),
+                        size = 50.dp,                // tweak to taste (24–32dp works well)
+                        frameDurationMs = 90L
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,       // background
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,  // title text
+                )
+
             )
         }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            items(eqsCollection?.features ?: emptyList()) { eq ->
-                Column(modifier = Modifier
+        if (eqListLoadedFromDb && !eqsList.isNullOrEmpty()) {
+            LazyColumn(
+                modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)) {
-                    val generated = eqsCollection?.metadata?.generated
-                    EarthquakeCard(
-                        eq = eq.toEQEntity(generated).toEarthquakeUI(),
-                    )
-                    /*Text(text = eq.properties.place ?: "Unknown")
-                    Text(text = "M ${eq.properties.mag ?: 0.0}")*/
+                    .padding(padding)
+            ) {
+                items(eqsCollection?.features ?: emptyList()) { eq ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        val generated = eqsCollection?.metadata?.generated
+                        EarthquakeCard(
+                            eq = eq.toEQEntity(generated).toEarthquakeUI(),
+                        )
+                    }
                 }
-                /*HorizontalDivider(
-                    modifier = Modifier.padding(16.dp),
-                    thickness = 1.dp,
-                    color = Color.Gray
-                )*/
             }
+        }
+        else {
+            Text("No earthquakes found")
         }
     }
 }

@@ -32,7 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.indiewalk.watchdog.earthquake.core.data.ThemeMode
+import com.indiewalk.watchdog.earthquake.core.data.enums.ThemeMode
 
 
 @OptIn(ExperimentalMaterial3Api::class)

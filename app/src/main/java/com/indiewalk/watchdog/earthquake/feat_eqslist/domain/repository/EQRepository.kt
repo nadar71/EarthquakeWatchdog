@@ -10,11 +10,11 @@ interface EQRepository {
     // get earthquakes from api and save to db
     suspend fun fetchAndSaveDefault(): EQFeaturesCollectionDTO
 
-    suspend fun getEarthquakesDefault(
+    suspend fun getEQsRemoteDefault(
         min_mag: Double,
         limit: Int = 200
     ): EQFeaturesCollectionDTO
-    suspend fun getEarthquakesWithParams(params: EarthquakeQueryParams): EQFeaturesCollectionDTO
+    suspend fun getEQsRemoteWithParams(params: EarthquakeQueryParams): EQFeaturesCollectionDTO
 
     //------------------------------------------- QUERY --------------------------------------------
     suspend  fun loadAllEQs(): MutableList<EQEntity>

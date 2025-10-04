@@ -5,7 +5,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.indiewalk.watchdog.earthquake.core.data.ThemeMode
+import com.indiewalk.watchdog.earthquake.core.data.enums.ThemeMode
 import com.indiewalk.watchdog.earthquake.core.data.ThemePrefs
 import com.indiewalk.watchdog.earthquake.core.model.ThemeSettings
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,9 +29,9 @@ class ThemeViewModel @Inject constructor(
         }
     }
 
-    fun setDynamic(enabled: Boolean) {
+    /*fun setDynamic(enabled: Boolean) {
         viewModelScope.launch {
             ThemePrefs.setDynamic(getApplication(), enabled)
         }
-    }
+    }*/
 }
