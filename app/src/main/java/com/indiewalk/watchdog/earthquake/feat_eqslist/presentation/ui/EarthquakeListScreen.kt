@@ -1,15 +1,11 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui
 
-import android.R.attr.end
-import android.R.attr.fontWeight
-import android.R.attr.top
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -35,7 +30,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -47,7 +41,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -57,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.toEarthquakeUI
@@ -66,16 +60,18 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.Ea
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromDBState
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromRemoteState
 import com.indiewalk.watchdog.earthquake.R
-import kotlinx.coroutines.coroutineScope
+import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun EarthquakeListScreen(
+    navController: NavHostController,
     mainViewModel: MainViewModel = hiltViewModel()
 ) {
     val TAG = "EarthquakeListScreen"
+    Log.d(TAG, "EarthquakeListScreen on")
     var eqsCollection by remember { mutableStateOf<EQFeaturesCollectionDTO?>(null) }
     var eqsList by remember { mutableStateOf<List<EQEntity>?>(null) }
     var eqListLoadedFromDb by remember { mutableStateOf(false) }
@@ -191,7 +187,8 @@ fun EarthquakeListScreen(
 
 
     // ------------------------------------- UI ----------------------------------------------------
-    Scaffold(
+    ScaffoldModel(
+        navController = navController,
         topBar = {
             TopAppBar(
                 title = {
@@ -228,7 +225,7 @@ fun EarthquakeListScreen(
                 )
 
             )
-        }
+        },
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize()){
             if (eqListLoadedFromDb && !eqsList.isNullOrEmpty()) {

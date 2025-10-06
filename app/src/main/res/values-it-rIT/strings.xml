@@ -13,6 +13,11 @@
     <string name="generic_confirm_label">Conferma</string>
     <string name="update_btn_label">Aggiorna</string>
 
+    <!-- - - - - - - - - - - - - - - - - - - Navigation - - - - -  - - - - - - - - - - - - - - - -->
+    <string name="nav_bottom_home_desc">Home</string>
+    <string name="nav_bottom_eqs_desc">Map</string>
+    <string name="nav_bottom_settings_desc">Settings</string>
+
     <!-- - - - - - - - - - - - - - - - - - - - - Home - - - - - - - - - - - - - - - - - - - - - - -->
     <string name="quick_settings_title">Impostazioni rapide</string>
     <string name="last_update_label">Ultimo aggiornamento: </string>

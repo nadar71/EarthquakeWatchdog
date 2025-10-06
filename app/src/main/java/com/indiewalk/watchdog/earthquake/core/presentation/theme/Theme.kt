@@ -261,6 +261,7 @@ fun EQWatchdogTheme(
     }
 
     // Edge-to-edge Config
+    // TODO : check if it works with <= 12 android devices
     val view = LocalView.current
     if (!view.isInEditMode) {
         val activity = view.context as? ComponentActivity
