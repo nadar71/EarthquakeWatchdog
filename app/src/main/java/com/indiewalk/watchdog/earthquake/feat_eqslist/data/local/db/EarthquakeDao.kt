@@ -5,11 +5,27 @@ import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface EarthquakeDao {
 
     //------------------------------------------- QUERY --------------------------------------------
+
+    // stream eqs ordered by time (desc)
+    @Query("SELECT * FROM earthquakes ORDER BY time DESC")
+    fun observeAll(): Flow<List<EQEntity>>
+
+    // stream eqs in coordinates box
+    @Query("""
+        SELECT * FROM earthquakes
+        WHERE :west <= longitude AND longitude <= :east
+          AND :south <= latitude AND latitude <= :north
+        ORDER BY time DESC
+    """)
+    fun observeInBbox(
+        west: Double, south: Double, east: Double, north: Double
+    ): Flow<List<EQEntity>>
 
     // retrieve all the eqs
     @Query("SELECT * FROM earthquakes ")

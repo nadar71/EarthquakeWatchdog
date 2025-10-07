@@ -8,6 +8,7 @@
         android:maxSdkVersion="22" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="false" />
@@ -18,6 +19,7 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
 
     <application
         android:name=".EarthquakeApp"

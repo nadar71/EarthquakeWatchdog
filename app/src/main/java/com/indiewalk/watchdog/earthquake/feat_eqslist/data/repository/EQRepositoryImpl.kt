@@ -11,6 +11,8 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.Earthquak
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.toEQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.toFeedSnapshot
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.repository.EQRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class EQRepositoryImpl @Inject constructor(
@@ -22,7 +24,15 @@ class EQRepositoryImpl @Inject constructor(
 
     //------------------------------------------- API ----------------------------------------------
 
-    // todo: default one
+    override suspend fun observeAll(): Flow<List<EQEntity>> {
+        return eqDao.observeAll()
+    }
+
+    override suspend fun observeInBbox(
+        west: Double, south: Double, east: Double, north: Double
+    ): Flow<List<EQEntity>> {
+        return observeInBbox(west, south, east, north)
+    }
 
     // fetch eqs and save locally,
     // default request : https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time

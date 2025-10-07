@@ -84,7 +84,7 @@ dependencies {
 
     // Accompanist lib for compose integration
     // implementation(libs.accompanist.pager)
-    // implementation(libs.accompanist.permissions)
+    implementation(libs.accompanist.permissions)
 
     // Core library desugaring
     coreLibraryDesugaring(libs.desugar.jdk.libs)

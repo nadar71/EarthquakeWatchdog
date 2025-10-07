@@ -30,8 +30,9 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
     ]
 )
 data class EQEntity(
-    @PrimaryKey val id: String,                     // feature.properties.id
-    @ColumnInfo(name = "feed_generated") val feedGenerated: Long?, // FK links to FeedSnapshotEntity.generated
+    @PrimaryKey val id: String,             // feature.properties.id
+    @ColumnInfo(name = "feed_generated")
+    val feedGenerated: Long?,               // FK links to FeedSnapshotEntity.generated
 
     // properties
     val mag: Double?,
