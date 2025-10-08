@@ -33,17 +33,7 @@ android {
             }
             storePassword = keystoreProperties.getProperty("release_storePassword")
         }
-        /*// This adds the debug config from your old script.
-        create("debug") {
-            keyAlias = keystoreProperties.getProperty("debug_keyAlias")
-            keyPassword = keystoreProperties.getProperty("debug_keyPassword")
-            storeFile = if (keystoreProperties.getProperty("debug_storeFile") != null) {
-                rootProject.file(keystoreProperties.getProperty("debug_storeFile"))
-            } else {
-                null // Or default to the debug.keystore if null
-            }
-            storePassword = keystoreProperties.getProperty("debug_storePassword")
-        }*/
+
     }
 
 
