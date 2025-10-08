@@ -1,4 +1,5 @@
-import org.gradle.kotlin.dsl.implementation
+import java.util.Properties
+import java.io.FileInputStream
 
 plugins { // plugin application
     alias(libs.plugins.android.application)
@@ -13,6 +14,39 @@ android {
     compileSdk = 35
 
 
+    // Load keystore properties
+    val keystorePropertiesFile = rootProject.file("keystore.properties")
+    val keystoreProperties = Properties()
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    }
+
+    signingConfigs {
+        // This is the existing release config - it's correct.
+        create("release") {
+            keyAlias = keystoreProperties.getProperty("release_keyAlias")
+            keyPassword = keystoreProperties.getProperty("release_keyPassword")
+            storeFile = if (keystoreProperties.getProperty("release_storeFile") != null) {
+                rootProject.file(keystoreProperties.getProperty("release_storeFile"))
+            } else {
+                null
+            }
+            storePassword = keystoreProperties.getProperty("release_storePassword")
+        }
+        /*// This adds the debug config from your old script.
+        create("debug") {
+            keyAlias = keystoreProperties.getProperty("debug_keyAlias")
+            keyPassword = keystoreProperties.getProperty("debug_keyPassword")
+            storeFile = if (keystoreProperties.getProperty("debug_storeFile") != null) {
+                rootProject.file(keystoreProperties.getProperty("debug_storeFile"))
+            } else {
+                null // Or default to the debug.keystore if null
+            }
+            storePassword = keystoreProperties.getProperty("debug_storePassword")
+        }*/
+    }
+
+
     defaultConfig {
         applicationId = "com.indiewalk.watchdog.earthquake"
         minSdk = 26
@@ -21,17 +55,26 @@ android {
         versionName = "2.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders["MAPS_API_KEY"] = ""
     }
 
     buildTypes {
-        release {
+        release{
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
+            manifestPlaceholders["MAPS_API_KEY"] = keystoreProperties.getProperty("MAPS_API_KEY", "")
+        }
+
+        debug{
+            signingConfig = signingConfigs.getByName("debug")
+            manifestPlaceholders["MAPS_API_KEY"] = keystoreProperties.getProperty("MAPS_API_KEY", "")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
