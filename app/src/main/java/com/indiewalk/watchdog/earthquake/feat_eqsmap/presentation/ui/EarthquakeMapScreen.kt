@@ -12,14 +12,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
@@ -27,7 +25,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -37,9 +34,10 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.shouldShowRationale
-import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
+import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.openAppSettings
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.PermissionDeniedDialog
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.PermissionRationaleDialog
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.state.MapUiState
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
@@ -184,62 +182,8 @@ fun EarthquakeMapScreen(
     }
 }
 
-/* ---------------- Dialogs ---------------- */
 
-@Composable
-private fun PermissionRationaleDialog(
-    onDismiss: () -> Unit,
-    onContinue: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Allow location access") },
-        text = {
-            Text(
-                "We use your location to center the map near you. " +
-                        "Earthquakes will be shown regardless of your choice."
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = onContinue) { Text("Continue") }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
-        }
-    )
-}
 
-@Composable
-private fun PermissionDeniedDialog(
-    onOpenSettings: () -> Unit,
-    onContinue: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onContinue,
-        title = { Text("Location permission denied") },
-        text = {
-            Text(
-                "You can still browse the map, but we can’t show your blue dot or center on your position.\n\n" +
-                        "To enable location:\n• Open system Settings → App permissions → Location\n" +
-                        "• Or continue without it and set a location manually later."
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = onOpenSettings) { Text("Open Settings") }
-        },
-        dismissButton = {
-            TextButton(onClick = onContinue) { Text("Continue") }
-        }
-    )
-}
 
-/* ------------- Helpers ------------- */
-
-private fun openAppSettings(context: Context) {
-    val uri = Uri.fromParts("package", context.packageName, null)
-    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri)
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    context.startActivity(intent)
-}
 
 

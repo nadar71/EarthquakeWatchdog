@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- - - - - - - - - - - - - - - - - - - - Generale - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - - - Generic - - - - - - - - - - - - - - - - - - - - -->
     <string name="app_name">EarthQuake Watchdog</string>
     <string name="title_reduced" translatable="false">EQWatchdog</string>
     <string name="searching_label">Caricamento dati ultimi terremoti</string>
@@ -11,6 +11,7 @@
     <string name="generic_cancel">Annulla</string>
     <string name="generic_save_label">Salva</string>
     <string name="generic_confirm_label">Conferma</string>
+    <string name="generic_continue_label">Continua</string>
     <string name="update_btn_label">Aggiorna</string>
 
     <!-- - - - - - - - - - - - - - - - - - - Navigation - - - - -  - - - - - - - - - - - - - - - -->
@@ -34,7 +35,7 @@
     <string name="order_by_nearest">Più vicino</string>
     <string name="order_by_furthest">Più lontano</string>
 
-    <!-- - - - - - - - - - - Mappe - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - Maps - - - - - - - - - - - - - - - - - - -->
     <string name="maps_title">Osservatorio Terremoti</string>
     <string name="maps_my_position_label">La mia posizione</string>
     <string name="maps_refresh_label">Aggiorna</string>
@@ -50,8 +51,12 @@
     <string name="maps_manual_localization_on_label">Localizzazione Manuale Attivata</string>
     <string name="maps_dis_from_default_location_label">dalla posizione predefinita</string>
     <string name="maps_dis_from_user_location_label">da te</string>
+    <string name="maps_permission_rationale_title_label">Consenti accesso alla posizione</string>
+    <string name="maps_permission_rationale_text_label">Utilizziamo la tua posizione per calcolare la distanza dei terremoti dalla tua posizione. I terremoti verranno mostrati sulla mappa indipendentemente dalla tua scelta.</string>    <string name="maps_permission_denied_title_label">Autorizzazione alla posizione negata</string>
+    <string name="maps_permission_denied_text_label">Puoi comunque esplorare la mappa, ma non possiamo mostrare la distanza dei terremoti dalla tua posizione.\nPer abilitare la posizione:\n\n• Apri Impostazioni di sistema → Autorizzazioni app → Posizione\n\n• Oppure continua senza e imposta manualmente una posizione in un secondo momento nel menu in alto a destra.</string>
+    <string name="maps_permission_settings_label">Apri Impostazioni</string>
 
-    <!-- - - - - - - - - - - - Stringhe per il menu Impostazioni - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - Settings - - - -  - - - - - - - - - - - - - - - - - - - - -->
     <string name="title_activity_settings">Impostazioni</string>
     <string name="settings_title">Impostazioni Terremoto</string>
     <string name="settings_menu_item">Impostazioni</string>
@@ -88,7 +93,7 @@
     <string name="settings_faq_text"><![CDATA[<b>FAQ E DISCLAIMER</b> Questa app scarica e mostra dati sui terremoti (fino agli ultimi 120 terremoti) tratti dal servizio online <a href="https://earthquake.usgs.gov/earthquakes/">USGS.gov</a>. Non è in alcun modo correlata a USGS né è un'app di quest'ultimo. Ha solo scopo informativo, i dati sui terremoti non sono in tempo reale (consultare il <a href="https://earthquake.usgs.gov/earthquakes/">sito USGS.gov</a> per i dettagli). Pertanto, non intende essere un'allerta terremoti.]]></string>
 -->
 
-    <!-- - - - - - - - - - - - - - - - - - - Messaggi di errore - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - Error - - - - - - - - - - -  - - - - - - - - - - - - - -->
     <string name="no_earthquakes">Nessun terremoto trovato. Prova un altro filtro.</string>
     <string name="no_internet_connection">Nessuna connessione Internet. Devi connetterti almeno la prima volta per scaricare i dati sui terremoti.</string>
     <!-- Generic error shown when loading earthquakes fails -->

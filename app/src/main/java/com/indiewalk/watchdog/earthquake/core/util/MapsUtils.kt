@@ -1,5 +1,9 @@
 package com.indiewalk.watchdog.earthquake.core.util
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import android.util.Log
 import com.indiewalk.watchdog.earthquake.core.data.AppPreferences.device_lat
 import com.indiewalk.watchdog.earthquake.core.data.AppPreferences.device_lng
@@ -68,6 +72,13 @@ object MapsUtils {
 
             return dist.toInt()
         }
+    }
+
+    fun openAppSettings(context: Context) {
+        val uri = Uri.fromParts("package", context.packageName, null)
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
     }
 }
 
