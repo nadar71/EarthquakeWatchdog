@@ -24,15 +24,6 @@ class EQRepositoryImpl @Inject constructor(
 
     //------------------------------------------- API ----------------------------------------------
 
-    override suspend fun observeAll(): Flow<List<EQEntity>> {
-        return eqDao.observeAll()
-    }
-
-    override suspend fun observeInBbox(
-        west: Double, south: Double, east: Double, north: Double
-    ): Flow<List<EQEntity>> {
-        return observeInBbox(west, south, east, north)
-    }
 
     // fetch eqs and save locally,
     // default request : https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time
@@ -86,6 +77,16 @@ class EQRepositoryImpl @Inject constructor(
     }
 
     //------------------------------------------- QUERY --------------------------------------------
+
+    override suspend fun observeAll(): Flow<List<EQEntity>> {
+        return eqDao.observeAll()
+    }
+
+    override suspend fun observeInBbox(
+        west: Double, south: Double, east: Double, north: Double
+    ): Flow<List<EQEntity>> {
+        return observeInBbox(west, south, east, north)
+    }
 
     override suspend fun loadAllEQs(): MutableList<EQEntity> {
         return eqDao.loadAllEQs()

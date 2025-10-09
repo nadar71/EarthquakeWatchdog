@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.implementation
 import java.util.Properties
 import java.io.FileInputStream
 
@@ -148,6 +149,7 @@ dependencies {
     // Google Maps and Location dependencies
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
+    implementation (libs.kotlinx.coroutines.play.services)
     implementation(libs.android.maps.utils)
     implementation(libs.maps.ktx)
     implementation(libs.maps.utils.ktx)
@@ -187,6 +189,7 @@ dependencies {
 
     // DataStore (preferences)
     implementation (libs.androidx.datastore.preferences)
+
 
 
     // testing
