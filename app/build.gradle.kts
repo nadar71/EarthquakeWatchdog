@@ -184,13 +184,8 @@ dependencies {
     implementation(libs.ktor.serialization.gson)
     implementation(libs.ktor.client.logging)
 
-    // Accompanist
-    // implementation (libs.accompanist.systemuicontroller)
-
     // DataStore (preferences)
     implementation (libs.androidx.datastore.preferences)
-
-
 
     // testing
     testImplementation(libs.junit)

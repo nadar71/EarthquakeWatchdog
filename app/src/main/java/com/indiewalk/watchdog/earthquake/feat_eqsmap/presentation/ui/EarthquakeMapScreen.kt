@@ -67,12 +67,7 @@ fun EarthquakeMapScreen(
     var showDeniedDialog by remember { mutableStateOf(false) }
     //  persist across recomposition/config changes for this screen
     var hasAskedOnce by rememberSaveable { mutableStateOf(false) }
-    // var askedOnce by remember { mutableStateOf(false) }
 
-    // Whether we can enable "my location" layer/button
-    /*val hasLocationPermission by remember(permissions) {
-        derivedStateOf { permissions.allPermissionsGranted }
-    }*/
 
     // 3) Derived flags
     val allGranted by remember(permissions) { derivedStateOf { permissions.allPermissionsGranted } }
@@ -83,9 +78,7 @@ fun EarthquakeMapScreen(
     val anyPermanentlyDenied by remember(permissions, hasAskedOnce) {
         derivedStateOf {
             hasAskedOnce && permissions.permissions.any {
-                // (!it.status.isGranted || !it.status.shouldShowRationale)
                 (!it.status.isGranted && !it.status.shouldShowRationale)
-                        /*|| (!it.status.shouldShowRationale)*/
             }
         }
     }
@@ -101,24 +94,10 @@ fun EarthquakeMapScreen(
     }
 
     // If we asked already and still not granted:
-    // - show the denied dialog ONLY if rationale is available (i.e., NOT permanently denied)
+    // show the denied dialog ONLY if rationale is available (i.e., NOT permanently denied)
     LaunchedEffect(allGranted, hasAskedOnce, anyShouldShowRationale, anyPermanentlyDenied) {
         showDeniedDialog = hasAskedOnce && !allGranted && anyShouldShowRationale && !anyPermanentlyDenied
     }
-
-    // If user was asked and still not granted, show the denied dialog
-    /*LaunchedEffect(hasLocationPermission, askedOnce) {
-        if (askedOnce && !hasLocationPermission) {
-            showDeniedDialog = true
-        } else {
-            showDeniedDialog = false
-        }
-    }*/
-
-    /*LaunchedEffect(Unit) {
-        permissions.launchMultiplePermissionRequest()
-    }
-    */
 
     // db state collection : get eqs list updated
     val eqsUIFromDBState by mapViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
