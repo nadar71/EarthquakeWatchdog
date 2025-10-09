@@ -23,6 +23,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -64,7 +65,9 @@ fun EarthquakeMapScreen(
     // 2) dialogs states
     var showPrePermissionDialog by remember { mutableStateOf(false) }
     var showDeniedDialog by remember { mutableStateOf(false) }
-    var askedOnce by remember { mutableStateOf(false) }
+    //  persist across recomposition/config changes for this screen
+    var hasAskedOnce by rememberSaveable { mutableStateOf(false) }
+    // var askedOnce by remember { mutableStateOf(false) }
 
     // Whether we can enable "my location" layer/button
     /*val hasLocationPermission by remember(permissions) {
@@ -77,9 +80,10 @@ fun EarthquakeMapScreen(
         derivedStateOf { permissions.permissions.any { it.status.shouldShowRationale } }
     }
     // Permanently denied = not granted: no rationale, and already asked once
-    val anyPermanentlyDenied by remember(permissions, askedOnce) {
+    val anyPermanentlyDenied by remember(permissions, hasAskedOnce) {
         derivedStateOf {
-            askedOnce && permissions.permissions.any {
+            hasAskedOnce && permissions.permissions.any {
+                // (!it.status.isGranted || !it.status.shouldShowRationale)
                 (!it.status.isGranted && !it.status.shouldShowRationale)
                         /*|| (!it.status.shouldShowRationale)*/
             }
@@ -98,8 +102,8 @@ fun EarthquakeMapScreen(
 
     // If we asked already and still not granted:
     // - show the denied dialog ONLY if rationale is available (i.e., NOT permanently denied)
-    LaunchedEffect(allGranted, askedOnce, anyShouldShowRationale, anyPermanentlyDenied) {
-        showDeniedDialog = askedOnce && !allGranted && anyShouldShowRationale && !anyPermanentlyDenied
+    LaunchedEffect(allGranted, hasAskedOnce, anyShouldShowRationale, anyPermanentlyDenied) {
+        showDeniedDialog = hasAskedOnce && !allGranted && anyShouldShowRationale && !anyPermanentlyDenied
     }
 
     // If user was asked and still not granted, show the denied dialog
@@ -125,7 +129,7 @@ fun EarthquakeMapScreen(
             onDismiss = { showPrePermissionDialog = false }, // optional close
             onContinue = {
                 showPrePermissionDialog = false
-                askedOnce = true
+                hasAskedOnce = true
                 permissions.launchMultiplePermissionRequest()
             }
         )
