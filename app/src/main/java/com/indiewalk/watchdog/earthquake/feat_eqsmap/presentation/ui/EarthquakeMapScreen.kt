@@ -33,7 +33,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.accompanist.permissions.shouldShowRationale
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
@@ -49,12 +51,9 @@ fun EarthquakeMapScreen(
 ) {
     val TAG = "EarthquakeMapScreen"
     val context = LocalContext.current
-    // UI state for dialogs
-    var showPrePermissionDialog by remember { mutableStateOf(false) }
-    var showDeniedDialog by remember { mutableStateOf(false) }
-    var askedOnce by remember { mutableStateOf(false) }
 
-    // Ask location permission on first composition
+
+    // 1) Permissions state: ask location permission on 1st composition
     val permissions = rememberMultiplePermissionsState(
         listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -62,31 +61,62 @@ fun EarthquakeMapScreen(
         )
     )
 
+    // 2) dialogs states
+    var showPrePermissionDialog by remember { mutableStateOf(false) }
+    var showDeniedDialog by remember { mutableStateOf(false) }
+    var askedOnce by remember { mutableStateOf(false) }
+
     // Whether we can enable "my location" layer/button
-    val hasLocationPermission by remember(permissions) {
+    /*val hasLocationPermission by remember(permissions) {
         derivedStateOf { permissions.allPermissionsGranted }
+    }*/
+
+    // 3) Derived flags
+    val allGranted by remember(permissions) { derivedStateOf { permissions.allPermissionsGranted } }
+    val anyShouldShowRationale by remember(permissions) {
+        derivedStateOf { permissions.permissions.any { it.status.shouldShowRationale } }
+    }
+    // Permanently denied = not granted: no rationale, and already asked once
+    val anyPermanentlyDenied by remember(permissions, askedOnce) {
+        derivedStateOf {
+            askedOnce && permissions.permissions.any {
+                (!it.status.isGranted && !it.status.shouldShowRationale)
+                        /*|| (!it.status.shouldShowRationale)*/
+            }
+        }
     }
 
-    // Decide when to show dialogs
+    // ---------------------------------------- LOGIC ----------------------------------------------
+
+    // 4) Decide when to show dialogs
+    // Show the pre-permission rationale ONLY if not granted and NOT permanently denied
     LaunchedEffect(Unit) {
-        if (!hasLocationPermission) {
+        if (!allGranted && !anyPermanentlyDenied) {
             showPrePermissionDialog = true
         }
     }
 
+    // If we asked already and still not granted:
+    // - show the denied dialog ONLY if rationale is available (i.e., NOT permanently denied)
+    LaunchedEffect(allGranted, askedOnce, anyShouldShowRationale, anyPermanentlyDenied) {
+        showDeniedDialog = askedOnce && !allGranted && anyShouldShowRationale && !anyPermanentlyDenied
+    }
+
     // If user was asked and still not granted, show the denied dialog
-    LaunchedEffect(hasLocationPermission, askedOnce) {
+    /*LaunchedEffect(hasLocationPermission, askedOnce) {
         if (askedOnce && !hasLocationPermission) {
             showDeniedDialog = true
         } else {
             showDeniedDialog = false
         }
-    }
+    }*/
 
     /*LaunchedEffect(Unit) {
         permissions.launchMultiplePermissionRequest()
     }
-*/
+    */
+
+    // db state collection : get eqs list updated
     val eqsUIFromDBState by mapViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
 
     // ---- Dialogs ----
@@ -101,13 +131,15 @@ fun EarthquakeMapScreen(
         )
     }
 
-    if (showDeniedDialog && !hasLocationPermission) {
+    // This will NOT show when permanently denied (anyPermanentlyDenied == true)
+    if (showDeniedDialog) {
         PermissionDeniedDialog(
             onOpenSettings = { openAppSettings(context) },
             onContinue = { showDeniedDialog = false } // continue without location
         )
     }
 
+    // ------------------------------------------- UI ----------------------------------------------
     ScaffoldModel(
         navController = navController,
         topBar = {
@@ -125,7 +157,9 @@ fun EarthquakeMapScreen(
                 },
                 navigationIcon = {},
                 actions = {
-                    IconButton(onClick = {  /*Handle icon click*/  }) {
+                    IconButton(onClick = {
+                        openAppSettings(context)
+                    }) {
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = "Settings",
@@ -158,7 +192,7 @@ fun EarthquakeMapScreen(
                 EarthquakeMapContent(
                     padding = padding,
                     eqs = eqs,
-                    hasLocationPermission = hasLocationPermission,
+                    hasLocationPermission = allGranted,
                     onLocationGranted = { /* optional */ },
                     onLocationDenied = { /* optional */ }
                 )
