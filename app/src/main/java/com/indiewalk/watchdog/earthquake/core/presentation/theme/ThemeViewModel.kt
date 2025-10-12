@@ -6,7 +6,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.indiewalk.watchdog.earthquake.core.data.enums.ThemeMode
-import com.indiewalk.watchdog.earthquake.core.data.ThemePrefs
+import com.indiewalk.watchdog.earthquake.core.data.AppPrefs
 import com.indiewalk.watchdog.earthquake.core.model.ThemeSettings
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -20,12 +20,12 @@ class ThemeViewModel @Inject constructor(
 ) : AndroidViewModel(app) {
 
     val settings: StateFlow<ThemeSettings> =
-        ThemePrefs.settingsFlow(app)
+        AppPrefs.settingsFlow(app)
             .stateIn(viewModelScope, SharingStarted.Eagerly, ThemeSettings())
 
     fun setMode(mode: ThemeMode) {
         viewModelScope.launch {
-            ThemePrefs.setMode(getApplication(), mode)
+            AppPrefs.setMode(getApplication(), mode)
         }
     }
 

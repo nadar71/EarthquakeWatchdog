@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -26,7 +28,10 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import com.google.android.gms.location.LocationServices
+import com.google.maps.android.compose.MapType
 import kotlinx.coroutines.tasks.await
 
 
@@ -35,6 +40,7 @@ fun EarthquakeMapContent(
     padding: PaddingValues,
     eqs: List<EQEntity>,
     hasLocationPermission: Boolean,
+    mapType: MapType,
     onLocationGranted: () -> Unit,
     onLocationDenied: () -> Unit
 ) {
@@ -98,9 +104,10 @@ fun EarthquakeMapContent(
     }
 
     // Map properties / UI
-    val properties = remember(hasLocationPermission) {
+    val properties = remember(hasLocationPermission, mapType) {
         MapProperties(
-            isMyLocationEnabled = hasLocationPermission
+            isMyLocationEnabled = hasLocationPermission,
+            mapType = mapType
         )
     }
     val uiSettings = remember(hasLocationPermission) {
@@ -123,6 +130,12 @@ fun EarthquakeMapContent(
         cameraPositionState = cameraPositionState,
         properties = properties,
         uiSettings = uiSettings,
+        /*contentPadding = PaddingValues(
+            top = padding.calculateTopPadding(),
+            bottom = padding.calculateBottomPadding() + 12.dp,
+            start = padding.calculateStartPadding(LayoutDirection.Ltr),
+            end = padding.calculateEndPadding(LayoutDirection.Ltr) + 12.dp
+        ),*/
         onMapLoaded = { mapLoaded = true }
     ) {
         // Add a marker for each earthquake

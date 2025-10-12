@@ -1,7 +1,6 @@
 package com.indiewalk.watchdog.earthquake.core.data
 
 object Constants {
-
     // API
     // URL to query the USGS dataset for earthquake information
     const val USGS_REQUEST_URL    = "https://earthquake.usgs.gov/fdsnws/event/1/query"

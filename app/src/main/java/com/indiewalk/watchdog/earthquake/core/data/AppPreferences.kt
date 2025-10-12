@@ -13,8 +13,4 @@ object AppPreferences : KotprefModel() {
     var manual_loc_on by booleanPref(false)
     var last_update by longPref(0)
     var settings_dontshow_me_again by booleanPref(false)
-
-
-
-
 }
