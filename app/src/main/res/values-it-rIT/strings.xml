@@ -13,6 +13,9 @@
     <string name="generic_confirm_label">Conferma</string>
     <string name="generic_continue_label">Continua</string>
     <string name="update_btn_label">Aggiorna</string>
+    <string name="generic_from_label">da</string>
+    <string name="generic_you_label">da te</string>
+
 
     <!-- - - - - - - - - - - - - - - - - - - Navigation - - - - -  - - - - - - - - - - - - - - - -->
     <string name="nav_bottom_home_desc">Home</string>

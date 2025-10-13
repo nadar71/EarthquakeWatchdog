@@ -1,9 +1,10 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto
 
+import com.indiewalk.watchdog.earthquake.core.model.MappingSettings
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getEQDistanceFromUser
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 
-// A single EQ Feature with properties + geometry + id, network/dto.
+// A single EQ Feature network/dto with properties + geometry + id.
 data class EQFeatureDTO(
     val type: String,                   // "Feature"
     val properties: EQPropertiesDTO,
@@ -13,38 +14,50 @@ data class EQFeatureDTO(
 
 
 
-fun EQFeatureDTO.toEQEntity(feedGenerated: Long?): EQEntity =
-    EQEntity(
-        id = id,
-        feedGenerated = feedGenerated,
-        mag = properties.mag,
-        place = properties.place,
-        time = properties.time,
-        updated = properties.updated,
-        tz = properties.tz,
-        url = properties.url,
-        detail = properties.detail,
-        felt = properties.felt,
-        cdi = properties.cdi,
-        mmi = properties.mmi,
-        alert = properties.alert,
-        status = properties.status,
-        tsunami = properties.tsunami,
-        sig = properties.sig,
-        net = properties.net,
-        code = properties.code,
-        ids = properties.ids,
-        sources = properties.sources,
-        types = properties.types,
-        nst = properties.nst,
-        dmin = properties.dmin,
-        rms = properties.rms,
-        gap = properties.gap,
-        magType = properties.magType,
-        eventType = properties.type,
-        geometryType = geometry.type,
-        longitude = geometry.longitude,
-        latitude = geometry.latitude,
-        depthKm = geometry.depthKm,
-        distanceFromUser = getEQDistanceFromUser(geometry)
-    )
+fun EQFeatureDTO.toEQEntity(
+    feedGenerated: Long?,
+    settings: MappingSettings
+): EQEntity {
+    val distKm = getEQDistanceFromUser(geometry, settings)?.toInt() // truncate to int
+    return baseEntity(feedGenerated, distKm)
+}
+
+
+/** Helper to assemble the entity (you asked “what is baseEntity?”) */
+private fun EQFeatureDTO.baseEntity(
+    feedGenerated: Long?,
+    distanceFromUserKm: Int?
+) = EQEntity(
+    id = id,
+    feedGenerated = feedGenerated,
+    mag = properties.mag,
+    place = properties.place,
+    time = properties.time,
+    updated = properties.updated,
+    tz = properties.tz,
+    url = properties.url,
+    detail = properties.detail,
+    felt = properties.felt,
+    cdi = properties.cdi,
+    mmi = properties.mmi,
+    alert = properties.alert,
+    status = properties.status,
+    tsunami = properties.tsunami,
+    sig = properties.sig,
+    net = properties.net,
+    code = properties.code,
+    ids = properties.ids,
+    sources = properties.sources,
+    types = properties.types,
+    nst = properties.nst,
+    dmin = properties.dmin,
+    rms = properties.rms,
+    gap = properties.gap,
+    magType = properties.magType,
+    eventType = properties.type,
+    geometryType = geometry.type,
+    longitude = geometry.longitude,
+    latitude = geometry.latitude,
+    depthKm = geometry.depthKm,
+    distanceFromUser = distanceFromUserKm // stored as KM (canonical)
+)

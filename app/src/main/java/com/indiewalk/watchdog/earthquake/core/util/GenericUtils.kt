@@ -5,10 +5,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
-import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
-import android.preference.PreferenceManager
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
@@ -20,12 +18,7 @@ import android.view.View
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.EarthquakeApp
 import com.indiewalk.watchdog.earthquake.core.data.Constants.USGS_REQUEST_URL
-import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.fromKmToMiles
-import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivity
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
-import it.abenergie.customerarea.core.utility.extensions.TAG
 
 import java.text.SimpleDateFormat
 import java.time.Instant

@@ -5,12 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import android.util.Log
-import com.indiewalk.watchdog.earthquake.core.data.AppPreferences.device_lat
-import com.indiewalk.watchdog.earthquake.core.data.AppPreferences.device_lng
-import com.indiewalk.watchdog.earthquake.core.data.AppPreferences.unitSystem
-import com.indiewalk.watchdog.earthquake.core.data.Constants.KM_TO_MILES
-import com.indiewalk.watchdog.earthquake.core.data.Constants.MILES_TO_KM
-import com.indiewalk.watchdog.earthquake.core.data.enums.UnitSystems
+import com.indiewalk.watchdog.earthquake.core.model.MappingSettings
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQGeometryDTO
 import it.abenergie.customerarea.core.utility.extensions.TAG
 import kotlin.math.atan2
@@ -26,20 +21,19 @@ object MapsUtils {
     }
 
     // Returning the distance in Km between 2 points on a sphere throught the Haversine formula
-    private fun haversineDistanceCalc(p1Lat: Double, p2Lat: Double, p1Lng: Double, p2Lng: Double): Double {
-        val R = 6378137 // Earth’s mean radius in meter
-        val dLat = fromDegreeToRadiant(p2Lat - p1Lat)
-        val dLng = fromDegreeToRadiant(p2Lng - p1Lng)
-        val a = sin(dLat / 2) * sin(dLat / 2) + cos(fromDegreeToRadiant(p1Lat)) *
-                cos(fromDegreeToRadiant(p2Lat)) *
+    private fun haversineDistanceKm(lat1: Double, lat2: Double, lng1: Double, lng2: Double): Double {
+        val R = 6371.0 // km
+        val dLat = fromDegreeToRadiant(lat2 - lat1)
+        val dLng = fromDegreeToRadiant(lng2 - lng1)
+        val a = sin(dLat / 2) * sin(dLat / 2) + cos(fromDegreeToRadiant(lat1)) *
+                cos(fromDegreeToRadiant(lat2)) *
                 sin(dLng / 2) * sin(dLng / 2)
         val c = 2 * atan2(sqrt(a), sqrt(1 - a))
-        val d = R * c
-        return d / 1000 // returns the distance in Km
+        return R * c
     }
 
 
-    // Convert km to miles
+    /*// Convert km to miles
     fun fromKmToMiles(km: Double): Double {
         return km * KM_TO_MILES
     }
@@ -47,11 +41,32 @@ object MapsUtils {
     // Convert from miles to km
     fun fromMilesToKm(miles: Double): Double {
         return miles * MILES_TO_KM
+    }*/
+
+
+    // Update each equakes info with custom distance from user if any, with distance unit preferred.
+    fun getEQDistanceFromUser(
+        eqCoords: EQGeometryDTO,
+        settings: MappingSettings
+    ): Double? {
+        Log.d(TAG, "getEQDistanceFromUser: eqCoords: $eqCoords")
+        val eqLat = eqCoords.latitude ?: return null
+        val eqLng = eqCoords.longitude ?: return null
+
+        var dist =  haversineDistanceKm(
+            lat1 = settings.userLat,
+            lat2 = eqLat,
+            lng1 = settings.userLng,
+            lng2 = eqLng
+        )
+        Log.i(TAG, "getEQDistanceFromUser: eq distance from user : $dist in km")
+
+        return dist
     }
 
-
-    // Update each equakes info with custom distance from user if any,with distance unit preferred.
-    fun getEQDistanceFromUser(eqCoords: EQGeometryDTO): Int? {
+    /*fun getEQDistanceFromUser(
+        eqCoords: EQGeometryDTO,
+        ): Int? {
         Log.d(TAG, "getEQDistanceFromUser: eqCoords: $eqCoords")
         if (eqCoords == null || eqCoords.latitude == null || eqCoords.longitude == null) {
             return null
@@ -64,15 +79,16 @@ object MapsUtils {
                 userLng, eqCoords.longitude as Double
             )
 
-            if (unitSystem == UnitSystems.IMPERIAL.value) {
+            *//*if (unitSystem == UnitSystems.IMPERIAL.value) {
                 dist = fromKmToMiles(dist.toDouble())
             }
 
-            Log.i(TAG, "getEQDistanceFromUser: eq distance from user : $dist in $unitSystem")
+            Log.i(TAG, "getEQDistanceFromUser: eq distance from user : $dist in $unitSystem")*//*
+            Log.i(TAG, "getEQDistanceFromUser: eq distance from user : $dist in km")
 
             return dist.toInt()
         }
-    }
+    }*/
 
     fun openAppSettings(context: Context) {
         val uri = Uri.fromParts("package", context.packageName, null)

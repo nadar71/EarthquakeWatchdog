@@ -27,11 +27,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.google.android.gms.maps.model.LatLng
+import com.indiewalk.watchdog.earthquake.R
+import com.indiewalk.watchdog.earthquake.core.data.Constants
+import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
+import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
+import com.indiewalk.watchdog.earthquake.core.data.enums.ThemeMode
+import com.indiewalk.watchdog.earthquake.core.data.enums.UnitSystem
+import com.indiewalk.watchdog.earthquake.core.model.AppSettings
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.EQWatchdogTheme
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraDeepRed_dark
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraDeepRed_light
@@ -44,27 +53,29 @@ import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraRed_light
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraYellow_dark
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraYellow_light
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.onBackgroundLight
+import com.indiewalk.watchdog.earthquake.core.util.extensions.kmToDisplayString
 import com.indiewalk.watchdog.earthquake.core.util.formatUtils.formatDate
-import com.indiewalk.watchdog.earthquake.core.util.formatUtils.formatDistanceToInt
 import com.indiewalk.watchdog.earthquake.core.util.formatUtils.formatMag
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.toEarthquakeUI
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQFeatureDTO
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQGeometryDTO
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQPropertiesDTO
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.toEQEntity
 import java.util.Locale
 
 @Composable
 fun EarthquakeCard(
     eq: EarthquakeUI,
-    // distanceKm: Double?,                 // pass precomputed distance if you have it; else null to hide
+    settings: AppSettings,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     bubbleSize: Dp = 44.dp
 ) {
 
     val distanceKm = eq.distanceFromUser
+
+    val unitSystem = settings.unitSystem
+    val isDefaultLocation = settings.position.latitude == DEFAULT_LAT &&
+                            settings.position.longitude == DEFAULT_LNG
+    val fromLabel = if (!isDefaultLocation)
+                         stringResource(id = R.string.generic_from_label)
+                    else stringResource(id = R.string.generic_from_label) + Constants.DEFAULT_ADDRESS
 
     Card(
         modifier = modifier
@@ -130,14 +141,14 @@ fun EarthquakeCard(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = distanceKm.toString(), // "${formatDistanceToInt(distanceKm)} km",
+                        text = distanceKm.kmToDisplayString(unitSystem).toString(),
                         style = MaterialTheme.typography.labelLarge.copy(
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Medium
                         )
                     )
                     Text(
-                        text = "from you",
+                        text = fromLabel,
                         style = MaterialTheme.typography.labelSmall.copy(
                             color = MaterialTheme.colorScheme.secondary,
                         )
@@ -264,25 +275,35 @@ private fun magnitudeColors(mag: Double): Pair<Color, Color> {
 @Preview(
     name = "Earthquake cards – Light",
     showBackground = true,
-    backgroundColor = 0xFF181C1F, // val onBackgroundLight = Color(0xFF181C1F)
+    backgroundColor = 0xFF181C1F,
     widthDp = 360
 )
 @Composable
 fun EarthquakeCardPreviewLight() {
-    EQWatchdogTheme(/*dynamicColor = false*/) {
+    EQWatchdogTheme {
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.onBackground/*Color(0xFFF7F9FC)*/)
+                .background(MaterialTheme.colorScheme.onBackground)
                 .padding(vertical = 8.dp)
         ) {
             Column {
                 EarthquakeCard(
                     eq = sampleFeature1(),
+                    settings = AppSettings(
+                        position = LatLng(DEFAULT_LAT, DEFAULT_LNG),
+                        unitSystem = UnitSystem.METRIC,
+                        mode = ThemeMode.Light,
+                    ),
                     modifier = Modifier.padding(horizontal = 8.dp)
                 )
                 EarthquakeCard(
                     eq = sampleFeature2(),
+                    settings = AppSettings(
+                        position = LatLng(DEFAULT_LAT, DEFAULT_LNG),
+                        unitSystem = UnitSystem.IMPERIAL,
+                        mode = ThemeMode.Light,
+                    ),
                     modifier = Modifier.padding(horizontal = 8.dp)
                 )
             }
@@ -310,10 +331,20 @@ fun EarthquakeCardPreviewDark() {
             Column {
                 EarthquakeCard(
                     eq = sampleFeature1(),
+                    settings = AppSettings(
+                        position = LatLng(DEFAULT_LAT, DEFAULT_LNG),
+                        unitSystem = UnitSystem.METRIC,
+                        mode = ThemeMode.Light,
+                    ),
                     modifier = Modifier.padding(horizontal = 8.dp)
                 )
                 EarthquakeCard(
                     eq = sampleFeature2(),
+                    settings = AppSettings(
+                        position = LatLng(DEFAULT_LAT, DEFAULT_LNG),
+                        unitSystem = UnitSystem.METRIC,
+                        mode = ThemeMode.Light,
+                    ),
                     modifier = Modifier.padding(horizontal = 8.dp)
                 )
             }

@@ -1,5 +1,8 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.data.repository
 
+import com.indiewalk.watchdog.earthquake.EarthquakeApp
+import com.indiewalk.watchdog.earthquake.core.data.AppPrefs
+import com.indiewalk.watchdog.earthquake.core.model.MappingSettings
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.EarthquakeDao
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.FeedSnapshotDao
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.FeedWriterDao
@@ -20,6 +23,7 @@ class EQRepositoryImpl @Inject constructor(
     private val feedSnapshotDao: FeedSnapshotDao,
     private val feedWriterDao: FeedWriterDao,
     private val earthquakeApi: EarthquakeApi,
+
 ): EQRepository {
 
     //------------------------------------------- API ----------------------------------------------
@@ -138,7 +142,14 @@ class EQRepositoryImpl @Inject constructor(
 
     override suspend fun refreshDB(feed: EQFeaturesCollectionDTO): SaveResult {
         val snapshot = feed.toFeedSnapshot()
-        val events = feed.features.map { it.toEQEntity(feedGenerated = snapshot.generated) }
+        val appSettings = AppPrefs.getCurrentSettings(EarthquakeApp.appContext) // suspend
+        val mappingSettings = MappingSettings(
+            userLat = appSettings.position.latitude,
+            userLng = appSettings.position.longitude
+        )
+        // update eqs distance from user/default position in prefs
+        val events = feed.features.map {
+            it.toEQEntity(feedGenerated = snapshot.generated, settings = mappingSettings) }
         // clear tables
         feedSnapshotDao.dropSnapshotTable()
         eqDao.dropEarthquakeListTable()

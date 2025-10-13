@@ -3,6 +3,9 @@ package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.indiewalk.watchdog.earthquake.EarthquakeApp
+import com.indiewalk.watchdog.earthquake.core.data.AppPrefs
+import com.indiewalk.watchdog.earthquake.core.model.AppSettings
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQFeaturesCollectionDTO
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.repository.EQRepository
@@ -15,8 +18,10 @@ import eu.indiewalkabout.fridgemanager.core.domain.model.ApiResponse
 import eu.indiewalkabout.fridgemanager.core.domain.model.DbResponse
 import eu.indiewalkabout.fridgemanager.core.domain.model.ErrorResponse
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,6 +44,10 @@ class MainViewModel @Inject constructor(
     val eqsUIFromDBState: StateFlow<EQsListUiFromDBState<List<EQEntity>?>> =
         _eqsUIFromDBState.asStateFlow()
 
+
+    val settings: StateFlow<AppSettings> =
+        AppPrefs.settingsFlow(EarthquakeApp.appContext)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppSettings())
 
 
     // request eqs list from remote and save to db

@@ -11,7 +11,7 @@ object Constants {
     // this is the default position: google at mountain view
     const val DEFAULT_LAT         = 37.4219999
     const val DEFAULT_LNG         = -122.0862515
-    const val DEFAULT_ADDRESS     = "Mountain View,CA"
+    const val DEFAULT_ADDRESS     = " Mountain View,CA"
     const val DEFAULT_LAST_UPDATE = ""
 
     // UNIT MEASURE

@@ -41,6 +41,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -50,6 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
@@ -60,6 +62,7 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.Ea
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromDBState
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromRemoteState
 import com.indiewalk.watchdog.earthquake.R
+import com.indiewalk.watchdog.earthquake.core.model.toMappingSettings
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
 import kotlinx.coroutines.launch
 
@@ -105,7 +108,7 @@ fun EarthquakeListScreen(
     )
 
     // ------------------------------------- LOGIC -------------------------------------------------
-
+    val settings by mainViewModel.settings.collectAsStateWithLifecycle()
     val eqsUIFromRemoteState by mainViewModel.eqsUIFromRemoteState.collectAsStateWithLifecycle()
     val eqsUIFromDBState by mainViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
 
@@ -251,7 +254,8 @@ fun EarthquakeListScreen(
                         ) {
                             val generated = eqsCollection?.metadata?.generated
                             EarthquakeCard(
-                                eq = eq.toEQEntity(generated).toEarthquakeUI(),
+                                eq = eq.toEQEntity(generated,settings.toMappingSettings()).toEarthquakeUI(),
+                                settings = settings
                             )
                         }
                     }
