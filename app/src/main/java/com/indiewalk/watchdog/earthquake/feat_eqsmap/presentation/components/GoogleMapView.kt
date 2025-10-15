@@ -1,0 +1,65 @@
+package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components
+
+import android.annotation.SuppressLint
+import android.location.Geocoder
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+
+
+@SuppressLint("MissingPermission")
+@Composable
+fun GoogleMapView(
+    cameraPositionState: CameraPositionState,
+    initialLocation: LatLng?, // Added initial location parameter
+    onMapClick: (LatLng) -> Unit,
+    onMapLoaded: () -> Unit
+) {
+    // State to keep track of the marker position
+    var markerPosition by remember { mutableStateOf<LatLng?>(initialLocation) }
+
+    GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        properties = MapProperties(
+            isIndoorEnabled = true,
+        ),
+        uiSettings = MapUiSettings(
+            compassEnabled = true,
+            indoorLevelPickerEnabled = true,
+            myLocationButtonEnabled = true
+        ),
+        cameraPositionState = cameraPositionState,
+        onMapLoaded = { onMapLoaded() },
+        onMapClick = { latLng ->
+            // Update the marker position when the user clicks on the map
+            markerPosition = latLng
+            onMapClick(latLng)
+        }
+    ) {
+        // Only display the marker if a position is set by the user click
+        markerPosition?.let { position ->
+            Marker(
+                state = MarkerState(position = position),
+                title = "${
+                    Geocoder(LocalContext.current)
+                        .getFromLocation(position.latitude, position.longitude, 1)
+                        ?.get(0)
+                        ?.getAddressLine(0)
+                }"
+            )
+        }
+    }
+}
+

@@ -1,5 +1,6 @@
 package eu.indiewalkabout.fridgemanager.core.di
 
+import android.content.Context
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.EarthquakeDao
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.FeedSnapshotDao
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.FeedWriterDao
@@ -9,6 +10,7 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.repository.EQReposi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -22,8 +24,9 @@ object RepositoryModule {
         earthquakeDao: EarthquakeDao,
         feedSnapshotDao: FeedSnapshotDao,
         feedWriterDao: FeedWriterDao,
-        earthquakeApi: EarthquakeApi
+        earthquakeApi: EarthquakeApi,
+        @ApplicationContext context: Context
     ): EQRepository {
-        return EQRepositoryImpl(earthquakeDao, feedSnapshotDao, feedWriterDao, earthquakeApi)
+        return EQRepositoryImpl(earthquakeDao, feedSnapshotDao, feedWriterDao, earthquakeApi, context)
     }
 }

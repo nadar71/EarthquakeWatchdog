@@ -87,6 +87,7 @@ fun EarthquakeMapScreen(
 
 
     // ---------------------------------------- LOGIC ----------------------------------------------
+    val settings by mapViewModel.settings.collectAsStateWithLifecycle()
 
     // 4) Decide when to show dialogs
     // Show the pre-permission rationale ONLY if not granted and NOT permanently denied
@@ -206,6 +207,7 @@ fun EarthquakeMapScreen(
                             },
                             mapType = mapType,
                             onMapTypeChange = { mapType = it },
+                            settings = settings,
                             onDismiss = { showOptions = false }
                         )
                     }

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -26,12 +25,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.google.maps.android.compose.MapType
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-
+import com.google.android.gms.maps.model.LatLng
+import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
+import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
+import com.indiewalk.watchdog.earthquake.core.data.enums.UnitSystem
+import com.indiewalk.watchdog.earthquake.core.model.AppSettings
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.LocationPicker
 
 
 @Composable
@@ -41,9 +46,15 @@ fun MapOptionsOverlayCard(
     onManualPositionChange: (Boolean) -> Unit,
     mapType: MapType,
     onMapTypeChange: (MapType) -> Unit,
+    settings: AppSettings,
     onDismiss: () -> Unit
 ) {
-    // Click outside to dismiss: simple hitbox
+
+    var initialLocation = LatLng(settings.position.latitude, settings.position.longitude)
+    var selectedLocation by remember { mutableStateOf("") }
+    var selectedCoordinates by remember { mutableStateOf<LatLng?>(initialLocation) }
+    var showLocationPicker by remember { mutableStateOf(false) }
+
     Box(modifier = Modifier
         .fillMaxSize()
         .clickable(
@@ -65,7 +76,10 @@ fun MapOptionsOverlayCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(
                         checked = manualPosition,
-                        onCheckedChange = onManualPositionChange
+                        onCheckedChange = {
+                            onManualPositionChange
+                            showLocationPicker = true
+                        }
                     )
                     Spacer(Modifier.width(8.dp))
                     Text("Set position manually", style = MaterialTheme.typography.bodyLarge)
@@ -105,6 +119,27 @@ fun MapOptionsOverlayCard(
             }
         }
     }
+
+    // LOCATION PICKER
+    if (showLocationPicker) {
+        LocationPicker(
+            initialLat = selectedCoordinates?.latitude,
+            initialLng = selectedCoordinates?.longitude,
+            onLocationSelected = { locationName, latLng ->
+                selectedLocation = locationName
+                selectedCoordinates = latLng
+
+                selectedLocation = locationName
+                showLocationPicker = false
+            },
+            onDismiss = {
+                showLocationPicker = false
+            },
+            onLocationChange = { locationName ->
+                selectedLocation = locationName
+            }
+        )
+    }
 }
 
 @Composable
@@ -130,6 +165,9 @@ private fun MapTypeOption(
 
 
 
+
+
+
 // -------------------------------------- Previews --------------------------------------------------
 @Preview(showBackground = true)
 @Composable
@@ -149,6 +187,11 @@ private fun MapOptionsOverlayCardPreview() {
             onManualPositionChange = { manualPosition.value = it },
             mapType = mapType.value,
             onMapTypeChange = { mapType.value = it },
+            settings = AppSettings(
+                position = LatLng(DEFAULT_LAT, DEFAULT_LNG),
+                manualLocOn = false,
+                unitSystem = UnitSystem.METRIC,
+            ),
             onDismiss = {}
         )
     }

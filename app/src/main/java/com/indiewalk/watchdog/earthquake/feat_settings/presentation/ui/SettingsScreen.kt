@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
@@ -21,8 +22,7 @@ fun SettingsScreen(
     val TAG = "SettingsScreen"
     Log.d(TAG, "SettingsScreen on")
 
-    val settings by settingsViewModel.settings.collectAsState()
-
+    val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
 
     ScaffoldModel(navController, title = "Settings") { padding ->
         /*Column(Modifier.fillMaxSize().padding(padding).padding(16.dp)) {

@@ -1,5 +1,6 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.data.repository
 
+import android.content.Context
 import com.indiewalk.watchdog.earthquake.EarthquakeApp
 import com.indiewalk.watchdog.earthquake.core.data.AppPrefs
 import com.indiewalk.watchdog.earthquake.core.model.MappingSettings
@@ -14,6 +15,7 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.Earthquak
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.toEQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.toFeedSnapshot
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.repository.EQRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -23,7 +25,7 @@ class EQRepositoryImpl @Inject constructor(
     private val feedSnapshotDao: FeedSnapshotDao,
     private val feedWriterDao: FeedWriterDao,
     private val earthquakeApi: EarthquakeApi,
-
+    @ApplicationContext private val context: Context
 ): EQRepository {
 
     //------------------------------------------- API ----------------------------------------------
@@ -142,7 +144,7 @@ class EQRepositoryImpl @Inject constructor(
 
     override suspend fun refreshDB(feed: EQFeaturesCollectionDTO): SaveResult {
         val snapshot = feed.toFeedSnapshot()
-        val appSettings = AppPrefs.getCurrentSettings(EarthquakeApp.appContext) // suspend
+        val appSettings = AppPrefs.getCurrentSettings(context) // suspend
         val mappingSettings = MappingSettings(
             userLat = appSettings.position.latitude,
             userLng = appSettings.position.longitude
