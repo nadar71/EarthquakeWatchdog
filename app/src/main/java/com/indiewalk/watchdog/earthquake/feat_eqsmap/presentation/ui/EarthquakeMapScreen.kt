@@ -29,13 +29,17 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.shouldShowRationale
+import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.MapType
 import com.indiewalk.watchdog.earthquake.R
+import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
+import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.openAppSettings
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.PermissionDeniedDialog
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.PermissionRationaleDialog
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.state.MapUiState
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
@@ -43,12 +47,12 @@ import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.state.MapUiSta
 fun EarthquakeMapScreen(
     navController: NavHostController,
     mapViewModel: MapViewModel = hiltViewModel(),
-    onManualPositionToggle: (Boolean) -> Unit = {},
-    onLocationGranted: () -> Unit = {}, // hooks for future logic
-    onLocationDenied: () -> Unit = {},
+    onManualPositionToggle: (Boolean) -> Unit = {}
 ) {
     val TAG = "EarthquakeMapScreen"
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val settings by mapViewModel.settings.collectAsStateWithLifecycle()
 
 
     // 1) Permissions state: ask location permission on 1st composition
@@ -82,19 +86,21 @@ fun EarthquakeMapScreen(
 
     // Options overlay/state
     var showOptions by rememberSaveable { mutableStateOf(false) }
-    var manualPosition by rememberSaveable { mutableStateOf(false) }
+    // var manualPosition by rememberSaveable { mutableStateOf(false) }
+    val manualPosition = settings.manualLocOn // bind to persisted state
     var mapType by rememberSaveable { mutableStateOf(MapType.TERRAIN) } // default Terrain
+    var recenterTo by remember { mutableStateOf<LatLng?>(null) } // one-shot camera target
 
 
     // ---------------------------------------- LOGIC ----------------------------------------------
-    val settings by mapViewModel.settings.collectAsStateWithLifecycle()
+    // db state collection : get eqs list updated
+    val eqsUIFromDBState by mapViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
+
 
     // 4) Decide when to show dialogs
     // Show the pre-permission rationale ONLY if not granted and NOT permanently denied
-    LaunchedEffect(Unit) {
-        if (!allGranted && !anyPermanentlyDenied) {
-            showPrePermissionDialog = true
-        }
+    LaunchedEffect(allGranted, anyPermanentlyDenied) {
+        showPrePermissionDialog = !allGranted && !anyPermanentlyDenied
     }
 
     // If we asked already and still not granted:
@@ -103,8 +109,6 @@ fun EarthquakeMapScreen(
         showDeniedDialog = hasAskedOnce && !allGranted && anyShouldShowRationale && !anyPermanentlyDenied
     }
 
-    // db state collection : get eqs list updated
-    val eqsUIFromDBState by mapViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
 
     // ---- Dialogs ----
     if (showPrePermissionDialog) {
@@ -186,8 +190,9 @@ fun EarthquakeMapScreen(
                         eqs = eqs,
                         hasLocationPermission = allGranted,
                         mapType = mapType,
-                        onLocationGranted = { /* optional */ },
-                        onLocationDenied = { /* optional */ }
+                        recenterTarget = recenterTo,
+                        onRecenterHandled = { recenterTo = null },
+                        manualLatLng = if (settings.manualLocOn) settings.position else null
                     )
 
                     if (showOptions) {
@@ -195,15 +200,35 @@ fun EarthquakeMapScreen(
                             modifier = Modifier
                                 .align (Alignment.Center)
                                 .padding(
-                                    start = 32.dp,
-                                    top = 32.dp, //padding.calculateTopPadding() + 8.dp,
-                                    end = 32.dp,
+                                    start =  32.dp,
+                                    top =    32.dp,
+                                    end =    32.dp,
                                     bottom = 32.dp
                                 ),
                             manualPosition = manualPosition,
-                            onManualPositionChange = {
-                                manualPosition = it
-                                onManualPositionToggle(it)
+                            onManualPositionChange = { checked ->
+                                if (checked) {
+                                    // just open picker; persistence happens on OK (see onManualPositionConfirmed)
+                                } else {
+                                    // uncheck -> restore base coords (user if granted, else defaults) + persist + recenter
+                                    scope.launch {
+                                        val lastKnown =
+                                            if (allGranted) getLastKnownLatLng(context) else null
+                                        val fallback = lastKnown ?: LatLng(DEFAULT_LAT, DEFAULT_LNG)
+                                        mapViewModel.setManualLocOn(false)
+                                        mapViewModel.setPosition(fallback)
+                                        onManualPositionToggle(false)
+                                        recenterTo = fallback
+                                    }
+                                }
+                            },
+                            onManualPositionConfirmed = { latLng ->
+                                // only on OK in picker
+                                mapViewModel.setPosition(latLng)
+                                mapViewModel.setManualLocOn(true)
+                                onManualPositionToggle(true)
+                                recenterTo = latLng
+                                showOptions = false
                             },
                             mapType = mapType,
                             onMapTypeChange = { mapType = it },

@@ -28,7 +28,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val eqRepository: EQRepository,
     private val fetchAndSaveDefaultUseCase: FetchAndSaveDefaultUseCase,
     private val loadAllEQsUseCase: LoadAllEQsUseCase
 ) : ViewModel() {

@@ -2,6 +2,7 @@ package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.location.Geocoder
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -31,8 +32,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.compose.MapType
 import kotlinx.coroutines.tasks.await
+import java.util.Locale
 
 
 @Composable
@@ -41,15 +44,11 @@ fun EarthquakeMapContent(
     eqs: List<EQEntity>,
     hasLocationPermission: Boolean,
     mapType: MapType,
-    onLocationGranted: () -> Unit,
-    onLocationDenied: () -> Unit
+    recenterTarget: LatLng?,
+    onRecenterHandled: () -> Unit,
+    manualLatLng: LatLng?
 ) {
     val context = LocalContext.current
-
-    // Notify hooks (optional)
-    LaunchedEffect(hasLocationPermission) {
-        if (hasLocationPermission) onLocationGranted() else onLocationDenied()
-    }
 
     // Camera setup
     val worldCenter = LatLng(0.0, 0.0)
@@ -75,14 +74,22 @@ fun EarthquakeMapContent(
 
     var mapLoaded by remember { mutableStateOf(false) }
     var cameraInitialized by remember { mutableStateOf(false) }
+
+    // Resolve a friendly name for the manual marker (reverse geocode once per position)
+    var manualTitle by remember(manualLatLng) { mutableStateOf<String?>(null) }
+    LaunchedEffect(manualLatLng) {
+        manualTitle = manualLatLng?.let { ll -> getPlaceNameOrNull(context, ll) }
+    }
+
     // Decide initial camera target ONCE:
-    // 1) user location (if permitted & available), else
-    // 2) fit all markers, else
-    // 3) world view
-    LaunchedEffect(mapLoaded, hasLocationPermission, bounds) {
+    // 1) manual location
+    // 2) user location (if granted & available)
+    // 3) bounds fitting all markers
+    // 4) world view
+    LaunchedEffect(mapLoaded, hasLocationPermission, bounds, manualLatLng) {
         if (!mapLoaded || cameraInitialized) return@LaunchedEffect
 
-        val didCenterOnUser = if (hasLocationPermission) {
+        /*val didCenterOnUser = if (hasLocationPermission) {
             val user = getLastKnownLatLng(context)
             if (user != null) {
                 cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(user, 6f))
@@ -99,16 +106,39 @@ fun EarthquakeMapContent(
                     CameraUpdateFactory.newLatLngZoom(worldCenter, 2f)
                 )
             }
+        }*/
+
+        val didCenterOnManual = if (manualLatLng != null) {
+            cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(manualLatLng, 12f))
+            true
+        } else false
+
+        if (!didCenterOnManual) {
+            val didCenterOnUser = if (hasLocationPermission) {
+                val user = getLastKnownLatLng(context)
+                if (user != null) {
+                    cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(user, 6f))
+                    true
+                } else false
+            } else false
+
+            if (!didCenterOnUser) {
+                when {
+                    bounds != null -> cameraPositionState.animate(
+                        CameraUpdateFactory.newLatLngBounds(bounds, 80)
+                    )
+                    else -> cameraPositionState.move(
+                        CameraUpdateFactory.newLatLngZoom(worldCenter, 2f)
+                    )
+                }
+            }
         }
         cameraInitialized = true
     }
 
     // Map properties / UI
     val properties = remember(hasLocationPermission, mapType) {
-        MapProperties(
-            isMyLocationEnabled = hasLocationPermission,
-            mapType = mapType
-        )
+        MapProperties(isMyLocationEnabled = hasLocationPermission, mapType = mapType)
     }
     val uiSettings = remember(hasLocationPermission) {
         MapUiSettings(
@@ -122,6 +152,14 @@ fun EarthquakeMapContent(
         )
     }
 
+    // One-shot recenter when parent requests it
+    LaunchedEffect(recenterTarget) {
+        recenterTarget?.let { latLng ->
+            cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(latLng, 12f))
+            onRecenterHandled()
+        }
+    }
+
     GoogleMap(
         modifier = Modifier.Companion
             .fillMaxSize()
@@ -130,12 +168,6 @@ fun EarthquakeMapContent(
         cameraPositionState = cameraPositionState,
         properties = properties,
         uiSettings = uiSettings,
-        /*contentPadding = PaddingValues(
-            top = padding.calculateTopPadding(),
-            bottom = padding.calculateBottomPadding() + 12.dp,
-            start = padding.calculateStartPadding(LayoutDirection.Ltr),
-            end = padding.calculateEndPadding(LayoutDirection.Ltr) + 12.dp
-        ),*/
         onMapLoaded = { mapLoaded = true }
     ) {
         // Add a marker for each earthquake
@@ -156,12 +188,24 @@ fun EarthquakeMapContent(
                     snippet = snippet
                 )
             }
+
+            // if manual location, single green manual marker
+            manualLatLng?.let { ll ->
+                Marker(
+                    state = rememberMarkerState(position = ll),
+                    title = buildString {
+                        append(manualTitle ?: "Selected location")
+                        append(" (manual selected)")
+                    },
+                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN),
+                )
+            }
         }
     }
 }
 
 @SuppressLint("MissingPermission")
-private suspend fun getLastKnownLatLng(context: Context): LatLng? {
+suspend fun getLastKnownLatLng(context: Context): LatLng? {
     return try {
         val fused = LocationServices.getFusedLocationProviderClient(context)
         val loc = fused.lastLocation.await() ?: return null
@@ -169,4 +213,12 @@ private suspend fun getLastKnownLatLng(context: Context): LatLng? {
     } catch (_: Exception) {
         null
     }
+}
+
+private fun getPlaceNameOrNull(context: Context, latLng: LatLng): String? = try {
+    val geocoder = Geocoder(context, Locale.getDefault())
+    val list = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+    list?.firstOrNull()?.getAddressLine(0)
+} catch (_: Exception) {
+    null
 }

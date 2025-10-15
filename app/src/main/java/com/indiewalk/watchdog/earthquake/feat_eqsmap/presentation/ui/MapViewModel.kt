@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.core.data.AppPrefs
 import com.indiewalk.watchdog.earthquake.core.model.AppSettings
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
@@ -56,6 +57,18 @@ class MapViewModel @Inject constructor(
                 .collect { list ->
                     _eqsUIFromDBState.value = MapUiState.Success(list)
                 }
+        }
+    }
+
+    fun setManualLocOn(enabled: Boolean) {
+        viewModelScope.launch {
+            AppPrefs.setManualLocation(context, enabled)
+        }
+    }
+
+    fun setPosition(latLng: LatLng) {
+        viewModelScope.launch {
+            AppPrefs.setLocation(context, latLng.latitude, latLng.longitude)
         }
     }
 }

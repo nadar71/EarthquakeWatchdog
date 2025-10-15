@@ -25,10 +25,6 @@ fun SettingsScreen(
     val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
 
     ScaffoldModel(navController, title = "Settings") { padding ->
-        /*Column(Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
-            Text("Settings Placeholder", style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.height(12.dp))
-        }*/
         Column(Modifier.padding(16.dp)) {
             Text("Unit: ${settings.unitSystem}")
             Button(onClick = { settingsViewModel.toggleUnitSystem() }) {

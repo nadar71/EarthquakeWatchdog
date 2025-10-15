@@ -42,18 +42,20 @@ import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.Loc
 @Composable
 fun MapOptionsOverlayCard(
     modifier: Modifier = Modifier,
-    manualPosition: Boolean,
-    onManualPositionChange: (Boolean) -> Unit,
+    manualPosition: Boolean,                          // persisted flag
+    onManualPositionChange: (Boolean) -> Unit,        // UI toggle
+    onManualPositionConfirmed: (LatLng) -> Unit,      // OK from picker
     mapType: MapType,
     onMapTypeChange: (MapType) -> Unit,
     settings: AppSettings,
     onDismiss: () -> Unit
 ) {
 
-    var initialLocation = LatLng(settings.position.latitude, settings.position.longitude)
+    // var initialLocation = LatLng(settings.position.latitude, settings.position.longitude)
     var selectedLocation by remember { mutableStateOf("") }
-    var selectedCoordinates by remember { mutableStateOf<LatLng?>(initialLocation) }
     var showLocationPicker by remember { mutableStateOf(false) }
+    var selectedCoordinates by remember { mutableStateOf(settings.position) }
+
 
     Box(modifier = Modifier
         .fillMaxSize()
@@ -76,9 +78,14 @@ fun MapOptionsOverlayCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(
                         checked = manualPosition,
-                        onCheckedChange = {
-                            onManualPositionChange
-                            showLocationPicker = true
+                        onCheckedChange = { checked ->
+                            onManualPositionChange(checked)
+                            if (checked) {
+                                // open picker; persist only on OK
+                                showLocationPicker = true
+                            } else {
+                                // Uncheck handled in parent (restore & recenter)
+                            }
                         }
                     )
                     Spacer(Modifier.width(8.dp))
@@ -123,21 +130,19 @@ fun MapOptionsOverlayCard(
     // LOCATION PICKER
     if (showLocationPicker) {
         LocationPicker(
-            initialLat = selectedCoordinates?.latitude,
-            initialLng = selectedCoordinates?.longitude,
+            initialLat = selectedCoordinates.latitude,
+            initialLng = selectedCoordinates.longitude,
             onLocationSelected = { locationName, latLng ->
                 selectedLocation = locationName
                 selectedCoordinates = latLng
-
+                onManualPositionConfirmed(latLng) // persist + recenter + close overlay in parent
                 selectedLocation = locationName
                 showLocationPicker = false
             },
             onDismiss = {
                 showLocationPicker = false
             },
-            onLocationChange = { locationName ->
-                selectedLocation = locationName
-            }
+            onLocationChange = { }
         )
     }
 }
@@ -192,6 +197,7 @@ private fun MapOptionsOverlayCardPreview() {
                 manualLocOn = false,
                 unitSystem = UnitSystem.METRIC,
             ),
+            onManualPositionConfirmed = {},
             onDismiss = {}
         )
     }
