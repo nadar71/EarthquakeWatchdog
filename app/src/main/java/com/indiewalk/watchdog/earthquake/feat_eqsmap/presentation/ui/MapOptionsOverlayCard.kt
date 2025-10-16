@@ -37,6 +37,7 @@ import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
 import com.indiewalk.watchdog.earthquake.core.data.enums.UnitSystem
 import com.indiewalk.watchdog.earthquake.core.model.AppSettings
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.LocationPicker
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.LocationPickerNoPermissionsReq
 
 
 @Composable
@@ -129,9 +130,10 @@ fun MapOptionsOverlayCard(
 
     // LOCATION PICKER
     if (showLocationPicker) {
-        LocationPicker(
-            initialLat = selectedCoordinates.latitude,
-            initialLng = selectedCoordinates.longitude,
+        LocationPickerNoPermissionsReq(
+            /*initialLat = selectedCoordinates.latitude,
+            initialLng = selectedCoordinates.longitude,*/
+            initialFallback = settings.position,
             onLocationSelected = { locationName, latLng ->
                 selectedLocation = locationName
                 selectedCoordinates = latLng

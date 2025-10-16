@@ -228,7 +228,7 @@ fun LocationPicker(
 
 // Function to check location permission and move the camera to the current position
 @SuppressLint("MissingPermission") // Use with caution, ensured permission checks are in place
-fun moveToCurrentLocationIfPermitted(
+private fun moveToCurrentLocationIfPermitted(
     context: Context,
     cameraPositionState: CameraPositionState,
     onLocationUpdated: (LatLng) -> Unit // Callback for updating location
@@ -258,7 +258,7 @@ fun moveToCurrentLocationIfPermitted(
 
 
 // Utility to update location name based on coordinates
-fun updateLocationName(
+private fun updateLocationName(
     context: Context,
     latLng: LatLng,
     onLocationChange: (String) -> Unit
