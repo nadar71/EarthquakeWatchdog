@@ -36,6 +36,7 @@ import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
 import com.indiewalk.watchdog.earthquake.core.data.enums.UnitSystem
 import com.indiewalk.watchdog.earthquake.core.model.AppSettings
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.LocationPickerNoPermissionsReq
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.LocationPickerPermissionReq
 
 
@@ -131,9 +132,10 @@ fun MapOptionsOverlayCard(
 
     // LOCATION PICKER
     if (showLocationPicker) {
-        LocationPickerPermissionReq(
-            initialLat = selectedCoordinates.latitude,
-            initialLng = selectedCoordinates.longitude,
+        LocationPickerNoPermissionsReq(
+            /*initialLat = selectedCoordinates.latitude,
+            initialLng = selectedCoordinates.longitude,*/
+            initialFallback = settings.position,
             onLocationSelected = { locationName, latLng ->
                 selectedCoordinates = latLng
                 onManualPositionConfirmed(latLng) // persist + recenter + close overlay in parent
