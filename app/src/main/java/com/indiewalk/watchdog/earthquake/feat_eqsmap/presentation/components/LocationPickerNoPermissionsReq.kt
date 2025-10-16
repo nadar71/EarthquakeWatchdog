@@ -55,7 +55,7 @@ import com.indiewalk.watchdog.earthquake.R
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun LocationPicker(
+fun LocationPickerNoPermissionsReq(
     initialLat: Double? = null,
     initialLng: Double? = null,
     onLocationSelected: (String, LatLng) -> Unit,
@@ -214,13 +214,14 @@ fun LocationPicker(
         )
     } else {
         // Show a message if location permission is denied
+        Log.e(TAG, "LocationPicker: Permission denied")
         SnackbarAlert(
             message = snackbarMsg,
             showSb = true,
             backgroundColorIn = MaterialTheme.colorScheme.inversePrimary,
             messageColorIn = MaterialTheme.colorScheme.onPrimary,
             openSnackbar = { showSnackbar.value = it },
-            snackbarMsg = { /* Handle any snackbar message updates if needed */ }
+            snackbarMsg = {"Permission denied" }
         )
     }
 }
@@ -228,7 +229,7 @@ fun LocationPicker(
 
 // Function to check location permission and move the camera to the current position
 @SuppressLint("MissingPermission") // Use with caution, ensured permission checks are in place
-fun moveToCurrentLocationIfPermitted(
+private fun moveToCurrentLocationIfPermitted(
     context: Context,
     cameraPositionState: CameraPositionState,
     onLocationUpdated: (LatLng) -> Unit // Callback for updating location
@@ -258,7 +259,7 @@ fun moveToCurrentLocationIfPermitted(
 
 
 // Utility to update location name based on coordinates
-fun updateLocationName(
+private fun updateLocationName(
     context: Context,
     latLng: LatLng,
     onLocationChange: (String) -> Unit
@@ -273,7 +274,7 @@ fun updateLocationName(
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewMultiPurposeTextFieldWithLocation() {
+fun PreviewMultiPurposeTextFieldWithLocation_noPermissionsReq() {
     var textFieldValue by remember { mutableStateOf("") }
     var selectedLocation by remember { mutableStateOf("") }
     var selectedCoordinates by remember { mutableStateOf<LatLng?>(null) }
@@ -288,7 +289,7 @@ fun PreviewMultiPurposeTextFieldWithLocation() {
         }
 
         if (showLocationPicker) {
-            LocationPicker(
+            LocationPickerNoPermissionsReq(
                 onLocationSelected = { locationName, latLng ->
                     selectedLocation = locationName
                     selectedCoordinates = latLng

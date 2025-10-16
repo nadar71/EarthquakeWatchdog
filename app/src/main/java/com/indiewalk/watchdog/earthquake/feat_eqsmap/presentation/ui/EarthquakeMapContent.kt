@@ -4,12 +4,14 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Geocoder
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -29,11 +31,14 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.MarkerInfoWindowContent
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
 
@@ -46,6 +51,7 @@ fun EarthquakeMapContent(
     mapType: MapType,
     recenterTarget: LatLng?,
     onRecenterHandled: () -> Unit,
+    manualPosition: Boolean,
     manualLatLng: LatLng?
 ) {
     val context = LocalContext.current
@@ -74,20 +80,50 @@ fun EarthquakeMapContent(
 
     var mapLoaded by remember { mutableStateOf(false) }
     var cameraInitialized by remember { mutableStateOf(false) }
-
-    // Resolve a friendly name for the manual marker (reverse geocode once per position)
+    var manualIcon by remember { mutableStateOf<BitmapDescriptor?>(null) }
+    // name for the manual marker (reverse geocode once per position)
     var manualTitle by remember(manualLatLng) { mutableStateOf<String?>(null) }
+
+    // create descriptor after the map ready
+    LaunchedEffect(mapLoaded) {
+        if (mapLoaded) {
+            manualIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+        }
+    }
     LaunchedEffect(manualLatLng) {
         manualTitle = manualLatLng?.let { ll -> getPlaceNameOrNull(context, ll) }
     }
 
-    // Decide initial camera target ONCE:
+    // choose initial camera target between:
     // 1) manual location
     // 2) user location (if granted & available)
     // 3) bounds fitting all markers
     // 4) world view
-    LaunchedEffect(mapLoaded, hasLocationPermission, bounds, manualLatLng) {
+    LaunchedEffect(mapLoaded, manualPosition, manualLatLng, hasLocationPermission, bounds) {
         if (!mapLoaded || cameraInitialized) return@LaunchedEffect
+
+        val centered = when {
+            manualPosition && manualLatLng != null -> {
+                cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(manualLatLng, 12f));
+                true
+            }
+            hasLocationPermission -> {
+                val user = getLastKnownLatLng(context)
+                if (user != null) {
+                    cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(user, 6f));
+                    true
+                } else false
+            }
+            bounds != null -> {
+                cameraPositionState.animate(CameraUpdateFactory.newLatLngBounds(bounds, 80));
+                true
+            }
+            else -> {
+                cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(worldCenter, 2f));
+                true
+            }
+        }
+        if (centered) cameraInitialized = true
 
         /*val didCenterOnUser = if (hasLocationPermission) {
             val user = getLastKnownLatLng(context)
@@ -108,7 +144,7 @@ fun EarthquakeMapContent(
             }
         }*/
 
-        val didCenterOnManual = if (manualLatLng != null) {
+        /*val didCenterOnManual = if (manualLatLng != null) {
             cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(manualLatLng, 12f))
             true
         } else false
@@ -133,7 +169,7 @@ fun EarthquakeMapContent(
                 }
             }
         }
-        cameraInitialized = true
+        cameraInitialized = true*/
     }
 
     // Map properties / UI
@@ -159,6 +195,7 @@ fun EarthquakeMapContent(
             onRecenterHandled()
         }
     }
+
 
     GoogleMap(
         modifier = Modifier.Companion
@@ -190,7 +227,27 @@ fun EarthquakeMapContent(
             }
 
             // if manual location, single green manual marker
-            manualLatLng?.let { ll ->
+               if (manualPosition && manualLatLng != null) {
+                MarkerInfoWindowContent(
+                    state = rememberMarkerState(position = manualLatLng),
+                    icon = manualIcon,            // <- can be null on first few frames; that's OK
+                ) { _ ->
+                    Column(
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.surface)
+                            .padding(8.dp)
+                    ) {
+                        Text(
+                            text = "${manualLatLng.latitude}, ${manualLatLng.longitude}\n(manual selected)",
+                            style = MaterialTheme.typography.bodyLarge,
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            }
+            /*manualLatLng?.let { ll ->
                 Marker(
                     state = rememberMarkerState(position = ll),
                     title = buildString {
@@ -199,7 +256,7 @@ fun EarthquakeMapContent(
                     },
                     icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN),
                 )
-            }
+            }*/
         }
     }
 }

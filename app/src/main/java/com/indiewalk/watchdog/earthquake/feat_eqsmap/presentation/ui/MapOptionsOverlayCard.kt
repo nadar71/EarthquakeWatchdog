@@ -36,7 +36,7 @@ import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
 import com.indiewalk.watchdog.earthquake.core.data.enums.UnitSystem
 import com.indiewalk.watchdog.earthquake.core.model.AppSettings
-import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.LocationPicker
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.LocationPickerPermissionReq
 
 
 @Composable
@@ -51,95 +51,98 @@ fun MapOptionsOverlayCard(
     onDismiss: () -> Unit
 ) {
 
-    // var initialLocation = LatLng(settings.position.latitude, settings.position.longitude)
     var selectedLocation by remember { mutableStateOf("") }
     var showLocationPicker by remember { mutableStateOf(false) }
     var selectedCoordinates by remember { mutableStateOf(settings.position) }
 
+    Box(Modifier.fillMaxSize()){
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) { onDismiss() })
+        {
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .clickable(
-        indication = null,
-        interactionSource = remember { MutableInteractionSource() }
-    ) { onDismiss() }) {
+            Card(
+                modifier = modifier,
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+            ) {
+                Column(Modifier.padding(16.dp)) {
 
-        Card(
-            modifier = modifier,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.onSurface
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-        ) {
-            Column(Modifier.padding(16.dp)) {
-
-                // Manual position
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(
-                        checked = manualPosition,
-                        onCheckedChange = { checked ->
-                            onManualPositionChange(checked)
-                            if (checked) {
-                                // open picker; persist only on OK
-                                showLocationPicker = true
-                            } else {
-                                // Uncheck handled in parent (restore & recenter)
+                    // Manual position
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = manualPosition,
+                            onCheckedChange = { checked ->
+                                onManualPositionChange(checked)
+                                if (checked) {
+                                    // open picker; persist only on OK
+                                    showLocationPicker = true
+                                } else {
+                                    // Uncheck handled in parent (restore & recenter)
+                                }
                             }
-                        }
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text("Set position manually", style = MaterialTheme.typography.bodyLarge)
+                    }
+
+                    Spacer(Modifier.height(12.dp))
+                    HorizontalDivider()
+                    Spacer(Modifier.height(12.dp))
+
+                    Text("Map type", style = MaterialTheme.typography.labelLarge)
+                    Spacer(Modifier.height(6.dp))
+
+                    MapTypeOption(
+                        label = "Road map",
+                        value = MapType.NORMAL,
+                        selected = mapType == MapType.NORMAL,
+                        onSelect = { onMapTypeChange(MapType.NORMAL) }
                     )
-                    Spacer(Modifier.width(8.dp))
-                    Text("Set position manually", style = MaterialTheme.typography.bodyLarge)
+                    MapTypeOption(
+                        label = "Hybrid",
+                        value = MapType.HYBRID,
+                        selected = mapType == MapType.HYBRID,
+                        onSelect = { onMapTypeChange(MapType.HYBRID) }
+                    )
+                    MapTypeOption(
+                        label = "Satellite",
+                        value = MapType.SATELLITE,
+                        selected = mapType == MapType.SATELLITE,
+                        onSelect = { onMapTypeChange(MapType.SATELLITE) }
+                    )
+                    MapTypeOption(
+                        label = "Terrain",
+                        value = MapType.TERRAIN,
+                        selected = mapType == MapType.TERRAIN,
+                        onSelect = { onMapTypeChange(MapType.TERRAIN) }
+                    )
                 }
-
-                Spacer(Modifier.height(12.dp))
-                HorizontalDivider()
-                Spacer(Modifier.height(12.dp))
-
-                Text("Map type", style = MaterialTheme.typography.labelLarge)
-                Spacer(Modifier.height(6.dp))
-
-                MapTypeOption(
-                    label = "Road map",
-                    value = MapType.NORMAL,
-                    selected = mapType == MapType.NORMAL,
-                    onSelect = { onMapTypeChange(MapType.NORMAL) }
-                )
-                MapTypeOption(
-                    label = "Hybrid",
-                    value = MapType.HYBRID,
-                    selected = mapType == MapType.HYBRID,
-                    onSelect = { onMapTypeChange(MapType.HYBRID) }
-                )
-                MapTypeOption(
-                    label = "Satellite",
-                    value = MapType.SATELLITE,
-                    selected = mapType == MapType.SATELLITE,
-                    onSelect = { onMapTypeChange(MapType.SATELLITE) }
-                )
-                MapTypeOption(
-                    label = "Terrain",
-                    value = MapType.TERRAIN,
-                    selected = mapType == MapType.TERRAIN,
-                    onSelect = { onMapTypeChange(MapType.TERRAIN) }
-                )
             }
         }
     }
 
     // LOCATION PICKER
     if (showLocationPicker) {
-        LocationPicker(
+        LocationPickerPermissionReq(
             initialLat = selectedCoordinates.latitude,
             initialLng = selectedCoordinates.longitude,
             onLocationSelected = { locationName, latLng ->
-                selectedLocation = locationName
                 selectedCoordinates = latLng
                 onManualPositionConfirmed(latLng) // persist + recenter + close overlay in parent
                 selectedLocation = locationName
                 showLocationPicker = false
             },
             onDismiss = {
+                // user canceled -> keep manual flag unchanged (still false if it was off)
+                onManualPositionChange(false)
                 showLocationPicker = false
             },
             onLocationChange = { }
