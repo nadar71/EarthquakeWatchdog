@@ -10,17 +10,22 @@ import androidx.navigation.navArgument
 import com.indiewalk.watchdog.earthquake.feat_details.presentation.ui.DetailsScreen
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.EarthquakeListScreen
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui.MapScreen
+import com.indiewalk.watchdog.earthquake.feat_intro.presentation.IntroScreen
 import com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui.SettingsScreen
 
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
-    startDestination: String = NavigationRoutes.Home.route
+    startDestination: String = NavigationRoutes.Intro.route
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
+        composable(NavigationRoutes.Intro.route) {
+            Log.d("NavigationGraph: ", NavigationRoutes.Intro.route)
+            IntroScreen(navController)
+        }
         composable(NavigationRoutes.Home.route) {
             Log.d("NavigationGraph: ", NavigationRoutes.Home.route)
             EarthquakeListScreen(navController)

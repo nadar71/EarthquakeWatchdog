@@ -13,8 +13,16 @@ sealed class NavigationRoutes(
     val label: String,
     val route: String,
     val icon: ImageVector? = null,
-    @StringRes val contentDescription: Int // accessibility
+    @StringRes val contentDescription: Int
 ) {
+
+    data object Intro : NavigationRoutes(
+        "Intro",
+        NavigationScreenConstants.INTRO,
+        null,
+        R.string.nav_bottom_intro_desc
+    )
+
     data object Home : NavigationRoutes(
         "Home",
         NavigationScreenConstants.HOME,

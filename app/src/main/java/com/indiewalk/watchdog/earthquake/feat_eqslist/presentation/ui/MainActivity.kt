@@ -26,7 +26,7 @@ class MainActivity() : AppCompatActivity() {
 
     private val themeViewModel: ThemeViewModel by viewModels()
 
-    private var lastUpdate: String? = ""
+    /*private var lastUpdate: String? = ""
     private var earthquakeUIS: List<EarthquakeUI>? = null
     // Preferences value
     private var minMagnitude: String? = null
@@ -35,7 +35,7 @@ class MainActivity() : AppCompatActivity() {
     private var lng_s: String? = null
     private var dateFilter: String? = null
     private lateinit var dateFilterLabel: String
-    private var location_address: String? = null
+    private var location_address: String? = null*/
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,11 +46,11 @@ class MainActivity() : AppCompatActivity() {
             // switch between System / Light / Dark
             // var themeMode by remember { mutableStateOf(ThemeMode.System) }
 
-            val isDark = when (settings.mode) {
+            /*val isDark = when (settings.mode) {
                 ThemeMode.System -> isSystemInDarkTheme()
                 ThemeMode.Light -> false
                 ThemeMode.Dark  -> true
-            }
+            }*/
             EQWatchdogTheme {
                 val navController = rememberNavController()
                 NavigationGraph(navController = navController)

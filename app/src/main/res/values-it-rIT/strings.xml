@@ -18,6 +18,7 @@
 
 
     <!-- - - - - - - - - - - - - - - - - - - Navigation - - - - -  - - - - - - - - - - - - - - - -->
+    <string name="nav_bottom_intro_desc">Intro</string>
     <string name="nav_bottom_home_desc">Home</string>
     <string name="nav_bottom_eqs_desc">Map</string>
     <string name="nav_bottom_settings_desc">Settings</string>

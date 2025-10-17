@@ -64,15 +64,15 @@ fun EarthquakeMapScreen(
     )
 
     // 2) Permissions dialogs states
-    var showPrePermissionDialog by remember { mutableStateOf(false) }
+    /*var showPrePermissionDialog by remember { mutableStateOf(false) }
     var showDeniedDialog by remember { mutableStateOf(false) }
     //  persist across recomposition/config changes for this screen
     var hasAskedOnce by rememberSaveable { mutableStateOf(false) }
-
+*/
 
     // 3) Permissions Derived flags
     val allGranted by remember(permissions) { derivedStateOf { permissions.allPermissionsGranted } }
-    val anyShouldShowRationale by remember(permissions) {
+    /*val anyShouldShowRationale by remember(permissions) {
         derivedStateOf { permissions.permissions.any { it.status.shouldShowRationale } }
     }
     // Permanently denied = not granted: no rationale, and already asked once
@@ -82,7 +82,7 @@ fun EarthquakeMapScreen(
                 (!it.status.isGranted && !it.status.shouldShowRationale)
             }
         }
-    }
+    }*/
 
     // Options overlay/state
     var showOptions by rememberSaveable { mutableStateOf(false) }
@@ -99,7 +99,7 @@ fun EarthquakeMapScreen(
 
     // 4) Decide when to show dialogs
     // Show the pre-permission rationale ONLY if not granted and NOT permanently denied
-    LaunchedEffect(allGranted, anyPermanentlyDenied) {
+   /* LaunchedEffect(allGranted, anyPermanentlyDenied) {
         showPrePermissionDialog = !allGranted && !anyPermanentlyDenied
     }
 
@@ -107,11 +107,11 @@ fun EarthquakeMapScreen(
     // show the denied dialog ONLY if rationale is available (i.e., NOT permanently denied)
     LaunchedEffect(allGranted, hasAskedOnce, anyShouldShowRationale, anyPermanentlyDenied) {
         showDeniedDialog = hasAskedOnce && !allGranted && anyShouldShowRationale && !anyPermanentlyDenied
-    }
+    }*/
 
 
     // ---- Dialogs ----
-    if (showPrePermissionDialog) {
+    /*if (showPrePermissionDialog) {
         PermissionRationaleDialog(
             onDismiss = { showPrePermissionDialog = false }, // optional close
             onContinue = {
@@ -128,7 +128,7 @@ fun EarthquakeMapScreen(
             onOpenSettings = { openAppSettings(context) },
             onContinue = { showDeniedDialog = false } // continue without location
         )
-    }
+    }*/
 
     // ------------------------------------------- UI ----------------------------------------------
     ScaffoldModel(
@@ -149,7 +149,6 @@ fun EarthquakeMapScreen(
                 navigationIcon = {},
                 actions = {
                     IconButton(onClick = {
-                        // openAppSettings(context)
                         showOptions = !showOptions
                     }) {
                         Icon(
