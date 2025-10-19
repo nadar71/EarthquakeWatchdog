@@ -25,6 +25,15 @@ class IntroViewModel @Inject constructor(
         AppPrefs.settingsFlow(context)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppSettings())
 
+    val askedOnce: StateFlow<Boolean> =
+        AppPrefs.askedLocationOnceFlow(context)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+
+    fun setAskedOnce() {
+        viewModelScope.launch { AppPrefs.setAskedLocationOnce(context, true) }
+    }
+
     fun setUserLocation(latLng: LatLng) {
         viewModelScope.launch {
             AppPrefs.setLocation(context, latLng.latitude, latLng.longitude)

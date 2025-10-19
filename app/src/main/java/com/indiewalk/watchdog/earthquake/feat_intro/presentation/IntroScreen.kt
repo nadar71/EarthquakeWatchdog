@@ -3,6 +3,7 @@ package com.indiewalk.watchdog.earthquake.feat_intro.presentation
 import android.Manifest
 import android.content.Context
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,6 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -42,13 +44,283 @@ import com.google.accompanist.permissions.shouldShowRationale
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.R
+import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationRoutes
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui.getLastKnownLatLng
 import kotlinx.coroutines.withContext
 
 
 
+
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
+@Composable
+fun IntroScreen(
+    navController: NavHostController,
+    vm: IntroViewModel = hiltViewModel()
+) {
+    val context = LocalContext.current
+    val settings by vm.settings.collectAsStateWithLifecycle()
+    val askedOnce by vm.askedOnce.collectAsStateWithLifecycle()
+
+    val permissions = rememberMultiplePermissionsState(
+        listOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+    )
+
+    // Derived
+    val allGranted by remember(permissions) { derivedStateOf { permissions.allPermissionsGranted } }
+    val anyShouldShowRationale by remember(permissions) {
+        derivedStateOf { permissions.permissions.any { it.status.shouldShowRationale } }
+    }
+    val anyPermanentlyDenied by remember(permissions, askedOnce) {
+        derivedStateOf {
+            askedOnce && permissions.permissions.any {
+                (!it.status.isGranted && !it.status.shouldShowRationale)
+            }
+        }
+    }
+    val manualOn = settings.manualLocOn
+    // track when we actually launched the system request permissions dialog
+    // and the result is returned ( awaitingResult turn false again)
+    var awaitingResult by rememberSaveable { mutableStateOf(false) }
+    var preRequestGrantMap by remember { mutableStateOf<Map<String, Boolean>?>(null) }
+
+    // ---- BYPASS: skip Intro if conditions met ----
+    LaunchedEffect(allGranted, anyPermanentlyDenied, manualOn) {
+        if (allGranted || anyPermanentlyDenied || manualOn) {
+            if (allGranted) {
+                // Best effort: persist user location
+                tryFetchAndPersistUserLocation(context, vm)
+            } else {
+                // Keep current settings (manual or defaults already in AppSettings)
+            }
+            navController.navigate(NavigationRoutes.Home.route) {
+                popUpTo(NavigationRoutes.Intro.route) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
+    }
+
+    // UI state
+    var showRationale by remember { mutableStateOf(false) }
+    var showDeniedDialog by remember { mutableStateOf(false) }
+
+    // After request completes, decide and go Home (only when we actually requested)
+    /*LaunchedEffect(allGranted, anyShouldShowRationale) {
+        if (!showRationale && askedOnce) {
+            showDeniedDialog = !allGranted && anyShouldShowRationale && !anyPermanentlyDenied
+            if (allGranted || anyPermanentlyDenied || (!allGranted && !anyShouldShowRationale)) {
+                if (allGranted) {
+                    tryFetchAndPersistUserLocation(context, vm)
+                }
+                navController.navigate(NavigationRoutes.Home.route) {
+                    popUpTo(NavigationRoutes.Intro.route) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+        }
+    }*/
+
+    // ✅ Handle navigation ONLY after the system dialog returns
+    /*LaunchedEffect(awaitingResult, allGranted, anyShouldShowRationale, anyPermanentlyDenied) {
+        if (!awaitingResult) return@LaunchedEffect
+
+        when {
+            allGranted -> {
+                tryFetchAndPersistUserLocation(context, vm)
+                awaitingResult = false
+                navController.navigate(NavigationRoutes.Home.route) {
+                    popUpTo(NavigationRoutes.Intro.route) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+            anyPermanentlyDenied -> {
+                awaitingResult = false
+                navController.navigate(NavigationRoutes.Home.route) {
+                    popUpTo(NavigationRoutes.Intro.route) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+            // Denied w/out "don't ask again" -> show a small info and let user proceed
+            !anyShouldShowRationale -> {
+                // Some OEMs report false here even on first request; treat as “no rationale”:
+                awaitingResult = false
+                navController.navigate(NavigationRoutes.Home.route) {
+                    popUpTo(NavigationRoutes.Intro.route) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+            else -> {
+                // Rationale available: user denied (no "don't ask again")
+                showDeniedDialog = true
+                awaitingResult = false
+            }
+        }
+    }*/
+
+    // ✅ Only proceed AFTER we detect the grant map has actually changed (dialog returned)
+    LaunchedEffect(awaitingResult, permissions.permissions) {
+        if (!awaitingResult) return@LaunchedEffect
+
+        val currentMap = permissions.permissions.associate { it.permission to it.status.isGranted }
+        val preMap = preRequestGrantMap
+
+        // Still waiting for user choice → do nothing
+        if (preMap == null || currentMap == preMap) return@LaunchedEffect
+
+        // Dialog resolved → decide
+        when {
+            allGranted -> {
+                tryFetchAndPersistUserLocation(context, vm)
+                awaitingResult = false
+                navController.navigate(NavigationRoutes.Home.route) {
+                    popUpTo(NavigationRoutes.Intro.route) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+            anyPermanentlyDenied -> {
+                awaitingResult = false
+                navController.navigate(NavigationRoutes.Home.route) {
+                    popUpTo(NavigationRoutes.Intro.route) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+            anyShouldShowRationale -> {
+                // Denied (no "Don't ask again")
+                showDeniedDialog = true
+                awaitingResult = false
+            }
+            else -> {
+                // Some OEMs keep shouldShowRationale=false even on deny; proceed anyway
+                awaitingResult = false
+                navController.navigate(NavigationRoutes.Home.route) {
+                    popUpTo(NavigationRoutes.Intro.route) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+        }
+    }
+
+    // ---------------------------------------- UI -------------------------------------------------
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Welcome", color = MaterialTheme.colorScheme.onPrimary) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            )
+        }
+    ) { padding ->
+        if (!allGranted && !anyPermanentlyDenied && !manualOn){
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_checkmark),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(180.dp)
+                        .padding(top = 24.dp)
+                )
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    text = "We use your location to center the map near you. " +
+                            "If you don’t allow it, we’ll use a default location (Mountain View) " +
+                            "or you can set a manual position later on the map.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Spacer(Modifier.height(24.dp))
+                Button(
+                    onClick = { showRationale = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) { Text("Continue") }
+            }
+        } else {
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .background(MaterialTheme.colorScheme.primary),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    text = "Loading",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+                Spacer(Modifier.height(16.dp))
+            }
+        }
+    }
+
+    // Rationale dialog
+    if (showRationale) {
+        AlertDialog(
+            onDismissRequest = { showRationale = false },
+            title = { Text("Location permission") },
+            text = { Text("Allowing location centers the map near you. You can also skip and set a manual position later.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showRationale = false
+                    vm.setAskedOnce() // mark that we have asked at least once
+                    // ✅ snapshot current grants and mark awaiting
+                    preRequestGrantMap = permissions.permissions.associate { it.permission to it.status.isGranted }
+                    awaitingResult = true // we’re now waiting for the system dialog result
+                    permissions.launchMultiplePermissionRequest()
+                }) {
+                    Text("Allow")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showRationale = false
+                    // vm.setAskedOnce() // we consider this a completed ask path
+                    // Skip request -> go Home; keep defaults or manual
+                    navController.navigate(NavigationRoutes.Home.route) {
+                        popUpTo(NavigationRoutes.Intro.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }) { Text("Skip") }
+            }
+        )
+    }
+
+    // Optional “denied” note (not shown when permanently denied)
+    if (showDeniedDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeniedDialog = false },
+            title = { Text("Permission denied") },
+            text = { Text("You can keep using the app with a default location or set a manual position later in the Map.") },
+            confirmButton = {
+                TextButton(onClick = { showDeniedDialog = false }) { Text("OK") }
+            }
+        )
+    }
+}
+
+private fun tryFetchAndPersistUserLocation(
+    context: Context,
+    vm: IntroViewModel
+) {
+    val fused = LocationServices.getFusedLocationProviderClient(context)
+    fused.lastLocation
+        .addOnSuccessListener { loc ->
+            if (loc != null) vm.setUserLocation(LatLng(loc.latitude, loc.longitude))
+        }
+        .addOnFailureListener { /* ignore; keep existing settings */ }
+}
+
+
+/*@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun IntroScreen(
     navController: NavHostController,
@@ -218,7 +490,7 @@ private fun tryFetchAndPersistUserLocation(
         .addOnFailureListener {
             vm.keepDefaultLocation()
         }
-}
+}*/
 
 
 /*OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)

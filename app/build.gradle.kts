@@ -84,6 +84,10 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     implementation(libs.androidx.ui.test.android)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx.v251)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
 
     // compose
     implementation(platform(libs.androidx.compose.bom))
@@ -166,17 +170,6 @@ dependencies {
 
     // Preference
     implementation(libs.androidx.preference.ktx)
-
-    // Kotpref SharePreferences lib: https://github.com/chibatching/Kotpref
-    implementation(libs.kotpref)
-    implementation(libs.initializer)
-    implementation(libs.enum.support)
-    implementation(libs.gson.support)
-    implementation(libs.livedata.support)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx.v251)
-    implementation(libs.preference.screen.dsl)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     // Ktor Client - Android
     implementation(libs.ktor.client.okhttp)
