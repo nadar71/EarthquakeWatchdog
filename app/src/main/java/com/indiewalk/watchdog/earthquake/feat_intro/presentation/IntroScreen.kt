@@ -228,9 +228,9 @@ fun showLocationPermissionDeniedDialog(context: Context,navController: NavHostCo
             }
         }
         .setNegativeButton("openSettings") { _, _ ->
-            // Open the app settings if the user wants to enable location permission manually
+            // Open app settings allowing user to enable location permissions manually
             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                // Intent.setData = Uri.fromParts("package", context.packageName, null)
+                data = Uri.fromParts("package", context.packageName, null)
             }
             context.startActivity(intent)
         }
