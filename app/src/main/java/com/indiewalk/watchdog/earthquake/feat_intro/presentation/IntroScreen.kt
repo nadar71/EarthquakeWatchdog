@@ -32,7 +32,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,13 +39,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationRoutes
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
@@ -68,30 +67,29 @@ fun IntroScreen_01(
     )
     val allGranted by remember(permissions) { derivedStateOf { permissions.allPermissionsGranted } }
 
-
     // ------------------------------------- LOGIC -------------------------------------------------
+    val askedOnce by introViewModel.askedOnce.collectAsStateWithLifecycle()
 
     val fineLocationLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted ->
             if (isGranted) {
                 // Foreground location permission granted
-                setupLocationAccess(navController)
+                navigateToHome(navController)
             } else {
                 // Foreground location permission denied
+                // asked one flag set: do not ask again next app opening
+                introViewModel.setAskedOnce()
                 showLocationPermissionDeniedDialog(context, navController)
             }
         }
     )
 
     // delay in transition to home screen
-    LaunchedEffect(allGranted) {
-        if (allGranted) {
+    LaunchedEffect(allGranted, askedOnce) {
+        if (allGranted || askedOnce) {
             delay(1000)
-            navController.navigate(NavigationRoutes.Home.route) {
-                popUpTo(NavigationRoutes.Intro.route) { inclusive = true }
-                launchSingleTop = true
-            }
+            navigateToHome(navController)
         }
     }
 
@@ -110,7 +108,7 @@ fun IntroScreen_01(
     ) { padding ->
         // if (!allGranted && !anyPermanentlyDenied && !manualOn){
 
-        if (!allGranted) {
+        if (!allGranted && !askedOnce) {
             Column(
                 Modifier
                     .fillMaxSize()
@@ -159,12 +157,7 @@ fun IntroScreen_01(
 
                 // ok/not now btn
                 Button(
-                    onClick = {
-                        navController.navigate(NavigationRoutes.Home.route) {
-                            popUpTo(NavigationRoutes.Intro.route) { inclusive = true }
-                            launchSingleTop = true
-                        }
-                    },
+                    onClick = { navigateToHome(navController) },
                     shape = RoundedCornerShape(10.dp),
                 ) {
                     if (!isReqPermissionBtnPressed)
@@ -253,7 +246,7 @@ fun IntroScreen_01(
 
 
 // Function to set up location access after permission is granted
-fun setupLocationAccess(navController: NavHostController) {
+fun navigateToHome(navController: NavHostController) {
     // accessing the location or setup GPS tracking
     navController.navigate(NavigationRoutes.Home.route) {
         popUpTo(NavigationRoutes.Intro.route) { inclusive = true }
@@ -267,10 +260,7 @@ fun showLocationPermissionDeniedDialog(context: Context, navController: NavHostC
         .setTitle("Location disables")
         .setMessage("You can enable after or manul position")
         .setPositiveButton("OK") { _, _ ->
-            navController.navigate(NavigationRoutes.Home.route) {
-                popUpTo(NavigationRoutes.Intro.route) { inclusive = true }
-                launchSingleTop = true
-            }
+            navigateToHome(navController)
         }
         .setNegativeButton("openSettings") { _, _ ->
             // Open app settings allowing user to enable location permissions manually
