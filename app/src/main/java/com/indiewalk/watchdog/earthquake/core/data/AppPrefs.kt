@@ -2,7 +2,6 @@ package com.indiewalk.watchdog.earthquake.core.data
 
 
 import android.content.Context
-import android.location.Address
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -11,6 +10,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.core.data.enums.ThemeMode
 import com.indiewalk.watchdog.earthquake.core.data.enums.UnitSystem
 import com.indiewalk.watchdog.earthquake.core.model.AppSettings
+import com.indiewalk.watchdog.earthquake.core.model.LocationInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -49,16 +49,20 @@ object AppPrefs {
             }
 
             val isManualLocOn = prefs[MANUAL_LOC_ON] ?: false
-            val lat = if (isManualLocOn) prefs[MANUAL_LOC_LAT]?.toDoubleOrNull() ?: Constants.DEFAULT_LAT
-                      else prefs[POSITION_LAT]?.toDoubleOrNull() ?: Constants.DEFAULT_LAT
-            val lng = if (isManualLocOn) prefs[MANUAL_LOC_LNG]?.toDoubleOrNull() ?: Constants.DEFAULT_LNG
-                      else prefs[POSITION_LNG]?.toDoubleOrNull() ?: Constants.DEFAULT_LNG
-            val city = if (isManualLocOn) prefs[MANUAL_LOC_CITY] ?: ""
-                       else prefs[POSITION_CITY] ?: ""
-            val country = if (isManualLocOn) prefs[MANUAL_LOC_COUNTRY_CODE] ?: ""
-                          else prefs[POSITION_COUNTRY_CODE] ?: ""
-            val address = if (isManualLocOn) prefs[MANUAL_LOC_ADDRESS] ?: ""
-                          else prefs[POSITION_ADDRESS] ?: ""
+
+            val userLat = prefs[POSITION_LAT]?.toDoubleOrNull() ?: Constants.DEFAULT_LAT
+            val userLng = prefs[POSITION_LNG]?.toDoubleOrNull() ?: Constants.DEFAULT_LNG
+            val userCity = prefs[POSITION_CITY] ?: ""
+            val userCountry = prefs[POSITION_COUNTRY_CODE] ?: ""
+            val userAddress = prefs[POSITION_ADDRESS] ?: ""
+
+            val manualLat = prefs[MANUAL_LOC_LAT]?.toDoubleOrNull() ?: Constants.DEFAULT_LAT
+            val manualLng = prefs[MANUAL_LOC_LNG]?.toDoubleOrNull() ?: Constants.DEFAULT_LNG
+            val manualCity = prefs[MANUAL_LOC_CITY] ?: ""
+            val manualCountry = prefs[MANUAL_LOC_COUNTRY_CODE] ?: ""
+            val manualAddress = prefs[MANUAL_LOC_ADDRESS] ?: ""
+
+
             val unit = when (prefs[UNIT_SYSTEM]) {
                 UnitSystem.IMPERIAL.name -> UnitSystem.IMPERIAL
                 else -> UnitSystem.METRIC
@@ -68,10 +72,10 @@ object AppPrefs {
             AppSettings(
                 mode = mode,
                 manualLocOn = isManualLocOn,
-                position = LatLng(lat, lng),
-                city = city,
-                country = country,
-                address = address,
+                userPosition = LatLng(userLat, userLng),
+                userLocationInfo = LocationInfo(userCity, userCountry, userAddress),
+                manualPosition = LatLng(manualLat, manualLng),
+                manualLocationInfo = LocationInfo(manualCity, manualCountry, manualAddress),
                 unitSystem = unit
             )
         }
@@ -92,31 +96,31 @@ object AppPrefs {
         context.dataStore.edit { it[UNIT_SYSTEM] = unit.name }
     }
 
-    suspend fun setManualLocation(context: Context, enabled: Boolean) {
+    suspend fun setManualLocationOn(context: Context, enabled: Boolean) {
         context.dataStore.edit { it[MANUAL_LOC_ON] = enabled }
     }
 
-    suspend fun setLocation(context: Context, lat: Double, lng: Double) {
+    suspend fun setUserPosition(context: Context, lat: Double, lng: Double) {
         context.dataStore.edit {
             it[POSITION_LAT] = lat.toString()
             it[POSITION_LNG] = lng.toString()
         }
     }
 
-    suspend fun setCity(context: Context, city: String) {
+    suspend fun setUserCity(context: Context, city: String) {
         context.dataStore.edit { it[POSITION_CITY] = city }
     }
 
-    suspend fun setCountryCode(context: Context, country: String) {
-        context.dataStore.edit { it[POSITION_COUNTRY_CODE] = country }
+    suspend fun setUserCountryCode(context: Context, countryCode: String) {
+        context.dataStore.edit { it[POSITION_COUNTRY_CODE] = countryCode }
     }
 
-    suspend fun setAddress(context: Context, address: String) {
+    suspend fun setUserAddress(context: Context, address: String) {
         context.dataStore.edit { it[POSITION_ADDRESS] = address }
     }
 
 
-    suspend fun setManualLocation(context: Context, lat: Double, lng: Double) {
+    suspend fun setManualPosition(context: Context, lat: Double, lng: Double) {
         context.dataStore.edit {
             it[MANUAL_LOC_LAT] = lat.toString()
             it[MANUAL_LOC_LNG] = lng.toString()

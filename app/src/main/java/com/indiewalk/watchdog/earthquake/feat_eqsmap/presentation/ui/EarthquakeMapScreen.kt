@@ -192,7 +192,7 @@ fun EarthquakeMapScreen(
                         mapType = mapType,
                         recenterTarget = recenterTo,
                         onRecenterHandled = { recenterTo = null },
-                        manualLatLng = if (settings.manualLocOn) settings.position else null
+                        manualLatLng = if (settings.manualLocOn) settings.userPosition else null
                     )
 
                     if (showOptions) {

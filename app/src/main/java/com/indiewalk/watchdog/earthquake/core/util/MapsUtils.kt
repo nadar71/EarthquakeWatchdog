@@ -10,7 +10,7 @@ import android.provider.Settings
 import android.util.Log
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
-import com.indiewalk.watchdog.earthquake.core.model.MappingSettings
+import com.indiewalk.watchdog.earthquake.core.model.AppSettings
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQGeometryDTO
 import it.abenergie.customerarea.core.utility.extensions.TAG
 import kotlinx.coroutines.tasks.await
@@ -43,16 +43,18 @@ object MapsUtils {
     // Update each equakes info with custom distance from user if any, with distance unit preferred.
     fun getEQDistanceFromUser(
         eqCoords: EQGeometryDTO,
-        settings: MappingSettings
+        settings: AppSettings
     ): Double? {
         Log.d(TAG, "getEQDistanceFromUser: eqCoords: $eqCoords")
         val eqLat = eqCoords.latitude ?: return null
         val eqLng = eqCoords.longitude ?: return null
 
         var dist =  haversineDistanceKm(
-            lat1 = settings.userLat,
+            lat1 = if (settings.manualLocOn) settings.manualPosition.latitude
+                   else settings.userPosition.latitude,
             lat2 = eqLat,
-            lng1 = settings.userLng,
+            lng1 = if (settings.manualLocOn) settings.manualPosition.longitude
+                   else settings.userPosition.longitude,
             lng2 = eqLng
         )
         Log.i(TAG, "getEQDistanceFromUser: eq distance from user : $dist in km")

@@ -81,7 +81,7 @@ fun IntroScreen_01(
                 // Foreground location permission granted
                 scope.launch {
                     userLocation = MapsUtils.getLastKnownLatLng(context)
-                    introViewModel.setUserLocation(userLocation )
+                    introViewModel.setUserPosition(userLocation )
                     if (userLocation != null) {
                         val address = MapsUtils.getAddressFromLatLng(context, userLocation!!)
                         introViewModel.setAddress(address?.getAddressLine(0) ?: "Unknown")

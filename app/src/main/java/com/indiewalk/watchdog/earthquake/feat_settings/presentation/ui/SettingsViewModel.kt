@@ -33,7 +33,7 @@ class SettingsViewModel @Inject constructor(
 
     fun setManualLocation(enabled: Boolean) {
         viewModelScope.launch {
-            AppPrefs.setManualLocation(context, enabled)
+            AppPrefs.setManualLocationOn(context, enabled)
         }
     }
 }

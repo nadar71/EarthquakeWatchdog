@@ -62,7 +62,6 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.Ea
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromDBState
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromRemoteState
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.model.toMappingSettings
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
 import kotlinx.coroutines.launch
 
@@ -254,7 +253,7 @@ fun EarthquakeListScreen(
                         ) {
                             val generated = eqsCollection?.metadata?.generated
                             EarthquakeCard(
-                                eq = eq.toEQEntity(generated,settings.toMappingSettings()).toEarthquakeUI(),
+                                eq = eq.toEQEntity(generated, settings).toEarthquakeUI(),
                                 settings = settings
                             )
                         }

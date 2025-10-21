@@ -1,10 +1,10 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto
 
-import com.indiewalk.watchdog.earthquake.core.model.MappingSettings
+import com.indiewalk.watchdog.earthquake.core.model.AppSettings
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getEQDistanceFromUser
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 
-// A single EQ Feature network/dto with properties + geometry + id.
+// Single EQ Feature network/dto with properties + geometry + id.
 data class EQFeatureDTO(
     val type: String,                   // "Feature"
     val properties: EQPropertiesDTO,
@@ -16,14 +16,13 @@ data class EQFeatureDTO(
 
 fun EQFeatureDTO.toEQEntity(
     feedGenerated: Long?,
-    settings: MappingSettings
+    settings: AppSettings
 ): EQEntity {
     val distKm = getEQDistanceFromUser(geometry, settings)?.toInt() // truncate to int
     return baseEntity(feedGenerated, distKm)
 }
 
 
-/** Helper to assemble the entity (you asked “what is baseEntity?”) */
 private fun EQFeatureDTO.baseEntity(
     feedGenerated: Long?,
     distanceFromUserKm: Int?

@@ -34,36 +34,36 @@ class IntroViewModel @Inject constructor(
         viewModelScope.launch { AppPrefs.setAskedLocationOnce(context, true) }
     }
 
-    fun setUserLocation(latLng: LatLng?) {
+    fun setUserPosition(latLng: LatLng?) {
         if (latLng == null) return
         viewModelScope.launch {
-            AppPrefs.setLocation(context, latLng.latitude, latLng.longitude)
+            AppPrefs.setUserPosition(context, latLng.latitude, latLng.longitude)
             // AppPrefs.setManualLocation(context, false) // autoloc by default after grant
         }
     }
 
     fun setAddress(address: String) {
         viewModelScope.launch {
-            AppPrefs.setAddress(context, address)
+            AppPrefs.setUserAddress(context, address)
         }
     }
 
     fun setCity(city: String) {
         viewModelScope.launch {
-            AppPrefs.setCity(context, city)
+            AppPrefs.setUserCity(context, city)
         }
     }
 
     fun setCountryCode(country: String) {
         viewModelScope.launch {
-            AppPrefs.setCountryCode(context, country)
+            AppPrefs.setUserCountryCode(context, country)
         }
     }
 
     fun keepDefaultLocation() {
         viewModelScope.launch {
             // force defaults (even if already there)
-            AppPrefs.setLocation(context, DEFAULT_LAT, DEFAULT_LNG)
+            AppPrefs.setUserPosition(context, DEFAULT_LAT, DEFAULT_LNG)
             // AppPrefs.setManualLocation(context, false)
         }
     }

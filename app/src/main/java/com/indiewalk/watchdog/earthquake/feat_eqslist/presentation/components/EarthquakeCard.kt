@@ -72,10 +72,16 @@ fun EarthquakeCard(
     val distanceKm = eq.distanceFromUser
 
     val unitSystem = settings.unitSystem
-    val isDefaultLocation = settings.position.latitude == DEFAULT_LAT &&
-                            settings.position.longitude == DEFAULT_LNG
+    val isDefaultLocation = settings.userPosition.latitude == DEFAULT_LAT &&
+                            settings.userPosition.longitude == DEFAULT_LNG
     val fromLabel = if (!isDefaultLocation)
-                         stringResource(id = R.string.generic_from_label) + "\n" + settings.country + " " + settings.city
+                        if (settings.manualLocOn)
+                             stringResource(id = R.string.generic_from_label) +
+                                     "\n" + settings.manualLocationInfo.countryCode + " " +
+                                     settings.manualLocationInfo.city
+                        else stringResource(id = R.string.generic_from_label) +
+                                "\n" + settings.userLocationInfo.countryCode + " " +
+                                settings.userLocationInfo.city
                     else stringResource(id = R.string.generic_from_label) + "\n" +
                          Constants.DEFAULT_COUNTRY_CODE + " " +
                          Constants.DEFAULT_CITY
@@ -296,7 +302,7 @@ fun EarthquakeCardPreviewLight() {
                 EarthquakeCard(
                     eq = sampleFeature1(),
                     settings = AppSettings(
-                        position = LatLng(DEFAULT_LAT, DEFAULT_LNG),
+                        userPosition = LatLng(DEFAULT_LAT, DEFAULT_LNG),
                         unitSystem = UnitSystem.METRIC,
                         mode = ThemeMode.Light,
                     ),
@@ -305,7 +311,7 @@ fun EarthquakeCardPreviewLight() {
                 EarthquakeCard(
                     eq = sampleFeature2(),
                     settings = AppSettings(
-                        position = LatLng(DEFAULT_LAT, DEFAULT_LNG),
+                        userPosition = LatLng(DEFAULT_LAT, DEFAULT_LNG),
                         unitSystem = UnitSystem.IMPERIAL,
                         mode = ThemeMode.Light,
                     ),
@@ -337,7 +343,7 @@ fun EarthquakeCardPreviewDark() {
                 EarthquakeCard(
                     eq = sampleFeature1(),
                     settings = AppSettings(
-                        position = LatLng(DEFAULT_LAT, DEFAULT_LNG),
+                        userPosition = LatLng(DEFAULT_LAT, DEFAULT_LNG),
                         unitSystem = UnitSystem.METRIC,
                         mode = ThemeMode.Light,
                     ),
@@ -346,7 +352,7 @@ fun EarthquakeCardPreviewDark() {
                 EarthquakeCard(
                     eq = sampleFeature2(),
                     settings = AppSettings(
-                        position = LatLng(DEFAULT_LAT, DEFAULT_LNG),
+                        userPosition = LatLng(DEFAULT_LAT, DEFAULT_LNG),
                         unitSystem = UnitSystem.METRIC,
                         mode = ThemeMode.Light,
                     ),

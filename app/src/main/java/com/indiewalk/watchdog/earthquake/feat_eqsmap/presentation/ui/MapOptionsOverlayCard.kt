@@ -36,7 +36,6 @@ import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
 import com.indiewalk.watchdog.earthquake.core.data.enums.UnitSystem
 import com.indiewalk.watchdog.earthquake.core.model.AppSettings
-import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.LocationPicker
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.LocationPickerNoPermissionsReq
 
 
@@ -55,7 +54,7 @@ fun MapOptionsOverlayCard(
     // var initialLocation = LatLng(settings.position.latitude, settings.position.longitude)
     var selectedLocation by remember { mutableStateOf("") }
     var showLocationPicker by remember { mutableStateOf(false) }
-    var selectedCoordinates by remember { mutableStateOf(settings.position) }
+    var selectedCoordinates by remember { mutableStateOf(settings.userPosition) }
 
 
     Box(modifier = Modifier
@@ -133,7 +132,7 @@ fun MapOptionsOverlayCard(
         LocationPickerNoPermissionsReq(
             /*initialLat = selectedCoordinates.latitude,
             initialLng = selectedCoordinates.longitude,*/
-            initialFallback = settings.position,
+            initialFallback = settings.userPosition,
             onLocationSelected = { locationName, latLng ->
                 selectedLocation = locationName
                 selectedCoordinates = latLng
@@ -195,7 +194,7 @@ private fun MapOptionsOverlayCardPreview() {
             mapType = mapType.value,
             onMapTypeChange = { mapType.value = it },
             settings = AppSettings(
-                position = LatLng(DEFAULT_LAT, DEFAULT_LNG),
+                userPosition = LatLng(DEFAULT_LAT, DEFAULT_LNG),
                 manualLocOn = false,
                 unitSystem = UnitSystem.METRIC,
             ),
