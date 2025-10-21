@@ -124,8 +124,6 @@ fun IntroScreen_01(
             )
         }
     ) { padding ->
-        // if (!allGranted && !anyPermanentlyDenied && !manualOn){
-
         if (!allGranted && !askedOnce) {
             Column(
                 Modifier
@@ -192,8 +190,6 @@ fun IntroScreen_01(
                     color = MaterialTheme.colorScheme.onBackground
 
                 )
-
-
             }
         } else {
 
@@ -281,11 +277,6 @@ fun showLocationPermissionDeniedDialog(context: Context, navController: NavHostC
             navigateToHome(navController)
         }
         .setNegativeButton("openSettings") { _, _ ->
-            /*// Open app settings allowing user to enable location permissions manually
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                data = Uri.fromParts("package", context.packageName, null)
-            }
-            context.startActivity(intent)*/
             openAppSettings(context)
         }
         .show()

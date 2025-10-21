@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -150,6 +151,7 @@ fun EarthquakeCard(
                         )
                     )
                     Text(
+                        textAlign = TextAlign.End,
                         text = fromLabel,
                         maxLines = 2,
                         style = MaterialTheme.typography.labelSmall.copy(
