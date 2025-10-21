@@ -40,17 +40,6 @@ object MapsUtils {
     }
 
 
-    /*// Convert km to miles
-    fun fromKmToMiles(km: Double): Double {
-        return km * KM_TO_MILES
-    }
-
-    // Convert from miles to km
-    fun fromMilesToKm(miles: Double): Double {
-        return miles * MILES_TO_KM
-    }*/
-
-
     // Update each equakes info with custom distance from user if any, with distance unit preferred.
     fun getEQDistanceFromUser(
         eqCoords: EQGeometryDTO,
@@ -71,31 +60,6 @@ object MapsUtils {
         return dist
     }
 
-    /*fun getEQDistanceFromUser(
-        eqCoords: EQGeometryDTO,
-        ): Int? {
-        Log.d(TAG, "getEQDistanceFromUser: eqCoords: $eqCoords")
-        if (eqCoords == null || eqCoords.latitude == null || eqCoords.longitude == null) {
-            return null
-        } else {
-            var userLat = device_lat.toDouble()
-            var userLng = device_lng.toDouble()
-
-            var dist = haversineDistanceCalc(
-                userLat, eqCoords.latitude as Double,
-                userLng, eqCoords.longitude as Double
-            )
-
-            *//*if (unitSystem == UnitSystems.IMPERIAL.value) {
-                dist = fromKmToMiles(dist.toDouble())
-            }
-
-            Log.i(TAG, "getEQDistanceFromUser: eq distance from user : $dist in $unitSystem")*//*
-            Log.i(TAG, "getEQDistanceFromUser: eq distance from user : $dist in km")
-
-            return dist.toInt()
-        }
-    }*/
 
     fun openAppSettings(context: Context) {
         val uri = Uri.fromParts("package", context.packageName, null)
@@ -115,8 +79,7 @@ object MapsUtils {
         }
     }
 
-    // Performs reverse geocoding to get a human-readable address from LatLng coordinates.
-
+    // Reverse geocoding to get address from LatLng
     fun getAddressFromLatLng(context: Context, latLng: LatLng): Address? {
         val geocoder = Geocoder(context, Locale.getDefault())
         return try {
