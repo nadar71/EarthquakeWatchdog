@@ -51,7 +51,7 @@ fun EarthquakeMapContent(
 ) {
     val context = LocalContext.current
 
-    // Camera setup
+    // Camera init
     val worldCenter = LatLng(0.0, 0.0)
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(worldCenter, 2f)
@@ -76,7 +76,7 @@ fun EarthquakeMapContent(
     var mapLoaded by remember { mutableStateOf(false) }
     var cameraInitialized by remember { mutableStateOf(false) }
 
-    // Resolve a friendly name for the manual marker (reverse geocode once per position)
+    // Manual localization marker address (reverse geocoding once per position)
     var manualTitle by remember(manualLatLng) { mutableStateOf<String?>(null) }
     LaunchedEffect(manualLatLng) {
         manualTitle = manualLatLng?.let { ll -> getPlaceNameOrNull(context, ll) }

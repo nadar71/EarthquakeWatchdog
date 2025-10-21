@@ -2,6 +2,7 @@ package com.indiewalk.watchdog.earthquake.core.data
 
 
 import android.content.Context
+import android.location.Address
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -20,17 +21,20 @@ private val Context.dataStore by preferencesDataStore(name = DATASTORE_NAME)
 object AppPrefs {
     private val THEME_MODE = stringPreferencesKey("mode")
     private val UNIT_SYSTEM = stringPreferencesKey("unit_system")
+
     private val POSITION_LAT = stringPreferencesKey("position_lat")
     private val POSITION_LNG = stringPreferencesKey("position_lng")
     private val POSITION_CITY = stringPreferencesKey("position_city")
     private val POSITION_COUNTRY_CODE = stringPreferencesKey("position_country_code")
     private val POSITION_ADDRESS = stringPreferencesKey("position_address")
+
     private val MANUAL_LOC_ON = booleanPreferencesKey("manual_loc_on")
     private val MANUAL_LOC_LAT = stringPreferencesKey("manual_loc_lat")
     private val MANUAL_LOC_LNG = stringPreferencesKey("manual_loc_lng")
     private val MANUAL_LOC_CITY = stringPreferencesKey("manual_loc_city")
     private val MANUAL_LOC_COUNTRY_CODE = stringPreferencesKey("manual_loc_country_code")
     private val MANUAL_LOC_ADDRESS = stringPreferencesKey("manual_loc_address")
+
     private val KEY_ASKED_LOCATION_ONCE = booleanPreferencesKey("asked_location_once")
 
 
@@ -44,25 +48,26 @@ object AppPrefs {
                 else -> ThemeMode.System
             }
 
-            val manualLoc = prefs[MANUAL_LOC_ON] ?: false
-            val lat = if (manualLoc) prefs[MANUAL_LOC_LAT]?.toDoubleOrNull() ?: Constants.DEFAULT_LAT
+            val isManualLocOn = prefs[MANUAL_LOC_ON] ?: false
+            val lat = if (isManualLocOn) prefs[MANUAL_LOC_LAT]?.toDoubleOrNull() ?: Constants.DEFAULT_LAT
                       else prefs[POSITION_LAT]?.toDoubleOrNull() ?: Constants.DEFAULT_LAT
-            val lng = if (manualLoc) prefs[MANUAL_LOC_LNG]?.toDoubleOrNull() ?: Constants.DEFAULT_LNG
+            val lng = if (isManualLocOn) prefs[MANUAL_LOC_LNG]?.toDoubleOrNull() ?: Constants.DEFAULT_LNG
                       else prefs[POSITION_LNG]?.toDoubleOrNull() ?: Constants.DEFAULT_LNG
-            val city = if (manualLoc) prefs[MANUAL_LOC_CITY] ?: ""
+            val city = if (isManualLocOn) prefs[MANUAL_LOC_CITY] ?: ""
                        else prefs[POSITION_CITY] ?: ""
-            val country = if (manualLoc) prefs[MANUAL_LOC_COUNTRY_CODE] ?: ""
+            val country = if (isManualLocOn) prefs[MANUAL_LOC_COUNTRY_CODE] ?: ""
                           else prefs[POSITION_COUNTRY_CODE] ?: ""
-            val address = if (manualLoc) prefs[MANUAL_LOC_ADDRESS] ?: ""
+            val address = if (isManualLocOn) prefs[MANUAL_LOC_ADDRESS] ?: ""
                           else prefs[POSITION_ADDRESS] ?: ""
             val unit = when (prefs[UNIT_SYSTEM]) {
                 UnitSystem.IMPERIAL.name -> UnitSystem.IMPERIAL
                 else -> UnitSystem.METRIC
             }
 
+
             AppSettings(
                 mode = mode,
-                manualLocOn = manualLoc,
+                manualLocOn = isManualLocOn,
                 position = LatLng(lat, lng),
                 city = city,
                 country = country,

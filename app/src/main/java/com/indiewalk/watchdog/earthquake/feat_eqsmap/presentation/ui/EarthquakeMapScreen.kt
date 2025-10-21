@@ -87,8 +87,8 @@ fun EarthquakeMapScreen(
 
     // Options overlay/state
     var showOptions by rememberSaveable { mutableStateOf(false) }
-    // var manualPosition by rememberSaveable { mutableStateOf(false) }
-    val manualPosition = settings.manualLocOn // bind to persisted state
+    var manualPosition by rememberSaveable { mutableStateOf(settings.manualLocOn) }
+    // val manualPosition = settings.manualLocOn // bind to persisted state
     var mapType by rememberSaveable { mutableStateOf(MapType.TERRAIN) } // default Terrain
     var recenterTo by remember { mutableStateOf<LatLng?>(null) } // one-shot camera target
 
