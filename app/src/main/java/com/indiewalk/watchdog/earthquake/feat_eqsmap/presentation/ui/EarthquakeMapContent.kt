@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.compose.MapType
+import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
 
@@ -204,7 +205,7 @@ fun EarthquakeMapContent(
     }
 }
 
-@SuppressLint("MissingPermission")
+/*@SuppressLint("MissingPermission")
 suspend fun getLastKnownLatLng(context: Context): LatLng? {
     return try {
         val fused = LocationServices.getFusedLocationProviderClient(context)
@@ -213,7 +214,7 @@ suspend fun getLastKnownLatLng(context: Context): LatLng? {
     } catch (_: Exception) {
         null
     }
-}
+}*/
 
 private fun getPlaceNameOrNull(context: Context, latLng: LatLng): String? = try {
     val geocoder = Geocoder(context, Locale.getDefault())

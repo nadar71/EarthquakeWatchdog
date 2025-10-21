@@ -1,13 +1,20 @@
 package com.indiewalk.watchdog.earthquake.core.util
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.location.Address
+import android.location.Geocoder
 import android.net.Uri
 import android.provider.Settings
 import android.util.Log
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.core.model.MappingSettings
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQGeometryDTO
 import it.abenergie.customerarea.core.utility.extensions.TAG
+import kotlinx.coroutines.tasks.await
+import java.util.Locale
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
@@ -96,5 +103,30 @@ object MapsUtils {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
+
+    @SuppressLint("MissingPermission")
+    suspend fun getLastKnownLatLng(context: Context): LatLng? {
+        return try {
+            val fused = LocationServices.getFusedLocationProviderClient(context)
+            val loc = fused.lastLocation.await() ?: return null
+            LatLng(loc.latitude, loc.longitude)
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    // Performs reverse geocoding to get a human-readable address from LatLng coordinates.
+
+    fun getAddressFromLatLng(context: Context, latLng: LatLng): Address? {
+        val geocoder = Geocoder(context, Locale.getDefault())
+        return try {
+            val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+            addresses?.firstOrNull() // Return 1st address found, or null if empty
+        } catch (e: Exception) {
+            Log.e("MapsUtils", "Failed to get address from LatLng", e)
+            null
+        }
+    }
+
 }
 

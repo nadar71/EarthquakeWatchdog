@@ -22,7 +22,15 @@ object AppPrefs {
     private val UNIT_SYSTEM = stringPreferencesKey("unit_system")
     private val POSITION_LAT = stringPreferencesKey("position_lat")
     private val POSITION_LNG = stringPreferencesKey("position_lng")
+    private val POSITION_CITY = stringPreferencesKey("position_city")
+    private val POSITION_COUNTRY_CODE = stringPreferencesKey("position_country_code")
+    private val POSITION_ADDRESS = stringPreferencesKey("position_address")
     private val MANUAL_LOC_ON = booleanPreferencesKey("manual_loc_on")
+    private val MANUAL_LOC_LAT = stringPreferencesKey("manual_loc_lat")
+    private val MANUAL_LOC_LNG = stringPreferencesKey("manual_loc_lng")
+    private val MANUAL_LOC_CITY = stringPreferencesKey("manual_loc_city")
+    private val MANUAL_LOC_COUNTRY_CODE = stringPreferencesKey("manual_loc_country_code")
+    private val MANUAL_LOC_ADDRESS = stringPreferencesKey("manual_loc_address")
     private val KEY_ASKED_LOCATION_ONCE = booleanPreferencesKey("asked_location_once")
 
 
@@ -36,9 +44,17 @@ object AppPrefs {
                 else -> ThemeMode.System
             }
 
-            val lat = prefs[POSITION_LAT]?.toDoubleOrNull() ?: Constants.DEFAULT_LAT
-            val lng = prefs[POSITION_LNG]?.toDoubleOrNull() ?: Constants.DEFAULT_LNG
             val manualLoc = prefs[MANUAL_LOC_ON] ?: false
+            val lat = if (manualLoc) prefs[MANUAL_LOC_LAT]?.toDoubleOrNull() ?: Constants.DEFAULT_LAT
+                      else prefs[POSITION_LAT]?.toDoubleOrNull() ?: Constants.DEFAULT_LAT
+            val lng = if (manualLoc) prefs[MANUAL_LOC_LNG]?.toDoubleOrNull() ?: Constants.DEFAULT_LNG
+                      else prefs[POSITION_LNG]?.toDoubleOrNull() ?: Constants.DEFAULT_LNG
+            val city = if (manualLoc) prefs[MANUAL_LOC_CITY] ?: ""
+                       else prefs[POSITION_CITY] ?: ""
+            val country = if (manualLoc) prefs[MANUAL_LOC_COUNTRY_CODE] ?: ""
+                          else prefs[POSITION_COUNTRY_CODE] ?: ""
+            val address = if (manualLoc) prefs[MANUAL_LOC_ADDRESS] ?: ""
+                          else prefs[POSITION_ADDRESS] ?: ""
             val unit = when (prefs[UNIT_SYSTEM]) {
                 UnitSystem.IMPERIAL.name -> UnitSystem.IMPERIAL
                 else -> UnitSystem.METRIC
@@ -48,6 +64,9 @@ object AppPrefs {
                 mode = mode,
                 manualLocOn = manualLoc,
                 position = LatLng(lat, lng),
+                city = city,
+                country = country,
+                address = address,
                 unitSystem = unit
             )
         }
@@ -77,6 +96,38 @@ object AppPrefs {
             it[POSITION_LAT] = lat.toString()
             it[POSITION_LNG] = lng.toString()
         }
+    }
+
+    suspend fun setCity(context: Context, city: String) {
+        context.dataStore.edit { it[POSITION_CITY] = city }
+    }
+
+    suspend fun setCountryCode(context: Context, country: String) {
+        context.dataStore.edit { it[POSITION_COUNTRY_CODE] = country }
+    }
+
+    suspend fun setAddress(context: Context, address: String) {
+        context.dataStore.edit { it[POSITION_ADDRESS] = address }
+    }
+
+
+    suspend fun setManualLocation(context: Context, lat: Double, lng: Double) {
+        context.dataStore.edit {
+            it[MANUAL_LOC_LAT] = lat.toString()
+            it[MANUAL_LOC_LNG] = lng.toString()
+        }
+    }
+
+    suspend fun setManualCity(context: Context, city: String) {
+        context.dataStore.edit { it[MANUAL_LOC_CITY] = city }
+    }
+
+    suspend fun setManualCountryCode(context: Context, country: String) {
+        context.dataStore.edit { it[MANUAL_LOC_COUNTRY_CODE] = country }
+    }
+
+    suspend fun setManualAddress(context: Context, address: String) {
+        context.dataStore.edit { it[MANUAL_LOC_ADDRESS] = address }
     }
 
     // Read fun

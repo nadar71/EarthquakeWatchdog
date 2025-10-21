@@ -74,8 +74,10 @@ fun EarthquakeCard(
     val isDefaultLocation = settings.position.latitude == DEFAULT_LAT &&
                             settings.position.longitude == DEFAULT_LNG
     val fromLabel = if (!isDefaultLocation)
-                         stringResource(id = R.string.generic_from_label)
-                    else stringResource(id = R.string.generic_from_label) + Constants.DEFAULT_ADDRESS
+                         stringResource(id = R.string.generic_from_label) + "\n" + settings.country + " " + settings.city
+                    else stringResource(id = R.string.generic_from_label) + "\n" +
+                         Constants.DEFAULT_COUNTRY_CODE + " " +
+                         Constants.DEFAULT_CITY
 
     Card(
         modifier = modifier
@@ -149,6 +151,7 @@ fun EarthquakeCard(
                     )
                     Text(
                         text = fromLabel,
+                        maxLines = 2,
                         style = MaterialTheme.typography.labelSmall.copy(
                             color = MaterialTheme.colorScheme.secondary,
                         )

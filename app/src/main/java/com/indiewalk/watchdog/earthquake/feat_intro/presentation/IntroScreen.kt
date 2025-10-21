@@ -3,9 +3,6 @@ package com.indiewalk.watchdog.earthquake.feat_intro.presentation
 import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,6 +29,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,9 +41,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationRoutes
+import com.indiewalk.watchdog.earthquake.core.util.MapsUtils
+import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.openAppSettings
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
@@ -58,7 +60,9 @@ fun IntroScreen_01(
     Log.d(TAG, "IntroScreen: shown.")
 
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var isReqPermissionBtnPressed by remember { mutableStateOf(false) }
+    var userLocation by remember { mutableStateOf(null as LatLng?) }
     val permissions = rememberMultiplePermissionsState(
         listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -75,7 +79,21 @@ fun IntroScreen_01(
         onResult = { isGranted ->
             if (isGranted) {
                 // Foreground location permission granted
-                navigateToHome(navController)
+                scope.launch {
+                    userLocation = MapsUtils.getLastKnownLatLng(context)
+                    introViewModel.setUserLocation(userLocation )
+                    if (userLocation != null) {
+                        val address = MapsUtils.getAddressFromLatLng(context, userLocation!!)
+                        introViewModel.setAddress(address?.getAddressLine(0) ?: "Unknown")
+                        introViewModel.setCity(address?.locality ?: "Unknown")
+                        introViewModel.setCountryCode(address?.countryCode ?: "Unknown")
+                        Log.d(TAG, "User location: ${userLocation?.latitude}, ${userLocation?.longitude}")
+                        Log.d(TAG, "User address: ${address?.getAddressLine(0)}")
+                        Log.d(TAG, "User city: ${address?.locality}")
+                        Log.d(TAG, "User country code: ${address?.countryCode}")
+                    }
+                    navigateToHome(navController)
+                }
             } else {
                 // Foreground location permission denied
                 // asked one flag set: do not ask again next app opening
@@ -263,11 +281,12 @@ fun showLocationPermissionDeniedDialog(context: Context, navController: NavHostC
             navigateToHome(navController)
         }
         .setNegativeButton("openSettings") { _, _ ->
-            // Open app settings allowing user to enable location permissions manually
+            /*// Open app settings allowing user to enable location permissions manually
             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                 data = Uri.fromParts("package", context.packageName, null)
             }
-            context.startActivity(intent)
+            context.startActivity(intent)*/
+            openAppSettings(context)
         }
         .show()
 }
