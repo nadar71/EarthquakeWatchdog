@@ -8,37 +8,34 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.TileProvider
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.TileOverlay
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.Dot
-import com.google.android.gms.maps.model.Gap
-import com.google.android.gms.maps.model.JointType
-import com.google.maps.android.compose.MapType
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
 import com.indiewalk.watchdog.earthquake.core.model.AppSettings
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getPlaceNameOrNull
-import com.google.maps.android.compose.Polyline
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.GraticuleTileProvider
 
 
 @Composable
@@ -50,51 +47,18 @@ fun EarthquakeMapContent(
     recenterTarget: LatLng?,
     onRecenterHandled: () -> Unit,
     settings: AppSettings,
-    // manualLatLng: LatLng?
 ) {
     val context = LocalContext.current
 
-    // Precompute world-wide 10° lines
     val showGrid by rememberSaveable { mutableStateOf(true) }
-    val gridSegments = remember {
-        val lines = mutableListOf<List<LatLng>>()
 
-        // Meridians (vertical) : multi-sampled
-        for (lon in -180..180 step 10) {
-            val pts = ArrayList<LatLng>(100)
-            var lat = -85.0
-            while (lat <= 85.0) {
-                pts += LatLng(lat, lon.toDouble())
-                lat += 2.0
-            }
-            lines += pts
-        }
-
-        // Parallels (horizontal): sample across longitudes to avoid anti-meridian wrap
-        for (lat in -80..80 step 10) {
-            val pts = ArrayList<LatLng>(200)
-            var lon = -179.9 // avoid exactly -180/180
-            while (lon <= 179.9) {
-                pts += LatLng(lat.toDouble(), lon)
-                lon += 2.0
-            }
-            lines += pts
-        }
-
-        /* other method to avoid antimeridian wrap
-        // For each parallel:
-        val leftSegment  = listOf(
-            LatLng(lat.toDouble(), -179.9),
-            LatLng(lat.toDouble(),  -0.1)
-        )
-        val rightSegment = listOf(
-            LatLng(lat.toDouble(),   0.1),
-            LatLng(lat.toDouble(), 179.9)
-        )
-        lines += leftSegment
-        lines += rightSegment*/
-
-        lines
+    // Create once; tiles are cached by Google Maps
+    val provider = remember {
+        GraticuleTileProvider(
+            stepDegrees = 10,
+            lineColor = 0x66FFFFFF.toInt(), // semi-transparent white
+            lineWidthPx = 2f
+        ) as TileProvider
     }
 
     // Camera init
@@ -261,18 +225,11 @@ fun EarthquakeMapContent(
 
         // Grid
         if (showGrid) {
-            val dashPattern = listOf(Dot(), Gap(8f))
-            gridSegments.forEach { segment ->
-                Polyline(
-                    points = segment,
-                    color = Color(0xFFFF3D00),
-                    width =  3.0f,
-                    zIndex = 10f,
-                    geodesic = false,  // straight lines, true for arcs
-                    pattern = dashPattern,
-                    jointType = JointType.DEFAULT
-                )
-            }
+            TileOverlay(
+                tileProvider = provider,
+                transparency = 0f, // 0 = opaque, 1 = invisible
+                zIndex = 1f        // draw above base map
+            )
         }
     }
 }
