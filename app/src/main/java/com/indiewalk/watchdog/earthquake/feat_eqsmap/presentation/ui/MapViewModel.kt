@@ -66,9 +66,15 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    fun setPosition(latLng: LatLng) {
+    fun setUserPosition(latLng: LatLng) {
         viewModelScope.launch {
             AppPrefs.setUserPosition(context, latLng.latitude, latLng.longitude)
+        }
+    }
+
+    fun setManualPositionOn(latLng: LatLng) {
+        viewModelScope.launch {
+            AppPrefs.setManualPosition(context, latLng.latitude, latLng.longitude)
         }
     }
 }

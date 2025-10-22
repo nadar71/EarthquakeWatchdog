@@ -72,7 +72,7 @@ fun EarthquakeMapScreen(
 */
 
     // 3) Permissions Derived flags
-    val allGranted by remember(permissions) { derivedStateOf { permissions.allPermissionsGranted } }
+    val hasLocalPermissions by remember(permissions) { derivedStateOf { permissions.allPermissionsGranted } }
     /*val anyShouldShowRationale by remember(permissions) {
         derivedStateOf { permissions.permissions.any { it.status.shouldShowRationale } }
     }
@@ -87,10 +87,12 @@ fun EarthquakeMapScreen(
 
     // Options overlay/state
     var showOptions by rememberSaveable { mutableStateOf(false) }
-    var manualPosition by rememberSaveable { mutableStateOf(settings.manualLocOn) }
+    var isManualPositionOn by rememberSaveable { mutableStateOf(settings.manualLocOn) }
     // val manualPosition = settings.manualLocOn // bind to persisted state
     var mapType by rememberSaveable { mutableStateOf(MapType.TERRAIN) } // default Terrain
-    var recenterTo by remember { mutableStateOf<LatLng?>(null) } // one-shot camera target
+    // one-shot camera target
+    // TODO: use this to center map in a particular eq location from home list
+    var recenterTo by remember { mutableStateOf<LatLng?>(null) }
 
 
     // ---------------------------------------- LOGIC ----------------------------------------------
@@ -188,35 +190,32 @@ fun EarthquakeMapScreen(
                     EarthquakeMapContent(
                         padding = padding,
                         eqs = eqs,
-                        hasLocationPermission = allGranted,
+                        hasLocationPermissions = hasLocalPermissions,
                         mapType = mapType,
                         recenterTarget = recenterTo,
                         onRecenterHandled = { recenterTo = null },
-                        manualLatLng = if (settings.manualLocOn) settings.userPosition else null
+                        settings = settings,
                     )
 
                     if (showOptions) {
                         MapOptionsOverlayCard(
                             modifier = Modifier
                                 .align (Alignment.Center)
-                                .padding(
-                                    start =  32.dp,
-                                    top =    32.dp,
-                                    end =    32.dp,
-                                    bottom = 32.dp
-                                ),
-                            manualPosition = manualPosition,
+                                .padding(32.dp, 32.dp, 32.dp, 32.dp),
+                            isManualPositionOn = isManualPositionOn,
                             onManualPositionChange = { checked ->
                                 if (checked) {
-                                    // just open picker; persistence happens on OK (see onManualPositionConfirmed)
+                                    // just open picker; persistence happens on OK
+                                    // (see onManualPositionConfirmed)
                                 } else {
-                                    // uncheck -> restore base coords (user if granted, else defaults) + persist + recenter
+                                    // uncheck -> restore base coords (user's ones if granted, else defaults)
+                                    // + persist + recenter
                                     scope.launch {
                                         val lastKnown =
-                                            if (allGranted) getLastKnownLatLng(context) else null
+                                            if (hasLocalPermissions) getLastKnownLatLng(context) else null
                                         val fallback = lastKnown ?: LatLng(DEFAULT_LAT, DEFAULT_LNG)
                                         mapViewModel.setManualLocOn(false)
-                                        mapViewModel.setPosition(fallback)
+                                        mapViewModel.setUserPosition(fallback)
                                         onManualPositionToggle(false)
                                         recenterTo = fallback
                                     }
@@ -224,12 +223,13 @@ fun EarthquakeMapScreen(
                             },
                             onManualPositionConfirmed = { latLng ->
                                 // only on OK in picker
-                                mapViewModel.setPosition(latLng)
+                                mapViewModel.setManualPositionOn(latLng)
                                 mapViewModel.setManualLocOn(true)
                                 onManualPositionToggle(true)
                                 recenterTo = latLng
                                 showOptions = false
                             },
+                            hasLocationPermissions = hasLocalPermissions,
                             mapType = mapType,
                             onMapTypeChange = { mapType = it },
                             settings = settings,

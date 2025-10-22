@@ -1,12 +1,8 @@
 package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.location.Geocoder
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -27,29 +23,79 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.Dot
+import com.google.android.gms.maps.model.Gap
+import com.google.android.gms.maps.model.JointType
 import com.google.maps.android.compose.MapType
+import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
+import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
+import com.indiewalk.watchdog.earthquake.core.model.AppSettings
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
-import kotlinx.coroutines.tasks.await
-import java.util.Locale
+import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getPlaceNameOrNull
+import com.google.maps.android.compose.Polyline
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 
 
 @Composable
 fun EarthquakeMapContent(
     padding: PaddingValues,
     eqs: List<EQEntity>,
-    hasLocationPermission: Boolean,
+    hasLocationPermissions: Boolean,
     mapType: MapType,
     recenterTarget: LatLng?,
     onRecenterHandled: () -> Unit,
-    manualLatLng: LatLng?
+    settings: AppSettings,
+    // manualLatLng: LatLng?
 ) {
     val context = LocalContext.current
+
+    // Precompute world-wide 10° lines
+    val showGrid by rememberSaveable { mutableStateOf(true) }
+    val gridSegments = remember {
+        val lines = mutableListOf<List<LatLng>>()
+
+        // Meridians (vertical) : multi-sampled
+        for (lon in -180..180 step 10) {
+            val pts = ArrayList<LatLng>(100)
+            var lat = -85.0
+            while (lat <= 85.0) {
+                pts += LatLng(lat, lon.toDouble())
+                lat += 2.0
+            }
+            lines += pts
+        }
+
+        // Parallels (horizontal): sample across longitudes to avoid anti-meridian wrap
+        for (lat in -80..80 step 10) {
+            val pts = ArrayList<LatLng>(200)
+            var lon = -179.9 // avoid exactly -180/180
+            while (lon <= 179.9) {
+                pts += LatLng(lat.toDouble(), lon)
+                lon += 2.0
+            }
+            lines += pts
+        }
+
+        /* other method to avoid antimeridian wrap
+        // For each parallel:
+        val leftSegment  = listOf(
+            LatLng(lat.toDouble(), -179.9),
+            LatLng(lat.toDouble(),  -0.1)
+        )
+        val rightSegment = listOf(
+            LatLng(lat.toDouble(),   0.1),
+            LatLng(lat.toDouble(), 179.9)
+        )
+        lines += leftSegment
+        lines += rightSegment*/
+
+        lines
+    }
 
     // Camera init
     val worldCenter = LatLng(0.0, 0.0)
@@ -76,18 +122,17 @@ fun EarthquakeMapContent(
     var mapLoaded by remember { mutableStateOf(false) }
     var cameraInitialized by remember { mutableStateOf(false) }
 
-    // Manual localization marker address (reverse geocoding once per position)
-    var manualTitle by remember(manualLatLng) { mutableStateOf<String?>(null) }
-    LaunchedEffect(manualLatLng) {
-        manualTitle = manualLatLng?.let { ll -> getPlaceNameOrNull(context, ll) }
+    // Manual localization marker address (reverse geocoding manual position)
+    var manualTitle by remember(settings.manualPosition) { mutableStateOf<String?>(null) }
+    LaunchedEffect(settings.manualPosition) {
+        manualTitle = settings.manualPosition.let { ll -> getPlaceNameOrNull(context, ll) }
     }
 
-    // Decide initial camera target ONCE:
+    // Init camera target :
     // 1) manual location
     // 2) user location (if granted & available)
-    // 3) bounds fitting all markers
-    // 4) world view
-    LaunchedEffect(mapLoaded, hasLocationPermission, bounds, manualLatLng) {
+    // 3) bounds fitting all markers/default location
+    LaunchedEffect(mapLoaded, hasLocationPermissions, bounds, settings.manualLocOn) {
         if (!mapLoaded || cameraInitialized) return@LaunchedEffect
 
         /*val didCenterOnUser = if (hasLocationPermission) {
@@ -109,28 +154,38 @@ fun EarthquakeMapContent(
             }
         }*/
 
-        val didCenterOnManual = if (manualLatLng != null) {
-            cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(manualLatLng, 12f))
+        // if manual is on, center map in manual location
+        val didCenterOnManual = if (settings.manualLocOn) {
+            Log.d("EarthquakeMapContent", "Centering on manual location: ${settings.manualPosition}")
+            cameraPositionState.animate(CameraUpdateFactory
+                .newLatLngZoom(settings.manualPosition, 12f))
             true
         } else false
 
+        // if manual is off, center map in user location
         if (!didCenterOnManual) {
-            val didCenterOnUser = if (hasLocationPermission) {
-                val user = getLastKnownLatLng(context)
-                if (user != null) {
-                    cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(user, 6f))
+            val didCenterOnUser = if (hasLocationPermissions) {
+                val userPosition = getLastKnownLatLng(context)
+                Log.d("EarthquakeMapContent", "Centering on user location: $userPosition")
+                if (userPosition != null) {
+                    cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(userPosition, 6f))
                     true
                 } else false
             } else false
 
+            // ...else center in bound or in default location
             if (!didCenterOnUser) {
                 when {
-                    bounds != null -> cameraPositionState.animate(
-                        CameraUpdateFactory.newLatLngBounds(bounds, 80)
-                    )
-                    else -> cameraPositionState.move(
-                        CameraUpdateFactory.newLatLngZoom(worldCenter, 2f)
-                    )
+                    bounds != null -> {
+                        Log.d("EarthquakeMapContent", "Centering on bounds: $bounds")
+                        cameraPositionState.animate(
+                            CameraUpdateFactory.newLatLngBounds(bounds, 80))
+                    }
+                    else -> {
+                        Log.d("EarthquakeMapContent", "Centering on default location: $bounds")
+                        cameraPositionState.move(
+                            CameraUpdateFactory.newLatLngZoom(LatLng(DEFAULT_LAT, DEFAULT_LNG), 2f))
+                    }
                 }
             }
         }
@@ -138,14 +193,14 @@ fun EarthquakeMapContent(
     }
 
     // Map properties / UI
-    val properties = remember(hasLocationPermission, mapType) {
-        MapProperties(isMyLocationEnabled = hasLocationPermission, mapType = mapType)
+    val properties = remember(hasLocationPermissions, mapType) {
+        MapProperties(isMyLocationEnabled = hasLocationPermissions, mapType = mapType)
     }
-    val uiSettings = remember(hasLocationPermission) {
+    val uiSettings = remember(hasLocationPermissions) {
         MapUiSettings(
             zoomControlsEnabled = false,
             compassEnabled = true,
-            myLocationButtonEnabled = hasLocationPermission,
+            myLocationButtonEnabled = hasLocationPermissions,
             scrollGesturesEnabled = true,
             zoomGesturesEnabled = true,
             rotationGesturesEnabled = true,
@@ -161,6 +216,7 @@ fun EarthquakeMapContent(
         }
     }
 
+    // Draw MAP
     GoogleMap(
         modifier = Modifier.Companion
             .fillMaxSize()
@@ -171,7 +227,7 @@ fun EarthquakeMapContent(
         uiSettings = uiSettings,
         onMapLoaded = { mapLoaded = true }
     ) {
-        // Add a marker for each earthquake
+        // Add marker for each earthquake
         eqs.forEach { eq ->
             val lat = eq.latitude
             val lng = eq.longitude
@@ -190,8 +246,8 @@ fun EarthquakeMapContent(
                 )
             }
 
-            // if manual location, single green manual marker
-            manualLatLng?.let { ll ->
+            // if manual location, draw single green manual marker
+            settings.manualPosition.let { ll ->
                 Marker(
                     state = rememberMarkerState(position = ll),
                     title = buildString {
@@ -202,24 +258,23 @@ fun EarthquakeMapContent(
                 )
             }
         }
+
+        // Grid
+        if (showGrid) {
+            val dashPattern = listOf(Dot(), Gap(8f))
+            gridSegments.forEach { segment ->
+                Polyline(
+                    points = segment,
+                    color = Color(0xFFFF3D00),
+                    width =  3.0f,
+                    zIndex = 10f,
+                    geodesic = false,  // straight lines, true for arcs
+                    pattern = dashPattern,
+                    jointType = JointType.DEFAULT
+                )
+            }
+        }
     }
 }
 
-/*@SuppressLint("MissingPermission")
-suspend fun getLastKnownLatLng(context: Context): LatLng? {
-    return try {
-        val fused = LocationServices.getFusedLocationProviderClient(context)
-        val loc = fused.lastLocation.await() ?: return null
-        LatLng(loc.latitude, loc.longitude)
-    } catch (_: Exception) {
-        null
-    }
-}*/
 
-private fun getPlaceNameOrNull(context: Context, latLng: LatLng): String? = try {
-    val geocoder = Geocoder(context, Locale.getDefault())
-    val list = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-    list?.firstOrNull()?.getAddressLine(0)
-} catch (_: Exception) {
-    null
-}

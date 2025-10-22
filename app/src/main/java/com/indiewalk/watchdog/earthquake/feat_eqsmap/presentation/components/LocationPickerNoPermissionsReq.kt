@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
-import android.os.Build
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,8 +38,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -59,41 +55,43 @@ import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
 fun LocationPickerNoPermissionsReq(
     initialFallback: LatLng,
     onLocationSelected: (String, LatLng) -> Unit,
+    hasLocationPermissions: Boolean,
     onDismiss: () -> Unit,
     onLocationChange: (String) -> Unit
 ) {
     val context = LocalContext.current
     val geocoder = remember { Geocoder(context, Locale.getDefault()) }
 
-    var selectedLocation by remember { mutableStateOf<LatLng?>(null) }
-    var locationName by remember { mutableStateOf("") }
+    var selectedCoordinates by remember { mutableStateOf<LatLng?>(null) }
+    var selectedLocationName by remember { mutableStateOf("") }
 
     // Check permission (no requesting here)
-    val isGranted = remember {
+    /*val isGranted = remember {
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-    }
+        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }*/
 
-    // Initial camera: if granted try to move to user, else use initialFallback (from settings)
+    // Init camera: go to to  initialFallback position ( manual, user, default position)
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(initialFallback, 12f)
     }
 
-    // Initialize selected marker from fallback
+    // Init starting marker attributes from fallback
     LaunchedEffect(initialFallback) {
-        selectedLocation = initialFallback
+        selectedCoordinates = initialFallback
         val addr = geocoder.getFromLocation(initialFallback.latitude, initialFallback.longitude, 1)
-        locationName = addr?.firstOrNull()?.getAddressLine(0) ?: "Unknown Location"
-        onLocationChange(locationName)
+        selectedLocationName = addr?.firstOrNull()?.getAddressLine(0) ?: "Unknown Location"
+        onLocationChange(selectedLocationName)
     }
 
     // If permission is granted, try to move camera to user once
-    LaunchedEffect(isGranted) {
-        if (isGranted) {
+    // TODO: check if necessary
+    LaunchedEffect(hasLocationPermissions) {
+        if (hasLocationPermissions) {
             moveToCurrentLocationIfPermitted(context, cameraPositionState) { current ->
-                selectedLocation = current
+                selectedCoordinates = current
                 updateLocationName(context, current, onLocationChange).also { name ->
-                    locationName = name
+                    selectedLocationName = name
                 }
             }
         }
@@ -106,8 +104,8 @@ fun LocationPickerNoPermissionsReq(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-                selectedLocation?.let { onLocationSelected(locationName, it) }
-                onLocationChange(locationName)
+                selectedCoordinates?.let { onLocationSelected(selectedLocationName, it) }
+                onLocationChange(selectedLocationName)
                 onDismiss()
             }) {
                 Text(
@@ -126,29 +124,31 @@ fun LocationPickerNoPermissionsReq(
         },
         text = {
             Column(Modifier.fillMaxWidth()) {
-                Text(locationName, color = MaterialTheme.colorScheme.onPrimary)
+                Text(selectedLocationName, color = MaterialTheme.colorScheme.onPrimary)
                 Spacer(Modifier.height(16.dp))
                 Box(Modifier.fillMaxSize()) {
                     GoogleMapView(
-                        initialLocation = selectedLocation, // marker
+                        initialLocation = selectedCoordinates, // marker
                         cameraPositionState = cameraPositionState,
                         onMapClick = { latLng ->
-                            selectedLocation = latLng
+                            selectedCoordinates = latLng
+                            // TODO : use function
                             val addr = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-                            locationName = addr?.firstOrNull()?.getAddressLine(0) ?: "Unknown Location"
-                            onLocationChange(locationName)
+                            selectedLocationName = addr?.firstOrNull()?.getAddressLine(0) ?: "Unknown Location"
+                            onLocationChange(selectedLocationName)
                         },
                         onMapLoaded = { /* do nothing */ }
                     )
 
-                    // Go to my real geolocation button ONLY if permissions granted
-                    if (isGranted) {
+                    // Go to user real position  ONLY if permissions granted
+                    // TODO: change, go to user position if permissions granted or else to fallback if not
+                    if (hasLocationPermissions) {
                         IconButton(
                             onClick = {
                                 moveToCurrentLocationIfPermitted(context, cameraPositionState) { current ->
-                                    selectedLocation = current
+                                    selectedCoordinates = current
                                     updateLocationName(context, current, onLocationChange).also { name ->
-                                        locationName = name
+                                        selectedLocationName = name
                                     }
                                 }
                             },
@@ -170,6 +170,7 @@ fun LocationPickerNoPermissionsReq(
 }
 
 // Function to check location permission and move the camera to the current position
+// TODO : try to use getFusedLocationProviderClient in map utils
 @SuppressLint("MissingPermission")
 private fun moveToCurrentLocationIfPermitted(
     context: Context,
@@ -177,7 +178,7 @@ private fun moveToCurrentLocationIfPermitted(
     onLocationUpdated: (LatLng) -> Unit  // Callback for updating location
 ) {
     // Check if permissions is granted for FINE location or COARSE location
-    val fine = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    val fine   = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
     val coarse = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
     if (!fine && !coarse) return
 
@@ -194,6 +195,7 @@ private fun moveToCurrentLocationIfPermitted(
     }
 }
 
+
 private fun updateLocationName(
     context: Context,
     latLng: LatLng,
@@ -207,6 +209,8 @@ private fun updateLocationName(
 }
 
 
+
+// -------------------------------------- Previews --------------------------------------------------
 
 @Preview(showBackground = true)
 @Composable
@@ -238,7 +242,8 @@ fun PreviewMultiPurposeTextFieldWithLocation_noPermissionsReq() {
                 onLocationChange = { locationName ->
                     // Update textFieldValue when location changes
                     textFieldValue = locationName
-                }
+                },
+                hasLocationPermissions = false,
             )
         }
     }

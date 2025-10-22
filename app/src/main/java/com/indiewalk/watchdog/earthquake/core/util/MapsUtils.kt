@@ -23,17 +23,17 @@ import kotlin.math.sqrt
 object MapsUtils {
 
     // Convert degree angle in radiant
-    private fun fromDegreeToRadiant(deg_angle: Double): Double {
+    /*private fun fromDegreeToRadiant(deg_angle: Double): Double {
         return deg_angle * Math.PI / 180
-    }
+    }*/
 
     // Returning the distance in Km between 2 points on a sphere throught the Haversine formula
     private fun haversineDistanceKm(lat1: Double, lat2: Double, lng1: Double, lng2: Double): Double {
         val R = 6371.0 // km
-        val dLat = fromDegreeToRadiant(lat2 - lat1)
-        val dLng = fromDegreeToRadiant(lng2 - lng1)
-        val a = sin(dLat / 2) * sin(dLat / 2) + cos(fromDegreeToRadiant(lat1)) *
-                cos(fromDegreeToRadiant(lat2)) *
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLng = Math.toRadians(lng2 - lng1)
+        val a = sin(dLat / 2) * sin(dLat / 2) + cos(Math.toRadians(lat1)) *
+                cos(Math.toRadians(lat2)) *
                 sin(dLng / 2) * sin(dLng / 2)
         val c = 2 * atan2(sqrt(a), sqrt(1 - a))
         return R * c
@@ -70,18 +70,20 @@ object MapsUtils {
         context.startActivity(intent)
     }
 
+    // Get user's last location and updates creating a fused Location client provider
     @SuppressLint("MissingPermission")
     suspend fun getLastKnownLatLng(context: Context): LatLng? {
         return try {
             val fused = LocationServices.getFusedLocationProviderClient(context)
             val loc = fused.lastLocation.await() ?: return null
             LatLng(loc.latitude, loc.longitude)
-        } catch (_: Exception) {
+        } catch ( e: Exception) {
+            Log.e("LocationPicker", "Error fetching location: ${e.message}", e)
             null
         }
     }
 
-    // Reverse geocoding to get address from LatLng
+    // Reverse geocoding to get Address obj from LatLng
     fun getAddressFromLatLng(context: Context, latLng: LatLng): Address? {
         val geocoder = Geocoder(context, Locale.getDefault())
         return try {
@@ -91,6 +93,15 @@ object MapsUtils {
             Log.e("MapsUtils", "Failed to get address from LatLng", e)
             null
         }
+    }
+
+    // Reverse geocoding to get address as String from LatLng
+    fun getPlaceNameOrNull(context: Context, latLng: LatLng): String? = try {
+        val geocoder = Geocoder(context, Locale.getDefault())
+        val list = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+        list?.firstOrNull()?.getAddressLine(0)
+    } catch (_: Exception) {
+        null
     }
 
 }
