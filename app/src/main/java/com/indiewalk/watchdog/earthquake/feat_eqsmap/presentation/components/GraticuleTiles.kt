@@ -2,6 +2,7 @@ package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components
 
 
 import android.graphics.*
+import androidx.compose.ui.graphics.Color
 import com.google.android.gms.maps.model.Tile
 import com.google.android.gms.maps.model.TileProvider
 import kotlin.math.*
@@ -25,9 +26,13 @@ private fun latToWorldY(lat: Double, zoom: Int): Double {
 
 
 class GraticuleTileProvider(
+    // private val col = Color(0xFFFF5722)
     private val stepDegrees: Int = 10,        // grid degrees pace
-    private val lineColor: Int = 0x66FFFFFF,  // ARGB for lines
-    private val lineWidthPx: Float = 2f,
+    private val lineColor: Int = 0x66FFFFFF,  // default ARGB for lines, semi-transparent white
+    private val lineWidthPx: Float = 1f,
+    private val dashed: Boolean = true,       // turn dashes on/off
+    private val dashOnPx: Float = 6f,         // dash length in px
+    private val dashOffPx: Float = 6f,        // gap length in px
     private val labelColor: Int = 0xFFFFFFFF.toInt(),
     private val debugTextBg: Boolean = false   // set true to verify label rects
 ) : TileProvider {
@@ -40,6 +45,7 @@ class GraticuleTileProvider(
             color = lineColor
             style = Paint.Style.STROKE
             strokeWidth = lineWidthPx
+            pathEffect = if (dashed) DashPathEffect(floatArrayOf(dashOnPx, dashOffPx), 0f) else null
         }
 
         // ----- Zoom-aware label sizing & density -----

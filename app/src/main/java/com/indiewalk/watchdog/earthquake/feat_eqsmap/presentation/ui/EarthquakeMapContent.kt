@@ -8,33 +8,39 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.TileProvider
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.TileOverlay
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.Dot
+import com.google.android.gms.maps.model.Gap
+import com.google.android.gms.maps.model.JointType
+import com.google.maps.android.compose.MapType
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
 import com.indiewalk.watchdog.earthquake.core.model.AppSettings
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getPlaceNameOrNull
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
+import com.google.maps.android.compose.Polyline
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import com.google.android.gms.maps.model.TileProvider
+import com.google.maps.android.compose.TileOverlay
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.GraticuleTileProvider
 
 
@@ -56,11 +62,12 @@ fun EarthquakeMapContent(
     val provider = remember {
         GraticuleTileProvider(
             stepDegrees = 10,
-            lineColor = 0x66FFFFFF.toInt(), // semi-transparent white
-            lineWidthPx = 2f
+            // lineColor = 0x95FF5722.toInt(), // orange
+            lineWidthPx = 1f
         ) as TileProvider
     }
 
+    Color(0x95FF5722)
     // Camera init
     val worldCenter = LatLng(0.0, 0.0)
     val cameraPositionState = rememberCameraPositionState {
