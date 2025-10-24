@@ -22,10 +22,6 @@ import kotlin.math.sqrt
 
 object MapsUtils {
 
-    // Convert degree angle in radiant
-    /*private fun fromDegreeToRadiant(deg_angle: Double): Double {
-        return deg_angle * Math.PI / 180
-    }*/
 
     // Returning the distance in Km between 2 points on a sphere throught the Haversine formula
     private fun haversineDistanceKm(lat1: Double, lat2: Double, lng1: Double, lng2: Double): Double {

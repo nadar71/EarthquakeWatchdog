@@ -26,6 +26,7 @@ import com.google.maps.android.compose.MarkerState
 fun GoogleMapView(
     cameraPositionState: CameraPositionState,
     initialLocation: LatLng?, // Added initial location parameter
+    hasLocationPermissions: Boolean,
     onMapClick: (LatLng) -> Unit,
     onMapLoaded: () -> Unit
 ) {
@@ -33,9 +34,11 @@ fun GoogleMapView(
     Log.d(TAG, "GoogleMapView Opened")
 
     // State to keep track of the marker position
-    var markerPosition by remember(initialLocation) { 
-        mutableStateOf(initialLocation) 
+    var markerPosition by remember(initialLocation) {
+        mutableStateOf(initialLocation)
     }
+
+    var justOpened by remember { mutableStateOf(true) }
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
@@ -50,7 +53,7 @@ fun GoogleMapView(
         cameraPositionState = cameraPositionState,
         onMapLoaded = { onMapLoaded() },
         onMapClick = { latLng ->
-            // Update the marker position when the user clicks on the map
+            justOpened = false
             markerPosition = latLng
             onMapClick(latLng)
         }
@@ -65,7 +68,11 @@ fun GoogleMapView(
                         ?.get(0)
                         ?.getAddressLine(0)
                 }",
-                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+                icon =
+                    if (hasLocationPermissions && justOpened)
+                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
+                    else
+                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
             )
         }
     }

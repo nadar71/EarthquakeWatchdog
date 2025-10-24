@@ -1,6 +1,7 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -74,17 +75,20 @@ fun EarthquakeCard(
     val unitSystem = settings.unitSystem
     val isDefaultLocation = settings.userPosition.latitude == DEFAULT_LAT &&
                             settings.userPosition.longitude == DEFAULT_LNG
+    Log.d("EarthquakeCard", "isDefaultLocation: $isDefaultLocation")
+    Log.d("EarthquakeCard", "manualLocationInfo: ${settings.manualLocationInfo}")
+    Log.d("EarthquakeCard", "userLocationInfo: ${settings.userLocationInfo}")
     val fromLabel = if (!isDefaultLocation)
                         if (settings.manualLocOn)
                              stringResource(id = R.string.generic_from_label) +
-                                     "\n" + settings.manualLocationInfo.countryCode + " " +
-                                     settings.manualLocationInfo.city
+                             "\n" + settings.manualLocationInfo.countryCode + " " +
+                             settings.manualLocationInfo.city
                         else stringResource(id = R.string.generic_from_label) +
-                                "\n" + settings.userLocationInfo.countryCode + " " +
-                                settings.userLocationInfo.city
+                             "\n" + settings.userLocationInfo.countryCode + " " +
+                             settings.userLocationInfo.city
                     else stringResource(id = R.string.generic_from_label) + "\n" +
-                         Constants.DEFAULT_COUNTRY_CODE + " " +
-                         Constants.DEFAULT_CITY
+                            Constants.DEFAULT_COUNTRY_CODE + " " +
+                            Constants.DEFAULT_CITY
 
     Card(
         modifier = modifier
