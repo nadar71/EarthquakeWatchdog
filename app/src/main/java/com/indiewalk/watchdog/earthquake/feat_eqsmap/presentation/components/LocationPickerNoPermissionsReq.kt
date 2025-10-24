@@ -59,6 +59,9 @@ fun LocationPickerNoPermissionsReq(
     onDismiss: () -> Unit,
     onLocationChange: (String) -> Unit
 ) {
+    val TAG = "LocationPickerNoPermissionsReq"
+    Log.d(TAG, "LocationPickerNoPermissionsReq Opened")
+
     val context = LocalContext.current
     val geocoder = remember { Geocoder(context, Locale.getDefault()) }
 

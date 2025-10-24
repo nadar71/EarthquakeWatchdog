@@ -1,5 +1,6 @@
 package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -52,6 +53,10 @@ fun MapOptionsOverlayCard(
     onDismiss: () -> Unit
 ) {
 
+    val TAG = "MapOptionsOverlayCard"
+    Log.d(TAG, "MapOptionsOverlayCard Opened")
+    Log.d(TAG, "settings manualLocOn : ${settings.manualLocOn}")
+    Log.d(TAG, "isManualPositionOn: $isManualPositionOn")
     // var initialLocation = LatLng(settings.position.latitude, settings.position.longitude)
     var showLocationPicker by remember { mutableStateOf(false) }
     var selectedCoordinates by remember {
@@ -60,6 +65,8 @@ fun MapOptionsOverlayCard(
         )
     }
     var selectedLocationName by remember { mutableStateOf("") }
+
+
 
 
 

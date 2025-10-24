@@ -2,6 +2,7 @@ package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui
 
 
 import android.Manifest
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -51,11 +52,14 @@ fun EarthquakeMapScreen(
     onManualPositionToggle: (Boolean) -> Unit = {}
 ) {
     val TAG = "EarthquakeMapScreen"
+    Log.d(TAG, "EarthquakeMapScreen Opened")
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val settings by mapViewModel.settings.collectAsStateWithLifecycle()
 
 
+
+    Log.d(TAG, "settings manualLocOn : ${settings.manualLocOn}")
     // 1) Permissions state: ask location permission on 1st composition
     val permissions = rememberMultiplePermissionsState(
         listOf(
@@ -87,13 +91,15 @@ fun EarthquakeMapScreen(
 
     // Options overlay/state
     var showOptions by rememberSaveable { mutableStateOf(false) }
-    var isManualPositionOn by rememberSaveable { mutableStateOf(settings.manualLocOn) }
+    val isManualPositionOn by remember(settings.manualLocOn) {
+        mutableStateOf(settings.manualLocOn)
+    }
     // val manualPosition = settings.manualLocOn // bind to persisted state
     var mapType by rememberSaveable { mutableStateOf(MapType.TERRAIN) } // default Terrain
     // one-shot camera target
     // TODO: use this to center map in a particular eq location from home list
     var recenterTo by remember { mutableStateOf<LatLng?>(null) }
-
+    Log.d("EarthquakeMapScreen", "isManualPositionOn: $isManualPositionOn")
 
     // ---------------------------------------- LOGIC ----------------------------------------------
     // db state collection : get eqs list updated
@@ -200,7 +206,7 @@ fun EarthquakeMapScreen(
                     if (showOptions) {
                         MapOptionsOverlayCard(
                             modifier = Modifier
-                                .align (Alignment.Center)
+                                .align(Alignment.Center)
                                 .padding(32.dp, 32.dp, 32.dp, 32.dp),
                             isManualPositionOn = isManualPositionOn,
                             onManualPositionChange = { checked ->
