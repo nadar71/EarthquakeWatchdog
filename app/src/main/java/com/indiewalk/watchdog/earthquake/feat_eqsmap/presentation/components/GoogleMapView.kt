@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
@@ -28,7 +29,9 @@ fun GoogleMapView(
     onMapLoaded: () -> Unit
 ) {
     // State to keep track of the marker position
-    var markerPosition by remember { mutableStateOf<LatLng?>(initialLocation) }
+    var markerPosition by remember(initialLocation) { 
+        mutableStateOf(initialLocation) 
+    }
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
@@ -57,7 +60,8 @@ fun GoogleMapView(
                         .getFromLocation(position.latitude, position.longitude, 1)
                         ?.get(0)
                         ?.getAddressLine(0)
-                }"
+                }",
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
             )
         }
     }

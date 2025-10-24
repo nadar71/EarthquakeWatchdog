@@ -73,7 +73,7 @@ fun LocationPickerNoPermissionsReq(
 
     // Init camera: go to to  initialFallback position ( manual, user, default position)
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(initialFallback, 12f)
+        position = CameraPosition.fromLatLngZoom(initialFallback, 8f)
     }
 
     // Init starting marker attributes from fallback
@@ -132,7 +132,7 @@ fun LocationPickerNoPermissionsReq(
                         cameraPositionState = cameraPositionState,
                         onMapClick = { latLng ->
                             selectedCoordinates = latLng
-                            // TODO : use function
+                            // TODO : use function in map utils
                             val addr = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
                             selectedLocationName = addr?.firstOrNull()?.getAddressLine(0) ?: "Unknown Location"
                             onLocationChange(selectedLocationName)
@@ -187,7 +187,7 @@ private fun moveToCurrentLocationIfPermitted(
     fused.lastLocation.addOnSuccessListener { loc: Location? ->
         loc?.let {
             val ll = LatLng(it.latitude, it.longitude)
-            cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(ll, 15f))
+            cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(ll, 8f))
             onLocationUpdated(ll)
         }
     }.addOnFailureListener { e ->

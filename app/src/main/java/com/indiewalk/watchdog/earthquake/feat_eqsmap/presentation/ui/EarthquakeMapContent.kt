@@ -67,15 +67,14 @@ fun EarthquakeMapContent(
         ) as TileProvider
     }
 
-    Color(0x95FF5722)
     // Camera init
     val worldCenter = LatLng(0.0, 0.0)
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(worldCenter, 2f)
+        position = CameraPosition.fromLatLngZoom(worldCenter, 8f)
     }
 
     // Build bounds from earthquakes
-    val bounds: LatLngBounds? = remember(eqs) {
+    /*val bounds: LatLngBounds? = remember(eqs) {
         val builder = LatLngBounds.Builder()
         var count = 0
         eqs.forEach { e ->
@@ -87,7 +86,7 @@ fun EarthquakeMapContent(
             }
         }
         if (count > 0) builder.build() else null
-    }
+    }*/
 
 
     var mapLoaded by remember { mutableStateOf(false) }
@@ -103,7 +102,7 @@ fun EarthquakeMapContent(
     // 1) manual location
     // 2) user location (if granted & available)
     // 3) bounds fitting all markers/default location
-    LaunchedEffect(mapLoaded, hasLocationPermissions, bounds, settings.manualLocOn) {
+    LaunchedEffect(mapLoaded, hasLocationPermissions/*, bounds*/, settings.manualLocOn) {
         if (!mapLoaded || cameraInitialized) return@LaunchedEffect
 
         /*val didCenterOnUser = if (hasLocationPermission) {
@@ -129,7 +128,7 @@ fun EarthquakeMapContent(
         val didCenterOnManual = if (settings.manualLocOn) {
             Log.d("EarthquakeMapContent", "Centering on manual location: ${settings.manualPosition}")
             cameraPositionState.animate(CameraUpdateFactory
-                .newLatLngZoom(settings.manualPosition, 12f))
+                .newLatLngZoom(settings.manualPosition, 8f))
             true
         } else false
 
@@ -139,14 +138,14 @@ fun EarthquakeMapContent(
                 val userPosition = getLastKnownLatLng(context)
                 Log.d("EarthquakeMapContent", "Centering on user location: $userPosition")
                 if (userPosition != null) {
-                    cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(userPosition, 6f))
+                    cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(userPosition, 8f))
                     true
                 } else false
             } else false
 
             // ...else center in bound or in default location
             if (!didCenterOnUser) {
-                when {
+                /*when {
                     bounds != null -> {
                         Log.d("EarthquakeMapContent", "Centering on bounds: $bounds")
                         cameraPositionState.animate(
@@ -157,7 +156,10 @@ fun EarthquakeMapContent(
                         cameraPositionState.move(
                             CameraUpdateFactory.newLatLngZoom(LatLng(DEFAULT_LAT, DEFAULT_LNG), 2f))
                     }
-                }
+                }*/
+                Log.d("EarthquakeMapContent", "Centering on default location")
+                cameraPositionState.move(
+                    CameraUpdateFactory.newLatLngZoom(LatLng(DEFAULT_LAT, DEFAULT_LNG), 8f))
             }
         }
         cameraInitialized = true
@@ -182,7 +184,7 @@ fun EarthquakeMapContent(
     // One-shot recenter when parent requests it
     LaunchedEffect(recenterTarget) {
         recenterTarget?.let { latLng ->
-            cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(latLng, 12f))
+            cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(latLng, 8f))
             onRecenterHandled()
         }
     }
