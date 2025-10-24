@@ -70,23 +70,8 @@ fun EarthquakeMapContent(
     // Camera init
     val worldCenter = LatLng(0.0, 0.0)
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(worldCenter, 8f)
+        position = CameraPosition.fromLatLngZoom(worldCenter, 7f)
     }
-
-    // Build bounds from earthquakes
-    /*val bounds: LatLngBounds? = remember(eqs) {
-        val builder = LatLngBounds.Builder()
-        var count = 0
-        eqs.forEach { e ->
-            val lat = e.latitude
-            val lng = e.longitude
-            if (lat != null && lng != null) {
-                builder.include(LatLng(lat, lng))
-                count++
-            }
-        }
-        if (count > 0) builder.build() else null
-    }*/
 
 
     var mapLoaded by remember { mutableStateOf(false) }
@@ -101,34 +86,15 @@ fun EarthquakeMapContent(
     // Init camera target :
     // 1) manual location
     // 2) user location (if granted & available)
-    // 3) bounds fitting all markers/default location
+    // 3) default location
     LaunchedEffect(mapLoaded, hasLocationPermissions/*, bounds*/, settings.manualLocOn) {
         if (!mapLoaded || cameraInitialized) return@LaunchedEffect
-
-        /*val didCenterOnUser = if (hasLocationPermission) {
-            val user = getLastKnownLatLng(context)
-            if (user != null) {
-                cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(user, 6f))
-                true
-            } else false
-        } else false
-
-        if (!didCenterOnUser) {
-            when {
-                bounds != null -> cameraPositionState.animate(
-                    CameraUpdateFactory.newLatLngBounds(bounds, 80)
-                )
-                else -> cameraPositionState.move(
-                    CameraUpdateFactory.newLatLngZoom(worldCenter, 2f)
-                )
-            }
-        }*/
 
         // if manual is on, center map in manual location
         val didCenterOnManual = if (settings.manualLocOn) {
             Log.d("EarthquakeMapContent", "Centering on manual location: ${settings.manualPosition}")
             cameraPositionState.animate(CameraUpdateFactory
-                .newLatLngZoom(settings.manualPosition, 8f))
+                .newLatLngZoom(settings.manualPosition, 7f))
             true
         } else false
 
@@ -138,28 +104,16 @@ fun EarthquakeMapContent(
                 val userPosition = getLastKnownLatLng(context)
                 Log.d("EarthquakeMapContent", "Centering on user location: $userPosition")
                 if (userPosition != null) {
-                    cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(userPosition, 8f))
+                    cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(userPosition, 7f))
                     true
                 } else false
             } else false
 
             // ...else center in bound or in default location
             if (!didCenterOnUser) {
-                /*when {
-                    bounds != null -> {
-                        Log.d("EarthquakeMapContent", "Centering on bounds: $bounds")
-                        cameraPositionState.animate(
-                            CameraUpdateFactory.newLatLngBounds(bounds, 80))
-                    }
-                    else -> {
-                        Log.d("EarthquakeMapContent", "Centering on default location: $bounds")
-                        cameraPositionState.move(
-                            CameraUpdateFactory.newLatLngZoom(LatLng(DEFAULT_LAT, DEFAULT_LNG), 2f))
-                    }
-                }*/
                 Log.d("EarthquakeMapContent", "Centering on default location")
                 cameraPositionState.move(
-                    CameraUpdateFactory.newLatLngZoom(LatLng(DEFAULT_LAT, DEFAULT_LNG), 8f))
+                    CameraUpdateFactory.newLatLngZoom(LatLng(DEFAULT_LAT, DEFAULT_LNG), 7f))
             }
         }
         cameraInitialized = true
@@ -184,7 +138,7 @@ fun EarthquakeMapContent(
     // One-shot recenter when parent requests it
     LaunchedEffect(recenterTarget) {
         recenterTarget?.let { latLng ->
-            cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(latLng, 8f))
+            cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(latLng, 7f))
             onRecenterHandled()
         }
     }
@@ -218,19 +172,8 @@ fun EarthquakeMapContent(
                     snippet = snippet
                 )
             }
-
-            // if manual location, draw single green manual marker
-            settings.manualPosition.let { ll ->
-                Marker(
-                    state = rememberMarkerState(position = ll),
-                    title = buildString {
-                        append(manualTitle ?: "Selected location")
-                        append(" (manual selected)")
-                    },
-                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN),
-                )
-            }
         }
+
 
         // Grid
         if (showGrid) {
@@ -238,6 +181,26 @@ fun EarthquakeMapContent(
                 tileProvider = provider,
                 transparency = 0f, // 0 = opaque, 1 = invisible
                 zIndex = 1f        // draw above base map
+            )
+        }
+
+        // Manual location marker (if enabled)
+        if (settings.manualLocOn) {
+            Log.d("EarthquakeMapContent", "Manual location on, set marker at : ${settings.manualPosition}")
+            val markerState = rememberMarkerState(position = settings.manualPosition)
+            
+            // Update marker position when it changes
+            LaunchedEffect(settings.manualPosition) {
+                markerState.position = settings.manualPosition
+            }
+            
+            Marker(
+                state = markerState,
+                title = buildString {
+                    append(manualTitle ?: "Selected location")
+                    append(" (manual selected)")
+                },
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
             )
         }
     }
