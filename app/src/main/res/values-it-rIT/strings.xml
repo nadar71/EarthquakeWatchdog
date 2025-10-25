@@ -59,6 +59,8 @@
     <string name="maps_permission_rationale_text_label">Utilizziamo la tua posizione per calcolare la distanza dei terremoti dalla tua posizione. I terremoti verranno mostrati sulla mappa indipendentemente dalla tua scelta.</string>    <string name="maps_permission_denied_title_label">Autorizzazione alla posizione negata</string>
     <string name="maps_permission_denied_text_label">Puoi comunque esplorare la mappa, ma non possiamo mostrare la distanza dei terremoti dalla tua posizione.\nPer abilitare la posizione:\n\n• Apri Impostazioni di sistema → Autorizzazioni app → Posizione\n\n• Oppure continua senza e imposta manualmente una posizione in un secondo momento nel menu in alto a destra.</string>
     <string name="maps_permission_settings_label">Apri Impostazioni</string>
+    <string name="maps_selected_location">Posizione selezionata</string>
+    <string name="maps_manual_selected">(selezione manuale)</string>
 
     <!-- - - - - - - - - - - - - - - - Settings - - - -  - - - - - - - - - - - - - - - - - - - - -->
     <string name="title_activity_settings">Impostazioni</string>

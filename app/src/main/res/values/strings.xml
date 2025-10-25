@@ -64,6 +64,8 @@
     <string name="maps_permission_denied_title_label">Location permission denied</string>
     <string name="maps_permission_denied_text_label">You can still browse the map, but we can’t show earthquakes distance from your position.\nTo enable location:\n\n• Open system Settings → App permissions → Location\n\n• Or continue without it and set a location manually later on right menu settings.</string>
     <string name="maps_permission_settings_label">Open Settings</string>
+    <string name="maps_selected_location">Selected location</string>
+    <string name="maps_manual_selected">(manually selected)</string>
 
 
 
