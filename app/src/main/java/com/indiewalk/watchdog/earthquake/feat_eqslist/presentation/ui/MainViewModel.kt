@@ -1,8 +1,10 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.EarthquakeApp
 import com.indiewalk.watchdog.earthquake.core.data.AppPrefs
 import com.indiewalk.watchdog.earthquake.core.model.AppSettings
@@ -14,6 +16,7 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.use_cases.LoadAllEQ
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromDBState
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromRemoteState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import eu.indiewalkabout.fridgemanager.core.domain.model.ApiResponse
 import eu.indiewalkabout.fridgemanager.core.domain.model.DbResponse
 import eu.indiewalkabout.fridgemanager.core.domain.model.ErrorResponse
@@ -28,6 +31,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val fetchAndSaveDefaultUseCase: FetchAndSaveDefaultUseCase,
     private val loadAllEQsUseCase: LoadAllEQsUseCase
 ) : ViewModel() {
@@ -92,6 +96,32 @@ class MainViewModel @Inject constructor(
                 )
             }
 
+        }
+    }
+
+    fun setUserPosition(latLng: LatLng?) {
+        if (latLng == null) return
+        viewModelScope.launch {
+            AppPrefs.setUserPosition(context, latLng.latitude, latLng.longitude)
+            // AppPrefs.setManualLocation(context, false) // autoloc by default after grant
+        }
+    }
+
+    fun setUserAddress(address: String) {
+        viewModelScope.launch {
+            AppPrefs.setUserAddress(context, address)
+        }
+    }
+
+    fun setUserCity(city: String) {
+        viewModelScope.launch {
+            AppPrefs.setUserCity(context, city)
+        }
+    }
+
+    fun setUserCountryCode(country: String) {
+        viewModelScope.launch {
+            AppPrefs.setUserCountryCode(context, country)
         }
     }
 

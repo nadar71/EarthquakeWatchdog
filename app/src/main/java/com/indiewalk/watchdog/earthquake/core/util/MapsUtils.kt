@@ -67,6 +67,7 @@ object MapsUtils {
     }
 
     // Get user's last location and updates creating a fused Location client provider
+    // withsuspend function
     @SuppressLint("MissingPermission")
     suspend fun getLastKnownLatLng(context: Context): LatLng? {
         return try {
@@ -78,11 +79,25 @@ object MapsUtils {
             null
         }
     }
+    // Get user's last location and updates creating a fused Location client provider
+    // with callback, no suspend function
+    @SuppressLint("MissingPermission")
+    fun getLastKnownLatLngNotSusp(context: Context, onResult: (LatLng?) -> Unit) {
+        val fused = LocationServices.getFusedLocationProviderClient(context)
+        fused.lastLocation
+            .addOnSuccessListener { location ->
+                onResult(location?.let { LatLng(it.latitude, it.longitude) })
+            }
+            .addOnFailureListener { e ->
+                Log.e("LocationPicker", "Error fetching location: ${e.message}", e)
+                onResult(null)
+            }
+    }
 
     // --- Variuos Reverse geocoding to get address from LatLng ---
 
     // get Address obj from LatLng
-    fun getAddressFromLatLng(context: Context, latLng: LatLng): Address? {
+    fun getAddress(context: Context, latLng: LatLng): Address? {
         val geocoder = Geocoder(context, Locale.getDefault())
         return try {
             val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)

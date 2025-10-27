@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,8 +41,10 @@ import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
 import com.indiewalk.watchdog.earthquake.core.model.toLocationInfo
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
+import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getAddress
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.state.MapUiState
+import com.indiewalk.watchdog.earthquake.feat_intro.presentation.PreferencesViewModel
 import kotlinx.coroutines.launch
 
 
@@ -49,8 +52,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun EarthquakeMapScreen(
     navController: NavHostController,
+    onManualPositionToggle: (Boolean) -> Unit = {},
     mapViewModel: MapViewModel = hiltViewModel(),
-    onManualPositionToggle: (Boolean) -> Unit = {}
+    preferencesViewModel: PreferencesViewModel = hiltViewModel(),
 ) {
     val TAG = "EarthquakeMapScreen"
     Log.d(TAG, "EarthquakeMapScreen Opened")
@@ -59,9 +63,8 @@ fun EarthquakeMapScreen(
     val settings by mapViewModel.settings.collectAsStateWithLifecycle()
 
 
-
     Log.d(TAG, "settings manualLocOn : ${settings.manualLocOn}")
-    // 1) Permissions state: ask location permission on 1st composition
+    // Check current location permission state
     val permissions = rememberMultiplePermissionsState(
         listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -106,6 +109,19 @@ fun EarthquakeMapScreen(
     // db state collection : get eqs list updated
     val eqsUIFromDBState by mapViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
 
+    // Update user position and address in prefs in case location permissions changed meanwhile/later
+    LaunchedEffect(Unit) {
+        if (hasLocalPermissions) {
+            val userLocation = getLastKnownLatLng(context = context)
+            preferencesViewModel.setUserPosition(userLocation )
+            if (userLocation != null) {
+                val address = getAddress(context = context, latLng = userLocation)
+                preferencesViewModel.setUserAddress(address?.getAddressLine(0) ?: "Unknown")
+                preferencesViewModel.setUserCity(address?.locality ?: "Unknown")
+                preferencesViewModel.setUserCountryCode(address?.countryCode ?: "Unknown")
+            }
+        }
+    }
 
     // 4) Decide when to show dialogs
     // Show the pre-permission rationale ONLY if not granted and NOT permanently denied

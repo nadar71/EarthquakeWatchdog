@@ -1,5 +1,6 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui
 
+import android.Manifest
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -41,18 +42,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.toEarthquakeUI
@@ -63,17 +65,24 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsList
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromRemoteState
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
+import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getAddress
+import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
+import com.indiewalk.watchdog.earthquake.feat_intro.presentation.PreferencesViewModel
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class,
+    ExperimentalPermissionsApi::class
+)
 @Composable
 fun EarthquakeListScreen(
     navController: NavHostController,
-    mainViewModel: MainViewModel = hiltViewModel()
+    mainViewModel: MainViewModel = hiltViewModel(),
+    preferencesViewModel: PreferencesViewModel = hiltViewModel()
 ) {
     val TAG = "EarthquakeListScreen"
     Log.d(TAG, "EarthquakeListScreen on")
+    val context = LocalContext.current
     var eqsCollection by remember { mutableStateOf<EQFeaturesCollectionDTO?>(null) }
     var eqsList by remember { mutableStateOf<List<EQEntity>?>(null) }
     var eqListLoadedFromDb by remember { mutableStateOf(false) }
@@ -81,6 +90,16 @@ fun EarthquakeListScreen(
     val listState = rememberLazyListState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+
+    // Check current location permission state
+    val permissions = rememberMultiplePermissionsState(
+        listOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+    )
+
+    val hasLocalPermissions by remember(permissions) { derivedStateOf { permissions.allPermissionsGranted } }
 
     // State for FAB visibility
     val isFabVisible by remember {
@@ -112,6 +131,19 @@ fun EarthquakeListScreen(
     val eqsUIFromDBState by mainViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
 
 
+    // Update user position and address in prefs in case location permissions changed meanwhile/later
+    LaunchedEffect(Unit) {
+        if (hasLocalPermissions) {
+            val userLocation = getLastKnownLatLng(context = context)
+            preferencesViewModel.setUserPosition(userLocation )
+            if (userLocation != null) {
+                val address = getAddress(context = context, latLng = userLocation)
+                preferencesViewModel.setUserAddress(address?.getAddressLine(0) ?: "Unknown")
+                preferencesViewModel.setUserCity(address?.locality ?: "Unknown")
+                preferencesViewModel.setUserCountryCode(address?.countryCode ?: "Unknown")
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         mainViewModel.refreshEQsList()
@@ -254,6 +286,7 @@ fun EarthquakeListScreen(
                             val generated = eqsCollection?.metadata?.generated
                             EarthquakeCard(
                                 eq = eq.toEQEntity(generated, settings).toEarthquakeUI(),
+                                hasLocalPermissions = hasLocalPermissions,
                                 settings = settings
                             )
                         }

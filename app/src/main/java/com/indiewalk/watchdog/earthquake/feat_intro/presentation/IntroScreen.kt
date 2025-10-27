@@ -44,8 +44,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationRoutes
-import com.indiewalk.watchdog.earthquake.core.util.MapsUtils
-import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getAddressFromLatLng
+import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getAddress
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.openAppSettings
 import kotlinx.coroutines.delay
@@ -56,7 +55,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun IntroScreen_01(
     navController: NavHostController,
-    introViewModel: IntroViewModel = hiltViewModel()
+    preferencesViewModel: PreferencesViewModel = hiltViewModel()
 ) {
     val TAG = "IntroScreen"
     Log.d(TAG, "IntroScreen: shown.")
@@ -74,7 +73,7 @@ fun IntroScreen_01(
     val allGranted by remember(permissions) { derivedStateOf { permissions.allPermissionsGranted } }
 
     // ------------------------------------- LOGIC -------------------------------------------------
-    val askedOnce by introViewModel.askedOnce.collectAsStateWithLifecycle()
+    val askedOnce by preferencesViewModel.askedOnce.collectAsStateWithLifecycle()
 
     val fineLocationLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -83,12 +82,12 @@ fun IntroScreen_01(
                 // Foreground location permission granted
                 scope.launch {
                     userLocation = getLastKnownLatLng(context)
-                    introViewModel.setUserPosition(userLocation )
-                    if (userLocation != null) {
-                        val address = getAddressFromLatLng(context, userLocation!!)
-                        introViewModel.setAddress(address?.getAddressLine(0) ?: "Unknown")
-                        introViewModel.setCity(address?.locality ?: "Unknown")
-                        introViewModel.setCountryCode(address?.countryCode ?: "Unknown")
+                    preferencesViewModel.setUserPosition(userLocation )
+                    if (userLocation != null) { // update in prefs user location and address
+                        val address = getAddress(context, userLocation!!)
+                        preferencesViewModel.setUserAddress(address?.getAddressLine(0) ?: "Unknown")
+                        preferencesViewModel.setUserCity(address?.locality ?: "Unknown")
+                        preferencesViewModel.setUserCountryCode(address?.countryCode ?: "Unknown")
                         Log.d(TAG, "User location: ${userLocation?.latitude}, ${userLocation?.longitude}")
                         Log.d(TAG, "User address: ${address?.getAddressLine(0)}")
                         Log.d(TAG, "User city: ${address?.locality}")
@@ -99,7 +98,7 @@ fun IntroScreen_01(
             } else {
                 // Foreground location permission denied
                 // asked one flag set: do not ask again next app opening
-                introViewModel.setAskedOnce()
+                preferencesViewModel.setAskedOnce()
                 showLocationPermissionDeniedDialog(context, navController)
             }
         }

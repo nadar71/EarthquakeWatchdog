@@ -33,9 +33,8 @@ import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
 import com.indiewalk.watchdog.earthquake.core.model.AppSettings
-import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getAddressFromLatLng
+import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getAddress
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
-import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getPlaceNameOrNull
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.GraticuleTileProvider
 
@@ -81,7 +80,7 @@ fun EarthquakeMapContent(
     LaunchedEffect(settings.manualPosition) {
         manualPositionTitle = settings.manualPosition.let { ll ->
             // getPlaceNameOrNull(context, ll)
-            val address = getAddressFromLatLng(context, ll)
+            val address = getAddress(context, ll)
             address?.getAddressLine(0) + " " + address?.locality + " " + address?.countryCode
         }
     }

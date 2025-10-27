@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
@@ -47,10 +45,7 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.rememberCameraPositionState
 import java.util.Locale
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
-import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
-import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getAddressFromLatLng
-import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
+import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getAddress
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -90,7 +85,7 @@ fun LocationPicker(
         selectedLocationName = addr?.firstOrNull()?.getAddressLine(0) ?: "Unknown Location"*/
 
         // TODO : put in a function
-        selectedLocationAddress = getAddressFromLatLng(context, initialFallback)
+        selectedLocationAddress = getAddress(context, initialFallback)
         selectedLocationAddressString = selectedLocationAddress?.getAddressLine(0) + " " +
                 selectedLocationAddress?.locality + " " + selectedLocationAddress?.countryCode
         onLocationChange(selectedLocationAddressString)

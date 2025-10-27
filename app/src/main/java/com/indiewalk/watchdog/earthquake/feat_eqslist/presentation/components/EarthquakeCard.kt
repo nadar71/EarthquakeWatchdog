@@ -64,6 +64,7 @@ import java.util.Locale
 @Composable
 fun EarthquakeCard(
     eq: EarthquakeUI,
+    hasLocalPermissions: Boolean,
     settings: AppSettings,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
@@ -73,12 +74,17 @@ fun EarthquakeCard(
     val distanceKm = eq.distanceFromUser
 
     val unitSystem = settings.unitSystem
-    val isDefaultLocation = settings.userPosition.latitude == DEFAULT_LAT &&
-                            settings.userPosition.longitude == DEFAULT_LNG
+    val isDefaultLocation =
+            !hasLocalPermissions &&
+            !settings.manualLocOn &&
+            settings.userPosition.latitude == DEFAULT_LAT &&
+            settings.userPosition.longitude == DEFAULT_LNG
+    Log.d("EarthquakeCard", "hasLocalPermissions ?: $hasLocalPermissions")
     Log.d("EarthquakeCard", "isDefaultLocation: $isDefaultLocation")
+    Log.d("EarthquakeCard", "is manual loc On: ${settings.manualLocOn}")
     Log.d("EarthquakeCard", "manualLocationInfo: ${settings.manualLocationInfo}")
     Log.d("EarthquakeCard", "userLocationInfo: ${settings.userLocationInfo}")
-    val fromLabel = if (!isDefaultLocation)
+    val fromLocationAddress = if (!isDefaultLocation)
                         if (settings.manualLocOn)
                              stringResource(id = R.string.generic_from_label) +
                              "\n" + settings.manualLocationInfo.countryCode + " " +
@@ -162,7 +168,7 @@ fun EarthquakeCard(
                     )
                     Text(
                         textAlign = TextAlign.End,
-                        text = fromLabel,
+                        text = fromLocationAddress,
                         maxLines = 2,
                         style = MaterialTheme.typography.labelSmall.copy(
                             color = MaterialTheme.colorScheme.secondary,
@@ -305,6 +311,7 @@ fun EarthquakeCardPreviewLight() {
             Column {
                 EarthquakeCard(
                     eq = sampleFeature1(),
+                    hasLocalPermissions = true,
                     settings = AppSettings(
                         userPosition = LatLng(DEFAULT_LAT, DEFAULT_LNG),
                         unitSystem = UnitSystem.METRIC,
@@ -314,6 +321,7 @@ fun EarthquakeCardPreviewLight() {
                 )
                 EarthquakeCard(
                     eq = sampleFeature2(),
+                    hasLocalPermissions = true,
                     settings = AppSettings(
                         userPosition = LatLng(DEFAULT_LAT, DEFAULT_LNG),
                         unitSystem = UnitSystem.IMPERIAL,
@@ -346,6 +354,7 @@ fun EarthquakeCardPreviewDark() {
             Column {
                 EarthquakeCard(
                     eq = sampleFeature1(),
+                    hasLocalPermissions = true,
                     settings = AppSettings(
                         userPosition = LatLng(DEFAULT_LAT, DEFAULT_LNG),
                         unitSystem = UnitSystem.METRIC,
@@ -355,6 +364,7 @@ fun EarthquakeCardPreviewDark() {
                 )
                 EarthquakeCard(
                     eq = sampleFeature2(),
+                    hasLocalPermissions = true,
                     settings = AppSettings(
                         userPosition = LatLng(DEFAULT_LAT, DEFAULT_LNG),
                         unitSystem = UnitSystem.METRIC,

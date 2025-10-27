@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class IntroViewModel @Inject constructor(
+class PreferencesViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -28,7 +28,6 @@ class IntroViewModel @Inject constructor(
     val askedOnce: StateFlow<Boolean> =
         AppPrefs.askedLocationOnceFlow(context)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
-
 
     fun setAskedOnce() {
         viewModelScope.launch { AppPrefs.setAskedLocationOnce(context, true) }
@@ -42,19 +41,19 @@ class IntroViewModel @Inject constructor(
         }
     }
 
-    fun setAddress(address: String) {
+    fun setUserAddress(address: String) {
         viewModelScope.launch {
             AppPrefs.setUserAddress(context, address)
         }
     }
 
-    fun setCity(city: String) {
+    fun setUserCity(city: String) {
         viewModelScope.launch {
             AppPrefs.setUserCity(context, city)
         }
     }
 
-    fun setCountryCode(country: String) {
+    fun setUserCountryCode(country: String) {
         viewModelScope.launch {
             AppPrefs.setUserCountryCode(context, country)
         }
