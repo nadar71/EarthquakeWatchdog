@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.util.Log
@@ -48,17 +49,19 @@ import java.util.Locale
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
+import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getAddressFromLatLng
+import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
 
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun LocationPicker(
     initialFallback: LatLng,
-    onLocationSelected: (String, LatLng) -> Unit,
     hasLocationPermissions: Boolean,
+    onLocationSelected: (LatLng, Address) -> Unit,
+    onLocationChange: (String) -> Unit, // TODO : what's for ?
     onDismiss: () -> Unit,
-    onLocationChange: (String) -> Unit
-) {
+    ) {
     val TAG = "LocationPickerNoPermissionsReq"
     Log.d(TAG, "LocationPickerNoPermissionsReq Opened")
 
@@ -66,7 +69,8 @@ fun LocationPicker(
     val geocoder = remember { Geocoder(context, Locale.getDefault()) }
 
     var selectedCoordinates by remember { mutableStateOf<LatLng?>(null) }
-    var selectedLocationName by remember { mutableStateOf("") }
+    var selectedLocationAddress by remember { mutableStateOf<Address?>(null) }
+    var selectedLocationAddressString by remember { mutableStateOf("") }
 
     // Check permission (no requesting here)
     /*val isGranted = remember {
@@ -82,19 +86,37 @@ fun LocationPicker(
     // Init starting marker attributes from fallback
     LaunchedEffect(initialFallback) {
         selectedCoordinates = initialFallback
-        val addr = geocoder.getFromLocation(initialFallback.latitude, initialFallback.longitude, 1)
-        selectedLocationName = addr?.firstOrNull()?.getAddressLine(0) ?: "Unknown Location"
-        onLocationChange(selectedLocationName)
+        /*val addr = geocoder.getFromLocation(initialFallback.latitude, initialFallback.longitude, 1)
+        selectedLocationName = addr?.firstOrNull()?.getAddressLine(0) ?: "Unknown Location"*/
+
+        // TODO : put in a function
+        selectedLocationAddress = getAddressFromLatLng(context, initialFallback)
+        selectedLocationAddressString = selectedLocationAddress?.getAddressLine(0) + " " +
+                selectedLocationAddress?.locality + " " + selectedLocationAddress?.countryCode
+        onLocationChange(selectedLocationAddressString)
     }
 
     // If permission is granted, try to move camera to user once
     // TODO: check if necessary
     LaunchedEffect(hasLocationPermissions) {
         if (hasLocationPermissions) {
+            /*selectedCoordinates = getLastKnownLatLng(context).also { lastKnown ->
+                if (lastKnown != null) {
+                    cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(lastKnown, 8f))
+                }
+            }
+            selectedCoordinates?.let { coordinates ->
+                // TODO : put in a function
+                selectedLocationAddress = getAddressFromLatLng(context, coordinates)
+                selectedLocationAddressString = selectedLocationAddress?.getAddressLine(0) + " " +
+                        selectedLocationAddress?.locality + " " + selectedLocationAddress?.countryCode
+            }*/
+             onLocationChange(selectedLocationAddressString)
+
             moveToCurrentLocationIfPermitted(context, cameraPositionState) { current ->
                 selectedCoordinates = current
                 updateLocationName(context, current, onLocationChange).also { name ->
-                    selectedLocationName = name
+                    selectedLocationAddressString = name
                 }
             }
         }
@@ -107,8 +129,14 @@ fun LocationPicker(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-                selectedCoordinates?.let { onLocationSelected(selectedLocationName, it) }
-                onLocationChange(selectedLocationName)
+                selectedCoordinates?.let { coordinates ->
+                    val safeAddress = selectedLocationAddress ?: Address(Locale.getDefault()).apply {
+                        setAddressLine(0, "Unknown Location")
+                    }
+                    onLocationSelected(coordinates, safeAddress)
+                }
+                // selectedCoordinates?.let { onLocationSelected(it,selectedLocationAddress) }
+                onLocationChange(selectedLocationAddressString)
                 onDismiss()
             }) {
                 Text(
@@ -127,7 +155,7 @@ fun LocationPicker(
         },
         text = {
             Column(Modifier.fillMaxWidth()) {
-                Text(selectedLocationName, color = MaterialTheme.colorScheme.onPrimary)
+                Text(selectedLocationAddressString, color = MaterialTheme.colorScheme.onPrimary)
                 Spacer(Modifier.height(16.dp))
                 Box(Modifier.fillMaxSize()) {
                     GoogleMapView(
@@ -138,8 +166,8 @@ fun LocationPicker(
                             selectedCoordinates = latLng
                             // TODO : use function in map utils
                             val addr = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-                            selectedLocationName = addr?.firstOrNull()?.getAddressLine(0) ?: "Unknown Location"
-                            onLocationChange(selectedLocationName)
+                            selectedLocationAddressString = addr?.firstOrNull()?.getAddressLine(0) ?: "Unknown Location"
+                            onLocationChange(selectedLocationAddressString)
                         },
                         onMapLoaded = { /* do nothing */ }
                     )
@@ -149,10 +177,21 @@ fun LocationPicker(
                     if (hasLocationPermissions) {
                         IconButton(
                             onClick = {
+                                /*selectedCoordinates = getLastKnownLatLng(context).also { lastKnown ->
+                                    if (lastKnown != null) {
+                                        cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(lastKnown, 8f))
+                                    }
+                                }
+                                selectedCoordinates?.let { coordinates ->
+                                    // TODO : put in a function
+                                    selectedLocationAddress = getAddressFromLatLng(context, coordinates)
+                                    selectedLocationAddressString = selectedLocationAddress?.getAddressLine(0) + " " +
+                                            selectedLocationAddress?.locality + " " + selectedLocationAddress?.countryCode
+                                }*/
                                 moveToCurrentLocationIfPermitted(context, cameraPositionState) { current ->
                                     selectedCoordinates = current
                                     updateLocationName(context, current, onLocationChange).also { name ->
-                                        selectedLocationName = name
+                                        selectedLocationAddressString = name
                                     }
                                 }
                             },
@@ -216,7 +255,7 @@ private fun updateLocationName(
 
 // -------------------------------------- Previews --------------------------------------------------
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun PreviewMultiPurposeTextFieldWithLocation_noPermissionsReq() {
     var textFieldValue by remember { mutableStateOf("") }
@@ -251,4 +290,4 @@ fun PreviewMultiPurposeTextFieldWithLocation_noPermissionsReq() {
             )
         }
     }
-}
+}*/

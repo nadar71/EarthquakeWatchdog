@@ -38,6 +38,7 @@ import com.google.maps.android.compose.MapType
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
+import com.indiewalk.watchdog.earthquake.core.model.toLocationInfo
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.state.MapUiState
@@ -209,7 +210,10 @@ fun EarthquakeMapScreen(
                                 .align(Alignment.Center)
                                 .padding(32.dp, 32.dp, 32.dp, 32.dp),
                             isManualPositionOn = isManualPositionOn,
-                            onManualPositionChange = { checked ->
+                            hasLocationPermissions = hasLocalPermissions,
+                            mapType = mapType,
+                            settings = settings,
+                            onManualPositionToggle = { checked ->
                                 if (checked) {
                                     // just open picker; persistence happens on OK
                                     // (see onManualPositionConfirmed)
@@ -227,19 +231,17 @@ fun EarthquakeMapScreen(
                                     }
                                 }
                             },
-                            onManualPositionConfirmed = { latLng ->
+                            onManualPositionConfirmed = { latLng, address ->
                                 // only on OK in picker
-                                mapViewModel.setManualPositionOn(latLng)
+                                mapViewModel.setManualPosition(latLng)
+                                mapViewModel.setManualLocationInfo(address.toLocationInfo())
                                 mapViewModel.setManualLocOn(true)
                                 onManualPositionToggle(true)
                                 recenterTo = latLng
                                 showOptions = false
                             },
-                            hasLocationPermissions = hasLocalPermissions,
-                            mapType = mapType,
                             onMapTypeChange = { mapType = it },
-                            settings = settings,
-                            onDismiss = { showOptions = false }
+                            onDismiss = { showOptions = false },
                         )
                     }
                 }

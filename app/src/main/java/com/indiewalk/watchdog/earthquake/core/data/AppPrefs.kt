@@ -119,6 +119,14 @@ object AppPrefs {
         context.dataStore.edit { it[POSITION_ADDRESS] = address }
     }
 
+    suspend fun setUserLocationInfo(context: Context, locationInfo: LocationInfo) {
+        context.dataStore.edit {
+            it[POSITION_CITY] = locationInfo.city ?: "Unknown"
+            it[POSITION_COUNTRY_CODE] = locationInfo.countryCode ?: "Unknown"
+            it[POSITION_ADDRESS] = locationInfo.address ?: "Unknown"
+        }
+    }
+
 
     suspend fun setManualPosition(context: Context, lat: Double, lng: Double) {
         context.dataStore.edit {
@@ -137,6 +145,14 @@ object AppPrefs {
 
     suspend fun setManualAddress(context: Context, address: String) {
         context.dataStore.edit { it[MANUAL_LOC_ADDRESS] = address }
+    }
+
+    suspend fun setManualLocationInfo(context: Context, locationInfo: LocationInfo) {
+        context.dataStore.edit {
+            it[MANUAL_LOC_CITY] = locationInfo.city ?: "Unknown"
+            it[MANUAL_LOC_COUNTRY_CODE] = locationInfo.countryCode ?: "Unknown"
+            it[MANUAL_LOC_ADDRESS] = locationInfo.address
+        }
     }
 
     // Read fun

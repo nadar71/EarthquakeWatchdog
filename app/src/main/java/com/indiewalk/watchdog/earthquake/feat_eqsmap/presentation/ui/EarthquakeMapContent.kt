@@ -33,6 +33,7 @@ import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
 import com.indiewalk.watchdog.earthquake.core.model.AppSettings
+import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getAddressFromLatLng
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getPlaceNameOrNull
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
@@ -75,10 +76,14 @@ fun EarthquakeMapContent(
     var mapLoaded by remember { mutableStateOf(false) }
     var cameraInitialized by remember { mutableStateOf(false) }
 
-    // Manual localization marker address (reverse geocoding manual position)
+    // Manual localization marker address
     var manualPositionTitle by remember(settings.manualPosition) { mutableStateOf<String?>(null) }
     LaunchedEffect(settings.manualPosition) {
-        manualPositionTitle = settings.manualPosition.let { ll -> getPlaceNameOrNull(context, ll) }
+        manualPositionTitle = settings.manualPosition.let { ll ->
+            // getPlaceNameOrNull(context, ll)
+            val address = getAddressFromLatLng(context, ll)
+            address?.getAddressLine(0) + " " + address?.locality + " " + address?.countryCode
+        }
     }
 
     // Init camera target :

@@ -1,5 +1,6 @@
 package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui
 
+import android.location.Address
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -43,13 +44,13 @@ import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.Loc
 @Composable
 fun MapOptionsOverlayCard(
     modifier: Modifier = Modifier,
-    isManualPositionOn: Boolean,                      // persisted flag
-    onManualPositionChange: (Boolean) -> Unit,        // UI toggle
-    onManualPositionConfirmed: (LatLng) -> Unit,      // OK from picker
+    isManualPositionOn: Boolean,                               // persisted flag
     hasLocationPermissions: Boolean,
     mapType: MapType,
-    onMapTypeChange: (MapType) -> Unit,
     settings: AppSettings,
+    onManualPositionToggle: (Boolean) -> Unit,                 // UI toggle
+    onManualPositionConfirmed: (LatLng, Address) -> Unit,      // OK clicked, update LatLng, Address
+    onMapTypeChange: (MapType) -> Unit,
     onDismiss: () -> Unit
 ) {
 
@@ -59,12 +60,12 @@ fun MapOptionsOverlayCard(
     Log.d(TAG, "isManualPositionOn: $isManualPositionOn")
     // var initialLocation = LatLng(settings.position.latitude, settings.position.longitude)
     var showLocationPicker by remember { mutableStateOf(false) }
-    var selectedCoordinates by remember {
+    /*var selectedCoordinates by remember {
         mutableStateOf(
             if (settings.manualLocOn) settings.manualPosition else settings.userPosition
         )
     }
-    var selectedLocationName by remember { mutableStateOf("") }
+    var selectedLocationName by remember { mutableStateOf("") }*/
 
 
 
@@ -93,7 +94,7 @@ fun MapOptionsOverlayCard(
                     Checkbox(
                         checked = isManualPositionOn,
                         onCheckedChange = { checked ->
-                            onManualPositionChange(checked)
+                            onManualPositionToggle(checked)
                             if (checked) {
                                 showLocationPicker = true // open picker; persistence manual position happens on OK
                             } else {
@@ -145,17 +146,17 @@ fun MapOptionsOverlayCard(
         LocationPicker(
             initialFallback = if (settings.manualLocOn) settings.manualPosition
                               else settings.userPosition,
-            onLocationSelected = { locationName, latLng ->
-                selectedLocationName = locationName
-                selectedCoordinates = latLng
-                onManualPositionConfirmed(latLng) // persist + recenter + close overlay in parent
+            hasLocationPermissions = hasLocationPermissions,
+            onLocationSelected = { latLng, address ->
+                /*selectedLocationName = locationName
+                selectedCoordinates = latLng*/
+                onManualPositionConfirmed(latLng, address) // persist + recenter + close overlay in parent
                 showLocationPicker = false
             },
-            hasLocationPermissions = hasLocationPermissions,
+            onLocationChange = { }, // TODO : what's for ?
             onDismiss = {
                 showLocationPicker = false
             },
-            onLocationChange = { }
         )
     }
 }
@@ -186,8 +187,11 @@ private fun MapTypeOption(
 @Preview(showBackground = true)
 @Composable
 private fun MapOptionsOverlayCardPreview() {
-    val manualPosition = remember { mutableStateOf(false) }
+    val isManualPositionOn = remember { mutableStateOf(false) }
     val mapType = remember { mutableStateOf(MapType.NORMAL) }
+    val manualPosition = remember { mutableStateOf(LatLng(DEFAULT_LAT, DEFAULT_LNG)) }
+    val manualAddress = remember { mutableStateOf<Address?>(null) }
+
 
     Box(
         modifier = Modifier
@@ -197,8 +201,12 @@ private fun MapOptionsOverlayCardPreview() {
     ) {
         MapOptionsOverlayCard(
             modifier = Modifier.align(Alignment.TopEnd),
-            isManualPositionOn = manualPosition.value,
-            onManualPositionChange = { manualPosition.value = it },
+            isManualPositionOn = isManualPositionOn.value,
+            onManualPositionToggle = { isManualPositionOn.value = it },
+            onManualPositionConfirmed = { latLng, address ->
+                manualPosition.value = latLng
+                manualAddress.value = address
+                                        },
             hasLocationPermissions = false,
             mapType = mapType.value,
             onMapTypeChange = { mapType.value = it },
@@ -207,7 +215,6 @@ private fun MapOptionsOverlayCardPreview() {
                 manualLocOn = false,
                 unitSystem = UnitSystem.METRIC,
             ),
-            onManualPositionConfirmed = {},
             onDismiss = {}
         )
     }

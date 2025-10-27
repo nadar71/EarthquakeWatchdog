@@ -45,6 +45,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationRoutes
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils
+import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getAddressFromLatLng
+import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.openAppSettings
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -80,10 +82,10 @@ fun IntroScreen_01(
             if (isGranted) {
                 // Foreground location permission granted
                 scope.launch {
-                    userLocation = MapsUtils.getLastKnownLatLng(context)
+                    userLocation = getLastKnownLatLng(context)
                     introViewModel.setUserPosition(userLocation )
                     if (userLocation != null) {
-                        val address = MapsUtils.getAddressFromLatLng(context, userLocation!!)
+                        val address = getAddressFromLatLng(context, userLocation!!)
                         introViewModel.setAddress(address?.getAddressLine(0) ?: "Unknown")
                         introViewModel.setCity(address?.locality ?: "Unknown")
                         introViewModel.setCountryCode(address?.countryCode ?: "Unknown")

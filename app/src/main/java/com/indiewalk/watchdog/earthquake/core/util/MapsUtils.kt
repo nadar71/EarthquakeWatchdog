@@ -79,7 +79,9 @@ object MapsUtils {
         }
     }
 
-    // Reverse geocoding to get Address obj from LatLng
+    // --- Variuos Reverse geocoding to get address from LatLng ---
+
+    // get Address obj from LatLng
     fun getAddressFromLatLng(context: Context, latLng: LatLng): Address? {
         val geocoder = Geocoder(context, Locale.getDefault())
         return try {

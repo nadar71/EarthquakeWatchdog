@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.core.data.AppPrefs
 import com.indiewalk.watchdog.earthquake.core.model.AppSettings
+import com.indiewalk.watchdog.earthquake.core.model.LocationInfo
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.domain.use_cases.ObserveEarthquakesUseCase
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.state.MapUiState
@@ -72,9 +73,21 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    fun setManualPositionOn(latLng: LatLng) {
+    fun setUserLocationInfo(locationInfo: LocationInfo) {
+        viewModelScope.launch {
+            AppPrefs.setUserLocationInfo(context, locationInfo)
+        }
+    }
+
+    fun setManualPosition(latLng: LatLng) {
         viewModelScope.launch {
             AppPrefs.setManualPosition(context, latLng.latitude, latLng.longitude)
+        }
+    }
+
+    fun setManualLocationInfo(locationInfo: LocationInfo) {
+        viewModelScope.launch {
+            AppPrefs.setManualLocationInfo(context, locationInfo)
         }
     }
 }

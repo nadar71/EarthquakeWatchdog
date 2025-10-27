@@ -1,5 +1,6 @@
 package com.indiewalk.watchdog.earthquake.core.model
 
+import android.location.Address
 import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
@@ -17,9 +18,15 @@ data class AppSettings(
 )
 
 data class LocationInfo(
-    val city: String,
-    val countryCode: String,
+    val city: String?,
+    val countryCode: String?,
     val address: String
+)
+
+fun Address?.toLocationInfo(): LocationInfo = LocationInfo(
+    this?.locality,
+    this?.countryCode,
+    this?.getAddressLine(0) ?: "Unknown"
 )
 
 
