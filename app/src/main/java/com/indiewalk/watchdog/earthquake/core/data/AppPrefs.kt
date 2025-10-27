@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.android.gms.maps.model.LatLng
+import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.data.enums.ThemeMode
 import com.indiewalk.watchdog.earthquake.core.data.enums.UnitSystem
 import com.indiewalk.watchdog.earthquake.core.model.AppSettings
@@ -149,9 +150,9 @@ object AppPrefs {
 
     suspend fun setManualLocationInfo(context: Context, locationInfo: LocationInfo) {
         context.dataStore.edit {
-            it[MANUAL_LOC_CITY] = locationInfo.city ?: "Unknown"
-            it[MANUAL_LOC_COUNTRY_CODE] = locationInfo.countryCode ?: "Unknown"
-            it[MANUAL_LOC_ADDRESS] = locationInfo.address
+            it[MANUAL_LOC_CITY] = locationInfo.city ?: context.getString(R.string.generic_unknown_city)
+            it[MANUAL_LOC_COUNTRY_CODE] = locationInfo.countryCode ?: context.getString(R.string.generic_unknown_country_code)
+            it[MANUAL_LOC_ADDRESS] = locationInfo.address ?: context.getString(R.string.generic_unknown_address)
         }
     }
 

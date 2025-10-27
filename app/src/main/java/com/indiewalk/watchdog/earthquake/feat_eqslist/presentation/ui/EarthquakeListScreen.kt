@@ -64,6 +64,7 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.Ea
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromDBState
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromRemoteState
 import com.indiewalk.watchdog.earthquake.R
+import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getAddress
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
@@ -138,9 +139,12 @@ fun EarthquakeListScreen(
             preferencesViewModel.setUserPosition(userLocation )
             if (userLocation != null) {
                 val address = getAddress(context = context, latLng = userLocation)
-                preferencesViewModel.setUserAddress(address?.getAddressLine(0) ?: "Unknown")
+                address?.let { preferencesViewModel.setUserLocationInfo(address.toLocationInfo(context)) }
+                Log.d(TAG, "EarthquakeListScreen: user Location: $userLocation")
+                Log.d(TAG, "EarthquakeListScreen: user address: $address")
+                /*preferencesViewModel.setUserAddress(address?.getAddressLine(0) ?: "Unknown")
                 preferencesViewModel.setUserCity(address?.locality ?: "Unknown")
-                preferencesViewModel.setUserCountryCode(address?.countryCode ?: "Unknown")
+                preferencesViewModel.setUserCountryCode(address?.countryCode ?: "Unknown")*/
             }
         }
     }

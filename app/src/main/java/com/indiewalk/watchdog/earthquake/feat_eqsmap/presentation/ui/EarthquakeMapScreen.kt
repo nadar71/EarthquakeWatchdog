@@ -39,7 +39,7 @@ import com.google.maps.android.compose.MapType
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
-import com.indiewalk.watchdog.earthquake.core.model.toLocationInfo
+import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getAddress
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
@@ -116,9 +116,10 @@ fun EarthquakeMapScreen(
             preferencesViewModel.setUserPosition(userLocation )
             if (userLocation != null) {
                 val address = getAddress(context = context, latLng = userLocation)
-                preferencesViewModel.setUserAddress(address?.getAddressLine(0) ?: "Unknown")
+                address?.let { preferencesViewModel.setUserLocationInfo(address.toLocationInfo(context)) }
+                /*preferencesViewModel.setUserAddress(address?.getAddressLine(0) ?: "Unknown")
                 preferencesViewModel.setUserCity(address?.locality ?: "Unknown")
-                preferencesViewModel.setUserCountryCode(address?.countryCode ?: "Unknown")
+                preferencesViewModel.setUserCountryCode(address?.countryCode ?: "Unknown")*/
             }
         }
     }
@@ -231,27 +232,35 @@ fun EarthquakeMapScreen(
                             settings = settings,
                             onManualPositionToggle = { checked ->
                                 if (checked) {
+                                    Log.d(TAG, "EarthquakeMapScreen: manual position toggle: $checked")
                                     // just open picker; persistence happens on OK
                                     // (see onManualPositionConfirmed)
-                                } else {
-                                    // uncheck -> restore base coords (user's ones if granted, else defaults)
-                                    // + persist + recenter
+                                } else { // uncheck
+                                    Log.d(TAG, "EarthquakeMapScreen: UNCHECKED manual position toggle: $checked")
+                                    // restore user position coordinates and address info and recenter
                                     scope.launch {
-                                        val lastKnown =
+                                        val lastKnownUserPosition =
                                             if (hasLocalPermissions) getLastKnownLatLng(context) else null
-                                        val fallback = lastKnown ?: LatLng(DEFAULT_LAT, DEFAULT_LNG)
-                                        mapViewModel.setManualLocOn(false)
-                                        mapViewModel.setUserPosition(fallback)
+                                        val fallback = lastKnownUserPosition ?: LatLng(DEFAULT_LAT, DEFAULT_LNG)
+                                        val userAddress = getAddress(context, fallback)
+                                        preferencesViewModel.setUserPosition(fallback)
+                                        userAddress?.let { preferencesViewModel
+                                            .setUserLocationInfo(userAddress.toLocationInfo(context)) }
+
+                                        preferencesViewModel.setManualLocOn(false)
                                         onManualPositionToggle(false)
                                         recenterTo = fallback
                                     }
                                 }
                             },
-                            onManualPositionConfirmed = { latLng, address ->
-                                // only on OK in picker
-                                mapViewModel.setManualPosition(latLng)
-                                mapViewModel.setManualLocationInfo(address.toLocationInfo())
-                                mapViewModel.setManualLocOn(true)
+                            onManualPositionConfirmed = { latLng, address -> // only after OK in picker
+                                Log.d(TAG, "EarthquakeMapScreen: manual position confirmed: $latLng")
+                                Log.d(TAG, "EarthquakeMapScreen: manual address confirmed: $address")
+                                // save manual position coordinates and address info and recenter
+                                preferencesViewModel.setManualPosition(latLng)
+                                preferencesViewModel.setManualLocationInfo(address.toLocationInfo(context))
+
+                                preferencesViewModel.setManualLocOn(true)
                                 onManualPositionToggle(true)
                                 recenterTo = latLng
                                 showOptions = false

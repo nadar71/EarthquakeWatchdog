@@ -61,7 +61,7 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    fun setManualLocOn(enabled: Boolean) {
+    /*fun setManualLocOn(enabled: Boolean) {
         viewModelScope.launch {
             AppPrefs.setManualLocationOn(context, enabled)
         }
@@ -89,5 +89,5 @@ class MapViewModel @Inject constructor(
         viewModelScope.launch {
             AppPrefs.setManualLocationInfo(context, locationInfo)
         }
-    }
+    }*/
 }

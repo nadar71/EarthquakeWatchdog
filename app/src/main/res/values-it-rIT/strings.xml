@@ -6,6 +6,10 @@
     <string name="searching_label">Caricamento dati ultimi terremoti</string>
     <string name="show_no_more_label">Non mostrarmi più</string>
     <string name="generic_yes">Sì</string>
+    <string name="generic_unknown_location">Località sconosciuta</string>
+    <string name="generic_unknown_city">Città sconosciuta</string>
+    <string name="generic_unknown_country_code">Codice paese sconosciuto</string>
+    <string name="generic_unknown_address">Indirizzo sconosciuto</string>
     <string name="generic_no">No</string>
     <string name="generic_ok">Ok</string>
     <string name="generic_cancel">Annulla</string>

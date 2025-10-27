@@ -8,6 +8,10 @@
     <string name="searching_label">Loading last earthquakes data&#8230;</string>
     <string name="show_no_more_label">Don\'t show me again</string>
     <string name="generic_yes">Yes</string>
+    <string name="generic_unknown_location">Unknown Location</string>
+    <string name="generic_unknown_city">Unknown city</string>
+    <string name="generic_unknown_country_code">Unknown country code</string>
+    <string name="generic_unknown_address">Unknown Address</string>
     <string name="generic_no">No</string>
     <string name="generic_ok">Ok</string>
     <string name="generic_cancel">Cancel</string>

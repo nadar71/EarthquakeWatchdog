@@ -1,9 +1,5 @@
 package it.abenergie.customerarea.core.utility.extensions
 
-import android.text.Editable
-import android.text.TextWatcher
-import android.widget.EditText
-
 val Any.TAG: String
     get() {
         return if (!javaClass.isAnonymousClass) {

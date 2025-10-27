@@ -96,8 +96,10 @@ fun MapOptionsOverlayCard(
                         onCheckedChange = { checked ->
                             onManualPositionToggle(checked)
                             if (checked) {
+                                Log.d(TAG, "MapOptionsOverlayCard: manual position toggle: $checked")
                                 showLocationPicker = true // open picker; persistence manual position happens on OK
                             } else {
+                                Log.d(TAG, "MapOptionsOverlayCard: UNCHECKED manual position toggle: $checked")
                                 // Uncheck handled in parent (restore & recenter)
                             }
                         }
@@ -150,7 +152,8 @@ fun MapOptionsOverlayCard(
             onLocationSelected = { latLng, address ->
                 /*selectedLocationName = locationName
                 selectedCoordinates = latLng*/
-                onManualPositionConfirmed(latLng, address) // persist + recenter + close overlay in parent
+                // save on prefs, recenter, close overlay in parent
+                onManualPositionConfirmed(latLng, address)
                 showLocationPicker = false
             },
             onLocationChange = { }, // TODO : what's for ?
