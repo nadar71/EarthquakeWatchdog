@@ -74,11 +74,9 @@ fun EarthquakeCard(
     val distanceKm = eq.distanceFromUser
 
     val unitSystem = settings.unitSystem
-    val isDefaultLocation =
-            !hasLocalPermissions &&
-            !settings.manualLocOn &&
+    val isDefaultLocation = !hasLocalPermissions && !settings.manualLocOn /*&&
             settings.userPosition.latitude == DEFAULT_LAT &&
-            settings.userPosition.longitude == DEFAULT_LNG
+            settings.userPosition.longitude == DEFAULT_LNG*/
     Log.d("EarthquakeCard", "hasLocalPermissions ?: $hasLocalPermissions")
     Log.d("EarthquakeCard", "isDefaultLocation: $isDefaultLocation")
     Log.d("EarthquakeCard", "is manual loc On: ${settings.manualLocOn}")
