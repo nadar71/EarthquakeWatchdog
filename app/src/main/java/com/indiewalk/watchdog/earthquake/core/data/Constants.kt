@@ -1,5 +1,7 @@
 package com.indiewalk.watchdog.earthquake.core.data
 
+import com.google.android.gms.maps.model.LatLng
+
 object Constants {
     // API
     // URL to query the USGS dataset for earthquake information
@@ -15,6 +17,7 @@ object Constants {
     const val DEFAULT_COUNTRY_CODE  = "US"
     const val DEFAULT_ADDRESS       = "1600 Amphitheatre Parkway, Mountain View, CA 94043"
     const val DEFAULT_LAST_UPDATE   = ""
+    val DEFAULT_POSITION = LatLng(DEFAULT_LAT, DEFAULT_LNG)
 
     // UNIT MEASURE
     const val KM_TO_MILES  = 0.621371         // miles = km * 0.621371

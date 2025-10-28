@@ -1,6 +1,7 @@
 package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui
 
 import android.util.Log
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +15,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -30,9 +33,14 @@ import com.google.maps.android.compose.TileOverlay
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.indiewalk.watchdog.earthquake.R
+import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_ADDRESS
+import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_CITY
+import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_COUNTRY_CODE
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
+import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_POSITION
 import com.indiewalk.watchdog.earthquake.core.model.AppSettings
+import com.indiewalk.watchdog.earthquake.core.util.GenericUtils.bitmapDescriptorFromVector
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getAddress
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
@@ -70,10 +78,10 @@ fun EarthquakeMapContent(
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(worldCenter, 7f)
     }
-
-
-    var mapLoaded by remember { mutableStateOf(false) }
     var cameraInitialized by remember { mutableStateOf(false) }
+    var mapLoaded by remember { mutableStateOf(false) }
+
+
 
     // Manual localization marker address
     var manualPositionTitle by remember(settings.manualPosition) { mutableStateOf<String?>(null) }
@@ -123,11 +131,14 @@ fun EarthquakeMapContent(
 
     // Map properties / UI
     val properties = remember(hasLocationPermissions, mapType) {
-        MapProperties(isMyLocationEnabled = hasLocationPermissions, mapType = mapType)
+        MapProperties(
+            isMyLocationEnabled = false, // avoid standard user pin: custom pin
+            mapType = mapType
+        )
     }
     val uiSettings = remember(hasLocationPermissions) {
         MapUiSettings(
-            zoomControlsEnabled = false,
+            zoomControlsEnabled = true,
             compassEnabled = true,
             myLocationButtonEnabled = hasLocationPermissions,
             scrollGesturesEnabled = true,
@@ -156,6 +167,24 @@ fun EarthquakeMapContent(
         uiSettings = uiSettings,
         onMapLoaded = { mapLoaded = true }
     ) {
+
+        // Build a BitmapDescriptor from a vector/PNG drawable
+        val userPosPin = remember(R.drawable.ic_home) {
+            bitmapDescriptorFromVector(context, R.drawable.ic_home, 0xFF0105FC.toInt())
+        }
+
+        // Custom user pin
+        if (hasLocationPermissions ){
+            Marker(
+                state = rememberMarkerState(position =
+                    LatLng(settings.userPosition.latitude, settings.userPosition.longitude)),
+                icon = userPosPin,
+                anchor = Offset(0.5f, 1.0f),    // center-bottom so tip points to LatLng
+                flat = true,                    // allows rotation if you add bearing
+                title = "You are here"
+            )
+        }
+
         // Add marker for each earthquake
         eqs.forEach { eq ->
             val lat = eq.latitude
@@ -176,13 +205,21 @@ fun EarthquakeMapContent(
             }
         }
 
+        // Default location marker
+        if (!hasLocationPermissions && !settings.manualLocOn) {
+            Log.d("EarthquakeMapContent", "Default location on, set marker at : $DEFAULT_POSITION")
+            val markerState = rememberMarkerState(position = DEFAULT_POSITION)
 
-        // Grid
-        if (showGrid) {
-            TileOverlay(
-                tileProvider = provider,
-                transparency = 0f, // 0 = opaque, 1 = invisible
-                zIndex = 1f        // draw above base map
+            // Update marker position when it changes
+            LaunchedEffect(settings.userPosition) {
+                markerState.position = settings.userPosition
+            }
+
+            Marker(
+                state = markerState,
+                title = "$DEFAULT_ADDRESS, $DEFAULT_CITY, $DEFAULT_COUNTRY_CODE ",
+                snippet = " ${stringResource(id = R.string.maps_default_location_label)}",
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
             )
         }
 
@@ -201,6 +238,15 @@ fun EarthquakeMapContent(
                 title = (manualPositionTitle ?: stringResource(id = R.string.maps_selected_location)),
                 snippet = " ${stringResource(id = R.string.maps_manual_selected)}",
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+            )
+        }
+
+        // Grid
+        if (showGrid) {
+            TileOverlay(
+                tileProvider = provider,
+                transparency = 0f, // 0 = opaque, 1 = invisible
+                zIndex = 1f        // draw above base map
             )
         }
     }

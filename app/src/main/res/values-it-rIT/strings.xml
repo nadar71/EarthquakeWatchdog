@@ -55,7 +55,6 @@
     <string name="maps_dialog_manual_loc_title">Impostazione di posizione manuale attiva (senza GPS)</string>
     <string name="maps_dialog_manual_loc_msg">Per impostare/sovrascrivere manualmente la posizione, premi a lungo su un punto della mappa.</string>
     <string name="maps_forbidden_label">Spiacenti, impossibile Visualizza i terremoti sulla mappa con un intervallo di tempo massimo di 24 ore. Modifica le impostazioni del filtro nelle Impostazioni Generali.</string>
-
     <string name="maps_manual_localization_on_label">Localizzazione Manuale Attivata</string>
     <string name="maps_dis_from_default_location_label">dalla posizione predefinita</string>
     <string name="maps_dis_from_user_location_label">da te</string>
@@ -65,6 +64,8 @@
     <string name="maps_permission_settings_label">Apri Impostazioni</string>
     <string name="maps_selected_location">Posizione selezionata</string>
     <string name="maps_manual_selected">(selezione manuale)</string>
+    <string name="maps_default_location_label">(Località di default)</string>
+
 
     <!-- - - - - - - - - - - - - - - - Settings - - - -  - - - - - - - - - - - - - - - - - - - - -->
     <string name="title_activity_settings">Impostazioni</string>

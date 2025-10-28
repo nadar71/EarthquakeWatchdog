@@ -70,6 +70,7 @@
     <string name="maps_permission_settings_label">Open Settings</string>
     <string name="maps_selected_location">Selected location</string>
     <string name="maps_manual_selected">(manually selected)</string>
+    <string name="maps_default_location_label">(Default Location)</string>
 
 
 
