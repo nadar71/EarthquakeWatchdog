@@ -69,7 +69,7 @@ fun LocationPicker(
     var selectedLocationAddressString by remember { mutableStateOf("") }
 
 
-    // Init camera: go to to  initialFallback position ( manual, user, default position)
+    // Init camera: go to initialFallback position ( manual, user, default position)
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(initialFallback, 8f)
     }
@@ -77,8 +77,6 @@ fun LocationPicker(
     // Init starting marker attributes from fallback
     LaunchedEffect(initialFallback) {
         selectedCoordinates = initialFallback
-
-        // TODO : put in a function
         selectedLocationAddress = getAddress(context, initialFallback)
         selectedLocationAddressString = selectedLocationAddress.toLocationInfo(context).concatString(context)
         onLocationChange(selectedLocationAddressString)
@@ -86,10 +84,11 @@ fun LocationPicker(
 
     // Move camera: in case of permissions granted, move camera to user position
     // TODO: check if necessary
-    LaunchedEffect(hasLocationPermissions) {
+    /*LaunchedEffect(hasLocationPermissions) {
         if (hasLocationPermissions) {
             onLocationChange(selectedLocationAddressString)
 
+            // TODO: get from settings
             moveToCurrentLocationIfPermitted(context, cameraPositionState) { current ->
                 selectedCoordinates = current
                 updateLocationName(context, current, onLocationChange).also { name ->
@@ -97,7 +96,7 @@ fun LocationPicker(
                 }
             }
         }
-    }
+    }*/
 
     AlertDialog(
         properties = DialogProperties(usePlatformDefaultWidth = true),
@@ -148,18 +147,18 @@ fun LocationPicker(
                         onMapLoaded = { /* do nothing */ }
                     )
 
-                    // Go to user real position  ONLY if permissions granted
-                    // TODO: change, go to user position if permissions granted or else to fallback if not
+                    // permissions granted: go to user real position if
                     if (hasLocationPermissions) {
                         IconButton(
                             onClick = {
-                                // TODO : put in a function
-                                moveToCurrentLocationIfPermitted(context, cameraPositionState) { current ->
+                                // TODO: getting from settings
+                                /*moveToCurrentLocationIfPermitted(context, cameraPositionState) { current ->
                                     selectedCoordinates = current
                                     updateLocationName(context, current, onLocationChange).also { name ->
                                         selectedLocationAddressString = name
                                     }
-                                }
+                                }*/
+                                cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(initialFallback, 8f))
                             },
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
@@ -168,7 +167,7 @@ fun LocationPicker(
                             Icon(
                                 imageVector = Icons.Default.MyLocation,
                                 contentDescription = "Current Location",
-                                tint = MaterialTheme.colorScheme.onPrimary
+                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -180,7 +179,7 @@ fun LocationPicker(
 
 // Function to check location permission and move the camera to the current position
 // TODO : try to use getFusedLocationProviderClient in map utils
-@SuppressLint("MissingPermission")
+/*@SuppressLint("MissingPermission")
 private fun moveToCurrentLocationIfPermitted(
     context: Context,
     cameraPositionState: CameraPositionState,
@@ -216,7 +215,7 @@ private fun updateLocationName(
         context.getString(R.string.generic_unknown_location)
     onLocationChange(name)
     return name
-}
+}*/
 
 
 
