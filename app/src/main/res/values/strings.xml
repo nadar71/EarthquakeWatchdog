@@ -71,6 +71,7 @@
     <string name="maps_selected_location">Selected location</string>
     <string name="maps_manual_selected">(manually selected)</string>
     <string name="maps_default_location_label">(Default Location)</string>
+    <string name="maps_you_are_here">You are here</string>
 
 
 

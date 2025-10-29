@@ -61,33 +61,4 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    /*fun setManualLocOn(enabled: Boolean) {
-        viewModelScope.launch {
-            AppPrefs.setManualLocationOn(context, enabled)
-        }
-    }
-
-    fun setUserPosition(latLng: LatLng) {
-        viewModelScope.launch {
-            AppPrefs.setUserPosition(context, latLng.latitude, latLng.longitude)
-        }
-    }
-
-    fun setUserLocationInfo(locationInfo: LocationInfo) {
-        viewModelScope.launch {
-            AppPrefs.setUserLocationInfo(context, locationInfo)
-        }
-    }
-
-    fun setManualPosition(latLng: LatLng) {
-        viewModelScope.launch {
-            AppPrefs.setManualPosition(context, latLng.latitude, latLng.longitude)
-        }
-    }
-
-    fun setManualLocationInfo(locationInfo: LocationInfo) {
-        viewModelScope.launch {
-            AppPrefs.setManualLocationInfo(context, locationInfo)
-        }
-    }*/
 }

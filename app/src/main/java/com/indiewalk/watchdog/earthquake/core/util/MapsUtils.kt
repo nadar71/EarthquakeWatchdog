@@ -67,7 +67,7 @@ object MapsUtils {
     }
 
     // Get user's last location and updates creating a fused Location client provider
-    // withsuspend function
+    // with suspend function
     @SuppressLint("MissingPermission")
     suspend fun getLastKnownLatLng(context: Context): LatLng? {
         return try {

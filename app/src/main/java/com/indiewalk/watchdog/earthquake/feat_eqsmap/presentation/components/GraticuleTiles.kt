@@ -26,7 +26,6 @@ private fun latToWorldY(lat: Double, zoom: Int): Double {
 
 
 class GraticuleTileProvider(
-    // private val col = Color(0xFFFF5722)
     private val stepDegrees: Int = 10,        // grid degrees pace
     private val lineColor: Int = 0x66FFFFFF,  // default ARGB for lines, semi-transparent white
     private val lineWidthPx: Float = 1f,

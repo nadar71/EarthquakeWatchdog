@@ -58,17 +58,7 @@ fun MapOptionsOverlayCard(
     Log.d(TAG, "MapOptionsOverlayCard Opened")
     Log.d(TAG, "settings manualLocOn : ${settings.manualLocOn}")
     Log.d(TAG, "isManualPositionOn: $isManualPositionOn")
-    // var initialLocation = LatLng(settings.position.latitude, settings.position.longitude)
     var showLocationPicker by remember { mutableStateOf(false) }
-    /*var selectedCoordinates by remember {
-        mutableStateOf(
-            if (settings.manualLocOn) settings.manualPosition else settings.userPosition
-        )
-    }
-    var selectedLocationName by remember { mutableStateOf("") }*/
-
-
-
 
 
     Box(
@@ -150,8 +140,6 @@ fun MapOptionsOverlayCard(
                               else settings.userPosition,
             hasLocationPermissions = hasLocationPermissions,
             onLocationSelected = { latLng, address ->
-                /*selectedLocationName = locationName
-                selectedCoordinates = latLng*/
                 // save on prefs, recenter, close overlay in parent
                 onManualPositionConfirmed(latLng, address)
                 showLocationPicker = false

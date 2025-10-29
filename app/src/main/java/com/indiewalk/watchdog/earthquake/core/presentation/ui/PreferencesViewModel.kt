@@ -1,13 +1,11 @@
-package com.indiewalk.watchdog.earthquake.feat_intro.presentation
+package com.indiewalk.watchdog.earthquake.core.presentation.ui
 
 import android.content.Context
-import android.location.Address
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.core.data.AppPrefs
-import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
-import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
+import com.indiewalk.watchdog.earthquake.core.data.Constants
 import com.indiewalk.watchdog.earthquake.core.model.AppSettings
 import com.indiewalk.watchdog.earthquake.core.model.LocationInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,11 +23,11 @@ class PreferencesViewModel @Inject constructor(
 
     val settings: StateFlow<AppSettings> =
         AppPrefs.settingsFlow(context)
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppSettings())
+            .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), AppSettings())
 
     val askedOnce: StateFlow<Boolean> =
         AppPrefs.askedLocationOnceFlow(context)
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+            .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), false)
 
     fun setAskedOnce() {
         viewModelScope.launch { AppPrefs.setAskedLocationOnce(context, true) }
@@ -57,7 +55,6 @@ class PreferencesViewModel @Inject constructor(
         if (latLng == null) return
         viewModelScope.launch {
             AppPrefs.setUserPosition(context, latLng.latitude, latLng.longitude)
-            // AppPrefs.setManualLocation(context, false) // autoloc by default after grant
         }
     }
 
@@ -85,20 +82,11 @@ class PreferencesViewModel @Inject constructor(
         }
     }
 
-    /*fun setUserLocationInfoFromAddress(address: Address) {
-        val mainAddress = address.getAddressLine(0) ?: "Unknown"
-        val city = address.locality ?: "Unknown"
-        val countryCode = address.countryCode ?: "Unknown"
-        viewModelScope.launch {
-            AppPrefs.setUserLocationInfo(context, LocationInfo(city, countryCode, mainAddress))
-        }
-    }*/
 
     fun keepDefaultLocation() {
         viewModelScope.launch {
             // force defaults (even if already there)
-            AppPrefs.setUserPosition(context, DEFAULT_LAT, DEFAULT_LNG)
-            // AppPrefs.setManualLocation(context, false)
+            AppPrefs.setUserPosition(context, Constants.DEFAULT_LAT, Constants.DEFAULT_LNG)
         }
     }
 }

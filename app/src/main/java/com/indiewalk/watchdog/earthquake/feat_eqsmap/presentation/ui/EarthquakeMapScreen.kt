@@ -44,7 +44,7 @@ import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldMo
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getAddress
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.state.MapUiState
-import com.indiewalk.watchdog.earthquake.feat_intro.presentation.PreferencesViewModel
+import com.indiewalk.watchdog.earthquake.core.presentation.ui.PreferencesViewModel
 import kotlinx.coroutines.launch
 
 
@@ -72,41 +72,22 @@ fun EarthquakeMapScreen(
         )
     )
 
-    // 2) Permissions dialogs states
-    /*var showPrePermissionDialog by remember { mutableStateOf(false) }
-    var showDeniedDialog by remember { mutableStateOf(false) }
-    //  persist across recomposition/config changes for this screen
-    var hasAskedOnce by rememberSaveable { mutableStateOf(false) }
-*/
-
-    // 3) Permissions Derived flags
     val hasLocalPermissions by remember(permissions) { derivedStateOf { permissions.allPermissionsGranted } }
-    /*val anyShouldShowRationale by remember(permissions) {
-        derivedStateOf { permissions.permissions.any { it.status.shouldShowRationale } }
-    }
-    // Permanently denied = not granted: no rationale, and already asked once
-    val anyPermanentlyDenied by remember(permissions, hasAskedOnce) {
-        derivedStateOf {
-            hasAskedOnce && permissions.permissions.any {
-                (!it.status.isGranted && !it.status.shouldShowRationale)
-            }
-        }
-    }*/
 
     // Options overlay/state
     var showOptions by rememberSaveable { mutableStateOf(false) }
     val isManualPositionOn by remember(settings.manualLocOn) {
         mutableStateOf(settings.manualLocOn)
     }
-    // val manualPosition = settings.manualLocOn // bind to persisted state
     var mapType by rememberSaveable { mutableStateOf(MapType.TERRAIN) } // default Terrain
+
     // one-shot camera target
     // TODO: use this to center map in a particular eq location from home list
     var recenterTo by remember { mutableStateOf<LatLng?>(null) }
     Log.d("EarthquakeMapScreen", "isManualPositionOn: $isManualPositionOn")
 
     // ---------------------------------------- LOGIC ----------------------------------------------
-    // db state collection : get eqs list updated
+    // get eqs list updated from db
     val eqsUIFromDBState by mapViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
 
     // Update user position and address in prefs in case location permissions changed meanwhile/later
@@ -117,45 +98,11 @@ fun EarthquakeMapScreen(
             if (userLocation != null) {
                 val address = getAddress(context = context, latLng = userLocation)
                 address?.let { preferencesViewModel.setUserLocationInfo(address.toLocationInfo(context)) }
-                /*preferencesViewModel.setUserAddress(address?.getAddressLine(0) ?: "Unknown")
-                preferencesViewModel.setUserCity(address?.locality ?: "Unknown")
-                preferencesViewModel.setUserCountryCode(address?.countryCode ?: "Unknown")*/
             }
         }
     }
 
-    // 4) Decide when to show dialogs
-    // Show the pre-permission rationale ONLY if not granted and NOT permanently denied
-   /* LaunchedEffect(allGranted, anyPermanentlyDenied) {
-        showPrePermissionDialog = !allGranted && !anyPermanentlyDenied
-    }
 
-    // If we asked already and still not granted:
-    // show the denied dialog ONLY if rationale is available (i.e., NOT permanently denied)
-    LaunchedEffect(allGranted, hasAskedOnce, anyShouldShowRationale, anyPermanentlyDenied) {
-        showDeniedDialog = hasAskedOnce && !allGranted && anyShouldShowRationale && !anyPermanentlyDenied
-    }*/
-
-
-    // ---- Dialogs ----
-    /*if (showPrePermissionDialog) {
-        PermissionRationaleDialog(
-            onDismiss = { showPrePermissionDialog = false }, // optional close
-            onContinue = {
-                showPrePermissionDialog = false
-                hasAskedOnce = true
-                permissions.launchMultiplePermissionRequest()
-            }
-        )
-    }
-
-    // This will NOT show when permanently denied (anyPermanentlyDenied == true)
-    if (showDeniedDialog) {
-        PermissionDeniedDialog(
-            onOpenSettings = { openAppSettings(context) },
-            onContinue = { showDeniedDialog = false } // continue without location
-        )
-    }*/
 
     // ------------------------------------------- UI ----------------------------------------------
     ScaffoldModel(
@@ -233,8 +180,7 @@ fun EarthquakeMapScreen(
                             onManualPositionToggle = { checked ->
                                 if (checked) {
                                     Log.d(TAG, "EarthquakeMapScreen: manual position toggle: $checked")
-                                    // just open picker; persistence happens on OK
-                                    // (see onManualPositionConfirmed)
+                                    // just open picker; updating storage on OK pressed -> onManualPositionConfirmed
                                 } else { // uncheck
                                     Log.d(TAG, "EarthquakeMapScreen: UNCHECKED manual position toggle: $checked")
                                     // restore user position coordinates and address info and recenter

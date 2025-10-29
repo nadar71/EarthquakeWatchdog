@@ -68,7 +68,6 @@ fun EarthquakeMapContent(
     val provider = remember {
         GraticuleTileProvider(
             stepDegrees = 10,
-            // lineColor = 0x95FF5722.toInt(), // orange
             lineWidthPx = 1f
         ) as TileProvider
     }
@@ -87,7 +86,6 @@ fun EarthquakeMapContent(
     var manualPositionTitle by remember(settings.manualPosition) { mutableStateOf<String?>(null) }
     LaunchedEffect(settings.manualPosition) {
         manualPositionTitle = settings.manualPosition.let { ll ->
-            // getPlaceNameOrNull(context, ll)
             val address = getAddress(context, ll)
             address?.getAddressLine(0) + " " + address?.locality + " " + address?.countryCode
         }
@@ -180,8 +178,8 @@ fun EarthquakeMapContent(
                     LatLng(settings.userPosition.latitude, settings.userPosition.longitude)),
                 icon = userPosPin,
                 anchor = Offset(0.5f, 1.0f),    // center-bottom so tip points to LatLng
-                flat = true,                    // allows rotation if you add bearing
-                title = "You are here"
+                flat = true,                    // allows icon rotation
+                title = stringResource(id = R.string.maps_you_are_here)
             )
         }
 

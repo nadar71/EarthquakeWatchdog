@@ -26,17 +26,6 @@ class MainActivity() : AppCompatActivity() {
 
     private val themeViewModel: ThemeViewModel by viewModels()
 
-    /*private var lastUpdate: String? = ""
-    private var earthquakeUIS: List<EarthquakeUI>? = null
-    // Preferences value
-    private var minMagnitude: String? = null
-    private var orderBy: String? = null
-    private var lat_s: String? = null
-    private var lng_s: String? = null
-    private var dateFilter: String? = null
-    private lateinit var dateFilterLabel: String
-    private var location_address: String? = null*/
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

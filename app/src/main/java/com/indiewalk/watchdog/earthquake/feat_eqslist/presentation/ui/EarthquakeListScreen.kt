@@ -68,7 +68,7 @@ import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getAddress
 import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
-import com.indiewalk.watchdog.earthquake.feat_intro.presentation.PreferencesViewModel
+import com.indiewalk.watchdog.earthquake.core.presentation.ui.PreferencesViewModel
 import kotlinx.coroutines.launch
 
 
@@ -142,9 +142,6 @@ fun EarthquakeListScreen(
                 address?.let { preferencesViewModel.setUserLocationInfo(address.toLocationInfo(context)) }
                 Log.d(TAG, "EarthquakeListScreen: user Location: $userLocation")
                 Log.d(TAG, "EarthquakeListScreen: user address: $address")
-                /*preferencesViewModel.setUserAddress(address?.getAddressLine(0) ?: "Unknown")
-                preferencesViewModel.setUserCity(address?.locality ?: "Unknown")
-                preferencesViewModel.setUserCountryCode(address?.countryCode ?: "Unknown")*/
             }
         }
     }
