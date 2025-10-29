@@ -133,7 +133,7 @@ fun MapOptionsOverlayCard(
         }
     }
 
-    // LOCATION PICKER
+    // Location picker
     if (showLocationPicker) {
         LocationPicker(
             initialFallback = if (settings.manualLocOn) settings.manualPosition
@@ -144,7 +144,6 @@ fun MapOptionsOverlayCard(
                 onManualPositionConfirmed(latLng, address)
                 showLocationPicker = false
             },
-            onLocationChange = { }, // TODO : what's for ?
             onDismiss = {
                 showLocationPicker = false
             },

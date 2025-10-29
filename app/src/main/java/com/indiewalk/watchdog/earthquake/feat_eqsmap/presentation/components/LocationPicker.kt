@@ -56,7 +56,6 @@ fun LocationPicker(
     initialFallback: LatLng,         // starting position
     hasLocationPermissions: Boolean,
     onLocationSelected: (LatLng, Address) -> Unit,
-    onLocationChange: (String) -> Unit, // TODO : what's for ?
     onDismiss: () -> Unit,
     ) {
     val TAG = "LocationPickerNoPermissionsReq"
@@ -79,24 +78,7 @@ fun LocationPicker(
         selectedCoordinates = initialFallback
         selectedLocationAddress = getAddress(context, initialFallback)
         selectedLocationAddressString = selectedLocationAddress.toLocationInfo(context).concatString(context)
-        onLocationChange(selectedLocationAddressString)
     }
-
-    // Move camera: in case of permissions granted, move camera to user position
-    // TODO: check if necessary
-    /*LaunchedEffect(hasLocationPermissions) {
-        if (hasLocationPermissions) {
-            onLocationChange(selectedLocationAddressString)
-
-            // TODO: get from settings
-            moveToCurrentLocationIfPermitted(context, cameraPositionState) { current ->
-                selectedCoordinates = current
-                updateLocationName(context, current, onLocationChange).also { name ->
-                    selectedLocationAddressString = name
-                }
-            }
-        }
-    }*/
 
     AlertDialog(
         properties = DialogProperties(usePlatformDefaultWidth = true),
@@ -112,7 +94,6 @@ fun LocationPicker(
                     }
                     onLocationSelected(coordinates, selectedLocationAddress ?: safeAddress)
                 }
-                onLocationChange(selectedLocationAddressString)
                 onDismiss()
             }) {
                 Text(
@@ -142,7 +123,6 @@ fun LocationPicker(
                             selectedCoordinates = latLng
                             selectedLocationAddress = getAddress(context, latLng)
                             selectedLocationAddressString = selectedLocationAddress.toLocationInfo(context).concatString(context)
-                            onLocationChange(selectedLocationAddressString)
                         },
                         onMapLoaded = { /* do nothing */ }
                     )
@@ -151,13 +131,6 @@ fun LocationPicker(
                     if (hasLocationPermissions) {
                         IconButton(
                             onClick = {
-                                // TODO: getting from settings
-                                /*moveToCurrentLocationIfPermitted(context, cameraPositionState) { current ->
-                                    selectedCoordinates = current
-                                    updateLocationName(context, current, onLocationChange).also { name ->
-                                        selectedLocationAddressString = name
-                                    }
-                                }*/
                                 cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(initialFallback, 8f))
                             },
                             modifier = Modifier
@@ -177,45 +150,6 @@ fun LocationPicker(
     )
 }
 
-// Function to check location permission and move the camera to the current position
-// TODO : try to use getFusedLocationProviderClient in map utils
-/*@SuppressLint("MissingPermission")
-private fun moveToCurrentLocationIfPermitted(
-    context: Context,
-    cameraPositionState: CameraPositionState,
-    onLocationUpdated: (LatLng) -> Unit  // Callback for updating location
-) {
-    // Check if permissions is granted for FINE location or COARSE location
-    val fine   = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-    val coarse = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-    if (!fine && !coarse) return
-
-    // Attempt to get the last known location and update the camera position
-    val fused = LocationServices.getFusedLocationProviderClient(context)
-    fused.lastLocation.addOnSuccessListener { loc: Location? ->
-        loc?.let {
-            val ll = LatLng(it.latitude, it.longitude)
-            cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(ll, 8f))
-            onLocationUpdated(ll)
-        }
-    }.addOnFailureListener { e ->
-        Log.e("LocationPicker", "Error fetching location: ${e.message}", e)
-    }
-}
-
-
-private fun updateLocationName(
-    context: Context,
-    latLng: LatLng,
-    onLocationChange: (String) -> Unit
-): String {
-    val geocoder = Geocoder(context, Locale.getDefault())
-    val addr = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-    val name = addr?.firstOrNull()?.getAddressLine(0) ?:
-        context.getString(R.string.generic_unknown_location)
-    onLocationChange(name)
-    return name
-}*/
 
 
 
