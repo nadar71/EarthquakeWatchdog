@@ -132,7 +132,7 @@ fun EarthquakeMapContent(
     // Map properties / UI
     val properties = remember(hasLocationPermissions, mapType) {
         MapProperties(
-            isMyLocationEnabled = false, // avoid standard user pin: custom pin
+            isMyLocationEnabled = hasLocationPermissions, // avoid standard user pin: custom pin
             mapType = mapType
         )
     }
