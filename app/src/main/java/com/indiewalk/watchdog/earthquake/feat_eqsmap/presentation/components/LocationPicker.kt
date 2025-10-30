@@ -45,7 +45,7 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.rememberCameraPositionState
 import java.util.Locale
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getAddress
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
 import com.indiewalk.watchdog.earthquake.core.util.extensions.concatString
 import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
 
@@ -85,8 +85,13 @@ fun LocationPicker(
     }
 
     AlertDialog(
-        properties = DialogProperties(usePlatformDefaultWidth = true),
-        modifier = Modifier.fillMaxWidth(),
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = true
+        ),
+        modifier = Modifier
+            .fillMaxWidth(0.9f)
+            .padding(horizontal = 0.dp),
         containerColor = MaterialTheme.colorScheme.primary,
         onDismissRequest = onDismiss,
         confirmButton = {

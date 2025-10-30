@@ -1,7 +1,6 @@
 package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components
 
 import android.annotation.SuppressLint
-import android.location.Geocoder
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -19,6 +18,8 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
 
 
 @SuppressLint("MissingPermission")
@@ -34,6 +35,7 @@ fun GoogleMapView(
 ) {
     val TAG = "GoogleMapView"
     Log.d(TAG, "GoogleMapView Opened")
+    val context = LocalContext.current
 
     // State to keep track of the marker position
     var markerPosition by remember(initialLocation) {
@@ -64,13 +66,7 @@ fun GoogleMapView(
         if (hasLocationPermissions){
             Marker(
                 state = MarkerState(position = userPosition),
-                title = "${
-                    // TODO : use util fun ?
-                    Geocoder(LocalContext.current)
-                        .getFromLocation(userPosition.latitude, userPosition.longitude, 1)
-                        ?.get(0)
-                        ?.getAddressLine(0)
-                }",
+                title = getAddress(context, userPosition).toLocationInfo(context).concatString(context),
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
             )
         }
@@ -79,20 +75,8 @@ fun GoogleMapView(
         markerPosition?.let { position ->
                 Marker(
                     state = MarkerState(position = position),
-                    title = "${
-                        // TODO : use util fun ?
-                        Geocoder(LocalContext.current)
-                            .getFromLocation(position.latitude, position.longitude, 1)
-                            ?.get(0)
-                            ?.getAddressLine(0)
-                    }",
+                    title = getAddress(context, position).toLocationInfo(context).concatString(context),
                     icon =
-                        /*if (!isManualOn && hasLocationPermissions && justOpened) // with granted always blue at start, next green
-                            BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
-                        else*/
-
-                        // BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
-
                         if (isManualOn && !hasLocationPermissions) // in manual always green at start and next
                             BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
                         else if (!isManualOn && hasLocationPermissions && justOpened) // with granted always blue at start, next green

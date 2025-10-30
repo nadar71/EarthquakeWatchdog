@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.core.util
+package com.indiewalk.watchdog.earthquake.feat_eqsmap.util
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -118,4 +118,3 @@ object MapsUtils {
     }
 
 }
-

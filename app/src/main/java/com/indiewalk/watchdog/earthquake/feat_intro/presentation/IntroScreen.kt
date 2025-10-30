@@ -46,9 +46,9 @@ import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationRoutes
 import com.indiewalk.watchdog.earthquake.core.presentation.ui.PreferencesViewModel
-import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getAddress
-import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.getLastKnownLatLng
-import com.indiewalk.watchdog.earthquake.core.util.MapsUtils.openAppSettings
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getLastKnownLatLng
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.openAppSettings
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
