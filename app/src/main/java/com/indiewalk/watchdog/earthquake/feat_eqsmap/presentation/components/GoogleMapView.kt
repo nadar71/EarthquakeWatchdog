@@ -26,6 +26,7 @@ import com.google.maps.android.compose.MarkerState
 fun GoogleMapView(
     cameraPositionState: CameraPositionState,
     initialLocation: LatLng?, // Added initial location parameter
+    userPosition: LatLng,     // user position (real or default)
     hasLocationPermissions: Boolean,
     isManualOn: Boolean,
     onMapClick: (LatLng) -> Unit,
@@ -59,30 +60,47 @@ fun GoogleMapView(
             onMapClick(latLng)
         }
     ) {
-        // with granted permissions and no manual on, display the user marker, else manual position
-        markerPosition?.let { position ->
+        // with granted permissions display the user marker fixed
+        if (hasLocationPermissions){
             Marker(
-                state = MarkerState(position = position),
+                state = MarkerState(position = userPosition),
                 title = "${
                     // TODO : use util fun ?
                     Geocoder(LocalContext.current)
-                        .getFromLocation(position.latitude, position.longitude, 1)
+                        .getFromLocation(userPosition.latitude, userPosition.longitude, 1)
                         ?.get(0)
                         ?.getAddressLine(0)
                 }",
-                icon =
-                    if (!isManualOn && hasLocationPermissions && justOpened) // with granted always blue at start, next green
-                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
-                    else
-                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
-                /*
-                    if (isManualOn && !hasLocationPermissions) // in manual always green at start and next
-                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
-                    else if (!isManualOn && hasLocationPermissions && justOpened) // with granted always blue at start, next green
-                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
-                    else
-                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)*/
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
             )
+        }
+
+        // if manual position on, display the marker, then change it at clicking on map
+        markerPosition?.let { position ->
+                Marker(
+                    state = MarkerState(position = position),
+                    title = "${
+                        // TODO : use util fun ?
+                        Geocoder(LocalContext.current)
+                            .getFromLocation(position.latitude, position.longitude, 1)
+                            ?.get(0)
+                            ?.getAddressLine(0)
+                    }",
+                    icon =
+                        /*if (!isManualOn && hasLocationPermissions && justOpened) // with granted always blue at start, next green
+                            BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
+                        else*/
+
+                        // BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+
+                        if (isManualOn && !hasLocationPermissions) // in manual always green at start and next
+                            BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+                        else if (!isManualOn && hasLocationPermissions && justOpened) // with granted always blue at start, next green
+                            BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
+                        else
+                            BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+                )
+
         }
     }
 }

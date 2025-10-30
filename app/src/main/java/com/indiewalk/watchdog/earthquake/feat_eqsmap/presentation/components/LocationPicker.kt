@@ -120,7 +120,8 @@ fun LocationPicker(
                 Spacer(Modifier.height(16.dp))
                 Box(Modifier.fillMaxSize()) {
                     GoogleMapView(
-                        initialLocation = selectedCoordinates, // marker to user position (real or default)
+                        initialLocation = selectedCoordinates, //  user position (real or default)
+                        userPosition = userPosition, // user position (real or default)
                         cameraPositionState = cameraPositionState,
                         hasLocationPermissions = hasLocationPermissions,
                         isManualOn = isManualOn,
