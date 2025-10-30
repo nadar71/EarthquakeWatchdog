@@ -65,6 +65,7 @@ fun LocationPicker(
 
     val context = LocalContext.current
 
+    var isMapManualPositionSet by remember { mutableStateOf(false) }
     var selectedCoordinates by remember { mutableStateOf<LatLng?>(null) }
     var selectedLocationAddress by remember { mutableStateOf<Address?>(null) }
     var selectedLocationAddressString by remember { mutableStateOf("") }
@@ -90,13 +91,18 @@ fun LocationPicker(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-                selectedCoordinates?.let { coordinates ->
-                    val selectedLocationAddress = getAddress(context, coordinates)
-                    val safeAddress =
-                        selectedLocationAddress ?: Address(Locale.getDefault()).apply {
-                            setAddressLine(0, context.getString(R.string.generic_unknown_location))
-                        }
-                    onLocationSelected(coordinates, selectedLocationAddress ?: safeAddress)
+                if (isMapManualPositionSet){
+                    selectedCoordinates?.let { coordinates ->
+                        val selectedLocationAddress = getAddress(context, coordinates)
+                        val safeAddress =
+                            selectedLocationAddress ?: Address(Locale.getDefault()).apply {
+                                setAddressLine(
+                                    0,
+                                    context.getString(R.string.generic_unknown_location)
+                                )
+                            }
+                        onLocationSelected(coordinates, selectedLocationAddress ?: safeAddress)
+                    }
                 }
                 onDismiss()
             }) {
@@ -126,6 +132,7 @@ fun LocationPicker(
                         hasLocationPermissions = hasLocationPermissions,
                         isManualOn = isManualOn,
                         onMapClick = { latLng ->
+                            isMapManualPositionSet = true
                             selectedCoordinates = latLng
                             selectedLocationAddress = getAddress(context, latLng)
                             selectedLocationAddressString =
