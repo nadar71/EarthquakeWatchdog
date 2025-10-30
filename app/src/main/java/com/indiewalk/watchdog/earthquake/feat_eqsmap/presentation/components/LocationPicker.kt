@@ -54,10 +54,12 @@ import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
 @Composable
 fun LocationPicker(
     initialFallback: LatLng,         // starting position
+    userPosition: LatLng,            // user position: maybe Default position if permissions not granted
     hasLocationPermissions: Boolean,
+    isManualOn: Boolean,
     onLocationSelected: (LatLng, Address) -> Unit,
     onDismiss: () -> Unit,
-    ) {
+) {
     val TAG = "LocationPickerNoPermissionsReq"
     Log.d(TAG, "LocationPickerNoPermissionsReq Opened")
 
@@ -77,7 +79,8 @@ fun LocationPicker(
     LaunchedEffect(initialFallback) {
         selectedCoordinates = initialFallback
         selectedLocationAddress = getAddress(context, initialFallback)
-        selectedLocationAddressString = selectedLocationAddress.toLocationInfo(context).concatString(context)
+        selectedLocationAddressString =
+            selectedLocationAddress.toLocationInfo(context).concatString(context)
     }
 
     AlertDialog(
@@ -89,9 +92,10 @@ fun LocationPicker(
             TextButton(onClick = {
                 selectedCoordinates?.let { coordinates ->
                     val selectedLocationAddress = getAddress(context, coordinates)
-                    val safeAddress = selectedLocationAddress ?: Address(Locale.getDefault()).apply {
-                        setAddressLine(0, context.getString(R.string.generic_unknown_location))
-                    }
+                    val safeAddress =
+                        selectedLocationAddress ?: Address(Locale.getDefault()).apply {
+                            setAddressLine(0, context.getString(R.string.generic_unknown_location))
+                        }
                     onLocationSelected(coordinates, selectedLocationAddress ?: safeAddress)
                 }
                 onDismiss()
@@ -116,22 +120,38 @@ fun LocationPicker(
                 Spacer(Modifier.height(16.dp))
                 Box(Modifier.fillMaxSize()) {
                     GoogleMapView(
-                        initialLocation = selectedCoordinates, // marker
+                        initialLocation = selectedCoordinates, // marker to user position (real or default)
                         cameraPositionState = cameraPositionState,
                         hasLocationPermissions = hasLocationPermissions,
+                        isManualOn = isManualOn,
                         onMapClick = { latLng ->
                             selectedCoordinates = latLng
                             selectedLocationAddress = getAddress(context, latLng)
-                            selectedLocationAddressString = selectedLocationAddress.toLocationInfo(context).concatString(context)
+                            selectedLocationAddressString =
+                                selectedLocationAddress.toLocationInfo(context)
+                                    .concatString(context)
                         },
                         onMapLoaded = { /* do nothing */ }
                     )
 
-                    // permissions granted: go to user real position if
+                    // permissions granted: go to user real/default position if granted/not granted
                     if (hasLocationPermissions) {
                         IconButton(
                             onClick = {
-                                cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(initialFallback, 8f))
+                                if (hasLocationPermissions) {
+                                    cameraPositionState.move(
+                                        CameraUpdateFactory.newLatLngZoom(
+                                            userPosition, 8f
+                                        )
+                                    )
+
+                                } else {
+                                    cameraPositionState.move(
+                                        CameraUpdateFactory.newLatLngZoom(
+                                            initialFallback, 8f
+                                        )
+                                    )
+                                }
                             },
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
@@ -149,8 +169,6 @@ fun LocationPicker(
         }
     )
 }
-
-
 
 
 // -------------------------------------- Previews --------------------------------------------------

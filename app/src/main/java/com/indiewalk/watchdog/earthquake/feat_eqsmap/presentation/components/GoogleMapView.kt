@@ -27,6 +27,7 @@ fun GoogleMapView(
     cameraPositionState: CameraPositionState,
     initialLocation: LatLng?, // Added initial location parameter
     hasLocationPermissions: Boolean,
+    isManualOn: Boolean,
     onMapClick: (LatLng) -> Unit,
     onMapLoaded: () -> Unit
 ) {
@@ -38,7 +39,7 @@ fun GoogleMapView(
         mutableStateOf(initialLocation)
     }
 
-    var justOpened by remember { mutableStateOf(true) }
+    var justOpened by remember { mutableStateOf(true) } // at start
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
@@ -58,21 +59,29 @@ fun GoogleMapView(
             onMapClick(latLng)
         }
     ) {
-        // Only display the marker if a position is set by the user click
+        // with granted permissions and no manual on, display the user marker, else manual position
         markerPosition?.let { position ->
             Marker(
                 state = MarkerState(position = position),
                 title = "${
+                    // TODO : use util fun ?
                     Geocoder(LocalContext.current)
                         .getFromLocation(position.latitude, position.longitude, 1)
                         ?.get(0)
                         ?.getAddressLine(0)
                 }",
                 icon =
-                    if (hasLocationPermissions && justOpened)
+                    if (!isManualOn && hasLocationPermissions && justOpened) // with granted always blue at start, next green
                         BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
                     else
                         BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+                /*
+                    if (isManualOn && !hasLocationPermissions) // in manual always green at start and next
+                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+                    else if (!isManualOn && hasLocationPermissions && justOpened) // with granted always blue at start, next green
+                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
+                    else
+                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)*/
             )
         }
     }

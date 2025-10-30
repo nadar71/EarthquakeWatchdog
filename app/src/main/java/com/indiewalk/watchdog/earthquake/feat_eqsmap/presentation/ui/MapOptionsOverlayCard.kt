@@ -33,7 +33,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import com.google.android.gms.maps.model.LatLng
+import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
 import com.indiewalk.watchdog.earthquake.core.data.enums.UnitSystem
@@ -95,7 +97,14 @@ fun MapOptionsOverlayCard(
                         }
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text("Set position manually", style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        modifier = Modifier
+                            .clickable{
+                                showLocationPicker = true
+                            },
+                        text = stringResource(R.string.maps_set_position_manually),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
                 }
 
                 Spacer(Modifier.height(12.dp))
@@ -138,7 +147,9 @@ fun MapOptionsOverlayCard(
         LocationPicker(
             initialFallback = if (settings.manualLocOn) settings.manualPosition
                               else settings.userPosition,
+            userPosition = settings.userPosition,
             hasLocationPermissions = hasLocationPermissions,
+            isManualOn = settings.manualLocOn,
             onLocationSelected = { latLng, address ->
                 // save on prefs, recenter, close overlay in parent
                 onManualPositionConfirmed(latLng, address)
