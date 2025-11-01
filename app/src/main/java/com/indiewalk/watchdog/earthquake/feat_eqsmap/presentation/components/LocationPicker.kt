@@ -1,12 +1,6 @@
 package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components
 
-import android.Manifest
-import android.annotation.SuppressLint
-import android.content.Context
-import android.content.pm.PackageManager
 import android.location.Address
-import android.location.Geocoder
-import android.location.Location
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,19 +29,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import androidx.core.content.ContextCompat
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.rememberCameraPositionState
-import java.util.Locale
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
-import com.indiewalk.watchdog.earthquake.core.util.extensions.concatString
 import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
+import java.util.Locale
 
 
 @OptIn(ExperimentalPermissionsApi::class)

@@ -47,7 +47,6 @@ class MainViewModel @Inject constructor(
     val eqsUIFromDBState: StateFlow<EQsListUiFromDBState<List<EQEntity>?>> =
         _eqsUIFromDBState.asStateFlow()
 
-
     val settings: StateFlow<AppSettings> =
         AppPrefs.settingsFlow(EarthquakeApp.appContext)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppSettings())

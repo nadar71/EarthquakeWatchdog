@@ -31,7 +31,7 @@ class EQRepositoryImpl @Inject constructor(
     // fetch eqs and save locally,
     // default request : https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time
     // - min mag 1
-    // - order by time desc ( default from remote)
+    // - order by time desc from most recent ( default from remote)
     // - no start/date time: retrieve the last month ( ~170kb average )
     override suspend fun fetchAndSaveDefault(): EQFeaturesCollectionDTO {
         val params = EarthquakeQueryParams(

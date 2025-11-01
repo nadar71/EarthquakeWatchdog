@@ -44,7 +44,7 @@ import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldMo
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getLastKnownLatLng
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.state.MapUiState
-import com.indiewalk.watchdog.earthquake.core.presentation.ui.PreferencesViewModel
+import com.indiewalk.watchdog.earthquake.core.presentation.preferences.PreferencesViewModel
 import kotlinx.coroutines.launch
 
 
