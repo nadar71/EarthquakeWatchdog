@@ -13,6 +13,9 @@ val Context.eqFilterDataStore by preferencesDataStore(DS_NAME)
 
 object FilterPrefs {
     private val KEY_SORT = stringPreferencesKey("sort_option")
+    private val KEY_MIN_MAG = stringPreferencesKey("min_mag")
+    private val KEY_START_DATE = stringPreferencesKey("start_date")
+    private val KEY_END_DATE = stringPreferencesKey("end_date")
 
     fun sortFlow(context: Context): Flow<EqsSortOption> =
         context.eqFilterDataStore.data.map { prefs ->
@@ -22,6 +25,39 @@ object FilterPrefs {
     suspend fun setSort(context: Context, option: EqsSortOption) {
         context.eqFilterDataStore.edit { prefs ->
             prefs[KEY_SORT] = option.name
+        }
+    }
+
+    fun minMagFlow(context: Context): Flow<Double> =
+        context.eqFilterDataStore.data.map { prefs ->
+            prefs[KEY_MIN_MAG]?.toDoubleOrNull() ?: 0.0
+        }
+
+    suspend fun setMinMag(context: Context, mag: Double) {
+        context.eqFilterDataStore.edit { prefs ->
+            prefs[KEY_MIN_MAG] = mag.toString()
+        }
+    }
+
+    fun startDateFlow(context: Context): Flow<String> =
+        context.eqFilterDataStore.data.map { prefs ->
+            prefs[KEY_START_DATE] ?: ""
+        }
+
+    suspend fun setStartDate(context: Context, date: String) {
+        context.eqFilterDataStore.edit { prefs ->
+            prefs[KEY_START_DATE] = date
+        }
+    }
+
+    fun endDateFlow(context: Context): Flow<String> =
+        context.eqFilterDataStore.data.map { prefs ->
+            prefs[KEY_END_DATE] ?: ""
+        }
+
+    suspend fun setEndDate(context: Context, date: String) {
+        context.eqFilterDataStore.edit { prefs ->
+            prefs[KEY_END_DATE] = date
         }
     }
 }

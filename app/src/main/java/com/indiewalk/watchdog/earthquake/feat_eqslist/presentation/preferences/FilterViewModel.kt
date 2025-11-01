@@ -27,4 +27,34 @@ class FilterViewModel @Inject constructor(
             FilterPrefs.setSort(context, option)
         }
     }
+
+    val minMag: StateFlow<Double> =
+        FilterPrefs.minMagFlow(context)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, 0.0)
+
+    fun setMinMag(mag: Double) {
+        viewModelScope.launch {
+            FilterPrefs.setMinMag(context, mag)
+        }
+    }
+
+    val startDate: StateFlow<String> =
+        FilterPrefs.startDateFlow(context)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, "")
+
+    fun setStartDate(date: String) {
+        viewModelScope.launch {
+            FilterPrefs.setStartDate(context, date)
+        }
+    }
+
+    val endDate: StateFlow<String> =
+        FilterPrefs.endDateFlow(context)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, "")
+
+    fun setEndDate(date: String) {
+        viewModelScope.launch {
+            FilterPrefs.setEndDate(context, date)
+        }
+    }
 }

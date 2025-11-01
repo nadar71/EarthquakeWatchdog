@@ -9,9 +9,12 @@ import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +39,7 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Badge
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -50,6 +54,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -73,7 +79,8 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.preferences.F
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class,
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class,
     ExperimentalPermissionsApi::class
 )
 @Composable
@@ -129,7 +136,7 @@ fun EarthquakeListScreen(
     )
 
     // ------------------------------------- LOGIC -------------------------------------------------
-    val filters  by earthquakeListViewModel.filterFlow.collectAsStateWithLifecycle()
+    val filters by earthquakeListViewModel.filterFlow.collectAsStateWithLifecycle()
     val settings by earthquakeListViewModel.settings.collectAsStateWithLifecycle()
     val eqsUIFromRemoteState by earthquakeListViewModel.eqsUIFromRemoteState.collectAsStateWithLifecycle()
     val eqsUIFromDBState by earthquakeListViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
@@ -139,10 +146,16 @@ fun EarthquakeListScreen(
     LaunchedEffect(Unit) {
         if (hasLocalPermissions) {
             val userLocation = getLastKnownLatLng(context = context)
-            preferencesViewModel.setUserPosition(userLocation )
+            preferencesViewModel.setUserPosition(userLocation)
             if (userLocation != null) {
                 val address = getAddress(context = context, latLng = userLocation)
-                address?.let { preferencesViewModel.setUserLocationInfo(address.toLocationInfo(context)) }
+                address?.let {
+                    preferencesViewModel.setUserLocationInfo(
+                        address.toLocationInfo(
+                            context
+                        )
+                    )
+                }
                 Log.d(TAG, "EarthquakeListScreen: user Location: $userLocation")
                 Log.d(TAG, "EarthquakeListScreen: user address: $address")
             }
@@ -265,7 +278,7 @@ fun EarthquakeListScreen(
             )
         },
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize()){
+        Box(modifier = Modifier.fillMaxSize()) {
             if (eqListLoadedFromDb && !eqsList.isNullOrEmpty()) {
                 PullRefreshIndicator(
                     refreshing = isRefreshing,
@@ -304,15 +317,16 @@ fun EarthquakeListScreen(
                     exit = fadeOut() + slideOut(targetOffset = { IntOffset(0, 100) }),
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .padding(16.dp)
+                        .padding(
+                            end = 16.dp,
+                            bottom = WindowInsets.navigationBars.getBottom(LocalDensity.current).dp + 64.dp
+                        )
                 ) {
                     Box(
                         modifier = Modifier
-                            .padding(16.dp)
                             .wrapContentSize()
-                    ){
+                    ) {
                         FloatingActionButton(
-                            shape = CircleShape,
                             onClick = {
                                 scope.launch {
                                     snackbarHostState.showSnackbar(
@@ -322,28 +336,33 @@ fun EarthquakeListScreen(
                                 }
                             },
                             containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(40.dp),
+                            elevation = FloatingActionButtonDefaults.elevation(
+                                defaultElevation = 2.dp,
+                                pressedElevation = 4.dp,
+                                focusedElevation = 4.dp,
+                                hoveredElevation = 3.dp
+                            )
                         ) {
                             Icon(
                                 imageVector = Icons.Default.FilterList,
-                                contentDescription = "Notifications"
+                                contentDescription = "Notifications",
+                                modifier = Modifier.size(20.dp)
                             )
                         }
-
 
                         if (notificationCount.value > 0) {
                             Badge(
                                 modifier = Modifier
                                     .align(Alignment.TopEnd)
-                                    .zIndex(1f)
-                                    .offset(x = 2.dp, y = (-2).dp)
+                                    .offset(x = 6.dp, y = (-6).dp)
                             ) {
                                 Text(notificationCount.value.toString())
                             }
                         }
                     }
                 }
-
             } else {
                 Text("No earthquakes found")
             }
