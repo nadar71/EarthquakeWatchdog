@@ -1,7 +1,7 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.data.repository
 
 import android.content.Context
-import com.indiewalk.watchdog.earthquake.core.data.AppPrefs
+import com.indiewalk.watchdog.earthquake.core.data.local.preferences.AppPrefs
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.EarthquakeDao
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.FeedSnapshotDao
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.FeedWriterDao

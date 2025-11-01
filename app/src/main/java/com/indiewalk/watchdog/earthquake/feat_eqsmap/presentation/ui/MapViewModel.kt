@@ -4,10 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.maps.model.LatLng
-import com.indiewalk.watchdog.earthquake.core.data.AppPrefs
-import com.indiewalk.watchdog.earthquake.core.model.AppSettings
-import com.indiewalk.watchdog.earthquake.core.model.LocationInfo
+import com.indiewalk.watchdog.earthquake.core.data.local.preferences.AppPrefs
+import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.domain.use_cases.ObserveEarthquakesUseCase
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.state.MapUiState

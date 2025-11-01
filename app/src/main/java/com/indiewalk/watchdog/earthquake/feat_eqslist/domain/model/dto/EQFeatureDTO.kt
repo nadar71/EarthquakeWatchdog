@@ -1,6 +1,6 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto
 
-import com.indiewalk.watchdog.earthquake.core.model.AppSettings
+import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getEQDistanceFromUser
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 

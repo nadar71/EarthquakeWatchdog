@@ -1,6 +1,5 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.previews
 
-import android.R.attr.onClick
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,7 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.indiewalk.watchdog.earthquake.core.data.enums.ThemeMode
+import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
 
 
 @OptIn(ExperimentalMaterial3Api::class)

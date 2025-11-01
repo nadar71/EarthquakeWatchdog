@@ -1,7 +1,6 @@
 package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui
 
 import android.util.Log
-import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,7 +15,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -33,13 +31,13 @@ import com.google.maps.android.compose.TileOverlay
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_ADDRESS
-import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_CITY
-import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_COUNTRY_CODE
-import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
-import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
-import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_POSITION
-import com.indiewalk.watchdog.earthquake.core.model.AppSettings
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_ADDRESS
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_CITY
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_COUNTRY_CODE
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LAT
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LNG
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_POSITION
+import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
 import com.indiewalk.watchdog.earthquake.core.util.GenericUtils.bitmapDescriptorFromVector
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getLastKnownLatLng

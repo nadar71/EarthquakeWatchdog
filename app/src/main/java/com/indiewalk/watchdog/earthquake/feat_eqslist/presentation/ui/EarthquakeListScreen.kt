@@ -69,6 +69,7 @@ import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldMo
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getLastKnownLatLng
 import com.indiewalk.watchdog.earthquake.core.presentation.preferences.PreferencesViewModel
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.preferences.FilterViewModel
 import kotlinx.coroutines.launch
 
 
@@ -78,7 +79,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun EarthquakeListScreen(
     navController: NavHostController,
-    mainViewModel: MainViewModel = hiltViewModel(),
+    earthquakeListViewModel: EarthquakeListViewModel = hiltViewModel(),
+    filterViewModel: FilterViewModel = hiltViewModel(),
     preferencesViewModel: PreferencesViewModel = hiltViewModel()
 ) {
     val TAG = "EarthquakeListScreen"
@@ -120,16 +122,17 @@ fun EarthquakeListScreen(
         onRefresh = {
             coroutineScope.launch {
                 isRefreshing = true
-                mainViewModel.refreshEQsList()
+                earthquakeListViewModel.refreshEQsList()
                 isRefreshing = false
             }
         }
     )
 
     // ------------------------------------- LOGIC -------------------------------------------------
-    val settings by mainViewModel.settings.collectAsStateWithLifecycle()
-    val eqsUIFromRemoteState by mainViewModel.eqsUIFromRemoteState.collectAsStateWithLifecycle()
-    val eqsUIFromDBState by mainViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
+    val filters  by earthquakeListViewModel.filterFlow.collectAsStateWithLifecycle()
+    val settings by earthquakeListViewModel.settings.collectAsStateWithLifecycle()
+    val eqsUIFromRemoteState by earthquakeListViewModel.eqsUIFromRemoteState.collectAsStateWithLifecycle()
+    val eqsUIFromDBState by earthquakeListViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
 
 
     // Update user position and address in prefs in case location permissions changed meanwhile/later
@@ -147,7 +150,7 @@ fun EarthquakeListScreen(
     }
 
     LaunchedEffect(Unit) {
-        mainViewModel.refreshEQsList()
+        earthquakeListViewModel.refreshEQsList()
     }
 
     LaunchedEffect(eqsUIFromRemoteState) {
@@ -169,7 +172,7 @@ fun EarthquakeListScreen(
                 eqsCollection =
                     (eqsUIFromRemoteState as EQsListUiFromRemoteState.Success<EQFeaturesCollectionDTO>).data
                 // eqsList = eqsCollection?.features
-                mainViewModel.loadAllEQsDB()
+                earthquakeListViewModel.loadAllEQsDB()
                 Log.d(TAG, "EarthquakeListScreen: eqsList: $eqsList")
             }
 

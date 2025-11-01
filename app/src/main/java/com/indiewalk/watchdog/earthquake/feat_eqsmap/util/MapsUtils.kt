@@ -10,7 +10,7 @@ import android.provider.Settings
 import android.util.Log
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
-import com.indiewalk.watchdog.earthquake.core.model.AppSettings
+import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQGeometryDTO
 import it.abenergie.customerarea.core.utility.extensions.TAG
 import kotlinx.coroutines.tasks.await
@@ -24,7 +24,7 @@ object MapsUtils {
 
 
     // Returning the distance in Km between 2 points on a sphere throught the Haversine formula
-    private fun haversineDistanceKm(lat1: Double, lat2: Double, lng1: Double, lng2: Double): Double {
+    fun haversineDistanceKm(lat1: Double, lat2: Double, lng1: Double, lng2: Double): Double {
         val R = 6371.0 // km
         val dLat = Math.toRadians(lat2 - lat1)
         val dLng = Math.toRadians(lng2 - lng1)

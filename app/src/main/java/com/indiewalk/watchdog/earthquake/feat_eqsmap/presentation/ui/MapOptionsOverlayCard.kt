@@ -36,10 +36,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
-import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
-import com.indiewalk.watchdog.earthquake.core.data.enums.UnitSystem
-import com.indiewalk.watchdog.earthquake.core.model.AppSettings
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LAT
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LNG
+import com.indiewalk.watchdog.earthquake.core.data.local.enums.UnitSystem
+import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.LocationPicker
 
 

@@ -4,13 +4,13 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.EarthquakeApp
-import com.indiewalk.watchdog.earthquake.core.data.AppPrefs
-import com.indiewalk.watchdog.earthquake.core.model.AppSettings
+import com.indiewalk.watchdog.earthquake.core.data.local.preferences.AppPrefs
+import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQFeaturesCollectionDTO
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.repository.EQRepository
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.preferences.EqsSortOption
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.use_cases.FetchAndSaveDefaultUseCase
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.use_cases.LoadAllEQsUseCase
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromDBState
@@ -30,12 +30,18 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class EarthquakeListViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val fetchAndSaveDefaultUseCase: FetchAndSaveDefaultUseCase,
     private val loadAllEQsUseCase: LoadAllEQsUseCase
 ) : ViewModel() {
     private val TAG = "MainViewModel"
+
+    val filterFlow = FilterPrefs.sortFlow(context)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, EqsSortOption.DATE_DESC)
+
+    val settings: StateFlow<AppSettings> = AppPrefs.settingsFlow(EarthquakeApp.appContext)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppSettings())
 
     private val _eqsUIFromRemoteState = MutableStateFlow<EQsListUiFromRemoteState<EQFeaturesCollectionDTO>>(
         EQsListUiFromRemoteState.Idle)
@@ -46,10 +52,6 @@ class MainViewModel @Inject constructor(
         EQsListUiFromDBState.Idle)
     val eqsUIFromDBState: StateFlow<EQsListUiFromDBState<List<EQEntity>?>> =
         _eqsUIFromDBState.asStateFlow()
-
-    val settings: StateFlow<AppSettings> =
-        AppPrefs.settingsFlow(EarthquakeApp.appContext)
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppSettings())
 
 
     // request eqs list from remote and save to db

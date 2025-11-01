@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
-import com.indiewalk.watchdog.earthquake.core.data.AppPrefs
-import com.indiewalk.watchdog.earthquake.core.data.Constants
-import com.indiewalk.watchdog.earthquake.core.model.AppSettings
-import com.indiewalk.watchdog.earthquake.core.model.LocationInfo
+import com.indiewalk.watchdog.earthquake.core.data.local.preferences.AppPrefs
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants
+import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
+import com.indiewalk.watchdog.earthquake.core.model.preferences.LocationInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.SharingStarted

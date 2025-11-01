@@ -3,7 +3,7 @@ package com.indiewalk.watchdog.earthquake.core.util.extensions
 import android.content.Context
 import android.location.Address
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.model.LocationInfo
+import com.indiewalk.watchdog.earthquake.core.model.preferences.LocationInfo
 
 
 fun Address?.toLocationInfo(context: Context): LocationInfo = LocationInfo(

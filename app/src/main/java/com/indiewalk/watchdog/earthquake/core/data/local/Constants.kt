@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.core.data
+package com.indiewalk.watchdog.earthquake.core.data.local
 
 import com.google.android.gms.maps.model.LatLng
 

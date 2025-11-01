@@ -37,8 +37,8 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.MapType
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
-import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LAT
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LNG
 import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress

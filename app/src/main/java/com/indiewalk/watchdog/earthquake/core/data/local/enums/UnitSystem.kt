@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.core.data.enums
+package com.indiewalk.watchdog.earthquake.core.data.local.enums
 
 enum class UnitSystem(val value: String) {
     METRIC("METRIC"),

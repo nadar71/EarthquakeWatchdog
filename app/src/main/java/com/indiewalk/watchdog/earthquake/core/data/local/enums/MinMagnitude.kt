@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.core.data.enums
+package com.indiewalk.watchdog.earthquake.core.data.local.enums
 
 import androidx.annotation.StringRes
 import com.indiewalk.watchdog.earthquake.EarthquakeApp.Companion.appContext

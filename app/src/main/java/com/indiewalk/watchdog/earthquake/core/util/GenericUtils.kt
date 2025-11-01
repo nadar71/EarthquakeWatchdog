@@ -2,23 +2,17 @@ package com.indiewalk.watchdog.earthquake.core.util
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
-import android.net.Uri
-import android.os.Build
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import android.util.Log
-import android.view.View
 
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.data.Constants.USGS_REQUEST_URL
 
 import java.text.SimpleDateFormat
 import java.time.Instant

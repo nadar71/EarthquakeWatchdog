@@ -2,8 +2,8 @@ package com.indiewalk.watchdog.earthquake.core.util.extensions
 
 import com.indiewalk.watchdog.earthquake.EarthquakeApp
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.data.Constants.KM_TO_MILES
-import com.indiewalk.watchdog.earthquake.core.data.enums.UnitSystem
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants.KM_TO_MILES
+import com.indiewalk.watchdog.earthquake.core.data.local.enums.UnitSystem
 
 fun Int.kmToDisplayInt(unit: UnitSystem): Int =
     when (unit) {

@@ -1,12 +1,12 @@
-package com.indiewalk.watchdog.earthquake.core.model
+package com.indiewalk.watchdog.earthquake.core.model.preferences
 
 import android.content.Context
 import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LAT
-import com.indiewalk.watchdog.earthquake.core.data.Constants.DEFAULT_LNG
-import com.indiewalk.watchdog.earthquake.core.data.enums.ThemeMode
-import com.indiewalk.watchdog.earthquake.core.data.enums.UnitSystem
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LAT
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LNG
+import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
+import com.indiewalk.watchdog.earthquake.core.data.local.enums.UnitSystem
 
 data class AppSettings(
     val mode: ThemeMode = ThemeMode.System,

@@ -5,9 +5,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.indiewalk.watchdog.earthquake.core.data.enums.ThemeMode
-import com.indiewalk.watchdog.earthquake.core.data.AppPrefs
-import com.indiewalk.watchdog.earthquake.core.model.AppSettings
+import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
+import com.indiewalk.watchdog.earthquake.core.data.local.preferences.AppPrefs
+import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn

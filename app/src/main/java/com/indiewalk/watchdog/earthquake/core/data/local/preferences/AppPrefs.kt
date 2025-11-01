@@ -1,5 +1,4 @@
-package com.indiewalk.watchdog.earthquake.core.data
-
+package com.indiewalk.watchdog.earthquake.core.data.local.preferences
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -8,16 +7,18 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.data.enums.ThemeMode
-import com.indiewalk.watchdog.earthquake.core.data.enums.UnitSystem
-import com.indiewalk.watchdog.earthquake.core.model.AppSettings
-import com.indiewalk.watchdog.earthquake.core.model.LocationInfo
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants
+import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
+import com.indiewalk.watchdog.earthquake.core.data.local.enums.UnitSystem
+import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
+import com.indiewalk.watchdog.earthquake.core.model.preferences.LocationInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
+
 private const val DATASTORE_NAME = "app_prefs"
-private val Context.dataStore by preferencesDataStore(name = DATASTORE_NAME)
+val Context.dataStore by preferencesDataStore(name = DATASTORE_NAME)
 
 object AppPrefs {
     private val THEME_MODE = stringPreferencesKey("mode")
