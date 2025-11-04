@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.preferences.EqsSortOption
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 private const val DS_NAME = "eq_filters"
@@ -16,6 +17,7 @@ object FilterPrefs {
     private val KEY_MIN_MAG = stringPreferencesKey("min_mag")
     private val KEY_START_DATE = stringPreferencesKey("start_date")
     private val KEY_END_DATE = stringPreferencesKey("end_date")
+    private val KEY_TIME_INTERVAL = stringPreferencesKey("time_interval")
 
     fun sortFlow(context: Context): Flow<EqsSortOption> =
         context.eqFilterDataStore.data.map { prefs ->
@@ -59,5 +61,29 @@ object FilterPrefs {
         context.eqFilterDataStore.edit { prefs ->
             prefs[KEY_END_DATE] = date
         }
+    }
+
+    fun timeIntervalFlow(context: Context): Flow<String> =
+        context.eqFilterDataStore.data.map { prefs ->
+            prefs[KEY_TIME_INTERVAL] ?: ""
+        }
+
+    suspend fun setTimeInterval(context: Context, interval: String) {
+        context.eqFilterDataStore.edit { prefs ->
+            prefs[KEY_TIME_INTERVAL] = interval
+        }
+    }
+    // Debug
+    suspend fun debugPrintEqFilterDataStore(context: Context): String {
+        val data = context.eqFilterDataStore.data.first()
+        val stringBuilder = StringBuilder("=== FilterPrefs DataStore Contents ===\n")
+
+        data.asMap().forEach { (key, value) ->
+            stringBuilder.append("${key.name}: $value\n")
+        }
+
+        val result = stringBuilder.toString()
+        println(result)
+        return result
     }
 }

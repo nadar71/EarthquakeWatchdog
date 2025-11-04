@@ -46,6 +46,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -70,11 +71,15 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.Ea
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromDBState
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromRemoteState
 import com.indiewalk.watchdog.earthquake.R
+import com.indiewalk.watchdog.earthquake.core.data.local.enums.TimePeriod
 import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getLastKnownLatLng
 import com.indiewalk.watchdog.earthquake.core.presentation.preferences.PreferencesViewModel
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.preferences.EqsSortOption
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.preferences.FilterSheet
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.preferences.FilterViewModel
 import kotlinx.coroutines.launch
 
@@ -93,13 +98,14 @@ fun EarthquakeListScreen(
     val TAG = "EarthquakeListScreen"
     Log.d(TAG, "EarthquakeListScreen on")
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    // eqs list & c.
     var eqsCollection by remember { mutableStateOf<EQFeaturesCollectionDTO?>(null) }
     var eqsList by remember { mutableStateOf<List<EQEntity>?>(null) }
     var eqListLoadedFromDb by remember { mutableStateOf(false) }
-
     val listState = rememberLazyListState()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
+    // val snackbarHostState = remember { SnackbarHostState() }
+
 
     // Check current location permission state
     val permissions = rememberMultiplePermissionsState(
@@ -108,17 +114,16 @@ fun EarthquakeListScreen(
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
     )
-
     val hasLocalPermissions by remember(permissions) { derivedStateOf { permissions.allPermissionsGranted } }
 
-    // State for FAB visibility
+    // FAB visibility State
     val isFabVisible by remember {
         derivedStateOf {
             !listState.isScrollInProgress
         }
     }
 
-    // Example badge count - replace with your actual data
+    // TODO: dummy badge count, to be replaced
     val notificationCount = remember { mutableStateOf(3) }
 
     // Pull to refresh state
@@ -134,6 +139,10 @@ fun EarthquakeListScreen(
             }
         }
     )
+
+    // filter sheet state
+    var showFilterSheet by remember { mutableStateOf(false) }
+
 
     // ------------------------------------- LOGIC -------------------------------------------------
     val filters by earthquakeListViewModel.filterFlow.collectAsStateWithLifecycle()
@@ -163,6 +172,8 @@ fun EarthquakeListScreen(
     }
 
     LaunchedEffect(Unit) {
+        // Debug : filter at screen opening
+        println("Filter state on datastore: ${FilterPrefs.debugPrintEqFilterDataStore(context)}")
         earthquakeListViewModel.refreshEQsList()
     }
 
@@ -328,12 +339,13 @@ fun EarthquakeListScreen(
                     ) {
                         FloatingActionButton(
                             onClick = {
-                                scope.launch {
+                                showFilterSheet = true
+                                /*scope.launch {
                                     snackbarHostState.showSnackbar(
                                         message = "FAB clicked!",
                                         withDismissAction = true
                                     )
-                                }
+                                }*/
                             },
                             containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -366,10 +378,18 @@ fun EarthquakeListScreen(
             } else {
                 Text("No earthquakes found")
             }
-            // Add Snackbar host
+            /*// Add Snackbar host
             SnackbarHost(
                 hostState = snackbarHostState,
                 modifier = Modifier.align(Alignment.BottomCenter)
+            )*/
+        }
+
+        // show filter dialog sheet
+        if (showFilterSheet) {
+            FilterSheet(
+                filterViewModel = filterViewModel,
+                onDismiss = { showFilterSheet = false }
             )
         }
     }

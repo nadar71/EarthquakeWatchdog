@@ -20,6 +20,12 @@ class EarthquakeApi @Inject constructor(
 
     // Fetches a GeoJSON feed from USGS and deserializes into EQFeaturesCollectionDTO.
     // API docs: https://earthquake.usgs.gov/fdsnws/event/1/
+    // default request :
+    // https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time
+    // - min mag 1
+    // - order by time desc from most recent ( default from remote)
+    // - no start/date time: retrieve the last month ( ~170kb average )
+    // * use count to retrieve the total number of eqs
     suspend fun fetchFeed(
         params: EarthquakeQueryParams = EarthquakeQueryParams()
     ): EQFeaturesCollectionDTO {
@@ -33,7 +39,7 @@ class EarthquakeApi @Inject constructor(
                 parameter("eventtype", params.eventType)
                 parameter("orderby", params.orderBy)
                 // Time filters (ISO-8601 strings)
-                params.startTime?.let { parameter("starttime", it.iso()) }
+                params.startTime?.let { parameter("starttime", it.iso()) } // any, max 20000 items results
                 params.endTime?.let { parameter("endtime", it.iso()) }
                 // Magnitude filters
                 params.minMagnitude?.let { parameter("minmagnitude", it) }
@@ -48,7 +54,7 @@ class EarthquakeApi @Inject constructor(
                 params.longitude?.let { parameter("longitude", it) }
                 params.maxRadiusKm?.let { parameter("maxradiuskm", it) }
                 // Paging
-                params.limit?.let { parameter("limit", it) }
+                params.limit?.let { parameter("limit", it) } // max 20000
                 params.offset?.let { parameter("offset", it) }
             }
         }.body()

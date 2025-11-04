@@ -34,15 +34,15 @@
 
     <!-- - - - - - - min magnitude preferences value keys-values array - - - - - - - - - - - - -->
     <string-array name="settings_array_min_magnitude_labels">
-        <item>@string/settings_1_0_min_magnitude_label</item>
-        <item>@string/settings_2_0_min_magnitude_label</item>
-        <item>@string/settings_3_0_min_magnitude_label</item>
-        <item>@string/settings_4_0_min_magnitude_label</item>
-        <item>@string/settings_4_5_min_magnitude_label</item>
-        <item>@string/settings_5_0_min_magnitude_label</item>
-        <item>@string/settings_5_5_min_magnitude_label</item>
-        <item>@string/settings_6_0_min_magnitude_label</item>
-        <item>@string/settings_6_5_min_magnitude_label</item>
+        <item>@string/filter_1_0_min_magnitude_label</item>
+        <item>@string/filter_2_0_min_magnitude_label</item>
+        <item>@string/filter_3_0_min_magnitude_label</item>
+        <item>@string/filter_4_0_min_magnitude_label</item>
+        <item>@string/filter_4_5_min_magnitude_label</item>
+        <item>@string/filter_5_0_min_magnitude_label</item>
+        <item>@string/filter_5_5_min_magnitude_label</item>
+        <item>@string/filter_6_0_min_magnitude_label</item>
+        <item>@string/filter_6_5_min_magnitude_label</item>
     </string-array>
 
     <!--<string-array name="settings_array_min_magnitude_values">
@@ -77,13 +77,13 @@
 
     <!-- - - - - date filter preferences value keys-values array- - - - - - - -->
     <string-array name="settings_array_date_filter_labels">
-        <item>@string/settings_date_period_today_label</item>
-        <item>@string/settings_date_period_24h_label</item>
-        <item>@string/settings_date_period_48h_label</item>
+        <item>@string/filter_date_period_today_label</item>
+        <item>@string/filter_date_period_24h_label</item>
+        <item>@string/filter_date_period_48h_label</item>
         <!-- <item>@string/settings_date_period_3_days_label</item>
         <item>@string/settings_date_period_4_days_label</item> -->
-        <item>@string/settings_date_period_week_label</item>
-        <item>@string/settings_date_period_2_week_label</item>
+        <item>@string/filter_date_period_week_label</item>
+        <item>@string/filter_date_period_2_week_label</item>
         <!-- <item>@string/settings_date_period_month_label</item> #68 -->
     </string-array>
 

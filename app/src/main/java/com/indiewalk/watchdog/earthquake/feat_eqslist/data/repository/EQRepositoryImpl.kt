@@ -33,6 +33,8 @@ class EQRepositoryImpl @Inject constructor(
     // - min mag 1
     // - order by time desc from most recent ( default from remote)
     // - no start/date time: retrieve the last month ( ~170kb average )
+    // * use count to retrieve the total number of eqs
+    // TODO : set starttime at 30 days from todays each request, no limits
     override suspend fun fetchAndSaveDefault(): EQFeaturesCollectionDTO {
         val params = EarthquakeQueryParams(
             format = "geojson",

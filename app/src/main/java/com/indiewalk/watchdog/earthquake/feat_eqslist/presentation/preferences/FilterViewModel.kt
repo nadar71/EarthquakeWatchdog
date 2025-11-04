@@ -57,4 +57,14 @@ class FilterViewModel @Inject constructor(
             FilterPrefs.setEndDate(context, date)
         }
     }
+
+    val timeInterval: StateFlow<String> =
+        FilterPrefs.timeIntervalFlow(context)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, "")
+
+    fun setTimeInterval(interval: String) {
+        viewModelScope.launch {
+            FilterPrefs.setTimeInterval(context, interval)
+        }
+    }
 }
