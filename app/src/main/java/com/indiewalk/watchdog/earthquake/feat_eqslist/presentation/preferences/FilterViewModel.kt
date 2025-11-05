@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.preferences.EqsSortOption
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject

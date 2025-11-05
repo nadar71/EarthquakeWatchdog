@@ -45,9 +45,9 @@
 
     <!-- - - - - - - - - - - - - - - - Filter - - - -  - - - - - - - - - - - - - - - - - - - - -->
     <string name="filter_title">Filtri</string>
-    <string name="filter_sort_by">Ordina per : </string>
+    <string name="filter_sort_by">Ordina per</string>
     <string name="filter_none">Nessuno</string>
-    <string name="filter_min_magnitude_label">Magnitudo min: </string>
+    <string name="filter_min_magnitude_label">Magnitudo min</string>
 
     <string name="filter_sort_mag_desc">Magnitudo: alto → basso</string>
     <string name="filter_sort_mag_asc">Magnitudo: basso → alto</string>
@@ -56,7 +56,7 @@
     <string name="filter_sort_dist_asc">Distanza: vicini → lontani</string>
     <string name="filter_sort_dist_desc">Distanza: lontani → vicini</string>
 
-    <string name="filter_LT_0_min_magnitude_label">&lt;0</string>
+    <string name="filter_LT_0_min_magnitude_label">&lt; 0</string>
     <string name="filter_1_0_min_magnitude_label">1,0+</string>
     <string name="filter_2_0_min_magnitude_label">2,0+</string>
     <string name="filter_3_0_min_magnitude_label">3,0+</string>
@@ -67,7 +67,7 @@
     <string name="filter_6_0_min_magnitude_label">6,0+</string>
     <string name="filter_6_5_min_magnitude_label">6,5+</string>
 
-    <string name="filter_time_period_filter_label">Filtro periodo di tempo: </string>
+    <string name="filter_time_period_filter_label">Periodo temporale</string>
     <string name="filter_date_period_today_label">Oggi</string>
     <string name="filter_date_period_24h_label">24 ore</string>
     <string name="filter_date_period_48h_label">48 ore</string>

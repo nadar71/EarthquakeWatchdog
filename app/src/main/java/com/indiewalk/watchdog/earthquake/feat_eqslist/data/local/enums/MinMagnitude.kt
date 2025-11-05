@@ -1,4 +1,4 @@
-package com.indiewalk.watchdog.earthquake.core.data.local.enums
+package com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums
 
 import com.indiewalk.watchdog.earthquake.EarthquakeApp.Companion.appContext
 import com.indiewalk.watchdog.earthquake.R
@@ -20,6 +20,6 @@ enum class MinMagnitude(val value: String) {
         fun fromStringValue(value: String): MinMagnitude? {
             return MinMagnitude.entries.find { it.value == value }
         }
-
+        
     }
 }

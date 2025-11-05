@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PreferencesViewModel @Inject constructor(
+class AppPrefsViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 

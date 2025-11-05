@@ -2,7 +2,7 @@ package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.use_cases
 
 import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.preferences.EqsSortOption
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.haversineDistanceKm
 import kotlin.math.*
 

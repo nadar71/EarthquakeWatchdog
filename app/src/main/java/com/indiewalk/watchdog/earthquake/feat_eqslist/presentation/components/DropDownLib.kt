@@ -14,9 +14,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.data.local.enums.MinMagnitude
-import com.indiewalk.watchdog.earthquake.core.data.local.enums.TimePeriod
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.preferences.EqsSortOption
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.MinMagnitude
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.TimePeriod
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
 
 /* ------------ Dropdowns ------------ */
 

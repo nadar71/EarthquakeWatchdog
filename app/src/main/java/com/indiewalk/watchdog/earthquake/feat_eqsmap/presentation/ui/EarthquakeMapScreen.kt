@@ -44,7 +44,7 @@ import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldMo
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getLastKnownLatLng
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.state.MapUiState
-import com.indiewalk.watchdog.earthquake.core.presentation.preferences.PreferencesViewModel
+import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
 import kotlinx.coroutines.launch
 
 
@@ -54,7 +54,7 @@ fun EarthquakeMapScreen(
     navController: NavHostController,
     onManualPositionToggle: (Boolean) -> Unit = {},
     mapViewModel: MapViewModel = hiltViewModel(),
-    preferencesViewModel: PreferencesViewModel = hiltViewModel(),
+    appPrefsViewModel: AppPrefsViewModel = hiltViewModel(),
 ) {
     val TAG = "EarthquakeMapScreen"
     Log.d(TAG, "EarthquakeMapScreen Opened")
@@ -94,10 +94,10 @@ fun EarthquakeMapScreen(
     LaunchedEffect(Unit) {
         if (hasLocalPermissions) {
             val userLocation = getLastKnownLatLng(context = context)
-            preferencesViewModel.setUserPosition(userLocation )
+            appPrefsViewModel.setUserPosition(userLocation )
             if (userLocation != null) {
                 val address = getAddress(context = context, latLng = userLocation)
-                address?.let { preferencesViewModel.setUserLocationInfo(address.toLocationInfo(context)) }
+                address?.let { appPrefsViewModel.setUserLocationInfo(address.toLocationInfo(context)) }
             }
         }
     }
@@ -189,11 +189,11 @@ fun EarthquakeMapScreen(
                                             if (hasLocalPermissions) getLastKnownLatLng(context) else null
                                         val fallback = lastKnownUserPosition ?: LatLng(DEFAULT_LAT, DEFAULT_LNG)
                                         val userAddress = getAddress(context, fallback)
-                                        preferencesViewModel.setUserPosition(fallback)
-                                        userAddress?.let { preferencesViewModel
+                                        appPrefsViewModel.setUserPosition(fallback)
+                                        userAddress?.let { appPrefsViewModel
                                             .setUserLocationInfo(userAddress.toLocationInfo(context)) }
 
-                                        preferencesViewModel.setManualLocOn(false)
+                                        appPrefsViewModel.setManualLocOn(false)
                                         onManualPositionToggle(false)
                                         recenterTo = fallback
                                     }
@@ -203,10 +203,10 @@ fun EarthquakeMapScreen(
                                 Log.d(TAG, "EarthquakeMapScreen: manual position confirmed: $latLng")
                                 Log.d(TAG, "EarthquakeMapScreen: manual address confirmed: $address")
                                 // save manual position coordinates and address info and recenter
-                                preferencesViewModel.setManualPosition(latLng)
-                                preferencesViewModel.setManualLocationInfo(address.toLocationInfo(context))
+                                appPrefsViewModel.setManualPosition(latLng)
+                                appPrefsViewModel.setManualLocationInfo(address.toLocationInfo(context))
 
-                                preferencesViewModel.setManualLocOn(true)
+                                appPrefsViewModel.setManualLocOn(true)
                                 onManualPositionToggle(true)
                                 recenterTo = latLng
                                 showOptions = false

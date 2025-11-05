@@ -30,7 +30,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
@@ -43,10 +42,7 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -55,9 +51,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -71,14 +65,13 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.Ea
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromDBState
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromRemoteState
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.data.local.enums.TimePeriod
 import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getLastKnownLatLng
-import com.indiewalk.watchdog.earthquake.core.presentation.preferences.PreferencesViewModel
+import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.preferences.EqsSortOption
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.preferences.FilterSheet
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.preferences.FilterViewModel
 import kotlinx.coroutines.launch
@@ -93,16 +86,19 @@ fun EarthquakeListScreen(
     navController: NavHostController,
     earthquakeListViewModel: EarthquakeListViewModel = hiltViewModel(),
     filterViewModel: FilterViewModel = hiltViewModel(),
-    preferencesViewModel: PreferencesViewModel = hiltViewModel()
+    appPrefsViewModel: AppPrefsViewModel = hiltViewModel()
 ) {
     val TAG = "EarthquakeListScreen"
     Log.d(TAG, "EarthquakeListScreen on")
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+
     // eqs list & c.
+    var isRemoteFetchCompleted by remember { mutableStateOf(false) }
     var eqsCollection by remember { mutableStateOf<EQFeaturesCollectionDTO?>(null) }
     var eqsList by remember { mutableStateOf<List<EQEntity>?>(null) }
-    var eqListLoadedFromDb by remember { mutableStateOf(false) }
+    var eqsListFiltered by remember { mutableStateOf<List<EQEntity>?>(null) }
+    var isEqListLoadedFromDb by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
     // val snackbarHostState = remember { SnackbarHostState() }
 
@@ -146,6 +142,8 @@ fun EarthquakeListScreen(
 
     // ------------------------------------- LOGIC -------------------------------------------------
     val filters by earthquakeListViewModel.filterFlow.collectAsStateWithLifecycle()
+    val minMag by earthquakeListViewModel.minMagFlow.collectAsStateWithLifecycle()
+    val timeInterval by earthquakeListViewModel.timeIntervalFlow.collectAsStateWithLifecycle()
     val settings by earthquakeListViewModel.settings.collectAsStateWithLifecycle()
     val eqsUIFromRemoteState by earthquakeListViewModel.eqsUIFromRemoteState.collectAsStateWithLifecycle()
     val eqsUIFromDBState by earthquakeListViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
@@ -155,11 +153,11 @@ fun EarthquakeListScreen(
     LaunchedEffect(Unit) {
         if (hasLocalPermissions) {
             val userLocation = getLastKnownLatLng(context = context)
-            preferencesViewModel.setUserPosition(userLocation)
+            appPrefsViewModel.setUserPosition(userLocation)
             if (userLocation != null) {
                 val address = getAddress(context = context, latLng = userLocation)
                 address?.let {
-                    preferencesViewModel.setUserLocationInfo(
+                    appPrefsViewModel.setUserLocationInfo(
                         address.toLocationInfo(
                             context
                         )
@@ -171,24 +169,24 @@ fun EarthquakeListScreen(
         }
     }
 
+    // Fetch data from remote at each opening
     LaunchedEffect(Unit) {
         // Debug : filter at screen opening
         println("Filter state on datastore: ${FilterPrefs.debugPrintEqFilterDataStore(context)}")
         earthquakeListViewModel.refreshEQsList()
     }
 
+    // Check remote response
     LaunchedEffect(eqsUIFromRemoteState) {
         when (eqsUIFromRemoteState) {
             is EQsListUiFromRemoteState.Idle -> {
                 // TODO :
                 // showProgressBar = false
             }
-
             is EQsListUiFromRemoteState.Loading -> {
                 // TODO :
                 // showProgressBar = true
             }
-
             is EQsListUiFromRemoteState.Success -> {
                 Log.d(TAG, "EarthquakeListScreen: SUCCESS, eqs loaded")
                 // TODO :
@@ -196,10 +194,10 @@ fun EarthquakeListScreen(
                 eqsCollection =
                     (eqsUIFromRemoteState as EQsListUiFromRemoteState.Success<EQFeaturesCollectionDTO>).data
                 // eqsList = eqsCollection?.features
-                earthquakeListViewModel.loadAllEQsDB()
-                Log.d(TAG, "EarthquakeListScreen: eqsList: $eqsList")
+                // earthquakeListViewModel.loadAllEQsDB()
+                isRemoteFetchCompleted = true
+                Log.d(TAG, "EarthquakeListScreen: eqsList: $eqsListFiltered")
             }
-
             is EQsListUiFromRemoteState.Error -> {
                 Log.d(TAG, "EarthquakeListScreen: ERROR!")
 
@@ -215,36 +213,44 @@ fun EarthquakeListScreen(
                 }
                 showError = true*/
             }
-
             else -> {}
         }
     }
 
 
+    // load data from db when completed
+    LaunchedEffect(isRemoteFetchCompleted) {
+        earthquakeListViewModel.loadAllEQsDB()
+    }
 
+
+    // Check db response
     LaunchedEffect(eqsUIFromDBState) {
         when (eqsUIFromDBState) {
             is EQsListUiFromDBState.Idle -> {
                 // showProgressBar = false
             }
-
             is EQsListUiFromDBState.Loading -> {
                 // showProgressBar = true
             }
-
             is EQsListUiFromDBState.Success -> {
                 // showProgressBar = false
                 eqsList = (eqsUIFromDBState as EQsListUiFromDBState.Success<List<EQEntity>?>).data
                 Log.d(TAG, "Eq list loaded from db : $eqsList")
-                eqListLoadedFromDb = true
+                eqsListFiltered = filterList(filters, eqsList)
+                Log.d(TAG, "Eq list filtered : $eqsListFiltered")
+                isEqListLoadedFromDb = true
             }
-
             is EQsListUiFromDBState.Error -> {
                 // showProgressBar = false
                 Log.e(TAG, "Error recovering foodList from db")
-                eqListLoadedFromDb = true
+                isEqListLoadedFromDb = true
             }
         }
+    }
+
+    LaunchedEffect(filters) {
+
     }
 
 
@@ -290,7 +296,7 @@ fun EarthquakeListScreen(
         },
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize()) {
-            if (eqListLoadedFromDb && !eqsList.isNullOrEmpty()) {
+            if (isEqListLoadedFromDb && !eqsListFiltered.isNullOrEmpty()) {
                 PullRefreshIndicator(
                     refreshing = isRefreshing,
                     state = pullRefreshState,
@@ -306,7 +312,7 @@ fun EarthquakeListScreen(
                         .fillMaxSize()
                         .padding(padding)
                 ) {
-                    items(eqsCollection?.features ?: emptyList()) { eq ->
+                    /*items(eqsCollection?.features ?: emptyList()) { eq ->
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -314,6 +320,19 @@ fun EarthquakeListScreen(
                             val generated = eqsCollection?.metadata?.generated
                             EarthquakeCard(
                                 eq = eq.toEQEntity(generated, settings).toEarthquakeUI(),
+                                hasLocalPermissions = hasLocalPermissions,
+                                settings = settings
+                            )
+                        }
+                    }*/
+                    items(eqsListFiltered ?: emptyList()) { eq ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
+                            // val generated = eqsCollection?.metadata?.generated
+                            EarthquakeCard(
+                                eq = eq.toEarthquakeUI(), //.toEQEntity(generated, settings).toEarthquakeUI(),
                                 hasLocalPermissions = hasLocalPermissions,
                                 settings = settings
                             )
@@ -393,4 +412,25 @@ fun EarthquakeListScreen(
             )
         }
     }
+}
+
+// @Composable
+private fun filterList(
+    // eqsListFiltered: List<EQEntity>?,
+    filters: EqsSortOption,
+    // minMag: Double,
+    // timeInterval: String,
+    eqsList: List<EQEntity>?
+): List<EQEntity>? {
+    // var eqsListFiltered1 = eqsListFiltered
+    var eqsListFiltered = when (filters.name) {
+        EqsSortOption.MAG_DESC.name -> eqsList?.sortedByDescending { it.mag }
+        EqsSortOption.MAG_ASC.name -> eqsList?.sortedBy { it.mag ?: 0.0 }
+        EqsSortOption.DATE_ASC.name -> eqsList?.sortedBy { it.time }
+        EqsSortOption.DATE_DESC.name -> eqsList?.sortedByDescending { it.time }
+        EqsSortOption.DIST_ASC.name -> eqsList?.sortedBy { it.distanceFromUser }
+        EqsSortOption.DIST_DESC.name -> eqsList?.sortedByDescending { it.distanceFromUser }
+        else -> eqsList
+    }?.toList()
+    return eqsListFiltered
 }

@@ -1,16 +1,7 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.preferences
 
-import android.os.Build
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -19,21 +10,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.data.local.enums.MinMagnitude
-import com.indiewalk.watchdog.earthquake.core.data.local.enums.TimePeriod
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.TimePeriod
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.preferences.EqsSortOption
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.MinMagDropdown
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.PeriodDropdown
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.SortDropdown
-import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.util.FilterUtil
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.util.FilterUtil.minMagFromDouble
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.util.FilterUtil.toDouble
 import kotlinx.coroutines.launch
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,13 +77,13 @@ fun FilterSheet(
                 Text(
                     text = stringResource(R.string.filter_sort_by),
                     modifier = Modifier
-                        .weight(0.4f)
+                        .weight(0.5f)
                         .padding(end = 8.dp),
-                    maxLines = 1,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
                 SortDropdown(
-                    modifier = Modifier.weight(0.6f),
+                    modifier = Modifier.weight(0.5f),
                     value = selectedSort,
                     onChange = { selectedSort = it }
                 )
@@ -114,20 +99,19 @@ fun FilterSheet(
                 Text(
                     text = stringResource(R.string.filter_min_magnitude_label),
                     modifier = Modifier
-                        .weight(0.4f)
+                        .weight(0.5f)
                         .padding(end = 8.dp),
-                    maxLines = 1,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
                 MinMagDropdown(
-                    modifier = Modifier.weight(0.6f),
+                    modifier = Modifier.weight(0.5f),
                     value = selectedMinMag,
                     onChange = { selectedMinMag = it }
                 )
             }
 
             Spacer(Modifier.height(12.dp))
-
 
             // --- Start date ---
             // TODO: later impl: date, paging
@@ -171,13 +155,13 @@ fun FilterSheet(
                 Text(
                     text = stringResource(R.string.filter_time_period_filter_label),
                     modifier = Modifier
-                        .weight(0.4f)
+                        .weight(0.5f)
                         .padding(end = 8.dp),
-                    maxLines = 1,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
                 PeriodDropdown(
-                    modifier = Modifier.weight(0.6f),
+                    modifier = Modifier.weight(0.5f),
                     value = selectedPeriod,
                     onChange = { selectedPeriod = it }
                 )

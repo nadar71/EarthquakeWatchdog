@@ -10,7 +10,7 @@ import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQFeaturesCollectionDTO
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.preferences.EqsSortOption
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.use_cases.FetchAndSaveDefaultUseCase
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.use_cases.LoadAllEQsUseCase
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromDBState
@@ -39,6 +39,12 @@ class EarthquakeListViewModel @Inject constructor(
 
     val filterFlow = FilterPrefs.sortFlow(context)
         .stateIn(viewModelScope, SharingStarted.Eagerly, EqsSortOption.DATE_DESC)
+
+    val minMagFlow = FilterPrefs.minMagFlow(context)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0.0)
+
+    val timeIntervalFlow = FilterPrefs.timeIntervalFlow(context)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     val settings: StateFlow<AppSettings> = AppPrefs.settingsFlow(EarthquakeApp.appContext)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppSettings())
