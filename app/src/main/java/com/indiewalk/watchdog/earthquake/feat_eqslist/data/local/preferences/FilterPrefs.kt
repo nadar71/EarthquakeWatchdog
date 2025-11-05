@@ -39,9 +39,9 @@ object FilterPrefs {
             MinMagnitude.fromNameString(prefs[KEY_MIN_MAG])
         }
 
-    suspend fun setMinMag(context: Context, mag: Double) {
+    suspend fun setMinMag(context: Context, mag: MinMagnitude) {
         context.eqFilterDataStore.edit { prefs ->
-            prefs[KEY_MIN_MAG] = mag.toString()
+            prefs[KEY_MIN_MAG] = mag.name
         }
     }
 
@@ -75,9 +75,9 @@ object FilterPrefs {
         }
 
 
-    suspend fun setTimeInterval(context: Context, interval: String) {
+    suspend fun setTimeInterval(context: Context, interval: TimeInterval) {
         context.eqFilterDataStore.edit { prefs ->
-            prefs[KEY_TIME_INTERVAL] = interval
+            prefs[KEY_TIME_INTERVAL] = interval.name
         }
     }
 

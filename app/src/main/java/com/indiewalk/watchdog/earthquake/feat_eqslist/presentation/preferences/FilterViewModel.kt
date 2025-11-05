@@ -36,7 +36,7 @@ class FilterViewModel @Inject constructor(
         }
     }
 
-    fun setMinMag(mag: Double) {
+    fun setMinMag(mag: MinMagnitude) {
         viewModelScope.launch {
             FilterPrefs.setMinMag(context, mag)
         }
@@ -62,7 +62,7 @@ class FilterViewModel @Inject constructor(
         }
     }
 
-    fun setTimeInterval(interval: String) {
+    fun setTimeInterval(interval: TimeInterval) {
         viewModelScope.launch {
             FilterPrefs.setTimeInterval(context, interval)
         }
