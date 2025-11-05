@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.MinMagnitude
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.TimeInterval
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -22,15 +24,17 @@ class FilterViewModel @Inject constructor(
         FilterPrefs.sortFlow(context)
             .stateIn(viewModelScope, SharingStarted.Eagerly, EqsSortOption.DATE_DESC)
 
+    val minMagFlow: StateFlow<MinMagnitude> = FilterPrefs.minMagFlow(context)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, MinMagnitude.MAG_3_0)
+
+    val timeIntervalFlow: StateFlow<TimeInterval> = FilterPrefs.timeIntervalFlow(context)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, TimeInterval.LAST_30_DAYS)
+
     fun setSort(option: EqsSortOption) {
         viewModelScope.launch {
             FilterPrefs.setSort(context, option)
         }
     }
-
-    val minMag: StateFlow<Double> =
-        FilterPrefs.minMagFlow(context)
-            .stateIn(viewModelScope, SharingStarted.Eagerly, 0.0)
 
     fun setMinMag(mag: Double) {
         viewModelScope.launch {
@@ -57,10 +61,6 @@ class FilterViewModel @Inject constructor(
             FilterPrefs.setEndDate(context, date)
         }
     }
-
-    val timeInterval: StateFlow<String> =
-        FilterPrefs.timeIntervalFlow(context)
-            .stateIn(viewModelScope, SharingStarted.Eagerly, "")
 
     fun setTimeInterval(interval: String) {
         viewModelScope.launch {

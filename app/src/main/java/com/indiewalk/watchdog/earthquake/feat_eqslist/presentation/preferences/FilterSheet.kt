@@ -10,9 +10,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.TimePeriod
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.TimeInterval
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.MinMagnitude
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.MinMagDropdown
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.PeriodDropdown
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.SortDropdown
@@ -31,16 +32,14 @@ fun FilterSheet(
 
     // get current filter stored values
     val sort by filterViewModel.sortOption.collectAsStateWithLifecycle()
-    val minMag by filterViewModel.minMag.collectAsState()
-    // val startDateStr by filterViewModel.startDate.collectAsState()
-    val periodStr by filterViewModel.timeInterval.collectAsState()
+    val minMag by filterViewModel.minMagFlow.collectAsStateWithLifecycle()
+    // val startDateStr by filterViewModel.startDate.collectAsStateWithLifecycle()
+    val periodStr by filterViewModel.timeIntervalFlow.collectAsStateWithLifecycle()
 
     // local filter values
     var selectedSort by remember { mutableStateOf<EqsSortOption?>(sort) }
-    var selectedMinMag by remember { mutableStateOf(minMagFromDouble(minMag)) }
-    var selectedPeriod by remember {
-        mutableStateOf(TimePeriod.fromName(periodStr) ?: TimePeriod.LAST_30_DAYS)
-    }
+    var selectedMinMag by remember { mutableStateOf<MinMagnitude?>(minMag) }
+    var selectedInterval by remember { mutableStateOf<TimeInterval>(periodStr) }
 
  /*   // Start date: stored as "yyyy-MM-dd" (empty means none)
     val iso = DateTimeFormatter.ISO_LOCAL_DATE
@@ -162,8 +161,8 @@ fun FilterSheet(
                 )
                 PeriodDropdown(
                     modifier = Modifier.weight(0.5f),
-                    value = selectedPeriod,
-                    onChange = { selectedPeriod = it }
+                    value = selectedInterval,
+                    onChange = { selectedInterval = it }
                 )
             }
 
@@ -185,7 +184,7 @@ fun FilterSheet(
                         // Saving here
                         selectedSort?.let { filterViewModel.setSort(it) }
                         selectedMinMag?.let { filterViewModel.setMinMag(it.toDouble()) }
-                        filterViewModel.setTimeInterval(selectedPeriod.name)
+                        filterViewModel.setTimeInterval(selectedInterval.name)
                         // filterViewModel.setStartDate(selectedStartDate?.format(iso) ?: "")
 
                         // debug: filter after saving

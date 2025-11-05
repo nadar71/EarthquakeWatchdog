@@ -37,14 +37,14 @@ class EarthquakeListViewModel @Inject constructor(
 ) : ViewModel() {
     private val TAG = "MainViewModel"
 
-    val filterFlow = FilterPrefs.sortFlow(context)
+   /* val sortOption = FilterPrefs.sortFlow(context)
         .stateIn(viewModelScope, SharingStarted.Eagerly, EqsSortOption.DATE_DESC)
 
     val minMagFlow = FilterPrefs.minMagFlow(context)
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0.0)
 
     val timeIntervalFlow = FilterPrefs.timeIntervalFlow(context)
-        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)*/
 
     val settings: StateFlow<AppSettings> = AppPrefs.settingsFlow(EarthquakeApp.appContext)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppSettings())

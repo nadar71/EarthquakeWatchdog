@@ -60,7 +60,6 @@ import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimat
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.toEarthquakeUI
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQFeaturesCollectionDTO
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.toEQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.EarthquakeCard
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromDBState
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromRemoteState
@@ -141,9 +140,9 @@ fun EarthquakeListScreen(
 
 
     // ------------------------------------- LOGIC -------------------------------------------------
-    val filters by earthquakeListViewModel.filterFlow.collectAsStateWithLifecycle()
-    val minMag by earthquakeListViewModel.minMagFlow.collectAsStateWithLifecycle()
-    val timeInterval by earthquakeListViewModel.timeIntervalFlow.collectAsStateWithLifecycle()
+    val sortOption by filterViewModel.sortOption.collectAsStateWithLifecycle()
+    val minMag by filterViewModel.minMagFlow.collectAsStateWithLifecycle()
+    val timeInterval by filterViewModel.timeIntervalFlow.collectAsStateWithLifecycle()
     val settings by earthquakeListViewModel.settings.collectAsStateWithLifecycle()
     val eqsUIFromRemoteState by earthquakeListViewModel.eqsUIFromRemoteState.collectAsStateWithLifecycle()
     val eqsUIFromDBState by earthquakeListViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
@@ -237,7 +236,7 @@ fun EarthquakeListScreen(
                 // showProgressBar = false
                 eqsList = (eqsUIFromDBState as EQsListUiFromDBState.Success<List<EQEntity>?>).data
                 Log.d(TAG, "Eq list loaded from db : $eqsList")
-                eqsListFiltered = filterList(filters, eqsList)
+                eqsListFiltered = filterList(sortOption, eqsList)
                 Log.d(TAG, "Eq list filtered : $eqsListFiltered")
                 isEqListLoadedFromDb = true
             }
@@ -249,7 +248,7 @@ fun EarthquakeListScreen(
         }
     }
 
-    LaunchedEffect(filters) {
+    LaunchedEffect(sortOption) {
 
     }
 

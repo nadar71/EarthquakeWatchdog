@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.MinMagnitude
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.TimeInterval
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -20,9 +21,10 @@ object FilterPrefs {
     private val KEY_END_DATE = stringPreferencesKey("end_date")
     private val KEY_TIME_INTERVAL = stringPreferencesKey("time_interval")
 
+    // -- sort type --
     fun sortFlow(context: Context): Flow<EqsSortOption> =
         context.eqFilterDataStore.data.map { prefs ->
-            EqsSortOption.fromString(prefs[KEY_SORT])
+            EqsSortOption.fromNameString(prefs[KEY_SORT])
         }
 
     suspend fun setSort(context: Context, option: EqsSortOption) {
@@ -31,9 +33,10 @@ object FilterPrefs {
         }
     }
 
-    fun minMagFlow(context: Context): Flow<Double> =
+    // -- min magnitude --
+    fun minMagFlow(context: Context): Flow<MinMagnitude> =
         context.eqFilterDataStore.data.map { prefs ->
-            prefs[KEY_MIN_MAG]?.toDoubleOrNull() ?: 0.0
+            MinMagnitude.fromNameString(prefs[KEY_MIN_MAG])
         }
 
     suspend fun setMinMag(context: Context, mag: Double) {
@@ -42,6 +45,7 @@ object FilterPrefs {
         }
     }
 
+    // -- start/end date --
     fun startDateFlow(context: Context): Flow<String> =
         context.eqFilterDataStore.data.map { prefs ->
             prefs[KEY_START_DATE] ?: ""
@@ -64,16 +68,20 @@ object FilterPrefs {
         }
     }
 
-    fun timeIntervalFlow(context: Context): Flow<String> =
+    // -- time interval --
+    fun timeIntervalFlow(context: Context): Flow<TimeInterval> =
         context.eqFilterDataStore.data.map { prefs ->
-            prefs[KEY_TIME_INTERVAL] ?: ""
+            TimeInterval.fromNameString(prefs[KEY_TIME_INTERVAL])
         }
+
 
     suspend fun setTimeInterval(context: Context, interval: String) {
         context.eqFilterDataStore.edit { prefs ->
             prefs[KEY_TIME_INTERVAL] = interval
         }
     }
+
+
     // Debug
     suspend fun debugPrintEqFilterDataStore(context: Context): String {
         val data = context.eqFilterDataStore.data.first()

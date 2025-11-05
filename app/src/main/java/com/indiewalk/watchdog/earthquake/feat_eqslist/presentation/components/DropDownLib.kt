@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.MinMagnitude
-import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.TimePeriod
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.TimeInterval
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
 
 /* ------------ Dropdowns ------------ */
@@ -63,7 +63,7 @@ fun MinMagDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val labelNone = stringResource(R.string.filter_none)
-    val items = MinMagnitude.entries
+    val items = MinMagnitude.entries.toList()
 
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
         OutlinedTextField(
@@ -92,11 +92,11 @@ fun MinMagDropdown(
 @Composable
 fun PeriodDropdown(
     modifier: Modifier = Modifier,
-    value: TimePeriod,
-    onChange: (TimePeriod) -> Unit
+    value: TimeInterval,
+    onChange: (TimeInterval) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val items = TimePeriod.entries
+    val items = TimeInterval.entries.toList()
 
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
         OutlinedTextField(

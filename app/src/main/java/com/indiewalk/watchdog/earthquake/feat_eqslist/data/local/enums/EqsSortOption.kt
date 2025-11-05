@@ -12,7 +12,8 @@ enum class EqsSortOption(val value: String) {
     DIST_DESC(EarthquakeApp.Companion.appContext.getString(R.string.filter_sort_dist_desc));  // furthest → nearest
 
     companion object {
-        fun fromString(s: String?): EqsSortOption =
+        // from "DATE_ASC" -> EqsSortOption-DATE_ASC item
+        fun fromNameString(s: String?): EqsSortOption =
             runCatching { valueOf(s ?: "") }.getOrDefault(DATE_DESC)
     }
 }

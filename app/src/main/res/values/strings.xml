@@ -59,7 +59,7 @@
     <string name="filter_sort_dist_asc">Distance: near → far</string>
     <string name="filter_sort_dist_desc">Distance: far → near</string>
 
-    <string name="filter_LT_0_min_magnitude_label">&lt; 0</string>
+    <string name="filter_0_0_min_magnitude_label">0.0+</string>
     <string name="filter_1_0_min_magnitude_label">1.0+</string>
     <string name="filter_2_0_min_magnitude_label">2.0+</string>
     <string name="filter_3_0_min_magnitude_label">3.0+</string>
