@@ -10,6 +10,7 @@ import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
@@ -134,8 +135,8 @@ fun EarthquakeListScreen(
 
     // Pull to refresh state
     val coroutineScope = rememberCoroutineScope()
-    var isRefreshing by remember { mutableStateOf(false) }
-    val pullRefreshState = rememberPullRefreshState(
+    // var isRefreshing by remember { mutableStateOf(false) }
+    /*val pullRefreshState = rememberPullRefreshState(
         refreshing = isRefreshing,
         onRefresh = {
             coroutineScope.launch {
@@ -145,7 +146,7 @@ fun EarthquakeListScreen(
                 isRefreshing = false
             }
         }
-    )
+    )*/
 
     // filter sheet state
     var showFilterSheet by remember { mutableStateOf(false) }
@@ -160,6 +161,15 @@ fun EarthquakeListScreen(
     val eqsUIFromRemoteState by earthquakeListViewModel.eqsUIFromRemoteState.collectAsStateWithLifecycle()
     val eqsUIFromDBState by earthquakeListViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
 
+    var isRefreshing = eqsUIFromRemoteState is EQsListUiFromRemoteState.Loading
+
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = {
+            Log.d(TAG, "EarthquakeListScreen: refreshing pulled, starting")
+            earthquakeListViewModel.refreshEQsList()
+        }
+    )
 
     // Update user position and address in prefs in case location permissions changed meanwhile/later
     LaunchedEffect(Unit) {
@@ -311,7 +321,15 @@ fun EarthquakeListScreen(
             )
         },
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize()) {
+
+        val bottomInset = padding.calculateBottomPadding()
+        val topInset = padding.calculateTopPadding()
+
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(top= 8.dp, bottom = bottomInset)
+            .pullRefresh(pullRefreshState)
+        ) {
             Log.d(
                 TAG, "Eq list filtered size: " +
                         "${if (eqsListFiltered != null) eqsListFiltered?.size else "null"}"
@@ -321,9 +339,9 @@ fun EarthquakeListScreen(
                 if (isEqListLoadedFromDb && !eqsListFiltered.isNullOrEmpty()) {
                     LazyColumn(
                         state = listState,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding)
+                        modifier = Modifier.fillMaxSize(),
+                            //.padding(padding)
+                        contentPadding = PaddingValues(bottom = bottomInset)
                     ) {
                         /*items(eqsCollection?.features ?: emptyList()) { eq ->
                             Column(
@@ -373,7 +391,9 @@ fun EarthquakeListScreen(
             PullRefreshIndicator(
                 refreshing = isRefreshing,
                 state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter),
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = topInset),
                 backgroundColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.primary
             )
@@ -398,7 +418,7 @@ fun EarthquakeListScreen(
                     .align(Alignment.BottomEnd)
                     .padding(
                         end = 16.dp,
-                        bottom = WindowInsets.navigationBars.getBottom(LocalDensity.current).dp + 64.dp
+                        bottom = 16.dp
                     )
             ) {
                 Box(
