@@ -14,6 +14,10 @@ import kotlinx.coroutines.flow.map
 private const val DS_NAME = "eq_filters"
 val Context.eqFilterDataStore by preferencesDataStore(DS_NAME)
 
+// default value filter
+// sort_option: DATE_DESC
+// min_mag: MAG_3_0
+// time_interval: LAST_30_DAYS
 object FilterPrefs {
     private val KEY_SORT = stringPreferencesKey("sort_option")
     private val KEY_MIN_MAG = stringPreferencesKey("min_mag")

@@ -24,7 +24,7 @@ class EarthquakeApi @Inject constructor(
     // https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time
     // - min mag 1
     // - order by time desc from most recent ( default from remote)
-    // - no start/date time: retrieve the last month ( ~170kb average )
+    // - no start/date time: retrieve last 30 days by default ( ~170kb average )
     // * use count to retrieve the total number of eqs
     suspend fun fetchFeed(
         params: EarthquakeQueryParams = EarthquakeQueryParams()

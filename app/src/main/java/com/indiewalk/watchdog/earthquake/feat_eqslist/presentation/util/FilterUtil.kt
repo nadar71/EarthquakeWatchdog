@@ -1,5 +1,6 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.util
 
+import android.util.Log
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.MinMagnitude
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.TimeInterval
@@ -25,7 +26,10 @@ object FilterUtil {
         }?.toList()
 
         eqsListFiltered = eqsListFiltered?.filter { it.mag != null &&  it.mag >= minMag.toDouble() }
-        // eqsListFiltered = eqsListFiltered?.filter { it.time != null &&  it.time >= timeInterval.toLong() }
+        eqsListFiltered = eqsListFiltered?.filter {
+            Log.d("FilterUtil", "it.time: ${it.time}, timeInterval.toLong(): ${timeInterval.toLong()}")
+            it.time != null &&  it.time >= timeInterval.toLong()
+        }
 
         return eqsListFiltered
     }

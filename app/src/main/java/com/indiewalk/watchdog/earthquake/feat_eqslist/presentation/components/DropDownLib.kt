@@ -34,16 +34,16 @@ fun SortDropdown(
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
         OutlinedTextField(
             modifier = modifier.menuAnchor(),
-            value = value?.value ?: labelNone,
+            value = value?.value ?: EqsSortOption.DATE_DESC.value, // labelNone,
             onValueChange = {},
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) }
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(
+            /*DropdownMenuItem(
                 text = { Text(labelNone) },
                 onClick = { onChange(null); expanded = false }
-            )
+            )*/
             items.forEach { opt ->
                 DropdownMenuItem(
                     text = { Text(opt.value) },
@@ -68,16 +68,16 @@ fun MinMagDropdown(
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
         OutlinedTextField(
             modifier = modifier.menuAnchor(),
-            value = value?.value ?: labelNone, // enum holds the localized label
+            value = value?.value ?: MinMagnitude.MAG_0_0.value,// labelNone, // enum holds the localized label
             onValueChange = {},
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) }
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(
+            /*DropdownMenuItem(
                 text = { Text(labelNone) },
                 onClick = { onChange(null); expanded = false }
-            )
+            )*/
             items.forEach { opt ->
                 DropdownMenuItem(
                     text = { Text(opt.value) },

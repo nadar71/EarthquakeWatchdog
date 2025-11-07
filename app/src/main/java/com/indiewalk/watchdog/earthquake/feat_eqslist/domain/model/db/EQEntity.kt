@@ -37,7 +37,7 @@ data class EQEntity(
     // properties
     val mag: Double?,
     val place: String?,
-    val time: Long?,
+    val time: Long?,  // milliseconds since epoch : https://earthquake.usgs.gov/data/comcat/index.php#time
     val updated: Long?,
     val tz: Int?,
     val url: String?,
