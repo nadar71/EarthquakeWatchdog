@@ -60,3 +60,41 @@ private fun EQFeatureDTO.baseEntity(
     depthKm = geometry.depthKm,
     distanceFromUser = distanceFromUserKm // stored as KM (canonical)
 )
+
+// -- DATA SAMPLE --
+/*private fun sampleFeature1() = EQFeatureDTO(
+    type = "Feature",
+    id = "sample-ci-001",
+    properties = EQPropertiesDTO(
+        mag = 5.0,
+        place = "76 km West of Macquarie Island",
+        time = 1583196360000,  // Mar 03, 2020 2:06 am (example)
+        updated = 1583199960000,
+        tz = null,
+        url = "https://earthquake.usgs.gov/earthquakes/eventpage/sample-ci-001",
+        detail = null,
+        felt = null,
+        cdi = null,
+        mmi = null,
+        alert = null,
+        status = "reviewed",
+        tsunami = 0,
+        sig = 385,
+        net = "ci",
+        code = "001",
+        ids = ",sample-ci-001,",
+        sources = "ci",
+        types = "origin,phase-data",
+        nst = 25,
+        dmin = 0.123,
+        rms = 0.76,
+        gap = 45.0,
+        magType = "mb",
+        type = "earthquake"
+    ),
+    geometry = EQGeometryDTO(
+        type = "Point",
+        coordinates = listOf(158.95, -54.5, 10.0) // lon, lat, depth(km)
+    )
+).toEQEntity(124124124).toEarthquakeUI(distanceFromUserCustom = 123456789)
+*/

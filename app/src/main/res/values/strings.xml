@@ -31,20 +31,7 @@
 
 
     <!-- - - - - - - - - - - - - - - - - - - - - Home - - - - - - - - - - - - - - - - - - - - - -->
-    <string name="quick_settings_title">Quick settings</string>
-    <string name="last_update_label">Last update : </string>
-    <string name="time_range_label">Time range : </string>
-    <string name="your_position_label">Your position : </string>
-    <string name="settings_menu_item_quick">Quick Settings</string>
-    <string name="settings_menu_item_general">General settings</string>
-
-    <string name="order_by_label">Ordered By : </string>
-    <string name="order_by_desc_magnitude">Magnitude (High to Low)</string>
-    <string name="order_by_asc_magnitude">Magnitude (Low to High)</string>
-    <string name="order_by_most_recent">Most Recent</string>
-    <string name="order_by_oldest">Oldest</string>
-    <string name="order_by_nearest">Nearest</string>
-    <string name="order_by_furthest">Furthest</string>
+    <string name="home_no_earthquakes_found">No earthquakes found. Reload or check filter settings</string>
 
     <!-- - - - - - - - - - - - - - - - Filter - - - -  - - - - - - - - - - - - - - - - - - - - -->
     <string name="filter_title">Filters</string>

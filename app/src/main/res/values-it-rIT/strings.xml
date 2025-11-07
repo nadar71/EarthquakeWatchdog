@@ -28,20 +28,8 @@
     <string name="nav_bottom_settings_desc">Settings</string>
 
     <!-- - - - - - - - - - - - - - - - - - - - - Home - - - - - - - - - - - - - - - - - - - - - - -->
-    <string name="quick_settings_title">Impostazioni rapide</string>
-    <string name="last_update_label">Ultimo aggiornamento: </string>
-    <string name="time_range_label">Intervallo di tempo: </string>
-    <string name="your_position_label">La tua posizione: </string>
-    <string name="settings_menu_item_quick">Impostazioni rapide</string>
-    <string name="settings_menu_item_general">Impostazioni generali</string>
+    <string name="home_no_earthquakes_found">Nessun terremoto trovato. Ricarica o controlla le impostazioni del filtro</string>
 
-    <string name="order_by_label">Ordinato per: </string>
-    <string name="order_by_desc_magnitude">Magnitudo (da alta a bassa)</string>
-    <string name="order_by_asc_magnitude">Magnitudo (da bassa ad alta)</string>
-    <string name="order_by_most_recent">Più recente</string>
-    <string name="order_by_oldest">Più vecchio</string>
-    <string name="order_by_nearest">Più vicino</string>
-    <string name="order_by_furthest">Più lontano</string>
 
     <!-- - - - - - - - - - - - - - - - Filter - - - -  - - - - - - - - - - - - - - - - - - - - -->
     <string name="filter_title">Filtri</string>

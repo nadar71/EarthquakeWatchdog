@@ -1,6 +1,7 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui
 
 import android.Manifest
+import android.R.attr.text
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -35,8 +36,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Badge
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -47,11 +50,13 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -71,8 +76,13 @@ import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getLastKnown
 import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.MinMagnitude
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.TimeInterval
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.toDouble
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.toLong
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.preferences.FilterSheet
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.preferences.FilterViewModel
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.util.FilterUtil.filterList
 import kotlinx.coroutines.launch
 
 
@@ -99,7 +109,6 @@ fun EarthquakeListScreen(
     var eqsListFiltered by remember { mutableStateOf<List<EQEntity>?>(null) }
     var isEqListLoadedFromDb by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
-    // val snackbarHostState = remember { SnackbarHostState() }
 
 
     // Check current location permission state
@@ -118,6 +127,8 @@ fun EarthquakeListScreen(
         }
     }
 
+    var showProgressBar by remember { mutableStateOf(false) }
+
     // TODO: dummy badge count, to be replaced
     val notificationCount = remember { mutableStateOf(3) }
 
@@ -129,6 +140,7 @@ fun EarthquakeListScreen(
         onRefresh = {
             coroutineScope.launch {
                 isRefreshing = true
+                Log.d(TAG, "EarthquakeListScreen: refreshing pulled")
                 earthquakeListViewModel.refreshEQsList()
                 isRefreshing = false
             }
@@ -144,6 +156,7 @@ fun EarthquakeListScreen(
     val minMag by filterViewModel.minMagFlow.collectAsStateWithLifecycle()
     val timeInterval by filterViewModel.timeIntervalFlow.collectAsStateWithLifecycle()
     val settings by earthquakeListViewModel.settings.collectAsStateWithLifecycle()
+
     val eqsUIFromRemoteState by earthquakeListViewModel.eqsUIFromRemoteState.collectAsStateWithLifecycle()
     val eqsUIFromDBState by earthquakeListViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
 
@@ -179,17 +192,16 @@ fun EarthquakeListScreen(
     LaunchedEffect(eqsUIFromRemoteState) {
         when (eqsUIFromRemoteState) {
             is EQsListUiFromRemoteState.Idle -> {
-                // TODO :
-                // showProgressBar = false
+                showProgressBar = false
             }
+
             is EQsListUiFromRemoteState.Loading -> {
-                // TODO :
-                // showProgressBar = true
+                showProgressBar = true
             }
+
             is EQsListUiFromRemoteState.Success -> {
                 Log.d(TAG, "EarthquakeListScreen: SUCCESS, eqs loaded")
-                // TODO :
-                // showProgressBar = false
+                showProgressBar = false
                 eqsCollection =
                     (eqsUIFromRemoteState as EQsListUiFromRemoteState.Success<EQFeaturesCollectionDTO>).data
                 // eqsList = eqsCollection?.features
@@ -197,10 +209,10 @@ fun EarthquakeListScreen(
                 isRemoteFetchCompleted = true
                 Log.d(TAG, "EarthquakeListScreen: eqsList: $eqsListFiltered")
             }
+
             is EQsListUiFromRemoteState.Error -> {
                 Log.d(TAG, "EarthquakeListScreen: ERROR!")
-
-                // showProgressBar = false
+                showProgressBar = false
 
                 // TODO: rewrite error handling
                 /*val errorResponse = (userSubscriptionsUiState as EQsListUiState.Error).error
@@ -212,6 +224,7 @@ fun EarthquakeListScreen(
                 }
                 showError = true*/
             }
+
             else -> {}
         }
     }
@@ -223,33 +236,37 @@ fun EarthquakeListScreen(
     }
 
 
-    // Check db response
+    // React to db response
     LaunchedEffect(eqsUIFromDBState) {
         when (eqsUIFromDBState) {
             is EQsListUiFromDBState.Idle -> {
-                // showProgressBar = false
+                showProgressBar = false
             }
+
             is EQsListUiFromDBState.Loading -> {
-                // showProgressBar = true
+                showProgressBar = true
             }
+
             is EQsListUiFromDBState.Success -> {
-                // showProgressBar = false
+                showProgressBar = false
                 eqsList = (eqsUIFromDBState as EQsListUiFromDBState.Success<List<EQEntity>?>).data
                 Log.d(TAG, "Eq list loaded from db : $eqsList")
-                eqsListFiltered = filterList(sortOption, eqsList)
+                eqsListFiltered = filterList(sortOption, minMag, timeInterval, eqsList)
                 Log.d(TAG, "Eq list filtered : $eqsListFiltered")
                 isEqListLoadedFromDb = true
             }
+
             is EQsListUiFromDBState.Error -> {
-                // showProgressBar = false
+                showProgressBar = false
                 Log.e(TAG, "Error recovering foodList from db")
                 isEqListLoadedFromDb = true
             }
         }
     }
 
-    LaunchedEffect(sortOption) {
-
+    // React to changes in filter options
+    LaunchedEffect(sortOption, minMag, timeInterval) {
+        eqsListFiltered = filterList(sortOption, minMag, timeInterval, eqsList)
     }
 
 
@@ -295,112 +312,131 @@ fun EarthquakeListScreen(
         },
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize()) {
-            if (isEqListLoadedFromDb && !eqsListFiltered.isNullOrEmpty()) {
-                PullRefreshIndicator(
-                    refreshing = isRefreshing,
-                    state = pullRefreshState,
-                    modifier = Modifier
-                        .padding(top = 4.dp),
-                    backgroundColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
-
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                ) {
-                    /*items(eqsCollection?.features ?: emptyList()) { eq ->
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                        ) {
-                            val generated = eqsCollection?.metadata?.generated
-                            EarthquakeCard(
-                                eq = eq.toEQEntity(generated, settings).toEarthquakeUI(),
-                                hasLocalPermissions = hasLocalPermissions,
-                                settings = settings
-                            )
-                        }
-                    }*/
-                    items(eqsListFiltered ?: emptyList()) { eq ->
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                        ) {
-                            // val generated = eqsCollection?.metadata?.generated
-                            EarthquakeCard(
-                                eq = eq.toEarthquakeUI(), //.toEQEntity(generated, settings).toEarthquakeUI(),
-                                hasLocalPermissions = hasLocalPermissions,
-                                settings = settings
-                            )
-                        }
-                    }
-                }
-
-                // Add FAB
-                AnimatedVisibility(
-                    visible = isFabVisible,
-                    enter = fadeIn() + slideIn(initialOffset = { IntOffset(0, 100) }),
-                    exit = fadeOut() + slideOut(targetOffset = { IntOffset(0, 100) }),
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(
-                            end = 16.dp,
-                            bottom = WindowInsets.navigationBars.getBottom(LocalDensity.current).dp + 64.dp
-                        )
-                ) {
-                    Box(
+            Log.d(
+                TAG, "Eq list filtered size: " +
+                        "${if (eqsListFiltered != null) eqsListFiltered?.size else "null"}"
+            )
+            // Pull to refresh container
+            // Box(Modifier.pullRefresh(pullRefreshState)) {
+                if (isEqListLoadedFromDb && !eqsListFiltered.isNullOrEmpty()) {
+                    LazyColumn(
+                        state = listState,
                         modifier = Modifier
-                            .wrapContentSize()
+                            .fillMaxSize()
+                            .padding(padding)
                     ) {
-                        FloatingActionButton(
-                            onClick = {
-                                showFilterSheet = true
-                                /*scope.launch {
-                                    snackbarHostState.showSnackbar(
-                                        message = "FAB clicked!",
-                                        withDismissAction = true
-                                    )
-                                }*/
-                            },
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(40.dp),
-                            elevation = FloatingActionButtonDefaults.elevation(
-                                defaultElevation = 2.dp,
-                                pressedElevation = 4.dp,
-                                focusedElevation = 4.dp,
-                                hoveredElevation = 3.dp
-                            )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.FilterList,
-                                contentDescription = "Notifications",
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-
-                        if (notificationCount.value > 0) {
-                            Badge(
+                        /*items(eqsCollection?.features ?: emptyList()) { eq ->
+                            Column(
                                 modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .offset(x = 6.dp, y = (-6).dp)
+                                    .fillMaxSize()
                             ) {
-                                Text(notificationCount.value.toString())
+                                val generated = eqsCollection?.metadata?.generated
+                                EarthquakeCard(
+                                    eq = eq.toEQEntity(generated, settings).toEarthquakeUI(),
+                                    hasLocalPermissions = hasLocalPermissions,
+                                    settings = settings
+                                )
+                            }
+                        }*/
+                        items(eqsListFiltered ?: emptyList()) { eq ->
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                            ) {
+                                EarthquakeCard(
+                                    eq = eq.toEarthquakeUI(),
+                                    hasLocalPermissions = hasLocalPermissions,
+                                    settings = settings
+                                )
                             }
                         }
                     }
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.home_no_earthquakes_found),
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                color = MaterialTheme.colorScheme.primary,
+                            ),
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
-            } else {
-                Text("No earthquakes found")
+            // }
+
+            // Pull to refresh indicator (positioned at the top of the screen)
+            PullRefreshIndicator(
+                refreshing = isRefreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter),
+                backgroundColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.primary
+            )
+
+
+            // ProgressBar
+            if (showProgressBar) {
+                Box(
+                    modifier = Modifier,
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                }
             }
-            /*// Add Snackbar host
-            SnackbarHost(
-                hostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )*/
+
+            // Show filter FAB
+            AnimatedVisibility(
+                visible = isFabVisible,
+                enter = fadeIn() + slideIn(initialOffset = { IntOffset(0, 100) }),
+                exit = fadeOut() + slideOut(targetOffset = { IntOffset(0, 100) }),
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(
+                        end = 16.dp,
+                        bottom = WindowInsets.navigationBars.getBottom(LocalDensity.current).dp + 64.dp
+                    )
+            ) {
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize()
+                ) {
+                    FloatingActionButton(
+                        onClick = {
+                            showFilterSheet = true
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(40.dp),
+                        elevation = FloatingActionButtonDefaults.elevation(
+                            defaultElevation = 2.dp,
+                            pressedElevation = 4.dp,
+                            focusedElevation = 4.dp,
+                            hoveredElevation = 3.dp
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.FilterList,
+                            contentDescription = "Notifications",
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    if (notificationCount.value > 0) {
+                        Badge(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .offset(x = 6.dp, y = (-6).dp)
+                        ) {
+                            Text(notificationCount.value.toString())
+                        }
+                    }
+                }
+            }
         }
 
         // show filter dialog sheet
@@ -413,23 +449,3 @@ fun EarthquakeListScreen(
     }
 }
 
-// @Composable
-private fun filterList(
-    // eqsListFiltered: List<EQEntity>?,
-    filters: EqsSortOption,
-    // minMag: Double,
-    // timeInterval: String,
-    eqsList: List<EQEntity>?
-): List<EQEntity>? {
-    // var eqsListFiltered1 = eqsListFiltered
-    var eqsListFiltered = when (filters.name) {
-        EqsSortOption.MAG_DESC.name -> eqsList?.sortedByDescending { it.mag }
-        EqsSortOption.MAG_ASC.name -> eqsList?.sortedBy { it.mag ?: 0.0 }
-        EqsSortOption.DATE_ASC.name -> eqsList?.sortedBy { it.time }
-        EqsSortOption.DATE_DESC.name -> eqsList?.sortedByDescending { it.time }
-        EqsSortOption.DIST_ASC.name -> eqsList?.sortedBy { it.distanceFromUser }
-        EqsSortOption.DIST_DESC.name -> eqsList?.sortedByDescending { it.distanceFromUser }
-        else -> eqsList
-    }?.toList()
-    return eqsListFiltered
-}

@@ -41,7 +41,7 @@ object MapsUtils {
         eqCoords: EQGeometryDTO,
         settings: AppSettings
     ): Double? {
-        Log.d(TAG, "getEQDistanceFromUser: eqCoords: $eqCoords")
+        // Log.d(TAG, "getEQDistanceFromUser: eqCoords: $eqCoords")
         val eqLat = eqCoords.latitude ?: return null
         val eqLng = eqCoords.longitude ?: return null
 
@@ -53,7 +53,7 @@ object MapsUtils {
                    else settings.userPosition.longitude,
             lng2 = eqLng
         )
-        Log.i(TAG, "getEQDistanceFromUser: eq distance from user : $dist in km")
+        // Log.i(TAG, "getEQDistanceFromUser: eq distance from user : $dist in km")
 
         return dist
     }
