@@ -280,15 +280,7 @@ fun EarthquakeListScreen(
                         frameDurationMs = 90L
                     )
                 },
-                actions = {
-                    IconButton(onClick = { /* Handle icon click */ }) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
-                },
+                actions = {},
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,       // background
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,  // title text

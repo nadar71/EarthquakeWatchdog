@@ -2,10 +2,13 @@ package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui
 
 
 import android.Manifest
+import android.R.attr.contentDescription
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -134,7 +137,7 @@ fun EarthquakeMapScreen(
                         showOptions = !showOptions
                     }) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_equalizer),
+                            imageVector = Icons.Filled.Settings,
                             contentDescription = "Map settings",
                             tint = MaterialTheme.colorScheme.onPrimary
                         )

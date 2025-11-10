@@ -121,7 +121,7 @@ fun SettingsScreen(
                     imageVector = Icons.Default.ArrowForwardIos,
                     contentDescription = stringResource(R.string.settings_location_permissions_settings_label),
                     modifier = Modifier
-                        .size(20.dp)
+                        .size(18.dp)
                         .clickable(
                             onClick = {
                                 openAppSettings(context)
@@ -146,7 +146,7 @@ fun SettingsScreen(
                     imageVector = Icons.Default.ArrowForwardIos,
                     contentDescription = stringResource(R.string.settings_disclaimer_label),
                     modifier = Modifier
-                        .size(20.dp)
+                        .size(18.dp)
                         .clickable(
                             onClick = {
                                 showDisclaimer = true
