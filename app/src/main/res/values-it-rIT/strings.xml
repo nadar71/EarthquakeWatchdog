@@ -107,7 +107,15 @@
 
     <string name="settings_disclaimer_label">Disclaimer</string>
     <string name="settings_faq_btn_summary">Cosa può fare e cosa non può fare l\'app.</string>
-    <string name="settings_faq_text"><![CDATA[<b>FAQ E DISCLAIMER</b> Questa app scarica e mostra dati sui terremoti (fino agli ultimi 120 terremoti) tratti dal servizio online <a href="https://earthquake.usgs.gov/earthquakes/">USGS.gov</a>. Non è in alcun modo correlata a USGS né è un&apos;app di quest&apos;ultimo. Ha solo scopo informativo, i dati sui terremoti non sono in tempo reale (consultare il <a href="https://earthquake.usgs.gov/earthquakes/">sito USGS.gov</a> per i dettagli). Pertanto, non intende essere un&apos;allerta terremoti.]]></string>
+    <string name="settings_faq_text"><![CDATA[<b>FAQ E DISCLAIMER</b> Questa app scarica e mostra dati sui terremoti (fino agli ultimi 120 terremoti) tratti dal servizio online <a href="https://earthquake.usgs.gov/fdsnws/event/1/">USGS.gov</a>. Non è in alcun modo correlata a USGS né è un&apos;app di quest&apos;ultimo. Ha solo scopo informativo, i dati sui terremoti non sono in tempo reale (consultare il <a href="https://earthquake.usgs.gov/fdsnws/event/1/">sito USGS.gov</a> per i dettagli). Pertanto, non è intesa come un&apos;app di allerta terremoti in tempo reale, pertanto non utilizzarla come app salvavita. Non sono responsabile per qualsiasi uso improprio di questa app.
+
+Nella mappa, vengono richieste le autorizzazioni di localizzazione dell&apos;utente solo per calcolare la distanza dei terremoti dall&apos;utente, e le coordinate dell&apos;utente vengono memorizzate solo a questo scopo. Se le autorizzazioni di localizzazione vengono negate, consente il posizionamento manuale tenendo premuto a lungo sulla mappa, senza utilizzare il GPS o altri sistemi di localizzazione.
+
+Se le autorizzazioni non vengono concesse e non viene eseguita alcuna localizzazione manuale, utilizza la posizione predefinita (posizione di Google) e calcola la distanza dei terremoti da lì.
+
+Spero che la mia app vi piaccia e la troviate utile. Date un&apos;occhiata alle altre mie app e giochi sul mio sito: <a href="http://www.indie-walkabout.eu">http://www.indie-walkabout.eu</a>.
+
+Per suggerimenti, informazioni o segnalazioni di bug, contattatemi all&apos;indirizzo <a href="mailto:indie.walkabout.1971@gmail.com">indie.walkabout.1971@gmail.com</a>]]></string>
 
     <!-- - - - - - - - - - - - - - - - - - Error - - - - - - - - - - -  - - - - - - - - - - - - - -->
     <string name="no_earthquakes">Nessun terremoto trovato. Prova un altro filtro.</string>

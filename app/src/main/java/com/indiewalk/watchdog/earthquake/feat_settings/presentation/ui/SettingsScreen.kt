@@ -3,6 +3,7 @@ package com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material3.*
@@ -78,7 +79,7 @@ fun SettingsScreen(
         ) {
             Text(
                 text = stringResource(R.string.settings_unit_system_title),
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
@@ -112,7 +113,7 @@ fun SettingsScreen(
             ) {
                 Text(
                     text = stringResource(R.string.settings_location_permissions_settings_label),
-                    style = MaterialTheme.typography.labelMedium,
+                    style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .padding(bottom = 8.dp)
                 )
@@ -120,7 +121,7 @@ fun SettingsScreen(
                     imageVector = Icons.Default.ArrowForwardIos,
                     contentDescription = stringResource(R.string.settings_location_permissions_settings_label),
                     modifier = Modifier
-                        .size(24.dp)
+                        .size(20.dp)
                         .clickable(
                             onClick = {
                                 openAppSettings(context)
@@ -137,7 +138,7 @@ fun SettingsScreen(
             ) {
                 Text(
                     text = stringResource(R.string.settings_disclaimer_label),
-                    style = MaterialTheme.typography.labelMedium,
+                    style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .padding(bottom = 8.dp)
                 )
@@ -145,7 +146,7 @@ fun SettingsScreen(
                     imageVector = Icons.Default.ArrowForwardIos,
                     contentDescription = stringResource(R.string.settings_disclaimer_label),
                     modifier = Modifier
-                        .size(24.dp)
+                        .size(20.dp)
                         .clickable(
                             onClick = {
                                 showDisclaimer = true
@@ -157,7 +158,10 @@ fun SettingsScreen(
 
          if (showDisclaimer) {
             DisclaimerDialog(
-                onDismissRequest = { showDisclaimer = false }
+                onDismissRequest = { showDisclaimer = false },
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .padding(horizontal = 0.dp)
             )
         }
     }

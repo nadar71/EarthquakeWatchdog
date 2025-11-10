@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.text.HtmlCompat
 import com.indiewalk.watchdog.earthquake.R
 
@@ -19,11 +20,14 @@ fun DisclaimerDialog(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     val htmlText = stringResource(id = R.string.settings_faq_text)
     val spannedText = HtmlCompat.fromHtml(htmlText, HtmlCompat.FROM_HTML_MODE_LEGACY)
     
     AlertDialog(
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = true
+        ),
         onDismissRequest = onDismissRequest,
         title = { 
             Text(
