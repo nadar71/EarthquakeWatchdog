@@ -98,29 +98,38 @@
 
     <!-- - - - - - - - - - - - - - - - Settings - - - -  - - - - - - - - - - - - - - - - - - - - -->
     <string name="title_activity_settings">Settings</string>
-    <string name="settings_title">Earthquake Settings</string>
+    <string name="settings_title">Settings</string>
     <string name="settings_menu_item">Settings</string>
     <string name="settings_order_by_label">Ordered By : </string>
     <string name="settings_distance_unit_label">Distance unit system</string>
     <string name="settings_km_distance_unit_label">Km</string>
     <string name="settings_mi_distance_unit_label">Mi</string>
-
+    <string name="settings_unit_system_metric">Metric (km, °C)</string>
+    <string name="settings_unit_system_imperial">Imperial (mi, °F)</string>
+    <string name="settings_unit_system_title">Unit System</string>
+    <string name="settings_location_permissions_settings_label">System Localization Permissions settings </string>
 
 
 
     <string name="settings_gdpr_btn_title">GDPR</string>
     <string name="settings_gdpr_btn_summary">GDPR Consent Withdraw.</string>
 
-    <string name="settings_faq_btn_title">Faq &amp; Disclaimer</string>
-    <string name="settings_faq_btn_key" translatable="false">faq</string>
+    <string name="settings_disclaimer_label">Disclaimer</string>
     <string name="settings_faq_btn_summary">What app can do and don\'t.</string>
-    <!--<string name="settings_faq_text">"         <b>FAQ &amp; DISCLAIMER</b>          This app downloads and shows data about earthquakes (till the last 120 earthquakes happened) taken from         <a href="https://earthquake.usgs.gov/earthquakes/"> USGS.gov </a> online service.         It is not in any way related to USGS nor it is an app from them.            It has only informative purposes, the datas about earthquakes are not in real time         (check <a href="https://earthquake.usgs.gov/earthquakes/"> USGS.gov site </a> for details)         So it has not intent to be a real time earthquake alert app,         not use it as a saving-life app, I\'m not responsible of every improper use of this app.            In map it asks for user location permissions only for calculating distance of         earthquake from user, and the users coordinates are stored for this purpose only.         If permissions for localization are negated, it allows anyway manual positioning         by long pressing on map, without using gps nor any other localization system,         check in map settings.          If permissions are not allowed nor a manual localization is done, it uses         the default location (Google location) and calculate earthquake distance from there.                     Hope you\'ll enjoy my app and find it useful, check out my other app and games on my site          <a href="http://www.indie-walkabout.eu">http://www.indie-walkabout.eu</a>.           For suggestions, info or bugs please contact me at           <a href="mailto:indie.walkabout.1971@gmail.com">indie.walkabout.1971@gmail.com</a>       "</string>-->
+    <string name="settings_faq_text"><![CDATA[<b>FAQ &amp; DISCLAIMER</b> This app downloads and shows data about earthquakes (till the last 120 earthquakes happened) taken from <a href="https://earthquake.usgs.gov/earthquakes/">USGS.gov</a> online service. It is not in any way related to USGS nor it is an app from them. It has only informative purposes, the data about earthquakes are not in real time (check <a href="https://earthquake.usgs.gov/earthquakes/">USGS.gov site</a> for details). So it is not intended to be a real time earthquake alert app, do not use it as a lifeSaving app. I&apos;m not responsible for any improper use of this app.
+
+In the map, it asks for user location permissions only for calculating the distance of earthquakes from the user, and the user&apos;s coordinates are stored for this purpose only. If location permissions are denied, it allows manual positioning by long-pressing on the map, without using GPS or any other localization system.
+
+If permissions are not granted and no manual localization is done, it uses the default location (Google location) and calculates earthquake distances from there.
+
+Hope you&apos;ll enjoy my app and find it useful. Check out my other apps and games on my site: <a href="http://www.indie-walkabout.eu">http://www.indie-walkabout.eu</a>.
+
+For suggestions, info, or bug reports, please contact me at <a href="mailto:indie.walkabout.1971@gmail.com">indie.walkabout.1971@gmail.com</a>]]></string>
 
 
 
     <!-- - - - - - - - - - - - - - - - - - Error - - - - - - - - - - -  - - - - - - - - - - - - - -->
     <string name="no_earthquakes">No earthquakes found. Try another filter.</string>
-    <string name="no_internet_connection">No internet connection.You need to connect at last the first time to download earthquakes data.</string>
     <!-- Generic error shown when loading earthquakes fails -->
     <string name="error_loading_earthquakes">Error loading earthquakes data</string>
     <string name="api_generic_error">Error performing remote request</string>

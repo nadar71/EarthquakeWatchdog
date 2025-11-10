@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.core.data.local.preferences.AppPrefs
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants
+import com.indiewalk.watchdog.earthquake.core.data.local.enums.UnitSystem
 import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
 import com.indiewalk.watchdog.earthquake.core.model.preferences.LocationInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -87,6 +88,12 @@ class AppPrefsViewModel @Inject constructor(
         viewModelScope.launch {
             // force defaults (even if already there)
             AppPrefs.setUserPosition(context, Constants.DEFAULT_LAT, Constants.DEFAULT_LNG)
+        }
+    }
+
+    fun toggleUnitSystem(unitSystem: UnitSystem) {
+        viewModelScope.launch {
+            AppPrefs.setUnitSystem(context, unitSystem)
         }
     }
 }

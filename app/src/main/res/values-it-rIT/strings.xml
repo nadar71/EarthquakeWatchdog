@@ -91,22 +91,23 @@
 
     <!-- - - - - - - - - - - - - - - - Settings - - - -  - - - - - - - - - - - - - - - - - - - - -->
     <string name="title_activity_settings">Impostazioni</string>
-    <string name="settings_title">Impostazioni Terremoto</string>
+    <string name="settings_title">Impostazioni</string>
     <string name="settings_menu_item">Impostazioni</string>
     <string name="settings_order_by_label">Ordinato per: </string>
     <string name="settings_distance_unit_label">Sistema di unità di misura della distanza</string>
     <string name="settings_km_distance_unit_label">Km</string>
     <string name="settings_mi_distance_unit_label">Mi</string>
+    <string name="settings_unit_system_metric">Metric (km, °C)</string>
+    <string name="settings_unit_system_imperial">Imperial (mi, °F)</string>
+    <string name="settings_unit_system_title">Sistema di Misura</string>
+    <string name="settings_location_permissions_settings_label">Impostazioni di sistema permessi localizzazione</string>
 
     <string name="settings_gdpr_btn_title">GDPR</string>
     <string name="settings_gdpr_btn_summary">Ritiro del consenso al GDPR.</string>
 
-    <string name="settings_faq_btn_title">Domande frequenti e disclaimer</string>
-    <string name="settings_faq_btn_key" translatable="false">Domande frequenti</string>
+    <string name="settings_disclaimer_label">Disclaimer</string>
     <string name="settings_faq_btn_summary">Cosa può fare e cosa non può fare l\'app.</string>
-<!--
-    <string name="settings_faq_text"><![CDATA[<b>FAQ E DISCLAIMER</b> Questa app scarica e mostra dati sui terremoti (fino agli ultimi 120 terremoti) tratti dal servizio online <a href="https://earthquake.usgs.gov/earthquakes/">USGS.gov</a>. Non è in alcun modo correlata a USGS né è un'app di quest'ultimo. Ha solo scopo informativo, i dati sui terremoti non sono in tempo reale (consultare il <a href="https://earthquake.usgs.gov/earthquakes/">sito USGS.gov</a> per i dettagli). Pertanto, non intende essere un'allerta terremoti.]]></string>
--->
+    <string name="settings_faq_text"><![CDATA[<b>FAQ E DISCLAIMER</b> Questa app scarica e mostra dati sui terremoti (fino agli ultimi 120 terremoti) tratti dal servizio online <a href="https://earthquake.usgs.gov/earthquakes/">USGS.gov</a>. Non è in alcun modo correlata a USGS né è un&apos;app di quest&apos;ultimo. Ha solo scopo informativo, i dati sui terremoti non sono in tempo reale (consultare il <a href="https://earthquake.usgs.gov/earthquakes/">sito USGS.gov</a> per i dettagli). Pertanto, non intende essere un&apos;allerta terremoti.]]></string>
 
     <!-- - - - - - - - - - - - - - - - - - Error - - - - - - - - - - -  - - - - - - - - - - - - - -->
     <string name="no_earthquakes">Nessun terremoto trovato. Prova un altro filtro.</string>

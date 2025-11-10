@@ -39,6 +39,7 @@ import com.google.maps.android.compose.MapType
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LNG
+import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
 import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
@@ -120,7 +121,14 @@ fun EarthquakeMapScreen(
                         )
                     )
                 },
-                navigationIcon = {},
+                navigationIcon = {
+                    LogoAnimationForward(
+                        modifier = Modifier
+                            .padding(start = 5.dp),
+                        size = 50.dp,
+                        frameDurationMs = 90L
+                    )
+                },
                 actions = {
                     IconButton(onClick = {
                         showOptions = !showOptions
@@ -140,6 +148,7 @@ fun EarthquakeMapScreen(
             )
         },
     ) { padding ->
+
         when (val s = eqsUIFromDBState) {
             is MapUiState.Loading -> {
                 Box(Modifier
