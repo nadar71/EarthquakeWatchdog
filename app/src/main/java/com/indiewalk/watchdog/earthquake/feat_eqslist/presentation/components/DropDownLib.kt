@@ -18,8 +18,8 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.MinMagnit
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.TimeInterval
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
 
-/* ------------ Dropdowns ------------ */
 
+// default : DATE_DESC : newest -> oldest
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SortDropdown(
@@ -28,7 +28,6 @@ fun SortDropdown(
     onChange: (EqsSortOption?) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val labelNone = stringResource(R.string.filter_none)
     val items = EqsSortOption.entries.toList()
 
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
@@ -54,6 +53,7 @@ fun SortDropdown(
     }
 }
 
+// default : MAG_3_0
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MinMagDropdown(
@@ -62,7 +62,6 @@ fun MinMagDropdown(
     onChange: (MinMagnitude?) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val labelNone = stringResource(R.string.filter_none)
     val items = MinMagnitude.entries.toList()
 
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
@@ -74,10 +73,6 @@ fun MinMagDropdown(
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) }
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            /*DropdownMenuItem(
-                text = { Text(labelNone) },
-                onClick = { onChange(null); expanded = false }
-            )*/
             items.forEach { opt ->
                 DropdownMenuItem(
                     text = { Text(opt.value) },
@@ -88,6 +83,7 @@ fun MinMagDropdown(
     }
 }
 
+// default: LAST_30_DAYS
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PeriodDropdown(

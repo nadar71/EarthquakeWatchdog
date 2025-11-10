@@ -2,6 +2,7 @@ package com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
@@ -24,7 +25,7 @@ object FilterPrefs {
     private val KEY_START_DATE = stringPreferencesKey("start_date")
     private val KEY_END_DATE = stringPreferencesKey("end_date")
     private val KEY_TIME_INTERVAL = stringPreferencesKey("time_interval")
-
+    private val KEY_FILTER_ACTIVE_COUNTS = intPreferencesKey("filter_active_counts")
     // -- sort type --
     fun sortFlow(context: Context): Flow<EqsSortOption> =
         context.eqFilterDataStore.data.map { prefs ->
@@ -82,6 +83,18 @@ object FilterPrefs {
     suspend fun setTimeInterval(context: Context, interval: TimeInterval) {
         context.eqFilterDataStore.edit { prefs ->
             prefs[KEY_TIME_INTERVAL] = interval.name
+        }
+    }
+
+    // -- filter active counts --
+    fun filterActiveCountsFlow(context: Context): Flow<Int> =
+        context.eqFilterDataStore.data.map { prefs ->
+            prefs[KEY_FILTER_ACTIVE_COUNTS] ?: 0
+        }
+
+    suspend fun setFilterActiveCounts(context: Context, count: Int) {
+        context.eqFilterDataStore.edit { prefs ->
+            prefs[KEY_FILTER_ACTIVE_COUNTS] = count
         }
     }
 

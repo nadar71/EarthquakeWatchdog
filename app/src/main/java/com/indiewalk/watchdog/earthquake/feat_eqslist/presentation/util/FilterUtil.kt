@@ -9,6 +9,7 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.toLong
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 
 object FilterUtil {
+
     fun filterList(
         filters: EqsSortOption,
         minMag: MinMagnitude,
@@ -32,5 +33,14 @@ object FilterUtil {
         }
 
         return eqsListFiltered
+    }
+
+    fun checkFilterActiveCounts(selectedSort: EqsSortOption?, selectedMinMag: MinMagnitude?,
+                           selectedInterval: TimeInterval): Int{
+        var counts = 0
+        if (selectedSort != EqsSortOption.DATE_DESC ) counts++
+        if (selectedMinMag != MinMagnitude.MAG_3_0 ) counts++
+        if (selectedInterval != TimeInterval.LAST_30_DAYS ) counts++
+        return counts
     }
 }

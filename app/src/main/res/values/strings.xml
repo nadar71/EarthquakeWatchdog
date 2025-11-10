@@ -41,7 +41,7 @@
 
     <string name="filter_sort_mag_desc">Magnitude: high → low</string>
     <string name="filter_sort_mag_asc">Magnitude: low → high</string>
-    <string name="filter_sort_date_desc">Date: newest → oldest</string>
+    <string name="filter_sort_date_desc">Date: newest → oldest (default)</string>
     <string name="filter_sort_date_asc">Date: oldest → newest</string>
     <string name="filter_sort_dist_asc">Distance: near → far</string>
     <string name="filter_sort_dist_desc">Distance: far → near</string>
@@ -49,7 +49,7 @@
     <string name="filter_0_0_min_magnitude_label">0.0+</string>
     <string name="filter_1_0_min_magnitude_label">1.0+</string>
     <string name="filter_2_0_min_magnitude_label">2.0+</string>
-    <string name="filter_3_0_min_magnitude_label">3.0+</string>
+    <string name="filter_3_0_min_magnitude_label">3.0+ (default)</string>
     <string name="filter_4_0_min_magnitude_label">4.0+</string>
     <string name="filter_4_5_min_magnitude_label">4.5+</string>
     <string name="filter_5_0_min_magnitude_label">5.0+</string>
@@ -63,7 +63,7 @@
     <string name="filter_date_period_48h_label">48h</string>
     <string name="filter_date_period_week_label">Last Week</string>
     <string name="filter_date_period_2_week_label">Last 2 Weeks</string>
-    <string name="filter_date_period_30_days_label">Last 30 Days</string>
+    <string name="filter_date_period_30_days_label">Last 30 Days (default)</string>
 
 
     <!-- - - - - - - - - - - Maps - - - - - - - - - - - - - - - - - -->

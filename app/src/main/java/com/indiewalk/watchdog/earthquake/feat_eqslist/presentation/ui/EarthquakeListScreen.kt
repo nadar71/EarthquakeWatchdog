@@ -1,7 +1,6 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui
 
 import android.Manifest
-import android.R.attr.text
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -11,25 +10,12 @@ import androidx.compose.animation.slideOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
@@ -41,50 +27,53 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Badge
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
+import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
+import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
+import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.toEarthquakeUI
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQFeaturesCollectionDTO
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.EarthquakeCard
-import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromDBState
-import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromRemoteState
-import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
-import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
-import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
-import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getLastKnownLatLng
-import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
-import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
-import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
-import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.MinMagnitude
-import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.TimeInterval
-import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.toDouble
-import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.toLong
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.preferences.FilterSheet
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.preferences.FilterViewModel
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromDBState
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromRemoteState
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.util.FilterUtil.filterList
-import kotlinx.coroutines.launch
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getLastKnownLatLng
 
 
 @OptIn(
@@ -101,7 +90,6 @@ fun EarthquakeListScreen(
     val TAG = "EarthquakeListScreen"
     Log.d(TAG, "EarthquakeListScreen on")
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
 
     // eqs list & c.
     var isRemoteFetchCompleted by remember { mutableStateOf(false) }
@@ -131,22 +119,6 @@ fun EarthquakeListScreen(
     var showProgressBar by remember { mutableStateOf(false) }
 
     // TODO: dummy badge count, to be replaced
-    val notificationCount = remember { mutableStateOf(3) }
-
-    // Pull to refresh state
-    val coroutineScope = rememberCoroutineScope()
-    // var isRefreshing by remember { mutableStateOf(false) }
-    /*val pullRefreshState = rememberPullRefreshState(
-        refreshing = isRefreshing,
-        onRefresh = {
-            coroutineScope.launch {
-                isRefreshing = true
-                Log.d(TAG, "EarthquakeListScreen: refreshing pulled")
-                earthquakeListViewModel.refreshEQsList()
-                isRefreshing = false
-            }
-        }
-    )*/
 
     // filter sheet state
     var showFilterSheet by remember { mutableStateOf(false) }
@@ -156,12 +128,16 @@ fun EarthquakeListScreen(
     val sortOption by filterViewModel.sortOption.collectAsStateWithLifecycle()
     val minMag by filterViewModel.minMagFlow.collectAsStateWithLifecycle()
     val timeInterval by filterViewModel.timeIntervalFlow.collectAsStateWithLifecycle()
+    val filterActiveCounts by filterViewModel.filterActiveCountsFlow.collectAsStateWithLifecycle()
     val settings by earthquakeListViewModel.settings.collectAsStateWithLifecycle()
 
     val eqsUIFromRemoteState by earthquakeListViewModel.eqsUIFromRemoteState.collectAsStateWithLifecycle()
     val eqsUIFromDBState by earthquakeListViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
 
+    val notificationCount = remember { mutableStateOf(3) }
+
     var isRefreshing = eqsUIFromRemoteState is EQsListUiFromRemoteState.Loading
+
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isRefreshing,
@@ -325,67 +301,52 @@ fun EarthquakeListScreen(
         val bottomInset = padding.calculateBottomPadding()
         val topInset = padding.calculateTopPadding()
 
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(top= 8.dp, bottom = bottomInset)
-            .pullRefresh(pullRefreshState)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 8.dp, bottom = bottomInset)
+                .pullRefresh(pullRefreshState)
         ) {
             Log.d(
                 TAG, "Eq list filtered size: " +
                         "${if (eqsListFiltered != null) eqsListFiltered?.size else "null"}"
             )
-            // Pull to refresh container
-            // Box(Modifier.pullRefresh(pullRefreshState)) {
-                if (isEqListLoadedFromDb && !eqsListFiltered.isNullOrEmpty()) {
-                    LazyColumn(
-                        state = listState,
-                        modifier = Modifier.fillMaxSize(),
-                            //.padding(padding)
-                        contentPadding = PaddingValues(bottom = bottomInset)
-                    ) {
-                        /*items(eqsCollection?.features ?: emptyList()) { eq ->
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                            ) {
-                                val generated = eqsCollection?.metadata?.generated
-                                EarthquakeCard(
-                                    eq = eq.toEQEntity(generated, settings).toEarthquakeUI(),
-                                    hasLocalPermissions = hasLocalPermissions,
-                                    settings = settings
-                                )
-                            }
-                        }*/
-                        items(eqsListFiltered ?: emptyList()) { eq ->
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                            ) {
-                                EarthquakeCard(
-                                    eq = eq.toEarthquakeUI(),
-                                    hasLocalPermissions = hasLocalPermissions,
-                                    settings = settings
-                                )
-                            }
+            if (isEqListLoadedFromDb && !eqsListFiltered.isNullOrEmpty()) {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize(),
+                    //.padding(padding)
+                    contentPadding = PaddingValues(bottom = bottomInset)
+                ) {
+                    items(eqsListFiltered ?: emptyList()) { eq ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
+                            EarthquakeCard(
+                                eq = eq.toEarthquakeUI(),
+                                hasLocalPermissions = hasLocalPermissions,
+                                settings = settings
+                            )
                         }
                     }
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.home_no_earthquakes_found),
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                color = MaterialTheme.colorScheme.primary,
-                            ),
-                            textAlign = TextAlign.Center
-                        )
-                    }
                 }
-            // }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.home_no_earthquakes_found),
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            color = MaterialTheme.colorScheme.primary,
+                        ),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
 
             // Pull to refresh indicator (positioned at the top of the screen)
             PullRefreshIndicator(
@@ -446,13 +407,13 @@ fun EarthquakeListScreen(
                         )
                     }
 
-                    if (notificationCount.value > 0) {
+                    if (filterActiveCounts > 0) {
                         Badge(
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
                                 .offset(x = 6.dp, y = (-6).dp)
                         ) {
-                            Text(notificationCount.value.toString())
+                            Text(filterActiveCounts.toString())
                         }
                     }
                 }

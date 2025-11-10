@@ -17,6 +17,7 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.MinMagnit
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.MinMagDropdown
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.PeriodDropdown
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.SortDropdown
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.util.FilterUtil.checkFilterActiveCounts
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -184,6 +185,11 @@ fun FilterSheet(
                         selectedMinMag?.let { filterViewModel.setMinMag(it) }
                         filterViewModel.setTimeInterval(selectedInterval)
                         // filterViewModel.setStartDate(selectedStartDate?.format(iso) ?: "")
+
+                        // update filter active counts
+                        filterViewModel.setFilterActiveCounts(
+                            checkFilterActiveCounts(selectedSort, selectedMinMag, selectedInterval)
+                        )
 
                         // debug: filter after saving
                         println("Filter after saving: ${FilterPrefs.debugPrintEqFilterDataStore(context)}")

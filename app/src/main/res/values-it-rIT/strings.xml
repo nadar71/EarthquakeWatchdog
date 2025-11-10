@@ -39,7 +39,7 @@
 
     <string name="filter_sort_mag_desc">Magnitudo: alto → basso</string>
     <string name="filter_sort_mag_asc">Magnitudo: basso → alto</string>
-    <string name="filter_sort_date_desc">Data: più recenti → più vecchi</string>
+    <string name="filter_sort_date_desc">Data: più recenti → più vecchi (default)</string>
     <string name="filter_sort_date_asc">Data: più vecchi → più recenti</string>
     <string name="filter_sort_dist_asc">Distanza: vicini → lontani</string>
     <string name="filter_sort_dist_desc">Distanza: lontani → vicini</string>
@@ -47,7 +47,7 @@
     <string name="filter_0_0_min_magnitude_label">0.0+</string>
     <string name="filter_1_0_min_magnitude_label">1.0+</string>
     <string name="filter_2_0_min_magnitude_label">2.0+</string>
-    <string name="filter_3_0_min_magnitude_label">3.0+</string>
+    <string name="filter_3_0_min_magnitude_label">3.0+ (default)</string>
     <string name="filter_4_0_min_magnitude_label">4.0+</string>
     <string name="filter_4_5_min_magnitude_label">4.5+</string>
     <string name="filter_5_0_min_magnitude_label">5.0+</string>
@@ -61,7 +61,7 @@
     <string name="filter_date_period_48h_label">48 ore</string>
     <string name="filter_date_period_week_label">Ultima settimana</string>
     <string name="filter_date_period_2_week_label">Ultime 2 settimane</string>
-    <string name="filter_date_period_30_days_label">Ultimi 30 giorni</string>
+    <string name="filter_date_period_30_days_label">Ultimi 30 giorni (default)</string>
 
     <!-- - - - - - - - - - - Maps - - - - - - - - - - - - - - - - - - -->
     <string name="maps_title">Osservatorio Terremoti</string>

@@ -30,6 +30,9 @@ class FilterViewModel @Inject constructor(
     val timeIntervalFlow: StateFlow<TimeInterval> = FilterPrefs.timeIntervalFlow(context)
         .stateIn(viewModelScope, SharingStarted.Eagerly, TimeInterval.LAST_30_DAYS)
 
+    val filterActiveCountsFlow: StateFlow<Int> = FilterPrefs.filterActiveCountsFlow(context)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+
     fun setSort(option: EqsSortOption) {
         viewModelScope.launch {
             FilterPrefs.setSort(context, option)
@@ -42,6 +45,19 @@ class FilterViewModel @Inject constructor(
         }
     }
 
+    fun setTimeInterval(interval: TimeInterval) {
+        viewModelScope.launch {
+            FilterPrefs.setTimeInterval(context, interval)
+        }
+    }
+
+    fun setFilterActiveCounts(count: Int) {
+        viewModelScope.launch {
+            FilterPrefs.setFilterActiveCounts(context, count)
+        }
+    }
+
+    // -- start/end date --
     val startDate: StateFlow<String> =
         FilterPrefs.startDateFlow(context)
             .stateIn(viewModelScope, SharingStarted.Eagerly, "")
@@ -62,9 +78,4 @@ class FilterViewModel @Inject constructor(
         }
     }
 
-    fun setTimeInterval(interval: TimeInterval) {
-        viewModelScope.launch {
-            FilterPrefs.setTimeInterval(context, interval)
-        }
-    }
 }
