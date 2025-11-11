@@ -22,6 +22,7 @@ import com.indiewalk.watchdog.earthquake.core.data.local.enums.UnitSystem
 import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
 import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
+import com.indiewalk.watchdog.earthquake.core.presentation.theme.text_16
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.openAppSettings
 import com.indiewalk.watchdog.earthquake.feat_settings.presentation.components.DisclaimerDialog
 
@@ -78,17 +79,16 @@ fun SettingsScreen(
         },
     ) { padding ->
 
-        val bottomInset = padding.calculateBottomPadding()
         val topInset = padding.calculateTopPadding()
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, top = topInset + 32.dp, end = 16.dp,  )
+                .padding(start = 24.dp, top = topInset + 32.dp, end = 24.dp,  )
         ) {
             Text(
                 text = stringResource(R.string.settings_unit_system_title),
-                style = MaterialTheme.typography.bodyMedium,
+                style = text_16(MaterialTheme.colorScheme.primary, false),
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
@@ -114,7 +114,7 @@ fun SettingsScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -122,9 +122,7 @@ fun SettingsScreen(
             ) {
                 Text(
                     text = stringResource(R.string.settings_location_permissions_settings_label),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier
-                        .padding(bottom = 8.dp)
+                    style = text_16(MaterialTheme.colorScheme.primary, false)
                 )
                 Icon(
                     imageVector = Icons.Default.ArrowForwardIos,
@@ -139,7 +137,7 @@ fun SettingsScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -147,9 +145,7 @@ fun SettingsScreen(
             ) {
                 Text(
                     text = stringResource(R.string.settings_disclaimer_label),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier
-                        .padding(bottom = 8.dp)
+                    style = text_16(MaterialTheme.colorScheme.primary, false)
                 )
                 Icon(
                     imageVector = Icons.Default.ArrowForwardIos,

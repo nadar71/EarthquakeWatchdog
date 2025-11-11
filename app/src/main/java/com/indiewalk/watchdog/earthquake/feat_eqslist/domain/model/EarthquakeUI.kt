@@ -4,6 +4,7 @@ package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model
 data class EarthquakeUI(
     var magnitude: Double? = 0.0,
     var location: String? = null,
+    var url: String? = null,
     var occurenceDateTime: Long? = 0,  // date and time of occurrence in millisec
     var urlDetails: String? = null,   // url to details
     var longitude: Double? = 0.0,

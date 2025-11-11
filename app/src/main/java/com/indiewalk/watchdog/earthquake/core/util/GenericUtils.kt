@@ -2,13 +2,17 @@ package com.indiewalk.watchdog.earthquake.core.util
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import android.util.Log
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalUriHandler
 
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -24,6 +28,18 @@ import java.util.Locale
 import androidx.core.graphics.createBitmap
 
 object GenericUtils {
+
+
+    @Composable
+    fun openUrlInBrowser(url: String) {
+        val uriHandler = LocalUriHandler.current
+        uriHandler.openUri(url)
+    }
+
+    fun openUrlInBrowserNotCompose(context: Context, url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        context.startActivity(intent)
+    }
 
     // Converts a vector or PNG drawable to a BitmapDescriptor
     fun bitmapDescriptorFromVector(

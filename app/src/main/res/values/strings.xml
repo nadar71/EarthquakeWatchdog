@@ -32,6 +32,9 @@
 
     <!-- - - - - - - - - - - - - - - - - - - - - Home - - - - - - - - - - - - - - - - - - - - - -->
     <string name="home_no_earthquakes_found">No earthquakes found. Reload or check filter settings</string>
+    <string name="home_dialog_goto_map_label">Earthquake position on map</string>
+    <string name="home_dialog_eq_details_label">More details</string>
+    <string name="home_dialog_eq_feelit_label">Feel it?</string>
 
     <!-- - - - - - - - - - - - - - - - Filter - - - -  - - - - - - - - - - - - - - - - - - - - -->
     <string name="filter_title">Filters</string>

@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -34,7 +33,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -45,7 +43,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,10 +63,12 @@ import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldMo
 import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
 import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.toEarthquakeUI
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQFeaturesCollectionDTO
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.EarthquakeCard
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.EqItemDialog
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.preferences.FilterSheet
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.preferences.FilterViewModel
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromDBState
@@ -101,7 +100,8 @@ fun EarthquakeListScreen(
     var eqsListFiltered by remember { mutableStateOf<List<EQEntity>?>(null) }
     var isEqListLoadedFromDb by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
-
+    var showEqItemDialog by remember { mutableStateOf(false) }
+    var currentEqItemClicked by remember { mutableStateOf<EarthquakeUI?>(null) }
 
     // Check current location permission state
     val permissions = rememberMultiplePermissionsState(
@@ -111,19 +111,13 @@ fun EarthquakeListScreen(
         )
     )
     val hasLocalPermissions by remember(permissions) { derivedStateOf { permissions.allPermissionsGranted } }
-
     // FAB visibility State
     val isFabVisible by remember {
         derivedStateOf {
             !listState.isScrollInProgress
         }
     }
-
     var showProgressBar by remember { mutableStateOf(false) }
-
-    // TODO: dummy badge count, to be replaced
-
-    // filter sheet state
     var showFilterSheet by remember { mutableStateOf(false) }
 
 
@@ -137,10 +131,7 @@ fun EarthquakeListScreen(
     val eqsUIFromRemoteState by earthquakeListViewModel.eqsUIFromRemoteState.collectAsStateWithLifecycle()
     val eqsUIFromDBState by earthquakeListViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
 
-    val notificationCount = remember { mutableStateOf(3) }
-
     var isRefreshing = eqsUIFromRemoteState is EQsListUiFromRemoteState.Loading
-
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isRefreshing,
@@ -329,7 +320,11 @@ fun EarthquakeListScreen(
                             EarthquakeCard(
                                 eq = eq.toEarthquakeUI(),
                                 hasLocalPermissions = hasLocalPermissions,
-                                settings = settings
+                                settings = settings,
+                                onClick = {
+                                    currentEqItemClicked = eq.toEarthquakeUI()
+                                    showEqItemDialog = true
+                                }
                             )
                         }
                     }
@@ -428,6 +423,14 @@ fun EarthquakeListScreen(
             FilterSheet(
                 filterViewModel = filterViewModel,
                 onDismiss = { showFilterSheet = false }
+            )
+        }
+
+        if (showEqItemDialog){
+            val current = currentEqItemClicked ?: return@ScaffoldModel
+            EqItemDialog(
+                eq = current,
+                onDismiss = { showEqItemDialog = false }
             )
         }
     }

@@ -29,6 +29,9 @@
 
     <!-- - - - - - - - - - - - - - - - - - - - - Home - - - - - - - - - - - - - - - - - - - - - - -->
     <string name="home_no_earthquakes_found">Nessun terremoto trovato. Ricarica o controlla le impostazioni del filtro</string>
+    <string name="home_dialog_goto_map_label">Posizione sulla mappa</string>
+    <string name="home_dialog_eq_details_label">Maggiori Dettagli</string>
+    <string name="home_dialog_eq_feelit_label">L\'hai sentito?</string>
 
 
     <!-- - - - - - - - - - - - - - - - Filter - - - -  - - - - - - - - - - - - - - - - - - - - -->

@@ -76,6 +76,7 @@ fun EQEntity.toEarthquakeUI(): EarthquakeUI {
     return EarthquakeUI(
         magnitude = mag,
         location = place,
+        url = url,
         occurenceDateTime = time,
         urlDetails = url,
         longitude = longitude,
