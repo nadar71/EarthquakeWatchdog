@@ -6,7 +6,10 @@ import android.R.attr.contentDescription
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CircularProgressIndicator
@@ -30,7 +33,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,6 +54,7 @@ import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getLastKnownLatLng
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.state.MapUiState
 import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
+import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraGreen_dark
 import kotlinx.coroutines.launch
 
 
@@ -115,9 +121,9 @@ fun EarthquakeMapScreen(
             TopAppBar(
                 title = {
                     Text(
-                        modifier = Modifier
-                            .padding(start = 8.dp),
-                        text = "Map",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        text = stringResource(R.string.maps_title),
                         style = MaterialTheme.typography.labelLarge.copy(
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.Bold
@@ -136,11 +142,24 @@ fun EarthquakeMapScreen(
                     IconButton(onClick = {
                         showOptions = !showOptions
                     }) {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = "Map settings",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
+                        Box {
+                            Icon(
+                                imageVector = Icons.Filled.Settings,
+                                contentDescription = "Map settings",
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                            if(isManualPositionOn){
+                                Icon(
+                                    modifier = Modifier
+                                        .size(10.dp)
+                                        .align(Alignment.TopEnd)
+                                        .offset(x = 2.dp, y = (-2).dp),
+                                    painter = painterResource(id = R.drawable.ic_hand),
+                                    contentDescription = "Manual location on badge",
+                                    tint = extraGreen_dark
+                                )
+                            }
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

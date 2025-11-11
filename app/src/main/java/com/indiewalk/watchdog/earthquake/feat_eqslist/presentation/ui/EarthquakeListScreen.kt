@@ -10,10 +10,13 @@ import androidx.compose.animation.slideOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -261,10 +264,11 @@ fun EarthquakeListScreen(
         navController = navController,
         topBar = {
             TopAppBar(
+                modifier = Modifier,
                 title = {
                     Text(
-                        modifier = Modifier
-                            .padding(start = 8.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
                         text = stringResource(R.string.app_name),
                         style = MaterialTheme.typography.labelLarge.copy(
                             color = MaterialTheme.colorScheme.onPrimary,
@@ -280,7 +284,14 @@ fun EarthquakeListScreen(
                         frameDurationMs = 90L
                     )
                 },
-                actions = {},
+                actions = {
+                    // balancing space placeholder as  trail icon to title centering
+                    Spacer(
+                        modifier = Modifier
+                            .width(50.dp)
+                            .padding(end = 5.dp)
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,       // background
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,  // title text

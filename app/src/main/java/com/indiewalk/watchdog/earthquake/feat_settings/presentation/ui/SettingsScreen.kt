@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,8 +45,8 @@ fun SettingsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        modifier = Modifier
-                            .padding(start = 8.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
                         text = stringResource(R.string.settings_title),
                         style = MaterialTheme.typography.labelLarge.copy(
                             color = MaterialTheme.colorScheme.onPrimary,
@@ -59,6 +60,14 @@ fun SettingsScreen(
                             .padding(start = 5.dp),
                         size = 50.dp,
                         frameDurationMs = 90L
+                    )
+                },
+                actions = {
+                    // balancing space placeholder as trail icon to title centering
+                    Spacer(
+                        modifier = Modifier
+                            .width(50.dp)
+                            .padding(end = 5.dp)
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
