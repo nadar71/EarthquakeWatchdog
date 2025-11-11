@@ -42,6 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.MapType
 import com.indiewalk.watchdog.earthquake.R
@@ -62,6 +63,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun EarthquakeMapScreen(
     navController: NavHostController,
+    initialLatLng: LatLng? = null,
     onManualPositionToggle: (Boolean) -> Unit = {},
     mapViewModel: MapViewModel = hiltViewModel(),
     appPrefsViewModel: AppPrefsViewModel = hiltViewModel(),
@@ -111,7 +113,6 @@ fun EarthquakeMapScreen(
             }
         }
     }
-
 
 
     // ------------------------------------------- UI ----------------------------------------------
@@ -193,6 +194,7 @@ fun EarthquakeMapScreen(
                         padding = padding,
                         eqs = eqs,
                         hasLocationPermissions = hasLocalPermissions,
+                        initialLatLng = initialLatLng,
                         mapType = mapType,
                         recenterTarget = recenterTo,
                         onRecenterHandled = { recenterTo = null },

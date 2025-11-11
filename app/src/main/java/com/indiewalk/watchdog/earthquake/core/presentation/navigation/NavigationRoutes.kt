@@ -7,6 +7,11 @@ import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.indiewalk.watchdog.earthquake.R
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationScreenConstants.DETAILS
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationScreenConstants.HOME
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationScreenConstants.INTRO
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationScreenConstants.MAP
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationScreenConstants.SETTINGS
 
 
 sealed class NavigationRoutes(
@@ -15,38 +20,12 @@ sealed class NavigationRoutes(
     val icon: ImageVector? = null,
     @StringRes val contentDescription: Int
 ) {
-
-    data object Intro : NavigationRoutes(
-        "Intro",
-        NavigationScreenConstants.INTRO,
-        null,
-        R.string.nav_bottom_intro_desc
-    )
-
-    data object Home : NavigationRoutes(
-        "Home",
-        NavigationScreenConstants.HOME,
-        Icons.Filled.Home,
-        R.string.nav_bottom_home_desc
-    )
-    data object Map : NavigationRoutes(
-        "Map",
-        NavigationScreenConstants.MAP,
-        Icons.Filled.Map,
-        R.string.nav_bottom_eqs_desc
-    )
-    data object Settings : NavigationRoutes(
-        "Settings",
-        NavigationScreenConstants.SETTINGS,
-        Icons.Filled.Settings,
-        R.string.nav_bottom_settings_desc
-    )
-    data object Details : NavigationRoutes(
-        "Details",
-        "${NavigationScreenConstants.DETAILS}/{id}",
-        null,
-        R.string.nav_bottom_eqs_desc
-    )
+    data object Intro : NavigationRoutes("Intro", INTRO, null, R.string.nav_bottom_intro_desc)
+    data object Home : NavigationRoutes("Home", HOME, Icons.Filled.Home, R.string.nav_bottom_home_desc)
+    data object Map : NavigationRoutes("Map", MAP, Icons.Filled.Map, R.string.nav_bottom_eqs_desc)
+    data object Settings : NavigationRoutes("Settings", SETTINGS, Icons.Filled.Settings, R.string.nav_bottom_settings_desc)
+    data object MapFromHome : NavigationRoutes("Map", "$MAP/{longitude}/{latitude}", null, 0)
+    data object Details : NavigationRoutes("Details", "${DETAILS}/{id}", null, R.string.nav_bottom_eqs_desc)
 
 }
 

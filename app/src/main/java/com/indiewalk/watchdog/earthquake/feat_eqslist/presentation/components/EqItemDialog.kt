@@ -35,6 +35,7 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
 @Composable
 fun EqItemDialog(
     eq: EarthquakeUI,
+    onMapClick: () -> Unit,
     onDismiss: () -> Unit
 ) {
     val TAG = "EqItemDialog"
@@ -63,7 +64,10 @@ fun EqItemDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .clickable {},
+                        .clickable {
+                            onMapClick()
+                            onDismiss()
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(

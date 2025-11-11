@@ -7,8 +7,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.feat_details.presentation.ui.DetailsScreen
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.EarthquakeListScreen
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui.EarthquakeMapScreen
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui.MapScreen
 import com.indiewalk.watchdog.earthquake.feat_intro.presentation.IntroScreen_01
 import com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui.SettingsScreen
@@ -33,6 +35,17 @@ fun NavigationGraph(
         composable(NavigationRoutes.Map.route) {
             Log.d("NavigationGraph: ", NavigationRoutes.Map.route)
             MapScreen(navController)
+        }
+        composable(
+            route = NavigationRoutes.MapFromHome.route,
+            arguments = listOf(
+                navArgument("longitude") { type = NavType.FloatType },
+                navArgument("latitude") { type = NavType.FloatType }
+            )
+        ) { backStackEntry ->
+            val longitude = backStackEntry.arguments?.getFloat("longitude")?.toDouble() ?: 0.0
+            val latitude = backStackEntry.arguments?.getFloat("latitude")?.toDouble() ?: 0.0
+            MapScreen(navController,initialLatLng = LatLng(latitude, longitude))
         }
         composable(NavigationRoutes.Settings.route) {
             Log.d("NavigationGraph: ", NavigationRoutes.Settings.route)

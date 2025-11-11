@@ -50,6 +50,7 @@ fun EarthquakeMapContent(
     padding: PaddingValues,
     eqs: List<EQEntity>,
     hasLocationPermissions: Boolean,
+    initialLatLng: LatLng? = null,
     mapType: MapType,
     recenterTarget: LatLng?,
     onRecenterHandled: () -> Unit,
@@ -90,11 +91,18 @@ fun EarthquakeMapContent(
     }
 
     // Init camera target :
-    // 1) manual location
-    // 2) user location (if granted & available)
-    // 3) default location
-    LaunchedEffect(mapLoaded, hasLocationPermissions/*, bounds*/, settings.manualLocOn) {
+    // 1) check if initialLatLng is not null and in case go to eq location
+    // 2) manual location
+    // 3) user location (if granted & available)
+    // 4) default location
+    LaunchedEffect(mapLoaded, hasLocationPermissions, settings.manualLocOn) {
         if (!mapLoaded || cameraInitialized) return@LaunchedEffect
+
+        if (initialLatLng != null) {
+            cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(initialLatLng, 7f))
+            cameraInitialized = true
+            return@LaunchedEffect
+        }
 
         // if manual is on, center map in manual location
         val didCenterOnManual = if (settings.manualLocOn) {

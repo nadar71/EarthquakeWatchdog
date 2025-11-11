@@ -60,6 +60,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationRoutes
 import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
 import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
@@ -430,6 +431,11 @@ fun EarthquakeListScreen(
             val current = currentEqItemClicked ?: return@ScaffoldModel
             EqItemDialog(
                 eq = current,
+                onMapClick = {
+                    navController.navigate("map/${current.longitude}/${current.latitude}") {
+                        // popUpTo("list_screen") { inclusive = false }
+                    }
+                },
                 onDismiss = { showEqItemDialog = false }
             )
         }
