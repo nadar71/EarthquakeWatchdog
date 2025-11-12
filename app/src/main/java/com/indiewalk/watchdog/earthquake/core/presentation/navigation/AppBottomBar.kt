@@ -24,16 +24,11 @@ fun AppBottomBar(
         tonalElevation = 0.dp
     ) {
         BottomBarDestinations.forEach { dest ->
-            // val selected = currentDestination.isRouteInHierarchy(dest.route)
             val selected = currentDestination.matchesBaseRoute(dest.route)
-
             NavigationBarItem(
                 selected = selected,
                 onClick = {
                     if (!selected){
-                        /*var route = dest.route
-                        val toBeReplaced = "/{longitude}/{latitude}"
-                        if (toBeReplaced in route) route = route.replace("/{longitude}/{latitude}".trim(),"")*/
                         val target = baseRoute(dest.route) ?: dest.route  // "map" for Map
                         Log.d("AppBottomBar: ", "Navigate to ${target}")
                         navController.navigate(target) {

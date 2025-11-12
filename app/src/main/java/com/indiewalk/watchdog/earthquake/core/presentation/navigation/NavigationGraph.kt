@@ -32,7 +32,7 @@ fun NavigationGraph(
             Log.d("NavigationGraph: ", NavigationRoutes.Home.route)
             EarthquakeListScreen(navController)
         }
-        composable(NavigationRoutes.Map.route) {
+        /*composable(NavigationRoutes.Map.route) {
             Log.d("NavigationGraph: ", NavigationRoutes.Map.route)
             MapScreen(navController)
         }
@@ -49,6 +49,24 @@ fun NavigationGraph(
 
             if (latitude != null && longitude != null){
                 MapScreen(navController, initialLatLng = LatLng(latitude, longitude))
+            } else {
+                MapScreen(navController)
+            }
+        }*/
+        composable(NavigationScreenConstants.MAP) {
+            MapScreen(navController)
+        }
+        composable(
+            route = NavigationScreenConstants.MAP_ARGS, // "map/{longitude}/{latitude}"
+            arguments = listOf(
+                navArgument("longitude") { type = NavType.FloatType },
+                navArgument("latitude")  { type = NavType.FloatType }
+            )
+        ) { backStackEntry ->
+            val lon = backStackEntry.arguments?.getFloat("longitude")?.toDouble()
+            val lat = backStackEntry.arguments?.getFloat("latitude")?.toDouble()
+            if (lat != null && lon != null) {
+                MapScreen(navController, initialLatLng = LatLng(lat, lon))
             } else {
                 MapScreen(navController)
             }
