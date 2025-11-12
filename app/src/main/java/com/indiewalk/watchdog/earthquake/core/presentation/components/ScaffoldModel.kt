@@ -14,12 +14,10 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppBottomBar
-import com.indiewalk.watchdog.earthquake.core.presentation.navigation.TopLevelBaseRoutes
-import com.indiewalk.watchdog.earthquake.core.presentation.navigation.baseRoute
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.isRouteInHierarchy
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,9 +34,7 @@ fun ScaffoldModel(
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
 
-    val showBottomBar = currentDestination?.hierarchy?.any {
-        baseRoute(it.route) in TopLevelBaseRoutes
-    } == true
+    val showBottomBar = currentDestination?.isRouteInHierarchy() ?: false
     val canNavigateBack = !showBottomBar // simple heuristic: not top-level -> show back
 
     Scaffold(

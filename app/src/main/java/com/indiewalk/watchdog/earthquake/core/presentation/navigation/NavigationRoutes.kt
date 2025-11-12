@@ -32,8 +32,7 @@ sealed class NavigationRoutes(
 }
 
 val BottomBarDestinations = listOf(NavigationRoutes.Home, NavigationRoutes.MapBase, NavigationRoutes.Settings)
-val TopLevelBaseRoutes = setOf(HOME, MAP, SETTINGS)
-val TopLevelRoutes = BottomBarDestinations.map { it.route }.toSet()
+val TopLevelBaseRoutes = BottomBarDestinations.map { it.route }.toSet()
 
 
 fun baseRoute(route: String?): String? =
@@ -43,5 +42,5 @@ fun NavDestination?.matchesBaseRoute(target: String): Boolean =
     this?.hierarchy?.any { baseRoute(it.route) == baseRoute(target) } == true
 
 fun NavDestination?.isRouteInHierarchy(): Boolean {
-    return this?.hierarchy?.any { baseRoute(it.route) in TopLevelRoutes } == true
+    return this?.hierarchy?.any { baseRoute(it.route) in TopLevelBaseRoutes } == true
 }
