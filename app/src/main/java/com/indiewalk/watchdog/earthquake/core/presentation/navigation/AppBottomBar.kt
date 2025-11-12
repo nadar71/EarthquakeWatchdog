@@ -1,5 +1,7 @@
 package com.indiewalk.watchdog.earthquake.core.presentation.navigation
 
+import android.net.http.SslCertificate.restoreState
+import android.net.http.SslCertificate.saveState
 import android.util.Log
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -27,8 +29,12 @@ fun AppBottomBar(
                 selected = selected,
                 onClick = {
                     if (!selected){
-                        navController.navigate(dest.route) {
-                            Log.d("AppBottomBar: ", "Navigate to ${dest.route}")
+                        var route = dest.route
+                        val toBeReplaced = "/{longitude}/{latitude}"
+                        if (toBeReplaced in route) route = route.replace("/{longitude}/{latitude}".trim(),"")
+                        Log.d("AppBottomBar: ", "Navigate to ${route}")
+                        navController.navigate(route) {
+                            Log.d("AppBottomBar: ", "Navigate to ${route}")
                             // Pop up to the start destination to avoid building up a large back stack
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true

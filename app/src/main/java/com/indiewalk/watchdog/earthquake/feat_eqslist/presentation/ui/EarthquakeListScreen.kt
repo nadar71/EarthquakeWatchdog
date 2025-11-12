@@ -1,6 +1,8 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui
 
 import android.Manifest
+import android.net.http.SslCertificate.restoreState
+import android.net.http.SslCertificate.saveState
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -433,7 +435,9 @@ fun EarthquakeListScreen(
             EqItemDialog(
                 eq = current,
                 onMapClick = {
-                    navController.navigate("map/${current.longitude}/${current.latitude}") {
+                    val route = "map/${current.longitude}/${current.latitude}"
+                    Log.d("EarthquakeListScreen", "Navigate to $route")
+                    navController.navigate(route) {
                         // NB : ensures the bottom nav stays in sync
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true

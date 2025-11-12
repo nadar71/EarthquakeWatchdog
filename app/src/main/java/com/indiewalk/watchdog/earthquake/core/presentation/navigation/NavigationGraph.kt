@@ -32,20 +32,26 @@ fun NavigationGraph(
             Log.d("NavigationGraph: ", NavigationRoutes.Home.route)
             EarthquakeListScreen(navController)
         }
-        composable(NavigationRoutes.Map.route) {
+        /*composable(NavigationRoutes.Map.route) {
             Log.d("NavigationGraph: ", NavigationRoutes.Map.route)
             MapScreen(navController)
-        }
+        }*/
         composable(
-            route = NavigationRoutes.MapWithParams.route,
+            // route = NavigationRoutes.MapWithParams.route,
+            route = NavigationRoutes.Map.route,
             arguments = listOf(
-                navArgument("longitude") { type = NavType.FloatType },
-                navArgument("latitude") { type = NavType.FloatType }
+                navArgument("longitude") {type = NavType.FloatType},
+                navArgument("latitude") {type = NavType.FloatType}
             )
         ) { backStackEntry ->
-            val longitude = backStackEntry.arguments?.getFloat("longitude")?.toDouble() ?: 0.0
-            val latitude = backStackEntry.arguments?.getFloat("latitude")?.toDouble() ?: 0.0
-            MapScreen(navController,initialLatLng = LatLng(latitude, longitude))
+            val longitude = backStackEntry.arguments?.getFloat("longitude")?.toDouble()
+            val latitude = backStackEntry.arguments?.getFloat("latitude")?.toDouble()
+
+            if (latitude != null && longitude != null){
+                MapScreen(navController, initialLatLng = LatLng(latitude, longitude))
+            } else {
+                MapScreen(navController)
+            }
         }
         composable(NavigationRoutes.Settings.route) {
             Log.d("NavigationGraph: ", NavigationRoutes.Settings.route)
