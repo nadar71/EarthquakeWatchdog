@@ -1,6 +1,8 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui
 
 import android.Manifest
+import android.net.http.SslCertificate.restoreState
+import android.net.http.SslCertificate.saveState
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -62,6 +64,7 @@ import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationRoutes
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationScreenConstants
 import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
 import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
@@ -433,7 +436,8 @@ fun EarthquakeListScreen(
             EqItemDialog(
                 eq = current,
                 onMapClick = {
-                    navController.navigate("map/${current.longitude}/${current.latitude}") {
+                    // navController.navigate("map/${current.longitude}/${current.latitude}") {
+                    navController.navigate("${NavigationScreenConstants.MAP}/${current.longitude}/${current.latitude}"){
                         // NB : ensures the bottom nav stays in sync
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true

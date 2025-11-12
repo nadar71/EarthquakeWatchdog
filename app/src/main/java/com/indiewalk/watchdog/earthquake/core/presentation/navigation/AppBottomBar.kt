@@ -22,7 +22,9 @@ fun AppBottomBar(
         tonalElevation = 0.dp
     ) {
         BottomBarDestinations.forEach { dest ->
-            val selected = currentDestination.isRouteInHierarchy(dest.route)
+            // val selected = currentDestination.isRouteInHierarchy(dest.route)
+            val destBase = baseRoute(dest.route) ?: dest.route
+            val selected = currentDestination.isRouteInHierarchyBase(destBase)
             NavigationBarItem(
                 selected = selected,
                 onClick = {
@@ -30,9 +32,7 @@ fun AppBottomBar(
                         navController.navigate(dest.route) {
                             Log.d("AppBottomBar: ", "Navigate to ${dest.route}")
                             // Pop up to the start destination to avoid building up a large back stack
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
-                            }
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
                             launchSingleTop = true // avoid multiple copies of the same destination
                             restoreState = true // Restore state when re-selecting a previously selected item
                         }
@@ -52,6 +52,9 @@ fun AppBottomBar(
     }
 }
 
-private fun NavDestination?.isRouteInHierarchy(route: String): Boolean {
+/*private fun NavDestination?.isRouteInHierarchy(route: String): Boolean {
     return this?.hierarchy?.any { it.route == route } == true
+}*/
+private fun NavDestination?.isRouteInHierarchyBase(routeBase: String): Boolean {
+    return this?.hierarchy?.any { baseRoute(it.route) == routeBase } == true
 }

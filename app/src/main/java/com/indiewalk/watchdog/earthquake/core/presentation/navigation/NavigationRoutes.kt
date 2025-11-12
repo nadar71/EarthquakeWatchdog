@@ -30,4 +30,16 @@ sealed class NavigationRoutes(
 
 val BottomBarDestinations = listOf(NavigationRoutes.Home, /*NavigationRoutes.Map,*/
     NavigationRoutes.MapWithParams, NavigationRoutes.Settings)
+
 val TopLevelRoutes = BottomBarDestinations.map { it.route }.toSet()
+
+val TopLevelBaseRoutes = setOf(
+    NavigationScreenConstants.HOME,
+    NavigationScreenConstants.MAP,       // base: "map"
+    NavigationScreenConstants.SETTINGS
+)
+
+
+// stripping arguments
+fun baseRoute(route: String?): String? =
+    route?.substringBefore("/{")
