@@ -32,10 +32,10 @@ fun NavigationGraph(
             Log.d("NavigationGraph: ", NavigationRoutes.Home.route)
             EarthquakeListScreen(navController)
         }
-        /*composable(NavigationRoutes.Map.route) {
+        composable(NavigationRoutes.Map.route) {
             Log.d("NavigationGraph: ", NavigationRoutes.Map.route)
             MapScreen(navController)
-        }*/
+        }
         composable(
             // route = NavigationRoutes.MapWithParams.route,
             route = NavigationRoutes.Map.route,

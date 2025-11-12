@@ -6,6 +6,8 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hierarchy
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationScreenConstants.DETAILS
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationScreenConstants.HOME
@@ -30,3 +32,18 @@ sealed class NavigationRoutes(
 
 val BottomBarDestinations = listOf(NavigationRoutes.Home, NavigationRoutes.Map, NavigationRoutes.Settings)
 val TopLevelRoutes = BottomBarDestinations.map { it.route }.toSet()
+
+
+fun baseRoute(route: String?): String? =
+    route?.substringBefore("?")?.substringBefore("/{")
+
+fun NavDestination?.matchesBaseRoute(target: String): Boolean =
+    this?.hierarchy?.any { baseRoute(it.route) == baseRoute(target) } == true
+
+/*fun NavDestination?.isRouteInHierarchy(route: String): Boolean {
+    return this?.hierarchy?.any { it.route == route } == true
+}*/
+
+fun NavDestination?.isRouteInHierarchy(): Boolean {
+    return this?.hierarchy?.any { baseRoute(it.route) in TopLevelRoutes } == true
+}

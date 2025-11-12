@@ -24,21 +24,21 @@ fun AppBottomBar(
         tonalElevation = 0.dp
     ) {
         BottomBarDestinations.forEach { dest ->
-            val selected = currentDestination.isRouteInHierarchy(dest.route)
+            // val selected = currentDestination.isRouteInHierarchy(dest.route)
+            val selected = currentDestination.matchesBaseRoute(dest.route)
+
             NavigationBarItem(
                 selected = selected,
                 onClick = {
                     if (!selected){
-                        var route = dest.route
+                        /*var route = dest.route
                         val toBeReplaced = "/{longitude}/{latitude}"
-                        if (toBeReplaced in route) route = route.replace("/{longitude}/{latitude}".trim(),"")
-                        Log.d("AppBottomBar: ", "Navigate to ${route}")
-                        navController.navigate(route) {
-                            Log.d("AppBottomBar: ", "Navigate to ${route}")
+                        if (toBeReplaced in route) route = route.replace("/{longitude}/{latitude}".trim(),"")*/
+                        val target = baseRoute(dest.route) ?: dest.route  // "map" for Map
+                        Log.d("AppBottomBar: ", "Navigate to ${target}")
+                        navController.navigate(target) {
                             // Pop up to the start destination to avoid building up a large back stack
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
-                            }
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
                             launchSingleTop = true // avoid multiple copies of the same destination
                             restoreState = true // Restore state when re-selecting a previously selected item
                         }
@@ -58,6 +58,4 @@ fun AppBottomBar(
     }
 }
 
-private fun NavDestination?.isRouteInHierarchy(route: String): Boolean {
-    return this?.hierarchy?.any { it.route == route } == true
-}
+

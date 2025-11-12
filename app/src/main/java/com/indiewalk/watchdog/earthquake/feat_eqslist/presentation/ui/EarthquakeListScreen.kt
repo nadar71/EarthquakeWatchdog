@@ -439,9 +439,7 @@ fun EarthquakeListScreen(
                     Log.d("EarthquakeListScreen", "Navigate to $route")
                     navController.navigate(route) {
                         // NB : ensures the bottom nav stays in sync
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
+                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
                         launchSingleTop = true
                         restoreState = true
                     }
