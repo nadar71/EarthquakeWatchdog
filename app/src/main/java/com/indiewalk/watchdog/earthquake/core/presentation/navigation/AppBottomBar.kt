@@ -33,10 +33,8 @@ fun AppBottomBar(
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
                             }
-                            // Avoid multiple copies of the same destination
-                            launchSingleTop = true
-                            // Restore state when re-selecting a previously selected item
-                            restoreState = true
+                            launchSingleTop = true // avoid multiple copies of the same destination
+                            restoreState = true // Restore state when re-selecting a previously selected item
                         }
                     }
                 },

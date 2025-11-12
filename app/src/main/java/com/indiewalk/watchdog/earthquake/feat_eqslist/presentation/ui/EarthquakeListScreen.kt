@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -433,7 +434,12 @@ fun EarthquakeListScreen(
                 eq = current,
                 onMapClick = {
                     navController.navigate("map/${current.longitude}/${current.latitude}") {
-                        // popUpTo("list_screen") { inclusive = false }
+                        // NB : ensures the bottom nav stays in sync
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
                     }
                 },
                 onDismiss = { showEqItemDialog = false }

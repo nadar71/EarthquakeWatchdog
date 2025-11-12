@@ -23,11 +23,11 @@ sealed class NavigationRoutes(
     data object Intro : NavigationRoutes("Intro", INTRO, null, R.string.nav_bottom_intro_desc)
     data object Home : NavigationRoutes("Home", HOME, Icons.Filled.Home, R.string.nav_bottom_home_desc)
     data object Map : NavigationRoutes("Map", MAP, Icons.Filled.Map, R.string.nav_bottom_eqs_desc)
+    data object MapWithParams : NavigationRoutes("MapWithParams", "${MAP}/{longitude}/{latitude}", Icons.Filled.Map, R.string.nav_bottom_eqs_desc)
     data object Settings : NavigationRoutes("Settings", SETTINGS, Icons.Filled.Settings, R.string.nav_bottom_settings_desc)
-    data object MapFromHome : NavigationRoutes("Map", "$MAP/{longitude}/{latitude}", null, 0)
     data object Details : NavigationRoutes("Details", "${DETAILS}/{id}", null, R.string.nav_bottom_eqs_desc)
-
 }
 
-val BottomBarDestinations = listOf(NavigationRoutes.Home, NavigationRoutes.Map, NavigationRoutes.Settings)
+val BottomBarDestinations = listOf(NavigationRoutes.Home, /*NavigationRoutes.Map,*/
+    NavigationRoutes.MapWithParams, NavigationRoutes.Settings)
 val TopLevelRoutes = BottomBarDestinations.map { it.route }.toSet()

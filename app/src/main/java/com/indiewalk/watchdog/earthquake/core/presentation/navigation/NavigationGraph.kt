@@ -37,7 +37,7 @@ fun NavigationGraph(
             MapScreen(navController)
         }
         composable(
-            route = NavigationRoutes.MapFromHome.route,
+            route = NavigationRoutes.MapWithParams.route,
             arguments = listOf(
                 navArgument("longitude") { type = NavType.FloatType },
                 navArgument("latitude") { type = NavType.FloatType }
