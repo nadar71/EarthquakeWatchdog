@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.core.data.local.preferences.AppPrefs
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants
+import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
 import com.indiewalk.watchdog.earthquake.core.data.local.enums.UnitSystem
 import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
 import com.indiewalk.watchdog.earthquake.core.model.preferences.LocationInfo
@@ -29,6 +30,10 @@ class AppPrefsViewModel @Inject constructor(
     val askedOnce: StateFlow<Boolean> =
         AppPrefs.askedLocationOnceFlow(context)
             .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), false)
+
+    fun setThemeMode(themeMode: ThemeMode) {
+        viewModelScope.launch { AppPrefs.setMode(context, themeMode) }
+    }
 
     fun setAskedOnce() {
         viewModelScope.launch { AppPrefs.setAskedLocationOnce(context, true) }

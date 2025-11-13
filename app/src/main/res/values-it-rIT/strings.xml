@@ -104,7 +104,12 @@
     <string name="settings_unit_system_imperial">Imperial (mi, °F)</string>
     <string name="settings_unit_system_title">Sistema di Misura</string>
     <string name="settings_location_permissions_settings_label">Impostazioni di sistema permessi localizzazione</string>
-
+    <!-- Theme Mode Settings -->
+    <string name="settings_theme_mode_title">Tema</string>
+    <string name="theme_mode_system">Sistema</string>
+    <string name="theme_mode_light">Chiaro</string>
+    <string name="theme_mode_dark">Scuro</string>
+    
     <string name="settings_gdpr_btn_title">GDPR</string>
     <string name="settings_gdpr_btn_summary">Ritiro del consenso al GDPR.</string>
 

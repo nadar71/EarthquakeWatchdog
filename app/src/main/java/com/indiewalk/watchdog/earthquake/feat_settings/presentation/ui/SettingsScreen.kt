@@ -18,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.indiewalk.watchdog.earthquake.R
+import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
 import com.indiewalk.watchdog.earthquake.core.data.local.enums.UnitSystem
 import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
@@ -158,6 +159,40 @@ fun SettingsScreen(
                             }
                         )
                 )
+            }
+
+
+            // Add this after the unit system selector section (around line 90)
+            Spacer(modifier = Modifier.height(32.dp))
+
+// Add Theme Mode Selector
+            Text(
+                text = stringResource(R.string.settings_theme_mode_title),
+                style = text_16(MaterialTheme.colorScheme.primary, false),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            SingleChoiceSegmentedButtonRow(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                ThemeMode.entries.forEach { themeMode ->
+                    SegmentedButton(
+                        selected = appPrefs.mode == themeMode,
+                        onClick = { appPrefsViewModel.setThemeMode(themeMode) },
+                        shape = SegmentedButtonDefaults.itemShape(
+                            index = themeMode.ordinal,
+                            count = ThemeMode.entries.size
+                        )
+                    ) {
+                        Text(
+                            text = when (themeMode) {
+                                ThemeMode.System -> stringResource(R.string.theme_mode_system)
+                                ThemeMode.Light -> stringResource(R.string.theme_mode_light)
+                                ThemeMode.Dark -> stringResource(R.string.theme_mode_dark)
+                            }
+                        )
+                    }
+                }
             }
         }
 

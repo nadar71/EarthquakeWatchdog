@@ -111,7 +111,11 @@
     <string name="settings_unit_system_imperial">Imperial (mi, °F)</string>
     <string name="settings_unit_system_title">Unit System</string>
     <string name="settings_location_permissions_settings_label">System Localization Permissions settings </string>
-
+    <!-- Theme Mode Settings -->
+    <string name="settings_theme_mode_title">Theme Mode</string>
+    <string name="theme_mode_system">System</string>
+    <string name="theme_mode_light">Light</string>
+    <string name="theme_mode_dark">Dark</string>
 
 
     <string name="settings_gdpr_btn_title">GDPR</string>
