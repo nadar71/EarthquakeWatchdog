@@ -126,7 +126,7 @@ fun EarthquakeMapScreen(
                         textAlign = TextAlign.Center,
                         text = stringResource(R.string.maps_title),
                         style = MaterialTheme.typography.labelLarge.copy(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
                             fontWeight = FontWeight.Bold
                         )
                     )
@@ -147,7 +147,7 @@ fun EarthquakeMapScreen(
                             Icon(
                                 imageVector = Icons.Filled.Settings,
                                 contentDescription = "Map settings",
-                                tint = MaterialTheme.colorScheme.onPrimary
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                             if(isManualPositionOn){
                                 Icon(
@@ -164,8 +164,8 @@ fun EarthquakeMapScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,       // background
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,  // title text
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,       // background
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,  // title text
                 )
 
             )

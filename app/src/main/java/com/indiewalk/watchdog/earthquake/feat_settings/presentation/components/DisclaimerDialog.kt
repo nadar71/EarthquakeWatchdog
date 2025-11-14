@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.text.HtmlCompat
 import com.indiewalk.watchdog.earthquake.R
 import org.xml.sax.XMLReader
@@ -70,6 +71,10 @@ fun DisclaimerDialog(
                 AndroidView(
                     factory = { context ->
                         TextView(context).apply {
+                            // Set the font family to Quicksand
+                            val typeface = ResourcesCompat.getFont(context, R.font.quicksand_regular)
+                            setTypeface(typeface)
+
                             // Render HTML
                             text = spannedText
                             // Make <a href> clickable (http/https/mailto/tel…)

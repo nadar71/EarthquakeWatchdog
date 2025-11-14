@@ -75,7 +75,7 @@ fun EarthquakeCard(
 
     val unitSystem = settings.unitSystem
     val isDefaultLocation = !hasLocalPermissions && !settings.manualLocOn
-    Log.d("EarthquakeCard", "hasLocalPermissions ?: $hasLocalPermissions")
+    /*Log.d("EarthquakeCard", "hasLocalPermissions ?: $hasLocalPermissions")
     Log.d("EarthquakeCard", "isDefaultLocation: $isDefaultLocation")
     Log.d("EarthquakeCard", "is manual loc On: ${settings.manualLocOn}")
 
@@ -83,7 +83,7 @@ fun EarthquakeCard(
     Log.d("EarthquakeCard", "manualLocationInfo: ${settings.manualLocationInfo}")
 
     Log.d("EarthquakeCard", "userPosition: ${settings.userPosition}")
-    Log.d("EarthquakeCard", "userLocationInfo: ${settings.userLocationInfo}")
+    Log.d("EarthquakeCard", "userLocationInfo: ${settings.userLocationInfo}")*/
 
     val fromLocationAddress = if (!isDefaultLocation)
                         if (settings.manualLocOn)

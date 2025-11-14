@@ -20,7 +20,7 @@ fun AppBottomBar(
     val currentDestination = backStackEntry?.destination
 
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
         tonalElevation = 0.dp
     ) {
         BottomBarDestinations.forEach { dest ->

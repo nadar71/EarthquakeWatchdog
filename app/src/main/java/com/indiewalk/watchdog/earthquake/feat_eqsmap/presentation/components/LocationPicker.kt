@@ -82,7 +82,7 @@ fun LocationPicker(
         modifier = Modifier
             .fillMaxWidth(0.9f)
             .padding(horizontal = 0.dp),
-        containerColor = MaterialTheme.colorScheme.primary,
+        containerColor = MaterialTheme.colorScheme.surface,
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
@@ -103,7 +103,7 @@ fun LocationPicker(
             }) {
                 Text(
                     text = stringResource(R.string.generic_ok).uppercase(),
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         },
@@ -111,13 +111,13 @@ fun LocationPicker(
             TextButton(onClick = onDismiss) {
                 Text(
                     text = stringResource(id = R.string.generic_cancel),
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         },
         text = {
             Column(Modifier.fillMaxWidth()) {
-                Text(selectedLocationAddressString, color = MaterialTheme.colorScheme.onPrimary)
+                Text(selectedLocationAddressString, color = MaterialTheme.colorScheme.onSurface)
                 Spacer(Modifier.height(16.dp))
                 Box(Modifier.fillMaxSize()) {
                     GoogleMapView(

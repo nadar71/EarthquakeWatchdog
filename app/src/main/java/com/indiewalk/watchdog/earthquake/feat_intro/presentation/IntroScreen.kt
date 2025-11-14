@@ -120,7 +120,7 @@ fun IntroScreen_01(
             TopAppBar(
                 title = { Text("Welcome", color = MaterialTheme.colorScheme.onPrimary) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
             )
         }

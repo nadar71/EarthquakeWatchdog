@@ -266,7 +266,7 @@ fun EarthquakeListScreen(
                         textAlign = TextAlign.Center,
                         text = stringResource(R.string.app_name),
                         style = MaterialTheme.typography.labelLarge.copy(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
                             fontWeight = FontWeight.Bold
                         )
                     )
@@ -288,8 +288,8 @@ fun EarthquakeListScreen(
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,       // background
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,  // title text
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,       // background
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,  // title text
                 )
 
             )
