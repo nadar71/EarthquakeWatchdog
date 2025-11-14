@@ -29,14 +29,14 @@ class MainActivity() : AppCompatActivity() {
             val settings by appPrefsViewModel.settings.collectAsStateWithLifecycle()
 
             // switch between System / Light / Dark
-            var themeMode by remember { mutableStateOf(ThemeMode.System) }
+            // var themeMode by remember { mutableStateOf(ThemeMode.System) }
 
-            val isDark = when (settings.mode) {
+            val darkTheme = when (settings.mode) {
                 ThemeMode.System -> isSystemInDarkTheme()
                 ThemeMode.Light -> false
                 ThemeMode.Dark  -> true
             }
-            EQWatchdogTheme {
+            EQWatchdogTheme(darkTheme = darkTheme) {
                 val navController = rememberNavController()
                 NavigationGraph(navController = navController)
                 // EarthquakeListScreen(navController)

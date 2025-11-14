@@ -87,6 +87,8 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .padding(start = 24.dp, top = topInset + 32.dp, end = 24.dp,  )
         ) {
+
+            // --- Unit System ---
             Text(
                 text = stringResource(R.string.settings_unit_system_title),
                 style = text_16(MaterialTheme.colorScheme.primary, false),
@@ -115,6 +117,7 @@ fun SettingsScreen(
                 }
             }
 
+            //  --- App settings ---
             Spacer(modifier = Modifier.height(32.dp))
 
             Row(
@@ -138,6 +141,7 @@ fun SettingsScreen(
                 )
             }
 
+            // --- Disclaimer ---
             Spacer(modifier = Modifier.height(32.dp))
 
             Row(
@@ -161,11 +165,9 @@ fun SettingsScreen(
                 )
             }
 
-
-            // Add this after the unit system selector section (around line 90)
+            // --- Theme Mode Selector ---
             Spacer(modifier = Modifier.height(32.dp))
 
-// Add Theme Mode Selector
             Text(
                 text = stringResource(R.string.settings_theme_mode_title),
                 style = text_16(MaterialTheme.colorScheme.primary, false),
