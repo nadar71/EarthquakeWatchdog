@@ -1,26 +1,31 @@
 package com.indiewalk.watchdog.earthquake.feat_intro.presentation
 
 import android.Manifest
-import android.app.AlertDialog
+import android.R.attr.top
 import android.content.Context
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -33,8 +38,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -73,6 +82,7 @@ fun IntroScreen_01(
         )
     )
     val allGranted by remember(permissions) { derivedStateOf { permissions.allPermissionsGranted } }
+    var showDeniedDialog by remember { mutableStateOf(false) }
 
     // ------------------------------------- LOGIC -------------------------------------------------
     val askedOnce by appPrefsViewModel.askedOnce.collectAsStateWithLifecycle()
@@ -84,11 +94,20 @@ fun IntroScreen_01(
                 // Foreground location permission granted
                 scope.launch {
                     userLocation = getLastKnownLatLng(context)
-                    appPrefsViewModel.setUserPosition(userLocation )
+                    appPrefsViewModel.setUserPosition(userLocation)
                     if (userLocation != null) { // update in prefs user location and address
                         val address = getAddress(context, userLocation!!)
-                        address?.let { appPrefsViewModel.setUserLocationInfo(address.toLocationInfo(context)) }
-                        Log.d(TAG, "User location: ${userLocation?.latitude}, ${userLocation?.longitude}")
+                        address?.let {
+                            appPrefsViewModel.setUserLocationInfo(
+                                address.toLocationInfo(
+                                    context
+                                )
+                            )
+                        }
+                        Log.d(
+                            TAG,
+                            "User location: ${userLocation?.latitude}, ${userLocation?.longitude}"
+                        )
                         Log.d(TAG, "User address: ${address?.getAddressLine(0)}")
                         Log.d(TAG, "User city: ${address?.locality}")
                         Log.d(TAG, "User country code: ${address?.countryCode}")
@@ -98,8 +117,9 @@ fun IntroScreen_01(
             } else {
                 // Foreground location permission denied
                 // asked one flag set: do not ask again next app opening
-                appPrefsViewModel.setAskedOnce()
-                showLocationPermissionDeniedDialog(context, navController)
+                // appPrefsViewModel.setAskedOnce()
+                showDeniedDialog = true
+                // showLocationPermissionDeniedDialog(context, navController)
             }
         }
     )
@@ -118,7 +138,16 @@ fun IntroScreen_01(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Welcome", color = MaterialTheme.colorScheme.onPrimary) },
+                title = {
+                    Text(
+                        stringResource(R.string.intro_welcome),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
@@ -135,29 +164,31 @@ fun IntroScreen_01(
             ) {
 
                 Text(
-                    text = "Localization request",
+                    text = stringResource(R.string.intro_location_request_title),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
                 )
-                Spacer(Modifier.height(16.dp))
+
+                Spacer(Modifier.height(32.dp))
                 Image(
-                    painter = painterResource(id = R.drawable.ic_checkmark),
+                    painter = painterResource(id = R.drawable.map_img_permissions_req),
                     contentDescription = null,
+                    contentScale = ContentScale.FillWidth,
                     modifier = Modifier
-                        .size(180.dp)
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min)
                         .padding(top = 24.dp)
                 )
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = "We use your location to center the map near you. " +
-                            "If you don’t allow it, we’ll use a default location (Mountain View) " +
-                            "or you can set a manual position later on the map.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
 
                 Spacer(Modifier.height(16.dp))
+                Text(
+                    text = stringResource(R.string.intro_localization_permission_description),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Spacer(Modifier.height(32.dp))
 
                 // start request permissions
                 Button(
@@ -168,7 +199,9 @@ fun IntroScreen_01(
                         Log.d(TAG, "Request permissions shown")
                     },
                     shape = RoundedCornerShape(10.dp),
-                ) { Text("Enable Localization") }
+                ) { Text(
+                    stringResource(R.string.intro_enable_localization)
+                ) }
 
                 Spacer(Modifier.height(16.dp))
 
@@ -178,36 +211,26 @@ fun IntroScreen_01(
                     shape = RoundedCornerShape(10.dp),
                 ) {
                     if (!isReqPermissionBtnPressed)
-                        Text("Skip")
+                        Text(stringResource(R.string.intro_skip))
                     else
-                        Text("Ok")
+                        Text(stringResource(R.string.intro_allow))
                 }
 
-                Spacer(Modifier.height(16.dp))
-
-                Text(
-                    text = "You can enable after",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-
-                )
             }
         } else {
-
             Column(
                 Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .background(MaterialTheme.colorScheme.primary),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .background(MaterialTheme.colorScheme.surface),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Spacer(Modifier.height(16.dp))
                 Text(
-                    text = "Loading",
+                    text = stringResource(R.string.intro_loading_label),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = MaterialTheme.colorScheme.primary
                 )
-                Spacer(Modifier.height(16.dp))
             }
         }
     }
@@ -242,27 +265,54 @@ fun IntroScreen_01(
                 }) { Text("Skip") }
             }
         )
-    }
+    }*/
 
     // Optional “denied” note (not shown when permanently denied)
     if (showDeniedDialog) {
         AlertDialog(
             onDismissRequest = { showDeniedDialog = false },
-            title = { Text("Permission denied") },
-            text = { Text("You can keep using the app with a default location or set a manual position later in the Map.") },
+            title = {
+                Text(
+                    text = stringResource(R.string.intro_permission_denied)
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.intro_enable_manual_position)
+                )
+            },
             confirmButton = {
-                TextButton(onClick = { showDeniedDialog = false }) { Text("OK") }
+                TextButton(
+                    onClick = {
+                        showDeniedDialog = false
+                        openAppSettings(context)
+                        appPrefsViewModel.setAskedOnce()
+                    }
+                ) {
+                    Text(stringResource(R.string.intro_open_app_settings))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDeniedDialog = false
+                    appPrefsViewModel.setAskedOnce()
+                    // navigateToHome(navController)
+                }) {
+                    Text(
+                        stringResource(R.string.generic_ok)
+                    )
+                }
             }
+
+
         )
-    }*/
+    }
 
 
 }
 
 
-// Function to set up location access after permission is granted
 fun navigateToHome(navController: NavHostController) {
-    // accessing the location or setup GPS tracking
     navController.navigate(NavigationRoutes.Home.route) {
         popUpTo(NavigationRoutes.Intro.route) { inclusive = true }
         launchSingleTop = true
@@ -270,17 +320,17 @@ fun navigateToHome(navController: NavHostController) {
 }
 
 // Show dialog for denied location permission
-fun showLocationPermissionDeniedDialog(context: Context, navController: NavHostController) {
+/*fun showLocationPermissionDeniedDialog(context: Context, navController: NavHostController) {
     AlertDialog.Builder(context)
-        .setTitle("Location disables")
-        .setMessage("You can enable after or manul position")
-        .setPositiveButton("OK") { _, _ ->
+        .setTitle(context.getString(R.string.intro_permission_denied))
+        .setMessage(context.getString(R.string.intro_enable_manual_position))
+        .setPositiveButton(context.getString(R.string.generic_ok)) { _, _ ->
             navigateToHome(navController)
         }
-        .setNegativeButton("openSettings") { _, _ ->
+        .setNegativeButton(context.getString(R.string.intro_open_app_settings)) { _, _ ->
             openAppSettings(context)
         }
         .show()
-}
+}*/
 
 

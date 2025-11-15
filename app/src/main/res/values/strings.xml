@@ -5,7 +5,6 @@
     <!-- - - - - - - - - - - - - - - - - - - Generic - - - - -  - - - - - - - - - - - - - - - - -->
     <string name="app_name">EarthQuake Watchdog</string>
     <string name="title_reduced" translatable="false">EQWatchdog</string>
-    <string name="searching_label">Loading last earthquakes data&#8230;</string>
     <string name="show_no_more_label">Don\'t show me again</string>
     <string name="generic_yes">Yes</string>
     <string name="generic_unknown_location">Unknown Location</string>
@@ -28,6 +27,20 @@
     <string name="nav_bottom_home_desc">Home</string>
     <string name="nav_bottom_eqs_desc">Map</string>
     <string name="nav_bottom_settings_desc">Settings</string>
+
+
+    <!-- - - - - - - - - - - - - - - - - - - Intro - - - - -  - - - - - - - - - - - - - - - - -->
+    <string name="intro_welcome">Welcome Aboard!</string>
+    <string name="intro_location_request_title">Localization permission</string>
+    <string name="intro_localization_permission_description">We use your location to calculate earthquakes distance from you and center the map near you .\n\nIf you don\'t allow it, we\'ll use a default location (Google HQ at Mountain View) or you can set a manual position later on the map.</string>
+    <string name="intro_permission_rationale">You can keep using the app with a default location or set a manual position later in the Map.</string>
+    <string name="intro_enable_localization">Enable Localization</string>
+    <string name="intro_allow">Allow</string>
+    <string name="intro_skip">Skip</string>
+    <string name="intro_permission_denied">Permission denied</string>
+    <string name="intro_enable_manual_position">You can enable after in app settings or set a manual position in map section</string>
+    <string name="intro_open_app_settings">Open App Settings</string>
+    <string name="intro_loading_label">Loading last earthquakes data&#8230;</string>
 
 
     <!-- - - - - - - - - - - - - - - - - - - - - Home - - - - - - - - - - - - - - - - - - - - - -->
@@ -100,7 +113,6 @@
 
 
     <!-- - - - - - - - - - - - - - - - Settings - - - -  - - - - - - - - - - - - - - - - - - - - -->
-    <string name="title_activity_settings">Settings</string>
     <string name="settings_title">Settings</string>
     <string name="settings_menu_item">Settings</string>
     <string name="settings_order_by_label">Ordered By : </string>

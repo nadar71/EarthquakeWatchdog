@@ -3,7 +3,7 @@
     <!-- - - - - - - - - - - - - - - - - - - - Generic - - - - - - - - - - - - - - - - - - - - -->
     <string name="app_name">EarthQuake Watchdog</string>
     <string name="title_reduced" translatable="false">EQWatchdog</string>
-    <string name="searching_label">Caricamento dati ultimi terremoti</string>
+    <string name="intro_loading_label">Caricamento dati ultimi terremoti</string>
     <string name="show_no_more_label">Non mostrarmi più</string>
     <string name="generic_yes">Sì</string>
     <string name="generic_unknown_location">Località sconosciuta</string>
@@ -26,6 +26,18 @@
     <string name="nav_bottom_home_desc">Home</string>
     <string name="nav_bottom_eqs_desc">Map</string>
     <string name="nav_bottom_settings_desc">Settings</string>
+
+    <!-- - - - - - - - - - - - - - - - - - - Intro - - - - -  - - - - - - - - - - - - - - - - -->
+    <string name="intro_welcome">Benvenuto a bordo!</string>
+    <string name="intro_location_request_title">Permesso di localizzazione</string>
+    <string name="intro_localization_permission_description">Utilizziamo la tua posizione per calcolare la distanza dei terremoti da te e per centrare la mappa vicino a te.\n\nSe non lo permetti, utilizzeremo una posizione predefinita (sede di Google a Mountain View) o potrai impostare una posizione manuale successivamente sulla mappa.</string>
+    <string name="intro_permission_rationale">Puoi continuare a utilizzare l\'app con una posizione predefinita o impostare una posizione manuale successivamente nella Mappa.</string>
+    <string name="intro_enable_localization">Abilita Localizzazione</string>
+    <string name="intro_allow">Consenti</string>
+    <string name="intro_skip">Salta</string>
+    <string name="intro_permission_denied">Permesso negato</string>
+    <string name="intro_enable_manual_position">Puoi abilitare successivamente nelle impostazioni dell\'app o impostare una posizione manuale nella sezione mappa</string>
+    <string name="intro_open_app_settings">Apri impostazioni app</string>
 
     <!-- - - - - - - - - - - - - - - - - - - - - Home - - - - - - - - - - - - - - - - - - - - - - -->
     <string name="home_no_earthquakes_found">Nessun terremoto trovato. Ricarica o controlla le impostazioni del filtro</string>
@@ -93,7 +105,6 @@
 
 
     <!-- - - - - - - - - - - - - - - - Settings - - - -  - - - - - - - - - - - - - - - - - - - - -->
-    <string name="title_activity_settings">Impostazioni</string>
     <string name="settings_title">Impostazioni</string>
     <string name="settings_menu_item">Impostazioni</string>
     <string name="settings_order_by_label">Ordinato per: </string>

@@ -41,17 +41,6 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="@string/admob_key_app_id" />
-
-        <activity
-            android:name=".feat_settings.presentation.ui.SettingSimpleActivity"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName=".feat_eqslist.presentation.ui.MainActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.MainActivity" />
-        </activity>
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -60,13 +49,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
-
-        <activity
-            android:name=".feat_eqsmap.presentation.ui.MapsActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name=".feat_settings.presentation.ui.FaqActivity" />
-
-
         <uses-library android:name="org.apache.http.legacy" android:required="false" />
 
     </application>
