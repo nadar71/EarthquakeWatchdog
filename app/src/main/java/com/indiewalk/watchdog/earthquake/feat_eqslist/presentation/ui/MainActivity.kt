@@ -11,12 +11,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
+import com.google.android.gms.ads.MobileAds
+import com.indiewalk.watchdog.earthquake.EarthquakeApp
 import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationGraph
 import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.ThemeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.EQWatchdogTheme
+import com.indiewalk.watchdog.earthquake.feat_ads.util.ConsentManager
+import com.indiewalk.watchdog.earthquake.feat_ads.util.RequestConfigurationUtils
 
 
 @AndroidEntryPoint
@@ -25,33 +29,42 @@ class MainActivity() : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            val settings by appPrefsViewModel.settings.collectAsStateWithLifecycle()
 
-            // switch between System / Light / Dark
-            // var themeMode by remember { mutableStateOf(ThemeMode.System) }
+        // Set your test devices.
+        RequestConfigurationUtils.setTestDeviceIds()
 
-            val darkTheme = when (settings.mode) {
-                ThemeMode.System -> isSystemInDarkTheme()
-                ThemeMode.Light -> false
-                ThemeMode.Dark  -> true
-            }
-            EQWatchdogTheme(darkTheme = darkTheme) {
-                val navController = rememberNavController()
-                NavigationGraph(navController = navController)
-                // EarthquakeListScreen(navController)
-            }
+        // Check consent
+        ConsentManager.requestConsent(this, this@MainActivity){ canRequestAds ->
+            MobileAds.initialize(this)
+            setContent {
+                EarthquakeApp.canRequestAdsFlag = canRequestAds
+                val settings by appPrefsViewModel.settings.collectAsStateWithLifecycle()
 
-            /*EQWatchdogTheme(darkTheme = isDark, dynamicColor = settings.dynamicColor) {
-                Surface {
-                    ThemeDemoScreen(
-                        mode = settings.mode,
-                        dynamic = settings.dynamicColor,
-                        onModeChange = themeViewModel::setMode,
-                        onDynamicChange = themeViewModel::setDynamic
-                    )
+                // switch between System / Light / Dark
+                // var themeMode by remember { mutableStateOf(ThemeMode.System) }
+
+                val darkTheme = when (settings.mode) {
+                    ThemeMode.System -> isSystemInDarkTheme()
+                    ThemeMode.Light -> false
+                    ThemeMode.Dark -> true
                 }
-            }*/
+                EQWatchdogTheme(darkTheme = darkTheme) {
+                    val navController = rememberNavController()
+                    NavigationGraph(navController = navController)
+                    // EarthquakeListScreen(navController)
+                }
+
+                /*EQWatchdogTheme(darkTheme = isDark, dynamicColor = settings.dynamicColor) {
+                    Surface {
+                        ThemeDemoScreen(
+                            mode = settings.mode,
+                            dynamic = settings.dynamicColor,
+                            onModeChange = themeViewModel::setMode,
+                            onDynamicChange = themeViewModel::setDynamic
+                        )
+                    }
+                }*/
+            }
         }
 
     }

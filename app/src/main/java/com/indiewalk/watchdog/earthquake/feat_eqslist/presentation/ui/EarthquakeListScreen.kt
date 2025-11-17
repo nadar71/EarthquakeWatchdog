@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -66,6 +67,8 @@ import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldMo
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationRoutes
 import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
 import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
+import com.indiewalk.watchdog.earthquake.feat_ads.presentation.AdBannerPlaceholder
+import com.indiewalk.watchdog.earthquake.feat_ads.presentation.AdMobBannerView
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
@@ -309,6 +312,9 @@ fun EarthquakeListScreen(
                 TAG, "Eq list filtered size: " +
                         "${if (eqsListFiltered != null) eqsListFiltered?.size else "null"}"
             )
+
+
+
             if (isEqListLoadedFromDb && !eqsListFiltered.isNullOrEmpty()) {
                 LazyColumn(
                     state = listState,
@@ -420,6 +426,21 @@ fun EarthquakeListScreen(
                     }
                 }
             }
+
+            /*AdBannerPlaceholder(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(60.dp)
+            )*/
+
+            AdMobBannerView(
+                adUnitId = stringResource(R.string.admob_key_bottom_banner),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(60.dp)
+            )
         }
 
         // show filter dialog sheet
