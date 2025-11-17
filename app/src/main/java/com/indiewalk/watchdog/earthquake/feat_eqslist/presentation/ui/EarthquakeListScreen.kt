@@ -385,7 +385,7 @@ fun EarthquakeListScreen(
                     .align(Alignment.BottomEnd)
                     .padding(
                         end = 16.dp,
-                        bottom = 16.dp
+                        bottom = 16.dp + 60.dp
                     )
             ) {
                 Box(

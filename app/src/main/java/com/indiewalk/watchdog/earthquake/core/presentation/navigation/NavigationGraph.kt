@@ -13,6 +13,7 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui.Earthquake
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui.EarthquakeMapScreen
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui.MapScreen
 import com.indiewalk.watchdog.earthquake.feat_intro.presentation.IntroScreen_01
+import com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui.CreditsScreen
 import com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui.SettingsScreen
 
 @Composable
@@ -53,6 +54,10 @@ fun NavigationGraph(
         composable(NavigationRoutes.Settings.route) {
             Log.d("NavigationGraph: ", NavigationRoutes.Settings.route)
             SettingsScreen(navController)
+        }
+        composable(NavigationRoutes.CreditsScreen.route) {
+            Log.d("NavigationGraph: ", NavigationRoutes.CreditsScreen.route)
+            CreditsScreen(navController)
         }
         composable(
             route = NavigationRoutes.Details.route,

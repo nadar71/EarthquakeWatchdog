@@ -20,7 +20,6 @@
     <string name="generic_from_label">da</string>
     <string name="generic_you_label">da te</string>
 
-
     <!-- - - - - - - - - - - - - - - - - - - Navigation - - - - -  - - - - - - - - - - - - - - - -->
     <string name="nav_bottom_intro_desc">Intro</string>
     <string name="nav_bottom_home_desc">Home</string>
@@ -44,7 +43,6 @@
     <string name="home_dialog_goto_map_label">Posizione sulla mappa</string>
     <string name="home_dialog_eq_details_label">Maggiori Dettagli</string>
     <string name="home_dialog_eq_feelit_label">L\'hai sentito?</string>
-
 
     <!-- - - - - - - - - - - - - - - - Filter - - - -  - - - - - - - - - - - - - - - - - - - - -->
     <string name="filter_title">Filtri</string>
@@ -120,10 +118,12 @@
     <string name="theme_mode_system">Sistema</string>
     <string name="theme_mode_light">Chiaro</string>
     <string name="theme_mode_dark">Scuro</string>
-    
-    <string name="settings_gdpr_btn_title">GDPR</string>
-    <string name="settings_gdpr_btn_summary">Ritiro del consenso al GDPR.</string>
-
+    <string name="settings_review_btn_summary">Ti piace l\'app? Lascia una recensione :)</string>
+    <string name="settings_review_btn_title">Recensione app</string>
+    <string name="settings_send_email_chooser_title">Invia email con…</string>
+    <string name="settings_support_choose_email_client_fallback_label">You must have an email app installed</string>
+    <string name="settings_support_btn_summary">Suggerimenti, bug, errori, qualsiasi cosa? Scrivi pure : </string>
+    <string name="settings_support_btn_title">Supporto</string>
     <string name="settings_disclaimer_label">Disclaimer</string>
     <string name="settings_faq_btn_summary">Cosa può fare e cosa non può fare l\'app.</string>
     <string name="settings_faq_text"><![CDATA[Questa app scarica e mostra dati sui terremoti (fino agli ultimi 120 terremoti) tratti dal servizio online <a href="https://earthquake.usgs.gov/fdsnws/event/1/">USGS.gov</a>. Non è in alcun modo correlata a USGS né è un&apos;app di quest&apos;ultimo.<br><br>Ha solo scopo informativo, i dati sui terremoti non sono in tempo reale (consultare il <a href="https://earthquake.usgs.gov/fdsnws/event/1/">sito USGS.gov</a> per i dettagli). <br><br>Pertanto, non è intesa come un&apos;app di allerta terremoti in tempo reale, pertanto non utilizzarla come app salvavita. <br><br>Non sono responsabile per qualsiasi uso improprio di questa app.
@@ -135,6 +135,18 @@
 <br><br>Spero che la mia app vi piaccia e la troviate utile. Date un&apos;occhiata alle altre mie app e giochi sul mio sito: <a href="http://www.indie-walkabout.eu">http://www.indie-walkabout.eu</a>.
 
 <br><br>Per suggerimenti, informazioni o segnalazioni di bug, contattatemi all&apos;indirizzo <a href="mailto:indie.walkabout.1971@gmail.com">indie.walkabout.1971@gmail.com</a>]]></string>
+    <string name="settings_gdpr_btn_title">Privacy e consenso per gli annunci</string>
+    <string name="gdpr_btn_summary">Gestisci il tuo consenso per la personalizzazione degli annunci</string>
+    <string name="gdpr_dialog_will_show_again">Il consenso è stato reimpostato. Ti verrà chiesto di nuovo.</string>
+    <string name="gdpr_dialog_reset_done">Finestra di dialogo per il consenso gestita.</string>
+
+    <!-- - - - - - - - - - - - - - - - - - Credits - - - - - - - - - - -  - - - - - - - - - - - - - -->
+    <string name="credits_title_label">Crediti</string>
+    <string name="credits_section_subtitle_summary">Guarda crediti e attribuzioni qui</string>
+    <string name="credits_dev_design_label">Sviluppo e Design</string>
+    <string name="credits_dev_design_SM">Simone Mapelli</string>
+    <string name="credits_eqs_data_source_label">Origine dati Terremoti</string>
+    <string name="credits_eqs_data_source_description">USGS.gov \n ( Questa app non è in alcun modo correlata a USGS né è un\'app di quest\'ultimo. ) </string>
 
     <!-- - - - - - - - - - - - - - - - - - Error - - - - - - - - - - -  - - - - - - - - - - - - - -->
     <string name="no_earthquakes">Nessun terremoto trovato. Prova un altro filtro.</string>

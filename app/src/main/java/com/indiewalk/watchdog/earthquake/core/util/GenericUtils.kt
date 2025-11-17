@@ -1,6 +1,7 @@
 package com.indiewalk.watchdog.earthquake.core.util
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
@@ -39,6 +40,34 @@ object GenericUtils {
     fun openUrlInBrowserNotCompose(context: Context, url: String) {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         context.startActivity(intent)
+    }
+
+    fun openAppStore(context: Context,appPackageName: String) {
+        val context = context
+        val marketUri_01 = Uri.parse("market://details?id=$appPackageName")
+        val marketUri_02 = Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")
+
+        try {
+            Log.d("openAppStore", "store uri: $marketUri_01")
+            context.startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    marketUri_01
+                )
+            )
+        } catch (anfe: ActivityNotFoundException) {
+            try {
+                Log.d("openAppStore", "store uri: $marketUri_02")
+                context.startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        marketUri_02
+                    )
+                )
+            } catch (e: ActivityNotFoundException){
+                Log.e("OpenAppStore", "Error opening app store", e)
+            }
+        }
     }
 
     // Converts a vector or PNG drawable to a BitmapDescriptor

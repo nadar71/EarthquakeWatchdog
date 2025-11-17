@@ -6,5 +6,6 @@ object NavigationScreenConstants {
     const val MAP = "map"
     const val MAP_ARGS = "map/{longitude}/{latitude}"
     const val SETTINGS = "settings"
+    const val CREDITS_SCREEN = "credits_screen"
     const val DETAILS = "details"
 }

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-
     <!-- - - - - - - - - - - - - - - - - - - Generic - - - - -  - - - - - - - - - - - - - - - - -->
     <string name="app_name">EarthQuake Watchdog</string>
     <string name="title_reduced" translatable="false">EQWatchdog</string>
@@ -21,13 +20,11 @@
     <string name="generic_from_label">from</string>
     <string name="generic_you_label">from you</string>
 
-
     <!-- - - - - - - - - - - - - - - - - - - Navigation - - - - -  - - - - - - - - - - - - - - - -->
     <string name="nav_bottom_intro_desc">Intro</string>
     <string name="nav_bottom_home_desc">Home</string>
     <string name="nav_bottom_eqs_desc">Map</string>
     <string name="nav_bottom_settings_desc">Settings</string>
-
 
     <!-- - - - - - - - - - - - - - - - - - - Intro - - - - -  - - - - - - - - - - - - - - - - -->
     <string name="intro_welcome">Welcome Aboard!</string>
@@ -41,7 +38,6 @@
     <string name="intro_enable_manual_position">You can enable after in app settings or set a manual position in map section</string>
     <string name="intro_open_app_settings">Open App Settings</string>
     <string name="intro_loading_label">Loading last earthquakes data&#8230;</string>
-
 
     <!-- - - - - - - - - - - - - - - - - - - - - Home - - - - - - - - - - - - - - - - - - - - - -->
     <string name="home_no_earthquakes_found">No earthquakes found. Reload or check filter settings</string>
@@ -81,7 +77,6 @@
     <string name="filter_date_period_2_week_label">Last 2 Weeks</string>
     <string name="filter_date_period_30_days_label">Last 30 Days (default)</string>
 
-
     <!-- - - - - - - - - - - Maps - - - - - - - - - - - - - - - - - -->
     <string name="maps_title" >Earthquakes World Map</string>
     <string name="maps_my_position_label">My Position</string>
@@ -110,8 +105,6 @@
     <string name="maps_set_position_manually">Set position manually</string>
     <string name="map_error_loading_earthquakes">Failed to load earthquakes</string>
 
-
-
     <!-- - - - - - - - - - - - - - - - Settings - - - -  - - - - - - - - - - - - - - - - - - - - -->
     <string name="settings_title">Settings</string>
     <string name="settings_menu_item">Settings</string>
@@ -128,11 +121,12 @@
     <string name="theme_mode_system">System</string>
     <string name="theme_mode_light">Light</string>
     <string name="theme_mode_dark">Dark</string>
-
-
-    <string name="settings_gdpr_btn_title">GDPR</string>
-    <string name="settings_gdpr_btn_summary">GDPR Consent Withdraw.</string>
-
+    <string name="settings_review_btn_summary">Like this app? Put a review please !</string>
+    <string name="settings_review_btn_title">App Review</string>
+    <string name="settings_send_email_chooser_title">Invia email con…</string>
+    <string name="settings_support_choose_email_client_fallback_label">È necessario avere installata un\'app di posta elettronica</string>
+    <string name="settings_support_btn_summary">Suggestions, bugs, errors, whatever? Drop a line here please :</string>
+    <string name="settings_support_btn_title">Support</string>
     <string name="settings_disclaimer_label">Disclaimer</string>
     <string name="settings_faq_btn_summary">What app can do and don\'t.</string>
     <string name="settings_faq_text"><![CDATA[This app downloads and shows data about earthquakes (till the last 120 earthquakes happened) taken from <a href="https://earthquake.usgs.gov/fdsnws/event/1/">USGS.gov</a> online service. It is not in any way related to USGS nor it is an app from them. <br><br>It has only informative purposes, the data about earthquakes are not in real time (check <a href="https://earthquake.usgs.gov/fdsnws/event/1/">USGS.gov site</a> for details). <br><br>So it is not intended to be a real time earthquake alert app, do not use it as a life saving app. <br><br>I&apos;m not responsible for any improper use of this app.
@@ -144,8 +138,18 @@
 <br><br>Hope you&apos;ll enjoy my app and find it useful. Check out my other apps and games on my site: <a href="http://www.indie-walkabout.eu">http://www.indie-walkabout.eu</a>.
 
 <br><br>For suggestions, info, or bug reports, please contact me at <a href="mailto:indie.walkabout.1971@gmail.com">indie.walkabout.1971@gmail.com</a>]]></string>
+    <string name="settings_gdpr_btn_title">Privacy &amp; Ad Consent</string>
+    <string name="gdpr_btn_summary">Manage your ad personalization consent</string>
+    <string name="gdpr_dialog_will_show_again">Consent has been reset. You\'ll be asked again.</string>
+    <string name="gdpr_dialog_reset_done">Consent dialog handled.</string>
 
-
+    <!-- - - - - - - - - - - - - - - - - - Credits - - - - - - - - - - -  - - - - - - - - - - - - - -->
+    <string name="credits_title_label">Credits</string>
+    <string name="credits_section_subtitle_summary">See credits and attributions here.</string>
+    <string name="credits_dev_design_label">Development and Design</string>
+    <string name="credits_dev_design_SM">Simone Mapelli</string>
+    <string name="credits_eqs_data_source_label">Earthquakes Data Source</string>
+    <string name="credits_eqs_data_source_description">USGS.gov \n ( This app is not in any way related to USGS nor it is an app from them. ) </string>
 
     <!-- - - - - - - - - - - - - - - - - - Error - - - - - - - - - - -  - - - - - - - - - - - - - -->
     <string name="no_earthquakes">No earthquakes found. Try another filter.</string>
@@ -153,7 +157,6 @@
     <string name="error_loading_earthquakes">Error loading earthquakes data</string>
     <string name="api_generic_error">Error performing remote request</string>
     <string name="db_generic_error">Error performing database operation</string>
-
 
     <!-- - - - - - - - - - - Strings For how many equakes load  Preference  - - - - - - - - - - - - - -->
 <!--    <string name="settings_max_equakes_label">How many Earthquakes display ?</string>

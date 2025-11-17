@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.indiewalk.watchdog.earthquake.R
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationScreenConstants.CREDITS_SCREEN
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationScreenConstants.DETAILS
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationScreenConstants.HOME
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationScreenConstants.INTRO
@@ -28,6 +29,7 @@ sealed class NavigationRoutes(
     data object MapBase  : NavigationRoutes("Map", MAP, Icons.Filled.Map, R.string.nav_bottom_eqs_desc)
     data object MapParam : NavigationRoutes("Map", MAP_ARGS, Icons.Filled.Map, R.string.nav_bottom_eqs_desc)
     data object Settings : NavigationRoutes("Settings", SETTINGS, Icons.Filled.Settings, R.string.nav_bottom_settings_desc)
+    data object CreditsScreen : NavigationRoutes("CreditsScreen", CREDITS_SCREEN, null, R.string.credits_title_label)
     data object Details : NavigationRoutes("Details", "${DETAILS}/{id}", null, R.string.nav_bottom_eqs_desc)
 }
 

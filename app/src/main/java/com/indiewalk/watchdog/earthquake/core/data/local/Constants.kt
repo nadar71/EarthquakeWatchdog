@@ -6,6 +6,10 @@ object Constants {
     // API
     // URL to query the USGS dataset for earthquake information
     const val USGS_REQUEST_URL    = "https://earthquake.usgs.gov/fdsnws/event/1/query"
+    const val USGS_URL            = "https://www.usgs.gov/programs/earthquake-hazards"
+    const val support_email = "indie.walkabout.71@gmail.com"
+    const val my_website = "http://www.indie-walkabout.eu"
+
 
     // MAPS
     // day limit for accessing map
