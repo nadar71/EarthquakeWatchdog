@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -24,6 +25,7 @@ import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimat
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
 import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.text_16
+import com.indiewalk.watchdog.earthquake.feat_ads.presentation.AdMobBannerView
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.openAppSettings
 import com.indiewalk.watchdog.earthquake.feat_settings.presentation.components.DisclaimerDialog
 
@@ -81,14 +83,42 @@ fun SettingsScreen(
     ) { padding ->
 
         val topInset = padding.calculateTopPadding()
+        val bottomInset = padding.calculateBottomPadding()
+
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 24.dp, top = topInset + 32.dp, end = 24.dp,  )
+                .padding(start = 24.dp, top = topInset + 32.dp, end = 24.dp, bottom = 0.dp )
         ) {
 
+
+            //  --- App settings ---
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(R.string.settings_location_permissions_settings_label),
+                    style = text_16(MaterialTheme.colorScheme.primary, false)
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowForwardIos,
+                    contentDescription = stringResource(R.string.settings_location_permissions_settings_label),
+                    modifier = Modifier
+                        .size(18.dp)
+                        .clickable(
+                            onClick = {
+                                openAppSettings(context)
+                            }
+                        )
+                )
+            }
+
             // --- Unit System ---
+            Spacer(modifier = Modifier.height(32.dp))
             Text(
                 text = stringResource(R.string.settings_unit_system_title),
                 style = text_16(MaterialTheme.colorScheme.primary, false),
@@ -115,54 +145,6 @@ fun SettingsScreen(
                         )
                     }
                 }
-            }
-
-            //  --- App settings ---
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(R.string.settings_location_permissions_settings_label),
-                    style = text_16(MaterialTheme.colorScheme.primary, false)
-                )
-                Icon(
-                    imageVector = Icons.Default.ArrowForwardIos,
-                    contentDescription = stringResource(R.string.settings_location_permissions_settings_label),
-                    modifier = Modifier
-                        .size(18.dp)
-                        .clickable(
-                            onClick = {
-                                openAppSettings(context)
-                            }
-                        )
-                )
-            }
-
-            // --- Disclaimer ---
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(R.string.settings_disclaimer_label),
-                    style = text_16(MaterialTheme.colorScheme.primary, false)
-                )
-                Icon(
-                    imageVector = Icons.Default.ArrowForwardIos,
-                    contentDescription = stringResource(R.string.settings_disclaimer_label),
-                    modifier = Modifier
-                        .size(18.dp)
-                        .clickable(
-                            onClick = {
-                                showDisclaimer = true
-                            }
-                        )
-                )
             }
 
             // --- Theme Mode Selector ---
@@ -196,6 +178,30 @@ fun SettingsScreen(
                     }
                 }
             }
+
+            // --- Disclaimer ---
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(R.string.settings_disclaimer_label),
+                    style = text_16(MaterialTheme.colorScheme.primary, false)
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowForwardIos,
+                    contentDescription = stringResource(R.string.settings_disclaimer_label),
+                    modifier = Modifier
+                        .size(18.dp)
+                        .clickable(
+                            onClick = {
+                                showDisclaimer = true
+                            }
+                        )
+                )
+            }
         }
 
          if (showDisclaimer) {
@@ -206,5 +212,18 @@ fun SettingsScreen(
                     .padding(horizontal = 0.dp)
             )
         }
+
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = bottomInset )
+        ) {
+            AdMobBannerView(
+                adUnitId = stringResource(R.string.admob_key_bottom_banner),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+            )
+        }
+
     }
 }

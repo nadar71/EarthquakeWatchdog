@@ -313,8 +313,6 @@ fun EarthquakeListScreen(
                         "${if (eqsListFiltered != null) eqsListFiltered?.size else "null"}"
             )
 
-
-
             if (isEqListLoadedFromDb && !eqsListFiltered.isNullOrEmpty()) {
                 LazyColumn(
                     state = listState,
@@ -439,7 +437,6 @@ fun EarthquakeListScreen(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .height(60.dp)
             )
         }
 

@@ -102,7 +102,7 @@
     <string name="maps_default_location_label">(Località di default)</string>
     <string name="maps_you_are_here">Sei qui</string>
     <string name="maps_set_position_manually">Imposta posizione manualmente</string>
-
+    <string name="map_error_loading_earthquakes">Impossibile caricare i terremoti</string>
 
     <!-- - - - - - - - - - - - - - - - Settings - - - -  - - - - - - - - - - - - - - - - - - - - -->
     <string name="settings_title">Impostazioni</string>

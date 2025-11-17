@@ -5,6 +5,7 @@ import android.Manifest
 import android.R.attr.contentDescription
 import android.util.Log
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -56,6 +57,7 @@ import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getLastKnown
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.state.MapUiState
 import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraGreen_dark
+import com.indiewalk.watchdog.earthquake.feat_ads.presentation.AdMobBannerView
 import kotlinx.coroutines.launch
 
 
@@ -172,26 +174,47 @@ fun EarthquakeMapScreen(
         },
     ) { padding ->
 
+        val bottomInset = padding.calculateBottomPadding()
+
         when (val s = eqsUIFromDBState) {
             is MapUiState.Loading -> {
                 Box(Modifier
                     .fillMaxSize()
-                    .padding(padding), contentAlignment = Alignment.Center) {
+                    .padding(top = 8.dp, bottom = bottomInset),
+                    contentAlignment = Alignment.Center
+                ) {
                     CircularProgressIndicator()
+                    AdMobBannerView(
+                        adUnitId = stringResource(R.string.admob_key_bottom_banner),
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth()
+                    )
                 }
             }
             is MapUiState.Error -> {
                 Box(Modifier
                     .fillMaxSize()
-                    .padding(padding), contentAlignment = Alignment.Center) {
-                    Text("Failed to load earthquakes")
+                    .padding(top = 8.dp, bottom = bottomInset),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = stringResource(id = R.string.map_error_loading_earthquakes))
+                    AdMobBannerView(
+                        adUnitId = stringResource(R.string.admob_key_bottom_banner),
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth()
+                    )
                 }
             }
             is MapUiState.Success -> {
                 val eqs = s.data.orEmpty()
-                Box(Modifier.fillMaxSize()) {
+                Box(Modifier
+                    .fillMaxSize()
+                    .padding(top = 8.dp, bottom = bottomInset)
+                ) {
                     EarthquakeMapContent(
-                        padding = padding,
+                        padding = PaddingValues(top = 0.dp, bottom = 0.dp), //bottomInset),
                         eqs = eqs,
                         hasLocationPermissions = hasLocalPermissions,
                         initialLatLng = initialLatLng,
@@ -248,6 +271,12 @@ fun EarthquakeMapScreen(
                             onDismiss = { showOptions = false },
                         )
                     }
+                    AdMobBannerView(
+                        adUnitId = stringResource(R.string.admob_key_bottom_banner),
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth()
+                    )
                 }
             }
         }

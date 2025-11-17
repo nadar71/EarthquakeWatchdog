@@ -108,7 +108,7 @@
     <string name="maps_default_location_label">(Default Location)</string>
     <string name="maps_you_are_here">You are here</string>
     <string name="maps_set_position_manually">Set position manually</string>
-
+    <string name="map_error_loading_earthquakes">Failed to load earthquakes</string>
 
 
 
