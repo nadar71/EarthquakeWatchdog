@@ -138,7 +138,7 @@
     <string name="settings_gdpr_btn_title">Privacy e consenso per gli annunci</string>
     <string name="gdpr_btn_summary">Gestisci il tuo consenso per la personalizzazione degli annunci</string>
     <string name="gdpr_dialog_will_show_again">Il consenso è stato reimpostato. Ti verrà chiesto di nuovo.</string>
-    <string name="gdpr_dialog_reset_done">Finestra di dialogo per il consenso gestita.</string>
+    <string name="gdpr_dialog_reset_done">Consenso gestito correttamente.</string>
 
     <!-- - - - - - - - - - - - - - - - - - Credits - - - - - - - - - - -  - - - - - - - - - - - - - -->
     <string name="credits_title_label">Crediti</string>
@@ -146,7 +146,7 @@
     <string name="credits_dev_design_label">Sviluppo e Design</string>
     <string name="credits_dev_design_SM">Simone Mapelli</string>
     <string name="credits_eqs_data_source_label">Origine dati Terremoti</string>
-    <string name="credits_eqs_data_source_description">USGS.gov \n ( Questa app non è in alcun modo correlata a USGS né è un\'app di quest\'ultimo. ) </string>
+    <string name="credits_eqs_data_source_description">USGS.gov ( Questa app non è in alcun modo correlata a USGS né è un\'app di quest\'ultimo. ) </string>
 
     <!-- - - - - - - - - - - - - - - - - - Error - - - - - - - - - - -  - - - - - - - - - - - - - -->
     <string name="no_earthquakes">Nessun terremoto trovato. Prova un altro filtro.</string>

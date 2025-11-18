@@ -15,6 +15,8 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.toFeedSna
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.repository.EQRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 class EQRepositoryImpl @Inject constructor(
@@ -32,15 +34,15 @@ class EQRepositoryImpl @Inject constructor(
     // default request : https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventtype=earthquake&orderby=time
     // - min mag 1
     // - order by time desc from most recent ( default from remote)
-    // - no start/date time: retrieve the last month ( ~170kb average )
+    // - NB : set starttime at 30 days from today each request ( ~2-300kb average )
+    // - no limits in items ( system max cap by default: 20000)
     // * use count to retrieve the total number of eqs
-    // TODO : set starttime at 30 days from todays each request, no limits
     override suspend fun fetchAndSaveDefault(): EQFeaturesCollectionDTO {
         val params = EarthquakeQueryParams(
             format = "geojson",
             eventType = "earthquake",
             orderBy = "time",
-            // startTime = Instant.now().minus(1, ChronoUnit.DAYS),
+            startTime = Instant.now().minus(30, ChronoUnit.DAYS),
             // endTime = Instant.now(),
             // minMagnitude = 3.5,
             // limit = 200

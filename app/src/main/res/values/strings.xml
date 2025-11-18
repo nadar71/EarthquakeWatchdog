@@ -141,7 +141,7 @@
     <string name="settings_gdpr_btn_title">Privacy &amp; Ad Consent</string>
     <string name="gdpr_btn_summary">Manage your ad personalization consent</string>
     <string name="gdpr_dialog_will_show_again">Consent has been reset. You\'ll be asked again.</string>
-    <string name="gdpr_dialog_reset_done">Consent dialog handled.</string>
+    <string name="gdpr_dialog_reset_done">Consent choice done.</string>
 
     <!-- - - - - - - - - - - - - - - - - - Credits - - - - - - - - - - -  - - - - - - - - - - - - - -->
     <string name="credits_title_label">Credits</string>
@@ -149,7 +149,7 @@
     <string name="credits_dev_design_label">Development and Design</string>
     <string name="credits_dev_design_SM">Simone Mapelli</string>
     <string name="credits_eqs_data_source_label">Earthquakes Data Source</string>
-    <string name="credits_eqs_data_source_description">USGS.gov \n ( This app is not in any way related to USGS nor it is an app from them. ) </string>
+    <string name="credits_eqs_data_source_description">USGS.gov ( This app is not in any way related to USGS nor it is an app from them. ) </string>
 
     <!-- - - - - - - - - - - - - - - - - - Error - - - - - - - - - - -  - - - - - - - - - - - - - -->
     <string name="no_earthquakes">No earthquakes found. Try another filter.</string>

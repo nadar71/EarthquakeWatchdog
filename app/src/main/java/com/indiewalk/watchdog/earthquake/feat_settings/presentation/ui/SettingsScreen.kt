@@ -210,7 +210,8 @@ fun SettingsScreen(
                         }
                 )
 
-
+                // --- GDPR ---
+                Spacer(modifier = Modifier.height(32.dp))
                 SettingsItem(
                     title = stringResource(id = R.string.settings_gdpr_btn_title),
                     subtitle = stringResource(id = R.string.gdpr_btn_summary),
