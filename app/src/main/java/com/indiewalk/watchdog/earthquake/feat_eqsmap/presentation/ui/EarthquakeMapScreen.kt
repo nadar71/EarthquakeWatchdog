@@ -5,6 +5,7 @@ import android.Manifest
 import android.R.attr.contentDescription
 import android.util.Log
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -209,72 +210,106 @@ fun EarthquakeMapScreen(
             }
             is MapUiState.Success -> {
                 val eqs = s.data.orEmpty()
-                Box(Modifier
-                    .fillMaxSize()
-                    .padding(top = 8.dp, bottom = bottomInset)
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 8.dp, bottom = padding.calculateBottomPadding())
                 ) {
-                    EarthquakeMapContent(
-                        padding = PaddingValues(top = 0.dp, bottom = 0.dp), //bottomInset),
-                        eqs = eqs,
-                        hasLocationPermissions = hasLocalPermissions,
-                        initialLatLng = initialLatLng,
-                        mapType = mapType,
-                        recenterTarget = recenterTo,
-                        onRecenterHandled = { recenterTo = null },
-                        settings = settings,
-                    )
-
-                    if (showOptions) {
-                        MapOptionsOverlayCard(
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(32.dp, 32.dp, 32.dp, 32.dp),
-                            isManualPositionOn = isManualPositionOn,
+                    Box(
+                        Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            // .fillMaxSize()
+                            // .padding(top = 8.dp, bottom = bottomInset)
+                    ) {
+                        EarthquakeMapContent(
+                            padding = PaddingValues(top = 0.dp, bottom = 0.dp), //bottomInset),
+                            eqs = eqs,
                             hasLocationPermissions = hasLocalPermissions,
+                            initialLatLng = initialLatLng,
                             mapType = mapType,
+                            recenterTarget = recenterTo,
+                            onRecenterHandled = { recenterTo = null },
                             settings = settings,
-                            onManualPositionToggle = { checked ->
-                                if (checked) {
-                                    Log.d(TAG, "EarthquakeMapScreen: manual position toggle: $checked")
-                                    // just open picker; updating storage on OK pressed -> onManualPositionConfirmed
-                                } else { // uncheck
-                                    Log.d(TAG, "EarthquakeMapScreen: UNCHECKED manual position toggle: $checked")
-                                    // restore user position coordinates and address info and recenter
-                                    scope.launch {
-                                        val lastKnownUserPosition =
-                                            if (hasLocalPermissions) getLastKnownLatLng(context) else null
-                                        val fallback = lastKnownUserPosition ?: LatLng(DEFAULT_LAT, DEFAULT_LNG)
-                                        val userAddress = getAddress(context, fallback)
-                                        appPrefsViewModel.setUserPosition(fallback)
-                                        userAddress?.let { appPrefsViewModel
-                                            .setUserLocationInfo(userAddress.toLocationInfo(context)) }
-
-                                        appPrefsViewModel.setManualLocOn(false)
-                                        onManualPositionToggle(false)
-                                        recenterTo = fallback
-                                    }
-                                }
-                            },
-                            onManualPositionConfirmed = { latLng, address -> // only after OK in picker
-                                Log.d(TAG, "EarthquakeMapScreen: manual position confirmed: $latLng")
-                                Log.d(TAG, "EarthquakeMapScreen: manual address confirmed: $address")
-                                // save manual position coordinates and address info and recenter
-                                appPrefsViewModel.setManualPosition(latLng)
-                                appPrefsViewModel.setManualLocationInfo(address.toLocationInfo(context))
-
-                                appPrefsViewModel.setManualLocOn(true)
-                                onManualPositionToggle(true)
-                                recenterTo = latLng
-                                showOptions = false
-                            },
-                            onMapTypeChange = { mapType = it },
-                            onDismiss = { showOptions = false },
                         )
+
+                        if (showOptions) {
+                            MapOptionsOverlayCard(
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .padding(32.dp, 32.dp, 32.dp, 32.dp),
+                                isManualPositionOn = isManualPositionOn,
+                                hasLocationPermissions = hasLocalPermissions,
+                                mapType = mapType,
+                                settings = settings,
+                                onManualPositionToggle = { checked ->
+                                    if (checked) {
+                                        Log.d(
+                                            TAG,
+                                            "EarthquakeMapScreen: manual position toggle: $checked"
+                                        )
+                                        // just open picker; updating storage on OK pressed -> onManualPositionConfirmed
+                                    } else { // uncheck
+                                        Log.d(
+                                            TAG,
+                                            "EarthquakeMapScreen: UNCHECKED manual position toggle: $checked"
+                                        )
+                                        // restore user position coordinates and address info and recenter
+                                        scope.launch {
+                                            val lastKnownUserPosition =
+                                                if (hasLocalPermissions) getLastKnownLatLng(context) else null
+                                            val fallback = lastKnownUserPosition ?: LatLng(
+                                                DEFAULT_LAT,
+                                                DEFAULT_LNG
+                                            )
+                                            val userAddress = getAddress(context, fallback)
+                                            appPrefsViewModel.setUserPosition(fallback)
+                                            userAddress?.let {
+                                                appPrefsViewModel
+                                                    .setUserLocationInfo(
+                                                        userAddress.toLocationInfo(
+                                                            context
+                                                        )
+                                                    )
+                                            }
+
+                                            appPrefsViewModel.setManualLocOn(false)
+                                            onManualPositionToggle(false)
+                                            recenterTo = fallback
+                                        }
+                                    }
+                                },
+                                onManualPositionConfirmed = { latLng, address -> // only after OK in picker
+                                    Log.d(
+                                        TAG,
+                                        "EarthquakeMapScreen: manual position confirmed: $latLng"
+                                    )
+                                    Log.d(
+                                        TAG,
+                                        "EarthquakeMapScreen: manual address confirmed: $address"
+                                    )
+                                    // save manual position coordinates and address info and recenter
+                                    appPrefsViewModel.setManualPosition(latLng)
+                                    appPrefsViewModel.setManualLocationInfo(
+                                        address.toLocationInfo(
+                                            context
+                                        )
+                                    )
+
+                                    appPrefsViewModel.setManualLocOn(true)
+                                    onManualPositionToggle(true)
+                                    recenterTo = latLng
+                                    showOptions = false
+                                },
+                                onMapTypeChange = { mapType = it },
+                                onDismiss = { showOptions = false },
+                            )
+                        }
                     }
+
                     AdMobBannerView(
                         adUnitId = stringResource(R.string.admob_key_bottom_banner),
                         modifier = Modifier
-                            .align(Alignment.BottomCenter)
                             .fillMaxWidth()
                     )
                 }

@@ -1,5 +1,6 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.preferences
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,14 +19,21 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.Mi
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.PeriodDropdown
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.SortDropdown
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.util.FilterUtil.checkFilterActiveCounts
+import com.indiewalk.watchdog.earthquake.feat_settings.presentation.components.SettingsItem
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterSheet(
+    eqsCount: Int = 0,
+    lastRefreshTime: String = "",
+    startDate: String = "",
     filterViewModel: FilterViewModel,
     onDismiss: () -> Unit
 ) {
+    val TAG = "FilterSheet"
+    Log.d(TAG,"eqsCount: ${eqsCount}, lastRefreshTime: ${lastRefreshTime}, startDate: ${startDate}")
+
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -164,6 +172,37 @@ fun FilterSheet(
                     onChange = { selectedInterval = it }
                 )
             }
+
+
+            // --- Last refresh date time ---
+            Spacer(modifier = Modifier.height(12.dp))
+            SettingsItem(
+                title = stringResource(id = R.string.filter_last_refresh) + " :",
+                subtitle = lastRefreshTime,
+                isIconVisible = false,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+
+            // --- Start date  ---
+            Spacer(modifier = Modifier.height(12.dp))
+            SettingsItem(
+                title = stringResource(id = R.string.filter_start_date) + " :",
+                subtitle = startDate,
+                isIconVisible = false,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+
+            // --- Eqs number since start date  ---
+            Spacer(modifier = Modifier.height(12.dp))
+            SettingsItem(
+                title = stringResource(id = R.string.filter_eq_count_from_start_date) + " :",
+                subtitle = eqsCount.toString(),
+                isIconVisible = false,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
 
             Spacer(Modifier.height(20.dp))
 

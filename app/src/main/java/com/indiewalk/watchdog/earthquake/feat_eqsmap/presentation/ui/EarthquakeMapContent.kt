@@ -38,7 +38,7 @@ import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LNG
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_POSITION
 import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
-import com.indiewalk.watchdog.earthquake.core.util.GenericUtils.bitmapDescriptorFromVector
+import com.indiewalk.watchdog.earthquake.core.util.GraphicsUtil.bitmapDescriptorFromVector
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getLastKnownLatLng
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity

@@ -3,7 +3,6 @@ package com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -23,7 +21,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.indiewalk.watchdog.earthquake.R
@@ -31,8 +28,7 @@ import com.indiewalk.watchdog.earthquake.core.data.local.Constants.USGS_URL
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants.my_website
 import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
-import com.indiewalk.watchdog.earthquake.core.presentation.theme.text_16
-import com.indiewalk.watchdog.earthquake.core.util.GenericUtils.openUrlInBrowserNotCompose
+import com.indiewalk.watchdog.earthquake.core.util.GenericUtil.openUrlInBrowserNotCompose
 import com.indiewalk.watchdog.earthquake.feat_ads.presentation.AdMobBannerView
 import com.indiewalk.watchdog.earthquake.feat_settings.presentation.components.SettingsItem
 

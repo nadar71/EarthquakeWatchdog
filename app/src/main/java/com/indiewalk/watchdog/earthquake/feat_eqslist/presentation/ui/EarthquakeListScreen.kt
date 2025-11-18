@@ -1,8 +1,6 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui
 
 import android.Manifest
-import android.net.http.SslCertificate.restoreState
-import android.net.http.SslCertificate.saveState
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -15,7 +13,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -64,10 +61,8 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
-import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationRoutes
 import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
 import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
-import com.indiewalk.watchdog.earthquake.feat_ads.presentation.AdBannerPlaceholder
 import com.indiewalk.watchdog.earthquake.feat_ads.presentation.AdMobBannerView
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
@@ -104,6 +99,7 @@ fun EarthquakeListScreen(
     var isRemoteFetchCompleted by remember { mutableStateOf(false) }
     var eqsCollection by remember { mutableStateOf<EQFeaturesCollectionDTO?>(null) }
     var eqsList by remember { mutableStateOf<List<EQEntity>?>(null) }
+    var eqsCount by remember { mutableStateOf(0) }
     var eqsListFiltered by remember { mutableStateOf<List<EQEntity>?>(null) }
     var isEqListLoadedFromDb by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
@@ -129,6 +125,7 @@ fun EarthquakeListScreen(
 
 
     // ------------------------------------- LOGIC -------------------------------------------------
+    val filterSettings by filterViewModel.filterSettingsFlow.collectAsStateWithLifecycle()
     val sortOption by filterViewModel.sortOption.collectAsStateWithLifecycle()
     val minMag by filterViewModel.minMagFlow.collectAsStateWithLifecycle()
     val timeInterval by filterViewModel.timeIntervalFlow.collectAsStateWithLifecycle()
@@ -237,6 +234,7 @@ fun EarthquakeListScreen(
             is EQsListUiFromDBState.Success -> {
                 showProgressBar = false
                 eqsList = (eqsUIFromDBState as EQsListUiFromDBState.Success<List<EQEntity>?>).data
+                eqsCount = eqsList?.size ?: 0
                 Log.d(TAG, "Eq list loaded from db : $eqsList")
                 eqsListFiltered = filterList(sortOption, minMag, timeInterval, eqsList)
                 Log.d(TAG, "Eq list filtered : $eqsListFiltered")
@@ -443,6 +441,9 @@ fun EarthquakeListScreen(
         // show filter dialog sheet
         if (showFilterSheet) {
             FilterSheet(
+                eqsCount = eqsCount ?: 0,
+                lastRefreshTime = settings.lastRefreshTime,
+                startDate = filterSettings.startDate,
                 filterViewModel = filterViewModel,
                 onDismiss = { showFilterSheet = false }
             )

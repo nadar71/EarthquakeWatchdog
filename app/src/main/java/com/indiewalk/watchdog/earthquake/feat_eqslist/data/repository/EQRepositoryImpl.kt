@@ -1,10 +1,13 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.data.repository
 
 import android.content.Context
+import android.util.Log
 import com.indiewalk.watchdog.earthquake.core.data.local.preferences.AppPrefs
+import com.indiewalk.watchdog.earthquake.core.util.FormatUtil.formatInstantToUtcString
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.EarthquakeDao
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.FeedSnapshotDao
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.FeedWriterDao
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.remote.EarthquakeApi
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.SaveResult
@@ -47,6 +50,9 @@ class EQRepositoryImpl @Inject constructor(
             // minMagnitude = 3.5,
             // limit = 200
         )
+        Log.d("EQRepositoryImpl", "Fetch request params: $params")
+        AppPrefs.setLastRefreshTime(context, formatInstantToUtcString(Instant.now()))
+        FilterPrefs.setStartDate(context, formatInstantToUtcString(params.startTime))
         val feed = earthquakeApi.fetchFeed(params)
         refreshDB(feed)
         return feed

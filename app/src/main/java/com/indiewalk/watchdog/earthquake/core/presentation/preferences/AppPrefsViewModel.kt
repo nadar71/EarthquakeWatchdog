@@ -101,4 +101,12 @@ class AppPrefsViewModel @Inject constructor(
             AppPrefs.setUnitSystem(context, unitSystem)
         }
     }
+
+    fun setLastRefreshTime(lastRefreshTime: String) {
+        viewModelScope.launch {
+            AppPrefs.setLastRefreshTime(context, lastRefreshTime)
+        }
+    }
+
+
 }

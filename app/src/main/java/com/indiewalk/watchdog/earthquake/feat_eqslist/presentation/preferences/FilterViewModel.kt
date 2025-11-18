@@ -7,6 +7,7 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.Fil
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.MinMagnitude
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.TimeInterval
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.FilterSettings
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -19,6 +20,9 @@ import kotlinx.coroutines.launch
 class FilterViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
+
+    val filterSettingsFlow: StateFlow<FilterSettings> = FilterPrefs.filterSettingsFlow(context)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, FilterSettings())
 
     val sortOption: StateFlow<EqsSortOption> =
         FilterPrefs.sortFlow(context)

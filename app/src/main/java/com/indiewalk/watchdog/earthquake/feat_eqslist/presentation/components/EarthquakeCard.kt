@@ -1,7 +1,6 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components
 
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,21 +43,12 @@ import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
 import com.indiewalk.watchdog.earthquake.core.data.local.enums.UnitSystem
 import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.EQWatchdogTheme
-import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraDeepRed_dark
-import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraDeepRed_light
-import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraGreen_dark
-import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraGreen_light
-import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraOrange_dark
-import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraOrange_light
-import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraRed_dark
-import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraRed_light
-import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraYellow_dark
-import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraYellow_light
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.onBackgroundLight
 import com.indiewalk.watchdog.earthquake.core.util.extensions.kmToDisplayString
-import com.indiewalk.watchdog.earthquake.core.util.formatUtils.formatDate
-import com.indiewalk.watchdog.earthquake.core.util.formatUtils.formatMag
+import com.indiewalk.watchdog.earthquake.core.util.FormatUtil.formatMag
+import com.indiewalk.watchdog.earthquake.core.util.GraphicsUtil.magnitudeColors
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
+import com.indiewalk.watchdog.earthquake.core.util.FormatUtil.formatDateTime
 import java.util.Locale
 
 @Composable
@@ -121,7 +111,7 @@ fun EarthquakeCard(
             Column(modifier = Modifier.weight(1f)) {
                 // Date/time
                 Text(
-                    text = formatDate(eq.occurenceDateTime),
+                    text = formatDateTime(eq.occurenceDateTime),
                     style = MaterialTheme.typography.labelSmall.copy(
                         color = MaterialTheme.colorScheme.secondary
                     )
@@ -279,17 +269,6 @@ private fun splitPlace(place: String?): Pair<String, String> {
 }
 
 
-
-
-private fun magnitudeColors(mag: Double): Pair<Color, Color> {
-    return when {
-        mag < 2.5 -> extraGreen_light   to extraGreen_dark   // green
-        mag < 4.5 -> extraYellow_light  to extraYellow_dark  // yellow
-        mag < 6.0 -> extraOrange_light  to extraOrange_dark  // orange
-        mag < 7.0 -> extraRed_light     to extraRed_dark     // red
-        else      -> extraDeepRed_light to extraDeepRed_dark // deep red
-    }
-}
 
 // -------------------------------------- Previews -------------------------------------------------
 

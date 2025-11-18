@@ -31,7 +31,7 @@ import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldMo
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationRoutes
 import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.text_16
-import com.indiewalk.watchdog.earthquake.core.util.GenericUtils.openAppStore
+import com.indiewalk.watchdog.earthquake.core.util.GenericUtil.openAppStore
 import com.indiewalk.watchdog.earthquake.core.util.sendEmail
 import com.indiewalk.watchdog.earthquake.feat_ads.presentation.AdMobBannerView
 import com.indiewalk.watchdog.earthquake.feat_ads.util.ConsentManager
@@ -281,20 +281,7 @@ fun SettingsScreen(
                     )
                 }
             }
-
-
-
-            /*Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = bottomInset)
-        ) {
-            AdMobBannerView(
-                adUnitId = stringResource(R.string.admob_key_bottom_banner),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-            )
-        }*/
+            
 
             if (showDisclaimer) {
                 DisclaimerDialog(

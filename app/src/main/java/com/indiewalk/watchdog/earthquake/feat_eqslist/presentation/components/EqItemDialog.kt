@@ -24,11 +24,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.text_16
-import com.indiewalk.watchdog.earthquake.core.util.GenericUtils.openUrlInBrowserNotCompose
+import com.indiewalk.watchdog.earthquake.core.util.GenericUtil.openUrlInBrowserNotCompose
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
 
 

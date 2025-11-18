@@ -33,6 +33,7 @@ fun SettingsItem(
     titleStyle: TextStyle = text_16(MaterialTheme.colorScheme.primary),
     subtitle: String,
     subTitleStyle: TextStyle = text_14(MaterialTheme.colorScheme.primary),
+    isIconVisible: Boolean = true,
     @DrawableRes rightIcon: Int = R.drawable.ic_arrow_right,
     iconDescription: String = "",
     modifier: Modifier = Modifier
@@ -62,13 +63,15 @@ fun SettingsItem(
 
             }
 
-            Icon(
-                painter = painterResource(id = rightIcon),
-                contentDescription = iconDescription,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .size(24.dp)
-            )
+            if (isIconVisible) {
+                Icon(
+                    painter = painterResource(id = rightIcon),
+                    contentDescription = iconDescription,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .size(24.dp)
+                )
+            }
 
         }
     }

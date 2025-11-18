@@ -15,7 +15,8 @@ data class AppSettings(
     val userLocationInfo: LocationInfo = LocationInfo("", "", ""),
     val manualPosition: LatLng = LatLng(DEFAULT_LAT, DEFAULT_LNG),
     val manualLocationInfo: LocationInfo = LocationInfo("", "", ""),
-    val unitSystem: UnitSystem = UnitSystem.METRIC
+    val unitSystem: UnitSystem = UnitSystem.METRIC,
+    val lastRefreshTime: String = "",
 )
 
 data class LocationInfo(

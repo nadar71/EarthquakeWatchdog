@@ -53,7 +53,7 @@
 
     <string name="filter_sort_mag_desc">Magnitude: high → low</string>
     <string name="filter_sort_mag_asc">Magnitude: low → high</string>
-    <string name="filter_sort_date_desc">Date: newest → oldest (default)</string>
+    <string name="filter_sort_date_desc">Date: newest → oldest\n(default)</string>
     <string name="filter_sort_date_asc">Date: oldest → newest</string>
     <string name="filter_sort_dist_asc">Distance: near → far</string>
     <string name="filter_sort_dist_desc">Distance: far → near</string>
@@ -76,6 +76,10 @@
     <string name="filter_date_period_week_label">Last Week</string>
     <string name="filter_date_period_2_week_label">Last 2 Weeks</string>
     <string name="filter_date_period_30_days_label">Last 30 Days (default)</string>
+
+    <string name="filter_last_refresh">Last refresh</string>
+    <string name="filter_start_date">Start date</string>
+    <string name="filter_eq_count_from_start_date">Number of earthquakes since start date</string>
 
     <!-- - - - - - - - - - - Maps - - - - - - - - - - - - - - - - - -->
     <string name="maps_title" >Earthquakes World Map</string>

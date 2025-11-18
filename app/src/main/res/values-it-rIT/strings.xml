@@ -52,7 +52,7 @@
 
     <string name="filter_sort_mag_desc">Magnitudo: alto → basso</string>
     <string name="filter_sort_mag_asc">Magnitudo: basso → alto</string>
-    <string name="filter_sort_date_desc">Data: più recenti → più vecchi (default)</string>
+    <string name="filter_sort_date_desc">Data: più recenti → più vecchi\n(default)</string>
     <string name="filter_sort_date_asc">Data: più vecchi → più recenti</string>
     <string name="filter_sort_dist_asc">Distanza: vicini → lontani</string>
     <string name="filter_sort_dist_desc">Distanza: lontani → vicini</string>
@@ -75,6 +75,10 @@
     <string name="filter_date_period_week_label">Ultima settimana</string>
     <string name="filter_date_period_2_week_label">Ultime 2 settimane</string>
     <string name="filter_date_period_30_days_label">Ultimi 30 giorni (default)</string>
+
+    <string name="filter_last_refresh">Ultimo aggiornamento</string>
+    <string name="filter_start_date">Data inizio</string>
+    <string name="filter_eq_count_from_start_date">Numero di terremoti dalla data di inizio</string>
 
     <!-- - - - - - - - - - - Maps - - - - - - - - - - - - - - - - - - -->
     <string name="maps_title">Mappa Mondiale Terremoti</string>

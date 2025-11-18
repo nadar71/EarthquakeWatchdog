@@ -8,6 +8,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.MinMagnitude
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.TimeInterval
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.FilterSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -26,6 +27,20 @@ object FilterPrefs {
     private val KEY_END_DATE = stringPreferencesKey("end_date")
     private val KEY_TIME_INTERVAL = stringPreferencesKey("time_interval")
     private val KEY_FILTER_ACTIVE_COUNTS = intPreferencesKey("filter_active_counts")
+
+    fun filterSettingsFlow(context: Context): Flow<FilterSettings> =
+        context.eqFilterDataStore.data.map { prefs ->
+            FilterSettings(
+                sortOption = EqsSortOption.fromNameString(prefs[KEY_SORT]),
+                minMag = MinMagnitude.fromNameString(prefs[KEY_MIN_MAG]),
+                timeInterval = TimeInterval.fromNameString(prefs[KEY_TIME_INTERVAL]),
+                startDate = prefs[KEY_START_DATE] ?: "",
+                endDate = prefs[KEY_END_DATE] ?: "",
+                activeCounts = prefs[KEY_FILTER_ACTIVE_COUNTS] ?: 0
+            )
+        }
+
+
     // -- sort type --
     fun sortFlow(context: Context): Flow<EqsSortOption> =
         context.eqFilterDataStore.data.map { prefs ->

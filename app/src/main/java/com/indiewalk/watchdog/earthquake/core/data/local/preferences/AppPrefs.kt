@@ -3,6 +3,7 @@ package com.indiewalk.watchdog.earthquake.core.data.local.preferences
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.android.gms.maps.model.LatLng
@@ -39,7 +40,7 @@ object AppPrefs {
     private val MANUAL_LOC_ADDRESS = stringPreferencesKey("manual_loc_address")
 
     private val KEY_ASKED_LOCATION_ONCE = booleanPreferencesKey("asked_location_once")
-
+    private val LAST_REFRESH_TIME = stringPreferencesKey("last_refresh_time")
 
 
     // Main Flow with defaults
@@ -65,11 +66,12 @@ object AppPrefs {
             val manualCountry = prefs[MANUAL_LOC_COUNTRY_CODE] ?: ""
             val manualAddress = prefs[MANUAL_LOC_ADDRESS] ?: ""
 
-
             val unit = when (prefs[UNIT_SYSTEM]) {
                 UnitSystem.IMPERIAL.name -> UnitSystem.IMPERIAL
                 else -> UnitSystem.METRIC
             }
+
+            val lastRefreshTime = prefs[LAST_REFRESH_TIME] ?: ""
 
 
             AppSettings(
@@ -79,7 +81,8 @@ object AppPrefs {
                 userLocationInfo = LocationInfo(userCity, userCountry, userAddress),
                 manualPosition = LatLng(manualLat, manualLng),
                 manualLocationInfo = LocationInfo(manualCity, manualCountry, manualAddress),
-                unitSystem = unit
+                unitSystem = unit,
+                lastRefreshTime = lastRefreshTime
             )
         }
 
@@ -158,13 +161,21 @@ object AppPrefs {
         }
     }
 
-    // Read fun
     suspend fun getCurrentSettings(context: Context): AppSettings =
         settingsFlow(context).first()
 
     suspend fun setAskedLocationOnce(context: Context, value: Boolean) {
         context.appPrefsDataStore.edit { it[KEY_ASKED_LOCATION_ONCE] = value }
     }
+
+    suspend fun getLastRefreshTime(context: Context): String =
+        context.appPrefsDataStore.data.first()[LAST_REFRESH_TIME] ?: ""
+
+    suspend fun setLastRefreshTime(context: Context, value: String) {
+        context.appPrefsDataStore.edit { it[LAST_REFRESH_TIME] = value }
+    }
+
+
 
     // Debug
     suspend fun debugPrintAppPrefsDataStore(context: Context): String {
