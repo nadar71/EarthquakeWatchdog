@@ -55,7 +55,7 @@ fun EqItemDialog(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
             ) {
 
                 // goto eq map position

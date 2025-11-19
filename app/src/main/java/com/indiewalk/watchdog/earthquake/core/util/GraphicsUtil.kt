@@ -7,12 +7,15 @@ import android.util.Log
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.DrawableCompat
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.indiewalk.watchdog.earthquake.R
+import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraAzure_dark
+import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraAzure_light
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraDeepRed_dark
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraDeepRed_light
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraGreen_dark
@@ -96,6 +99,7 @@ object GraphicsUtil {
 
     fun magnitudeColors(mag: Double): Pair<Color, Color> {
         return when {
+            mag < 1.5 -> extraAzure_light to extraAzure_dark     // azure
             mag < 2.5 -> extraGreen_light   to extraGreen_dark   // green
             mag < 4.5 -> extraYellow_light  to extraYellow_dark  // yellow
             mag < 6.0 -> extraOrange_light  to extraOrange_dark  // orange
@@ -103,4 +107,16 @@ object GraphicsUtil {
             else      -> extraDeepRed_light to extraDeepRed_dark // deep red
         }
     }
+
+
+    fun dpToPx(context: Context, dp: Int): Int {
+        val density = context.resources.displayMetrics.density
+        return (dp * density).toInt()
+    }
+
+    fun Dp.toPx(context: Context): Int {
+        val density = context.resources.displayMetrics.density
+        return (this.value * density).toInt()
+    }
+
 }

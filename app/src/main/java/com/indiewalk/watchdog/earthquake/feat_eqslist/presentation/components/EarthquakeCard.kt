@@ -4,16 +4,13 @@ import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -23,10 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -45,8 +38,6 @@ import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.EQWatchdogTheme
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.onBackgroundLight
 import com.indiewalk.watchdog.earthquake.core.util.extensions.kmToDisplayString
-import com.indiewalk.watchdog.earthquake.core.util.FormatUtil.formatMag
-import com.indiewalk.watchdog.earthquake.core.util.GraphicsUtil.magnitudeColors
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
 import com.indiewalk.watchdog.earthquake.core.util.FormatUtil.formatDateTime
 import java.util.Locale
@@ -76,16 +67,16 @@ fun EarthquakeCard(
     Log.d("EarthquakeCard", "userLocationInfo: ${settings.userLocationInfo}")*/
 
     val fromLocationAddress = if (!isDefaultLocation)
-                        if (settings.manualLocOn)
-                             stringResource(id = R.string.generic_from_label) +
-                             "\n" + settings.manualLocationInfo.countryCode + " " +
-                             settings.manualLocationInfo.city
-                        else stringResource(id = R.string.generic_from_label) +
-                             "\n" + settings.userLocationInfo.countryCode + " " +
-                             settings.userLocationInfo.city
-                    else stringResource(id = R.string.generic_from_label) + "\n" +
-                            Constants.DEFAULT_COUNTRY_CODE + " " +
-                            Constants.DEFAULT_CITY
+        if (settings.manualLocOn)
+            stringResource(id = R.string.generic_from_label) +
+                    "\n" + settings.manualLocationInfo.countryCode + " " +
+                    settings.manualLocationInfo.city
+        else stringResource(id = R.string.generic_from_label) +
+                "\n" + settings.userLocationInfo.countryCode + " " +
+                settings.userLocationInfo.city
+    else stringResource(id = R.string.generic_from_label) + "\n" +
+            Constants.DEFAULT_COUNTRY_CODE + " " +
+            Constants.DEFAULT_CITY
 
     Card(
         modifier = modifier
@@ -178,62 +169,6 @@ fun EarthquakeCard(
 }
 
 
-
-@Composable
-private fun MagnitudeBubble(
-    mag: Double?,
-    size: Dp,
-) {
-    val m = (mag ?: 0.0).coerceAtLeast(0.0)
-    val colors = magnitudeColors(m)
-
-    Box(
-        modifier = Modifier.size(size + 8.dp), // Outer container to hold all layers
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .size(size + 4.dp)
-                .clip(CircleShape)
-                .background(colors.second),
-            contentAlignment = Alignment.Center
-        ) {}
-
-        Box(
-            modifier = Modifier
-                .size(size + 2.dp)
-                .clip(CircleShape)
-                .background(Color.White),
-            contentAlignment = Alignment.Center
-        ) {}
-
-        Box(
-            modifier = Modifier
-                .size(size)
-                .clip(CircleShape)
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(colors.first, colors.second),
-                        center = Offset.Unspecified,
-                        radius = 60f
-                    )
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = formatMag(m),
-                style = MaterialTheme.typography.labelLarge.copy(
-                    color = Color.White,
-                )
-            )
-        }
-    }
-}
-
-
-
-
-
 //  USGS 'place' strings are typically:
 //   - "76 km WSW of Anderson Springs, CA"
 //   - "Near the coast of Nicaragua"
@@ -267,7 +202,6 @@ private fun splitPlace(place: String?): Pair<String, String> {
     // Fallback: no prefix
     return "" to p
 }
-
 
 
 // -------------------------------------- Previews -------------------------------------------------

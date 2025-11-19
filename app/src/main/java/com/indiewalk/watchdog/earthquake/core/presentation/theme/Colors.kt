@@ -5,6 +5,8 @@ import androidx.compose.ui.graphics.Color
 // Fallback palette when dynamic color not available
 val md_seed = Color(0xFF23303D) // brand seed
 
+val extraAzure_light = Color(0xFF377476)
+val extraAzure_dark = Color(0xFF4FADAE)
 val extraGreen_light = Color(0xFF2E7D32)
 val extraGreen_dark = Color(0xFF66BB6A)
 val extraYellow_light = Color(0xFFF9A825)

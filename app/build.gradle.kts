@@ -12,7 +12,7 @@ plugins { // plugin application
 
 android {
     namespace = "com.indiewalk.watchdog.earthquake"
-    compileSdk = 35
+    compileSdk = 36
 
 
     // Load keystore properties

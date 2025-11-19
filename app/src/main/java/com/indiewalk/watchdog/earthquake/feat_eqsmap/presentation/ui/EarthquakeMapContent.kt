@@ -42,6 +42,7 @@ import com.indiewalk.watchdog.earthquake.core.util.GraphicsUtil.bitmapDescriptor
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getLastKnownLatLng
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.EarthquakeMarker
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.GraticuleTileProvider
 
 
@@ -201,11 +202,14 @@ fun EarthquakeMapContent(
                 val snippet =
                     listOf(magText, depthText).filter { it.isNotBlank() }.joinToString(" • ")
 
-                Marker(
+
+                EarthquakeMarker(
                     state = rememberMarkerState(position = pos),
                     title = title,
-                    snippet = snippet
-                )
+                    snippet = snippet,
+                    eq = eq,
+                    onClick = {true}
+                    )
             }
         }
 
@@ -225,6 +229,7 @@ fun EarthquakeMapContent(
                 snippet = " ${stringResource(id = R.string.maps_default_location_label)}",
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
             )
+
         }
 
         // Manual location marker (if enabled)
