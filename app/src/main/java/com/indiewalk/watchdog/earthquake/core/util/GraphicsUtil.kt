@@ -54,49 +54,6 @@ object GraphicsUtil {
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
-    // Return specific color value for specific magnitude values
-    fun getMagnitudeColor(magnitude: Double, context: Context): Int {
-        val mag = magnitude.toInt()
-        Log.i("getMagnitudeColor", "Color: $mag")
-        when (mag) {
-            1, 0 -> return ContextCompat.getColor(context, R.color.magnitude1)
-            2 -> return ContextCompat.getColor(context, R.color.magnitude2)
-            3 -> return ContextCompat.getColor(context, R.color.magnitude3)
-            4 -> return ContextCompat.getColor(context, R.color.magnitude4)
-            5 -> return ContextCompat.getColor(context, R.color.magnitude5)
-            6 -> return ContextCompat.getColor(context, R.color.magnitude6)
-            7 -> return ContextCompat.getColor(context, R.color.magnitude7)
-            8 -> return ContextCompat.getColor(context, R.color.magnitude8)
-            9 -> return ContextCompat.getColor(context, R.color.magnitude9)
-            10 -> return ContextCompat.getColor(context, R.color.magnitude10plus)
-            else -> {
-            }
-        }
-        return -1
-    }
-
-
-    // Return specific vector image for specific magnitude values
-    fun getMagnitudeImg(magnitude: Double, context: Context): Drawable? {
-        val mag = magnitude.toInt()
-        Log.i("getMagnitudeColor", "Color: $mag")
-        when (mag) {
-            1, 0 -> return ContextCompat.getDrawable(context, R.drawable.ic_earthquake_pointer_1)
-            2 -> return ContextCompat.getDrawable(context, R.drawable.ic_earthquake_pointer_2)
-            3 -> return ContextCompat.getDrawable(context, R.drawable.ic_earthquake_pointer_3)
-            4 -> return ContextCompat.getDrawable(context, R.drawable.ic_earthquake_pointer_4)
-            5 -> return ContextCompat.getDrawable(context, R.drawable.ic_earthquake_pointer_5)
-            6 -> return ContextCompat.getDrawable(context, R.drawable.ic_earthquake_pointer_6)
-            7 -> return ContextCompat.getDrawable(context, R.drawable.ic_earthquake_pointer_7)
-            8 -> return ContextCompat.getDrawable(context, R.drawable.ic_earthquake_pointer_8)
-            9 -> return ContextCompat.getDrawable(context, R.drawable.ic_earthquake_pointer_9)
-            10 -> return ContextCompat.getDrawable(context, R.drawable.ic_earthquake_pointer_10)
-            else -> {
-            }
-        }
-        return ContextCompat.getDrawable(context, R.drawable.ic_earthquake_pointer)
-    }
-
     fun magnitudeColors(mag: Double): Pair<Color, Color> {
         return when {
             mag < 1.5 -> extraAzure_light to extraAzure_dark     // azure

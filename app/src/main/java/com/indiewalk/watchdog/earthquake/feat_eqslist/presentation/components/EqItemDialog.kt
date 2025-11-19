@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -70,7 +69,7 @@ fun EqItemDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_planet),
+                        painter = painterResource(id = R.drawable.ic_globe),
                         contentDescription = stringResource(id = R.string.home_dialog_goto_map_label),
                         modifier = Modifier.size(30.dp),
                         tint = MaterialTheme.colorScheme.primary
@@ -95,7 +94,7 @@ fun EqItemDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_info_outline_white_50dp),
+                        painter = painterResource(id = R.drawable.ic_info_outline),
                         contentDescription = stringResource(id = R.string.home_dialog_eq_details_label),
                         modifier = Modifier.size(24.dp),
                         tint = MaterialTheme.colorScheme.primary
