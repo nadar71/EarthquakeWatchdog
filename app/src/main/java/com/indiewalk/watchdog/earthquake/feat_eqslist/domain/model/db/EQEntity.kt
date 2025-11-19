@@ -1,0 +1,87 @@
+package com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db
+
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.ForeignKey
+import androidx.room.Index
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
+
+// DB entity for eq event.
+// 1 row per Feature (earthquake).
+// Linked to its feed snapshot by feedGenerated (FK to FeedSnapshotEntity.generated).
+@Entity(
+    tableName = "earthquakes",
+    foreignKeys = [
+        ForeignKey(
+            entity = EQFeedSnapshotEntity::class,
+            parentColumns = ["generated"],
+            childColumns = ["feed_generated"],
+            onUpdate = ForeignKey.CASCADE,
+            onDelete = ForeignKey.SET_NULL
+        )
+    ],
+    indices = [
+        Index("feed_generated"),
+        Index("time"),
+        Index("mag"),
+        Index("place"),
+        Index(value = ["latitude", "longitude"]) // helps bbox queries
+    ]
+)
+data class EQEntity(
+    @PrimaryKey val id: String,             // feature.properties.id
+    @ColumnInfo(name = "feed_generated")
+    val feedGenerated: Long?,               // FK links to FeedSnapshotEntity.generated
+
+    // properties
+    val mag: Double?,
+    val place: String?,
+    val time: Long?,  // milliseconds since epoch : https://earthquake.usgs.gov/data/comcat/index.php#time
+    val updated: Long?,
+    val tz: Int?,
+    val url: String?,
+    val detail: String?,
+    val felt: Int?,
+    val cdi: Double?,
+    val mmi: Double?,
+    val alert: String?,
+    val status: String?,
+    val tsunami: Int?,
+    val sig: Int?,
+    val net: String?,
+    val code: String?,
+    val ids: String?,
+    val sources: String?,
+    val types: String?,
+    val nst: Int?,
+    val dmin: Double?,
+    val rms: Double?,
+    val gap: Double?,
+    val magType: String?,
+    @ColumnInfo(name = "event_type") val eventType: String?, // properties.type
+
+    // geometry (flattened)
+    @ColumnInfo(name = "geometry_type", defaultValue = "'Point'")
+    val geometryType: String = "Point",
+    val longitude: Double?,
+    val latitude: Double?,
+    @ColumnInfo(name = "depth_km") val depthKm: Double?,
+
+    // custom
+    val distanceFromUser: Int?
+)
+
+fun EQEntity.toEarthquakeUI(): EarthquakeUI {
+    return EarthquakeUI(
+        magnitude = mag,
+        location = place,
+        url = url,
+        occurenceDateTime = time,
+        urlDetails = url,
+        longitude = longitude,
+        latitude = latitude,
+        depth = depthKm,
+        distanceFromUser = distanceFromUser
+    )
+}

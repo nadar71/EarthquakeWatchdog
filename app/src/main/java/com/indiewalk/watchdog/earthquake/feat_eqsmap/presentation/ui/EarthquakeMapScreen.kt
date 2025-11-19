@@ -1,0 +1,325 @@
+package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui
+
+
+import android.Manifest
+import android.R.attr.contentDescription
+import android.util.Log
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.MapType
+import com.indiewalk.watchdog.earthquake.R
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LAT
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LNG
+import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
+import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
+import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getLastKnownLatLng
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.state.MapUiState
+import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
+import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraGreen_dark
+import com.indiewalk.watchdog.earthquake.feat_ads.presentation.AdMobBannerView
+import kotlinx.coroutines.launch
+
+
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
+@Composable
+fun EarthquakeMapScreen(
+    navController: NavHostController,
+    initialLatLng: LatLng? = null,
+    onManualPositionToggle: (Boolean) -> Unit = {},
+    mapViewModel: MapViewModel = hiltViewModel(),
+    appPrefsViewModel: AppPrefsViewModel = hiltViewModel(),
+) {
+    val TAG = "EarthquakeMapScreen"
+    Log.d(TAG, "EarthquakeMapScreen Opened")
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val settings by mapViewModel.settings.collectAsStateWithLifecycle()
+
+
+    Log.d(TAG, "settings manualLocOn : ${settings.manualLocOn}")
+    // Check current location permission state
+    val permissions = rememberMultiplePermissionsState(
+        listOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+    )
+
+    val hasLocalPermissions by remember(permissions) { derivedStateOf { permissions.allPermissionsGranted } }
+
+    // Options overlay/state
+    var showOptions by rememberSaveable { mutableStateOf(false) }
+    val isManualPositionOn by remember(settings.manualLocOn) {
+        mutableStateOf(settings.manualLocOn)
+    }
+    var mapType by rememberSaveable { mutableStateOf(MapType.TERRAIN) } // default Terrain
+
+    // one-shot camera target
+    // TODO: use this to center map in a particular eq location from home list
+    var recenterTo by remember { mutableStateOf<LatLng?>(null) }
+    Log.d("EarthquakeMapScreen", "isManualPositionOn: $isManualPositionOn")
+
+    // ---------------------------------------- LOGIC ----------------------------------------------
+    // get eqs list updated from db
+    val eqsUIFromDBState by mapViewModel.eqsUIFromDBState.collectAsStateWithLifecycle()
+
+    // Update user position and address in prefs in case location permissions changed meanwhile/later
+    LaunchedEffect(Unit) {
+        if (hasLocalPermissions) {
+            val userLocation = getLastKnownLatLng(context = context)
+            appPrefsViewModel.setUserPosition(userLocation )
+            if (userLocation != null) {
+                val address = getAddress(context = context, latLng = userLocation)
+                address?.let { appPrefsViewModel.setUserLocationInfo(address.toLocationInfo(context)) }
+            }
+        }
+    }
+
+
+    // ------------------------------------------- UI ----------------------------------------------
+    ScaffoldModel(
+        navController = navController,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        text = stringResource(R.string.maps_title),
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                },
+                navigationIcon = {
+                    LogoAnimationForward(
+                        modifier = Modifier
+                            .padding(start = 5.dp),
+                        size = 50.dp,
+                        frameDurationMs = 90L
+                    )
+                },
+                actions = {
+                    IconButton(onClick = {
+                        showOptions = !showOptions
+                    }) {
+                        Box {
+                            Icon(
+                                imageVector = Icons.Filled.Settings,
+                                contentDescription = "Map settings",
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            if(isManualPositionOn){
+                                Icon(
+                                    modifier = Modifier
+                                        .size(10.dp)
+                                        .align(Alignment.TopEnd)
+                                        .offset(x = 2.dp, y = (-2).dp),
+                                    painter = painterResource(id = R.drawable.ic_hand),
+                                    contentDescription = "Manual location on badge",
+                                    tint = extraGreen_dark
+                                )
+                            }
+                        }
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,       // background
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,  // title text
+                )
+
+            )
+        },
+    ) { padding ->
+
+        val bottomInset = padding.calculateBottomPadding()
+
+        when (val s = eqsUIFromDBState) {
+            is MapUiState.Loading -> {
+                Box(Modifier
+                    .fillMaxSize()
+                    .padding(top = 8.dp, bottom = bottomInset),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                    AdMobBannerView(
+                        adUnitId = stringResource(R.string.admob_key_bottom_banner),
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth()
+                    )
+                }
+            }
+            is MapUiState.Error -> {
+                Box(Modifier
+                    .fillMaxSize()
+                    .padding(top = 8.dp, bottom = bottomInset),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = stringResource(id = R.string.map_error_loading_earthquakes))
+                    AdMobBannerView(
+                        adUnitId = stringResource(R.string.admob_key_bottom_banner),
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth()
+                    )
+                }
+            }
+            is MapUiState.Success -> {
+                val eqs = s.data.orEmpty()
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 8.dp, bottom = padding.calculateBottomPadding())
+                ) {
+                    Box(
+                        Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            // .fillMaxSize()
+                            // .padding(top = 8.dp, bottom = bottomInset)
+                    ) {
+                        EarthquakeMapContent(
+                            padding = PaddingValues(top = 0.dp, bottom = 0.dp), //bottomInset),
+                            eqs = eqs,
+                            hasLocationPermissions = hasLocalPermissions,
+                            initialLatLng = initialLatLng,
+                            mapType = mapType,
+                            recenterTarget = recenterTo,
+                            onRecenterHandled = { recenterTo = null },
+                            settings = settings,
+                        )
+
+                        if (showOptions) {
+                            MapOptionsOverlayCard(
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .padding(32.dp, 32.dp, 32.dp, 32.dp),
+                                isManualPositionOn = isManualPositionOn,
+                                hasLocationPermissions = hasLocalPermissions,
+                                mapType = mapType,
+                                settings = settings,
+                                onManualPositionToggle = { checked ->
+                                    if (checked) {
+                                        Log.d(
+                                            TAG,
+                                            "EarthquakeMapScreen: manual position toggle: $checked"
+                                        )
+                                        // just open picker; updating storage on OK pressed -> onManualPositionConfirmed
+                                    } else { // uncheck
+                                        Log.d(
+                                            TAG,
+                                            "EarthquakeMapScreen: UNCHECKED manual position toggle: $checked"
+                                        )
+                                        // restore user position coordinates and address info and recenter
+                                        scope.launch {
+                                            val lastKnownUserPosition =
+                                                if (hasLocalPermissions) getLastKnownLatLng(context) else null
+                                            val fallback = lastKnownUserPosition ?: LatLng(
+                                                DEFAULT_LAT,
+                                                DEFAULT_LNG
+                                            )
+                                            val userAddress = getAddress(context, fallback)
+                                            appPrefsViewModel.setUserPosition(fallback)
+                                            userAddress?.let {
+                                                appPrefsViewModel
+                                                    .setUserLocationInfo(
+                                                        userAddress.toLocationInfo(
+                                                            context
+                                                        )
+                                                    )
+                                            }
+
+                                            appPrefsViewModel.setManualLocOn(false)
+                                            onManualPositionToggle(false)
+                                            recenterTo = fallback
+                                        }
+                                    }
+                                },
+                                onManualPositionConfirmed = { latLng, address -> // only after OK in picker
+                                    Log.d(
+                                        TAG,
+                                        "EarthquakeMapScreen: manual position confirmed: $latLng"
+                                    )
+                                    Log.d(
+                                        TAG,
+                                        "EarthquakeMapScreen: manual address confirmed: $address"
+                                    )
+                                    // save manual position coordinates and address info and recenter
+                                    appPrefsViewModel.setManualPosition(latLng)
+                                    appPrefsViewModel.setManualLocationInfo(
+                                        address.toLocationInfo(
+                                            context
+                                        )
+                                    )
+
+                                    appPrefsViewModel.setManualLocOn(true)
+                                    onManualPositionToggle(true)
+                                    recenterTo = latLng
+                                    showOptions = false
+                                },
+                                onMapTypeChange = { mapType = it },
+                                onDismiss = { showOptions = false },
+                            )
+                        }
+                    }
+
+                    AdMobBannerView(
+                        adUnitId = stringResource(R.string.admob_key_bottom_banner),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
+
