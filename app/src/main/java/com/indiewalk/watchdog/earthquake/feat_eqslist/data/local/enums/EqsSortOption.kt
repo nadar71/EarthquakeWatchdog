@@ -1,18 +1,14 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums
 
-import com.indiewalk.watchdog.earthquake.EarthquakeApp
-import com.indiewalk.watchdog.earthquake.R
-
-enum class EqsSortOption(val value: String) {
-    MAG_DESC (EarthquakeApp.Companion.appContext.getString(R.string.filter_sort_mag_desc)),   // greatest → smallest magnitude
-    MAG_ASC  (EarthquakeApp.Companion.appContext.getString(R.string.filter_sort_mag_asc)),    // smallest → greatest magnitude
-    DATE_ASC (EarthquakeApp.Companion.appContext.getString(R.string.filter_sort_date_asc)),   // oldest → newest
-    DATE_DESC(EarthquakeApp.Companion.appContext.getString(R.string.filter_sort_date_desc)),  // newest → oldest
-    DIST_ASC (EarthquakeApp.Companion.appContext.getString(R.string.filter_sort_dist_asc)),   // nearest → furthest
-    DIST_DESC(EarthquakeApp.Companion.appContext.getString(R.string.filter_sort_dist_desc));  // furthest → nearest
+enum class EqsSortOption {
+    MAG_DESC,   // greatest -> smallest magnitude
+    MAG_ASC,    // smallest -> greatest magnitude
+    DATE_ASC,   // oldest -> newest
+    DATE_DESC,  // newest -> oldest
+    DIST_ASC,   // nearest -> furthest
+    DIST_DESC;  // furthest -> nearest
 
     companion object {
-        // from "DATE_ASC" -> EqsSortOption-DATE_ASC item
         fun fromNameString(s: String?): EqsSortOption =
             runCatching { valueOf(s ?: "") }.getOrDefault(DATE_DESC)
     }

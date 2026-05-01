@@ -1,13 +1,12 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.data.repository
 
-import android.content.Context
 import android.util.Log
-import com.indiewalk.watchdog.earthquake.core.data.local.preferences.AppPrefs
+import com.indiewalk.watchdog.earthquake.core.domain.repository.AppPreferencesRepository
+import com.indiewalk.watchdog.earthquake.core.domain.repository.FilterPreferencesRepository
 import com.indiewalk.watchdog.earthquake.core.util.FormatUtil.formatInstantToUtcString
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.EarthquakeDao
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.FeedSnapshotDao
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.FeedWriterDao
-import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.remote.EarthquakeApi
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.SaveResult
@@ -16,7 +15,6 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.Earthquak
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.toEQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.toFeedSnapshot
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.repository.EQRepository
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -27,7 +25,8 @@ class EQRepositoryImpl @Inject constructor(
     private val feedSnapshotDao: FeedSnapshotDao,
     private val feedWriterDao: FeedWriterDao,
     private val earthquakeApi: EarthquakeApi,
-    @ApplicationContext private val context: Context
+    private val appPreferencesRepository: AppPreferencesRepository,
+    private val filterPreferencesRepository: FilterPreferencesRepository
 ): EQRepository {
 
     //------------------------------------------- API ----------------------------------------------
@@ -51,8 +50,8 @@ class EQRepositoryImpl @Inject constructor(
             // limit = 200
         )
         Log.d("EQRepositoryImpl", "Fetch request params: $params")
-        AppPrefs.setLastRefreshTime(context, formatInstantToUtcString(Instant.now()))
-        FilterPrefs.setStartDate(context, formatInstantToUtcString(params.startTime))
+        appPreferencesRepository.setLastRefreshTime(formatInstantToUtcString(Instant.now()))
+        filterPreferencesRepository.setStartDate(formatInstantToUtcString(params.startTime))
         val feed = earthquakeApi.fetchFeed(params)
         refreshDB(feed)
         return feed
@@ -98,7 +97,7 @@ class EQRepositoryImpl @Inject constructor(
     override suspend fun observeInBbox(
         west: Double, south: Double, east: Double, north: Double
     ): Flow<List<EQEntity>> {
-        return observeInBbox(west, south, east, north)
+        return eqDao.observeInBbox(west, south, east, north)
     }
 
     override suspend fun loadAllEQs(): MutableList<EQEntity> {
@@ -151,7 +150,7 @@ class EQRepositoryImpl @Inject constructor(
 
     override suspend fun refreshDB(feed: EQFeaturesCollectionDTO): SaveResult {
         val snapshot = feed.toFeedSnapshot()
-        val appSettings = AppPrefs.getCurrentSettings(context) // suspend
+        val appSettings = appPreferencesRepository.getCurrentSettings()
         // update eqs distance from user/default position in prefs
         val events = feed.features.map {
             it.toEQEntity(feedGenerated = snapshot.generated, settings = appSettings) }

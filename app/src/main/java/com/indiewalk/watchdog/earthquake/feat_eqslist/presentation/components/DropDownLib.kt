@@ -12,11 +12,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.MinMagnitude
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.TimeInterval
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.util.label
 
 
 // default : DATE_DESC : newest -> oldest
@@ -33,7 +32,7 @@ fun SortDropdown(
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
         OutlinedTextField(
             modifier = modifier.menuAnchor(),
-            value = value?.value ?: EqsSortOption.DATE_DESC.value, // labelNone,
+            value = value?.label() ?: EqsSortOption.DATE_DESC.label(),
             onValueChange = {},
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) }
@@ -45,7 +44,7 @@ fun SortDropdown(
             )*/
             items.forEach { opt ->
                 DropdownMenuItem(
-                    text = { Text(opt.value) },
+                    text = { Text(opt.label()) },
                     onClick = { onChange(opt); expanded = false }
                 )
             }
@@ -67,7 +66,7 @@ fun MinMagDropdown(
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
         OutlinedTextField(
             modifier = modifier.menuAnchor(),
-            value = value?.value ?: MinMagnitude.MAG_0_0.value,// labelNone, // enum holds the localized label
+            value = value?.label() ?: MinMagnitude.MAG_3_0.label(),
             onValueChange = {},
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) }
@@ -75,7 +74,7 @@ fun MinMagDropdown(
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             items.forEach { opt ->
                 DropdownMenuItem(
-                    text = { Text(opt.value) },
+                    text = { Text(opt.label()) },
                     onClick = { onChange(opt); expanded = false }
                 )
             }
@@ -97,7 +96,7 @@ fun PeriodDropdown(
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
         OutlinedTextField(
             modifier = modifier.menuAnchor(),
-            value = value.value,
+            value = value.label(),
             onValueChange = {},
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) }
@@ -105,7 +104,7 @@ fun PeriodDropdown(
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             items.forEach { opt ->
                 DropdownMenuItem(
-                    text = { Text(opt.value) },
+                    text = { Text(opt.label()) },
                     onClick = { onChange(opt); expanded = false }
                 )
             }

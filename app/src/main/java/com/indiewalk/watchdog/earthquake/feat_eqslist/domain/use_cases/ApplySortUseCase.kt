@@ -4,9 +4,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.haversineDistanceKm
+import javax.inject.Inject
 import kotlin.math.*
 
-class ApplySortUseCase {
+class ApplySortUseCase @Inject constructor() {
     fun invoke(
         items: List<EQEntity>,
         sort: EqsSortOption,

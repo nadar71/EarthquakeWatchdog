@@ -123,8 +123,6 @@ object FilterPrefs {
             stringBuilder.append("${key.name}: $value\n")
         }
 
-        val result = stringBuilder.toString()
-        println(result)
-        return result
+        return stringBuilder.toString()
     }
 }

@@ -29,7 +29,6 @@ import com.indiewalk.watchdog.earthquake.core.data.local.enums.UnitSystem
 import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationRoutes
-import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.text_16
 import com.indiewalk.watchdog.earthquake.core.util.GenericUtil.openAppStore
 import com.indiewalk.watchdog.earthquake.core.util.sendEmail
@@ -43,7 +42,7 @@ import com.indiewalk.watchdog.earthquake.feat_settings.presentation.components.S
 @Composable
 fun SettingsScreen(
     navController: NavHostController,
-    appPrefsViewModel: AppPrefsViewModel = hiltViewModel()
+    settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     val TAG = "SettingsScreen"
     Log.d(TAG, "SettingsScreen on")
@@ -52,7 +51,7 @@ fun SettingsScreen(
 
     var showDisclaimer by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
-    val appPrefs by appPrefsViewModel.settings.collectAsStateWithLifecycle()
+    val appPrefs by settingsViewModel.settings.collectAsStateWithLifecycle()
 
     ScaffoldModel(
         navController = navController,
@@ -151,7 +150,7 @@ fun SettingsScreen(
                     UnitSystem.entries.forEach { unitSystem ->
                         SegmentedButton(
                             selected = appPrefs.unitSystem == unitSystem,
-                            onClick = { appPrefsViewModel.toggleUnitSystem(unitSystem) },
+                            onClick = { settingsViewModel.setUnitSystem(unitSystem) },
                             shape = SegmentedButtonDefaults.itemShape(
                                 index = unitSystem.ordinal,
                                 count = UnitSystem.entries.size
@@ -181,7 +180,7 @@ fun SettingsScreen(
                     ThemeMode.entries.forEach { themeMode ->
                         SegmentedButton(
                             selected = appPrefs.mode == themeMode,
-                            onClick = { appPrefsViewModel.setThemeMode(themeMode) },
+                            onClick = { settingsViewModel.setThemeMode(themeMode) },
                             shape = SegmentedButtonDefaults.itemShape(
                                 index = themeMode.ordinal,
                                 count = ThemeMode.entries.size
