@@ -111,6 +111,8 @@ class FakeLocationRepository(
 
 class FakeEQRepository(
     initialEarthquakes: List<EQEntity> = emptyList(),
+    private val observeFlow: Flow<List<EQEntity>>? = null,
+    private val observeError: Exception? = null,
     private val fetchBlock: suspend FakeEQRepository.() -> Unit = {}
 ) : EQRepository {
     val earthquakes = MutableStateFlow(initialEarthquakes)
@@ -119,7 +121,7 @@ class FakeEQRepository(
     override suspend fun fetchAndSaveDefault(): EQFeaturesCollectionDTO {
         fetchCount += 1
         fetchBlock()
-        throw NotImplementedError("DTO not needed in tests")
+        return sampleEqFeed()
     }
 
     suspend fun succeedFetch() {
@@ -134,8 +136,20 @@ class FakeEQRepository(
         error("unused")
     }
 
-    override suspend fun observeAll(): Flow<List<EQEntity>> = earthquakes.asStateFlow()
-    override suspend fun observeInBbox(west: Double, south: Double, east: Double, north: Double): Flow<List<EQEntity>> = earthquakes.asStateFlow()
+    override suspend fun observeAll(): Flow<List<EQEntity>> {
+        observeError?.let { throw it }
+        return observeFlow ?: earthquakes.asStateFlow()
+    }
+
+    override suspend fun observeInBbox(
+        west: Double,
+        south: Double,
+        east: Double,
+        north: Double
+    ): Flow<List<EQEntity>> {
+        observeError?.let { throw it }
+        return observeFlow ?: earthquakes.asStateFlow()
+    }
     override suspend fun loadAllEQs(): MutableList<EQEntity> = earthquakes.value.toMutableList()
     override suspend fun loadAllEQs_orderby_desc_mag(min_mag: Double): MutableList<EQEntity> = mutableListOf()
     override suspend fun loadAllEQs_orderby_asc_mag(min_mag: Double): MutableList<EQEntity> = mutableListOf()
@@ -151,4 +165,3 @@ class FakeEQRepository(
     override suspend fun dropEarthquakeListTable() = Unit
     override suspend fun deleteOlderThan(cutoff: Long) = Unit
 }
-
