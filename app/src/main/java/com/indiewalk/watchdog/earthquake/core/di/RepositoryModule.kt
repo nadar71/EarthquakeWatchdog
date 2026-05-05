@@ -1,4 +1,4 @@
-package eu.indiewalkabout.fridgemanager.core.di
+package com.indiewalk.watchdog.earthquake.core.di
 
 import android.content.Context
 import com.indiewalk.watchdog.earthquake.core.data.repository.AppPreferencesRepositoryImpl
