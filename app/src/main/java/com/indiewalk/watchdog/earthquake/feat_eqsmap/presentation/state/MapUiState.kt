@@ -1,9 +1,16 @@
 package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.state
 
-import eu.indiewalkabout.fridgemanager.core.domain.model.ErrorResponse
+import com.google.android.gms.maps.model.LatLng
+import com.indiewalk.watchdog.earthquake.core.domain.model.AppError
+import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 
-sealed class MapUiState<out T> {
-    object Loading : MapUiState<Nothing>()
-    data class Success<out T>(val data: T) : MapUiState<T>()
-    data class Error(val error: ErrorResponse) : MapUiState<Nothing>()
-}
+data class MapUiState(
+    val isLoading: Boolean = true,
+    val earthquakes: List<EQEntity> = emptyList(),
+    val settings: AppSettings = AppSettings(),
+    val hasLocationPermission: Boolean = false,
+    val recenterTarget: LatLng? = null,
+    val error: AppError? = null
+)
+

@@ -1,19 +1,16 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums
 
-import com.indiewalk.watchdog.earthquake.EarthquakeApp.Companion.appContext
-import com.indiewalk.watchdog.earthquake.R
 import java.util.Calendar
 
-enum class TimeInterval(val value: String) {
-    TODAY(appContext.getString(R.string.filter_date_period_today_label)),
-    HOURS_24(appContext.getString(R.string.filter_date_period_24h_label)),
-    HOURS_48(appContext.getString(R.string.filter_date_period_48h_label)),
-    LAST_WEEK(appContext.getString(R.string.filter_date_period_week_label)),
-    LAST_2_WEEKS(appContext.getString(R.string.filter_date_period_2_week_label)),
-    LAST_30_DAYS(appContext.getString(R.string.filter_date_period_30_days_label));
+enum class TimeInterval {
+    TODAY,
+    HOURS_24,
+    HOURS_48,
+    LAST_WEEK,
+    LAST_2_WEEKS,
+    LAST_30_DAYS;
 
     companion object {
-        // from "LAST_30_DAYS" -> TimePeriod.LAST_30_DAYS item
         fun fromNameString(s: String?): TimeInterval =
             runCatching { TimeInterval.valueOf(s ?: "") }.getOrDefault(LAST_30_DAYS)
     }

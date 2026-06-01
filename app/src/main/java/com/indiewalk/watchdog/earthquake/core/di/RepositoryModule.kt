@@ -1,6 +1,12 @@
-package eu.indiewalkabout.fridgemanager.core.di
+package com.indiewalk.watchdog.earthquake.core.di
 
 import android.content.Context
+import com.indiewalk.watchdog.earthquake.core.data.repository.AppPreferencesRepositoryImpl
+import com.indiewalk.watchdog.earthquake.core.data.repository.FilterPreferencesRepositoryImpl
+import com.indiewalk.watchdog.earthquake.core.data.repository.LocationRepositoryImpl
+import com.indiewalk.watchdog.earthquake.core.domain.repository.AppPreferencesRepository
+import com.indiewalk.watchdog.earthquake.core.domain.repository.FilterPreferencesRepository
+import com.indiewalk.watchdog.earthquake.core.domain.repository.LocationRepository
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.EarthquakeDao
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.FeedSnapshotDao
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.db.FeedWriterDao
@@ -20,13 +26,39 @@ object RepositoryModule {
 
     @Provides
     @Singleton
+    fun provideAppPreferencesRepository(
+        @ApplicationContext context: Context
+    ): AppPreferencesRepository = AppPreferencesRepositoryImpl(context)
+
+    @Provides
+    @Singleton
+    fun provideFilterPreferencesRepository(
+        @ApplicationContext context: Context
+    ): FilterPreferencesRepository = FilterPreferencesRepositoryImpl(context)
+
+    @Provides
+    @Singleton
+    fun provideLocationRepository(
+        @ApplicationContext context: Context
+    ): LocationRepository = LocationRepositoryImpl(context)
+
+    @Provides
+    @Singleton
     fun provideEQRepository(
         earthquakeDao: EarthquakeDao,
         feedSnapshotDao: FeedSnapshotDao,
         feedWriterDao: FeedWriterDao,
         earthquakeApi: EarthquakeApi,
-        @ApplicationContext context: Context
+        appPreferencesRepository: AppPreferencesRepository,
+        filterPreferencesRepository: FilterPreferencesRepository
     ): EQRepository {
-        return EQRepositoryImpl(earthquakeDao, feedSnapshotDao, feedWriterDao, earthquakeApi, context)
+        return EQRepositoryImpl(
+            earthquakeDao,
+            feedSnapshotDao,
+            feedWriterDao,
+            earthquakeApi,
+            appPreferencesRepository,
+            filterPreferencesRepository
+        )
     }
 }

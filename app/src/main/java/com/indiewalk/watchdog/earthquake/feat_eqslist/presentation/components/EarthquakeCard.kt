@@ -37,7 +37,7 @@ import com.indiewalk.watchdog.earthquake.core.data.local.enums.UnitSystem
 import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.EQWatchdogTheme
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.onBackgroundLight
-import com.indiewalk.watchdog.earthquake.core.util.extensions.kmToDisplayString
+import com.indiewalk.watchdog.earthquake.core.util.extensions.kmToDisplayInt
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.EarthquakeUI
 import com.indiewalk.watchdog.earthquake.core.util.FormatUtil.formatDateTime
 import java.util.Locale
@@ -141,8 +141,15 @@ fun EarthquakeCard(
                     horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.Center
                 ) {
+                    val distanceUnitLabel = stringResource(
+                        if (unitSystem == UnitSystem.IMPERIAL) {
+                            R.string.settings_mi_distance_unit_label
+                        } else {
+                            R.string.settings_km_distance_unit_label
+                        }
+                    )
                     Text(
-                        text = distanceKm.kmToDisplayString(unitSystem).toString(),
+                        text = "${distanceKm.kmToDisplayInt(unitSystem)} $distanceUnitLabel",
                         style = MaterialTheme.typography.labelLarge.copy(
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Medium

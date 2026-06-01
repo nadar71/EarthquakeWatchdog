@@ -1,13 +1,12 @@
 package com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.indiewalk.watchdog.earthquake.core.data.local.preferences.AppPrefs
+import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
 import com.indiewalk.watchdog.earthquake.core.data.local.enums.UnitSystem
+import com.indiewalk.watchdog.earthquake.core.domain.repository.AppPreferencesRepository
 import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -16,24 +15,28 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    @ApplicationContext private val context: Context
+    private val appPreferencesRepository: AppPreferencesRepository
 ) : ViewModel() {
 
     val settings: StateFlow<AppSettings> =
-        AppPrefs.settingsFlow(context)
+        appPreferencesRepository.settingsFlow
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppSettings())
 
-    fun toggleUnitSystem() {
+    fun setUnitSystem(unitSystem: UnitSystem) {
         viewModelScope.launch {
-            val current = settings.value.unitSystem
-            val newUnit = if (current == UnitSystem.METRIC) UnitSystem.IMPERIAL else UnitSystem.METRIC
-            AppPrefs.setUnitSystem(context, newUnit)
+            appPreferencesRepository.setUnitSystem(unitSystem)
+        }
+    }
+
+    fun setThemeMode(themeMode: ThemeMode) {
+        viewModelScope.launch {
+            appPreferencesRepository.setThemeMode(themeMode)
         }
     }
 
     fun setManualLocation(enabled: Boolean) {
         viewModelScope.launch {
-            AppPrefs.setManualLocationOn(context, enabled)
+            appPreferencesRepository.setManualLocationOn(enabled)
         }
     }
 }

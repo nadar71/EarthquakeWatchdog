@@ -1,62 +1,112 @@
 package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui
 
-import android.content.Context
-import android.util.Log
+import com.google.android.gms.maps.model.LatLng
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.indiewalk.watchdog.earthquake.core.data.local.preferences.AppPrefs
-import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LAT
+import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LNG
+import com.indiewalk.watchdog.earthquake.core.domain.model.AppError
+import com.indiewalk.watchdog.earthquake.core.domain.repository.AppPreferencesRepository
+import com.indiewalk.watchdog.earthquake.core.domain.repository.LocationRepository
+import com.indiewalk.watchdog.earthquake.core.model.preferences.LocationInfo
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.domain.use_cases.ObserveEarthquakesUseCase
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.state.MapUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import eu.indiewalkabout.fridgemanager.core.domain.model.ErrorResponse
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
     private val observeEarthquakesUseCase: ObserveEarthquakesUseCase,
-    @ApplicationContext private val context: Context
+    private val appPreferencesRepository: AppPreferencesRepository,
+    private val locationRepository: LocationRepository
 ) : ViewModel() {
 
-    private val TAG = "MapViewModel"
-
-    private val _eqsUIFromDBState = MutableStateFlow<MapUiState<List<EQEntity>?>>(
-        MapUiState.Loading)
-    val eqsUIFromDBState: StateFlow<MapUiState<List<EQEntity>?>> =
-        _eqsUIFromDBState.asStateFlow()
-
-    val settings: StateFlow<AppSettings> =
-        AppPrefs.settingsFlow(context)
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppSettings())
+    private val _uiState = MutableStateFlow(MapUiState())
+    val uiState: StateFlow<MapUiState> = _uiState.asStateFlow()
 
     init {
+        observeSettings()
         observeEarthquakes()
     }
 
-    fun observeEarthquakes() {
-        viewModelScope.launch {
-            observeEarthquakesUseCase()
-                .onStart { _eqsUIFromDBState.value = MapUiState.Loading }
-                .catch { e ->
-                    Log.d(TAG, "observeEarthquakes: exception error: ${e.message}")
-                    _eqsUIFromDBState.value = MapUiState.Error(
-                        ErrorResponse(0, emptyList(), e.message ?: "Unknown error")
-                    )
-                }
-                .collect { list ->
-                    _eqsUIFromDBState.value = MapUiState.Success(list)
-                }
+    fun onLocationPermissionChanged(hasLocationPermission: Boolean) {
+        _uiState.update { it.copy(hasLocationPermission = hasLocationPermission) }
+        if (hasLocationPermission) {
+            viewModelScope.launch { syncUserLocation() }
         }
     }
 
+    fun onManualLocationCleared() {
+        viewModelScope.launch {
+            val fallback = resolveUserFallback(_uiState.value.hasLocationPermission)
+            appPreferencesRepository.setUserPosition(fallback)
+            appPreferencesRepository.setUserLocationInfo(locationRepository.getLocationInfo(fallback))
+            appPreferencesRepository.setManualLocationOn(false)
+            _uiState.update { it.copy(recenterTarget = fallback) }
+        }
+    }
+
+    fun onManualLocationConfirmed(latLng: LatLng, locationInfo: LocationInfo) {
+        viewModelScope.launch {
+            appPreferencesRepository.setManualPosition(latLng)
+            appPreferencesRepository.setManualLocationInfo(locationInfo)
+            appPreferencesRepository.setManualLocationOn(true)
+            _uiState.update { it.copy(recenterTarget = latLng) }
+        }
+    }
+
+    fun onRecenterHandled() {
+        _uiState.update { it.copy(recenterTarget = null) }
+    }
+
+    private fun observeSettings() {
+        viewModelScope.launch {
+            appPreferencesRepository.settingsFlow.collect { settings ->
+                _uiState.update { current -> current.copy(settings = settings) }
+            }
+        }
+    }
+
+    private fun observeEarthquakes() {
+        viewModelScope.launch {
+            try {
+                observeEarthquakesUseCase().collect { earthquakes ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            earthquakes = earthquakes,
+                            error = null
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = AppError.Storage(e.message)
+                    )
+                }
+            }
+        }
+    }
+
+    private suspend fun syncUserLocation() {
+        val userLocation = locationRepository.getLastKnownLatLng() ?: return
+        appPreferencesRepository.setUserPosition(userLocation)
+        appPreferencesRepository.setUserLocationInfo(locationRepository.getLocationInfo(userLocation))
+    }
+
+    private suspend fun resolveUserFallback(hasLocationPermission: Boolean): LatLng {
+        return if (hasLocationPermission) {
+            locationRepository.getLastKnownLatLng() ?: LatLng(DEFAULT_LAT, DEFAULT_LNG)
+        } else {
+            LatLng(DEFAULT_LAT, DEFAULT_LNG)
+        }
+    }
 }
+
