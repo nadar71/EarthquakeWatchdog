@@ -6,17 +6,13 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.ads.MobileAds
 import com.indiewalk.watchdog.earthquake.EarthquakeApp
 import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationGraph
-import com.indiewalk.watchdog.earthquake.core.presentation.preferences.AppPrefsViewModel
-import com.indiewalk.watchdog.earthquake.core.presentation.theme.ThemeViewModel
+import com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui.SettingsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.EQWatchdogTheme
 import com.indiewalk.watchdog.earthquake.feat_ads.util.ConsentManager
@@ -25,7 +21,7 @@ import com.indiewalk.watchdog.earthquake.feat_ads.util.RequestConfigurationUtils
 
 @AndroidEntryPoint
 class MainActivity() : AppCompatActivity() {
-    private val appPrefsViewModel: AppPrefsViewModel by viewModels()
+    private val settingsViewModel: SettingsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +34,7 @@ class MainActivity() : AppCompatActivity() {
             MobileAds.initialize(this)
             setContent {
                 EarthquakeApp.canRequestAdsFlag = canRequestAds
-                val settings by appPrefsViewModel.settings.collectAsStateWithLifecycle()
+                val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
 
                 // switch between System / Light / Dark
                 // var themeMode by remember { mutableStateOf(ThemeMode.System) }

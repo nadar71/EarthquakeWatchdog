@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.indiewalk.watchdog.earthquake.R
+import com.indiewalk.watchdog.earthquake.core.model.preferences.LocationInfo
 import com.indiewalk.watchdog.earthquake.core.util.extensions.toLocationInfo
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
 import java.util.Locale
@@ -47,7 +48,7 @@ fun LocationPicker(
     userPosition: LatLng,            // user position: maybe Default position if permissions not granted
     hasLocationPermissions: Boolean,
     isManualOn: Boolean,
-    onLocationSelected: (LatLng, Address) -> Unit,
+    onLocationSelected: (LatLng, LocationInfo) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val TAG = "LocationPickerNoPermissionsReq"
@@ -96,7 +97,10 @@ fun LocationPicker(
                                     context.getString(R.string.generic_unknown_location)
                                 )
                             }
-                        onLocationSelected(coordinates, selectedLocationAddress ?: safeAddress)
+                        onLocationSelected(
+                            coordinates,
+                            (selectedLocationAddress ?: safeAddress).toLocationInfo(context)
+                        )
                     }
                 }
                 onDismiss()

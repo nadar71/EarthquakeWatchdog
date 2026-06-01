@@ -1,99 +1,169 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui
 
-import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.indiewalk.watchdog.earthquake.EarthquakeApp
-import com.indiewalk.watchdog.earthquake.core.data.local.preferences.AppPrefs
-import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
-import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.preferences.FilterPrefs
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQFeaturesCollectionDTO
+import com.indiewalk.watchdog.earthquake.core.domain.model.AppError
+import com.indiewalk.watchdog.earthquake.core.domain.repository.AppPreferencesRepository
+import com.indiewalk.watchdog.earthquake.core.domain.repository.FilterPreferencesRepository
+import com.indiewalk.watchdog.earthquake.core.domain.repository.LocationRepository
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.use_cases.FetchAndSaveDefaultUseCase
-import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.use_cases.LoadAllEQsUseCase
-import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromDBState
-import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EQsListUiFromRemoteState
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.MinMagnitude
+import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.TimeInterval
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.toEarthquakeUI
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.repository.EQRepository
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.use_cases.FilterEarthquakesUseCase
+import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.state.EarthquakeListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import eu.indiewalkabout.fridgemanager.core.domain.model.ApiResponse
-import eu.indiewalkabout.fridgemanager.core.domain.model.DbResponse
-import eu.indiewalkabout.fridgemanager.core.domain.model.ErrorResponse
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
 class EarthquakeListViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val fetchAndSaveDefaultUseCase: FetchAndSaveDefaultUseCase,
-    private val loadAllEQsUseCase: LoadAllEQsUseCase
+    private val repository: EQRepository,
+    private val appPreferencesRepository: AppPreferencesRepository,
+    private val filterPreferencesRepository: FilterPreferencesRepository,
+    private val locationRepository: LocationRepository,
+    private val filterEarthquakesUseCase: FilterEarthquakesUseCase
 ) : ViewModel() {
-    private val TAG = "MainViewModel"
 
-    val settings: StateFlow<AppSettings> = AppPrefs.settingsFlow(EarthquakeApp.appContext)
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppSettings())
+    private val _uiState = MutableStateFlow(EarthquakeListUiState())
+    val uiState: StateFlow<EarthquakeListUiState> = _uiState.asStateFlow()
 
-    private val _eqsUIFromRemoteState = MutableStateFlow<EQsListUiFromRemoteState<EQFeaturesCollectionDTO>>(
-        EQsListUiFromRemoteState.Idle)
-    val eqsUIFromRemoteState: StateFlow<EQsListUiFromRemoteState<EQFeaturesCollectionDTO>> =
-        _eqsUIFromRemoteState.asStateFlow()
+    private var hasStarted = false
 
-    private val _eqsUIFromDBState = MutableStateFlow<EQsListUiFromDBState<List<EQEntity>?>>(
-        EQsListUiFromDBState.Idle)
-    val eqsUIFromDBState: StateFlow<EQsListUiFromDBState<List<EQEntity>?>> =
-        _eqsUIFromDBState.asStateFlow()
+    init {
+        observeSettings()
+        observeFilters()
+        observeEarthquakes()
+    }
 
+    fun onScreenStarted(hasLocationPermission: Boolean) {
+        if (hasStarted) return
+        hasStarted = true
+        onLocationPermissionChanged(hasLocationPermission)
+        refreshEarthquakes()
+    }
 
-    // request eqs list from remote and save to db
-    fun refreshEQsList() {
+    fun onLocationPermissionChanged(hasLocationPermission: Boolean) {
+        _uiState.update { it.copy(hasLocationPermission = hasLocationPermission) }
+        if (hasLocationPermission) {
+            viewModelScope.launch { syncUserLocation() }
+        }
+    }
+
+    fun onRefreshRequested() {
+        refreshEarthquakes()
+    }
+
+    fun onFilterSheetVisibilityChanged(isVisible: Boolean) {
+        _uiState.update { it.copy(isFilterSheetVisible = isVisible) }
+    }
+
+    fun onFilterConfirmed(
+        sortOption: EqsSortOption,
+        minMagnitude: MinMagnitude,
+        timeInterval: TimeInterval
+    ) {
         viewModelScope.launch {
-            Log.d(TAG, "refreshEQsList: called")
-            _eqsUIFromRemoteState.value = EQsListUiFromRemoteState.Loading
-            try {
-                val response = fetchAndSaveDefaultUseCase()
-                _eqsUIFromRemoteState.value = when (response) {
-                    is ApiResponse.Success -> {
-                        Log.d(TAG, "refreshEQsList: success")
-                        EQsListUiFromRemoteState.Success(response.data)
-                    }
-                    is ApiResponse.Error -> {
-                        Log.d(TAG, "refreshEQsList: error")
-                        EQsListUiFromRemoteState.Error(response.error)
-                    }
-                }
-            } catch (e: Exception) {
-                Log.d(TAG, "refreshEQsList: exception error: ${e.message}")
-                _eqsUIFromRemoteState.value = EQsListUiFromRemoteState.Error(
-                    ErrorResponse(0, emptyList(), e.message ?: "Unknown error")
-                )
+            filterPreferencesRepository.updateFilters(sortOption, minMagnitude, timeInterval)
+            _uiState.update { it.copy(isFilterSheetVisible = false) }
+        }
+    }
+
+    fun onEarthquakeSelected(id: String) {
+        val selected = _uiState.value.filteredEarthquakes.firstOrNull { it.id == id }?.toEarthquakeUI()
+        _uiState.update { it.copy(selectedEarthquake = selected) }
+    }
+
+    fun onEarthquakeDialogDismissed() {
+        _uiState.update { it.copy(selectedEarthquake = null) }
+    }
+
+    private fun observeSettings() {
+        viewModelScope.launch {
+            appPreferencesRepository.settingsFlow.collect { settings ->
+                _uiState.update { current -> current.copy(settings = settings) }
             }
         }
     }
 
-    // get eqs list from db
-    fun loadAllEQsDB() {
+    private fun observeFilters() {
         viewModelScope.launch {
-            _eqsUIFromDBState.value = EQsListUiFromDBState.Loading
+            filterPreferencesRepository.filterSettingsFlow.collect { filterSettings ->
+                _uiState.update { current ->
+                    current.copy(
+                        filterSettings = filterSettings,
+                        filteredEarthquakes = filterEarthquakesUseCase(
+                            current.allEarthquakes,
+                            filterSettings
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    private fun observeEarthquakes() {
+        viewModelScope.launch {
             try {
-                val response = loadAllEQsUseCase()
-                _eqsUIFromDBState.value = when (response) {
-                    is DbResponse.Success -> EQsListUiFromDBState.Success(response.data)
-                    is DbResponse.Error -> EQsListUiFromDBState.Error(response.error)
+                repository.observeAll().collect { earthquakes ->
+                    _uiState.update { current ->
+                        current.copy(
+                            isLoading = false,
+                            allEarthquakes = earthquakes,
+                            filteredEarthquakes = filterEarthquakesUseCase(
+                                earthquakes,
+                                current.filterSettings
+                            ),
+                            error = null
+                        )
+                    }
                 }
             } catch (e: Exception) {
-                Log.d(TAG, "loadAllEQsDB: exception error: ${e.message}")
-                _eqsUIFromDBState.value = EQsListUiFromDBState.Error(
-                    ErrorResponse(0, emptyList(), e.message ?: "Unknown error")
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        isRefreshing = false,
+                        error = AppError.Storage(e.message)
+                    )
+                }
+            }
+        }
+    }
+
+    private fun refreshEarthquakes() {
+        viewModelScope.launch {
+            _uiState.update { current ->
+                current.copy(
+                    isLoading = current.allEarthquakes.isEmpty(),
+                    isRefreshing = true,
+                    error = null
                 )
             }
-
+            try {
+                repository.fetchAndSaveDefault()
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        isRefreshing = false,
+                        error = AppError.Network(e.message)
+                    )
+                }
+                return@launch
+            }
+            _uiState.update { it.copy(isRefreshing = false) }
         }
+    }
+
+    private suspend fun syncUserLocation() {
+        val userLocation = locationRepository.getLastKnownLatLng() ?: return
+        appPreferencesRepository.setUserPosition(userLocation)
+        appPreferencesRepository.setUserLocationInfo(locationRepository.getLocationInfo(userLocation))
     }
 }
+

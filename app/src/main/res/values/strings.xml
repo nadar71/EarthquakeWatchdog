@@ -157,6 +157,7 @@
 
     <!-- - - - - - - - - - - - - - - - - - Error - - - - - - - - - - -  - - - - - - - - - - - - - -->
     <string name="no_earthquakes">No earthquakes found. Try another filter.</string>
+    <string name="no_internet_connection">No Internet connection. You need to connect at least the first time to download earthquake data.</string>
     <!-- Generic error shown when loading earthquakes fails -->
     <string name="error_loading_earthquakes">Error loading earthquakes data</string>
     <string name="api_generic_error">Error performing remote request</string>

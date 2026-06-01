@@ -39,8 +39,6 @@ import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LNG
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_POSITION
 import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
 import com.indiewalk.watchdog.earthquake.core.util.GraphicsUtil.bitmapDescriptorFromVector
-import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getAddress
-import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.getLastKnownLatLng
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.EarthquakeMarker
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.GraticuleTileProvider
@@ -82,13 +80,8 @@ fun EarthquakeMapContent(
 
 
 
-    // Manual localization marker address
-    var manualPositionTitle by remember(settings.manualPosition) { mutableStateOf<String?>(null) }
-    LaunchedEffect(settings.manualPosition) {
-        manualPositionTitle = settings.manualPosition.let { ll ->
-            val address = getAddress(context, ll)
-            address?.getAddressLine(0) + " " + address?.locality + " " + address?.countryCode
-        }
+    val manualPositionTitle = remember(settings.manualLocationInfo) {
+        settings.manualLocationInfo.concatString(context)
     }
 
     // Init camera target :
@@ -116,12 +109,14 @@ fun EarthquakeMapContent(
         // if manual is off, center map in user location
         if (!didCenterOnManual) {
             val didCenterOnUser = if (hasLocationPermissions) {
-                val userPosition = getLastKnownLatLng(context)
+                val userPosition = settings.userPosition
                 Log.d("EarthquakeMapContent", "Centering on user location: $userPosition")
-                if (userPosition != null) {
+                if (userPosition.latitude != DEFAULT_LAT || userPosition.longitude != DEFAULT_LNG) {
                     cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(userPosition, 7f))
                     true
-                } else false
+                } else {
+                    false
+                }
             } else false
 
             // ...else center in bound or in default location
@@ -244,7 +239,7 @@ fun EarthquakeMapContent(
             
             Marker(
                 state = markerState,
-                title = (manualPositionTitle ?: stringResource(id = R.string.maps_selected_location)),
+                title = manualPositionTitle,
                 snippet = " ${stringResource(id = R.string.maps_manual_selected)}",
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
             )
@@ -260,5 +255,4 @@ fun EarthquakeMapContent(
         }
     }
 }
-
 

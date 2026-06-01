@@ -1,6 +1,5 @@
 package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui
 
-import android.location.Address
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -40,6 +39,7 @@ import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LNG
 import com.indiewalk.watchdog.earthquake.core.data.local.enums.UnitSystem
 import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
+import com.indiewalk.watchdog.earthquake.core.model.preferences.LocationInfo
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.LocationPicker
 
 
@@ -51,7 +51,7 @@ fun MapOptionsOverlayCard(
     mapType: MapType,
     settings: AppSettings,
     onManualPositionToggle: (Boolean) -> Unit,                 // UI toggle
-    onManualPositionConfirmed: (LatLng, Address) -> Unit,      // OK clicked, update LatLng, Address
+    onManualPositionConfirmed: (LatLng, LocationInfo) -> Unit, // OK clicked, update LatLng, location info
     onMapTypeChange: (MapType) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -191,7 +191,7 @@ private fun MapOptionsOverlayCardPreview() {
     val isManualPositionOn = remember { mutableStateOf(false) }
     val mapType = remember { mutableStateOf(MapType.NORMAL) }
     val manualPosition = remember { mutableStateOf(LatLng(DEFAULT_LAT, DEFAULT_LNG)) }
-    val manualAddress = remember { mutableStateOf<Address?>(null) }
+    val manualAddress = remember { mutableStateOf<LocationInfo?>(null) }
 
 
     Box(
@@ -220,5 +220,4 @@ private fun MapOptionsOverlayCardPreview() {
         )
     }
 }
-
 
