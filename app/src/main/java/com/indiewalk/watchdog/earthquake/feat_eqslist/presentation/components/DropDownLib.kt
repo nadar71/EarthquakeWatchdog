@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.fillMaxWidth
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.MinMagnitude
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.TimeInterval
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
@@ -31,7 +32,9 @@ fun SortDropdown(
 
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
         OutlinedTextField(
-            modifier = modifier.menuAnchor(),
+            modifier = modifier
+                .fillMaxWidth()
+                .menuAnchor(),
             value = value?.label() ?: EqsSortOption.DATE_DESC.label(),
             onValueChange = {},
             readOnly = true,
@@ -65,7 +68,9 @@ fun MinMagDropdown(
 
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
         OutlinedTextField(
-            modifier = modifier.menuAnchor(),
+            modifier = modifier
+                .fillMaxWidth()
+                .menuAnchor(),
             value = value?.label() ?: MinMagnitude.MAG_3_0.label(),
             onValueChange = {},
             readOnly = true,
@@ -95,7 +100,9 @@ fun PeriodDropdown(
 
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
         OutlinedTextField(
-            modifier = modifier.menuAnchor(),
+            modifier = modifier
+                .fillMaxWidth()
+                .menuAnchor(),
             value = value.label(),
             onValueChange = {},
             readOnly = true,

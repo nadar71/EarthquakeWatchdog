@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
@@ -57,73 +56,56 @@ fun FilterSheet(
         onDismissRequest = onDismiss,
         dragHandle = { BottomSheetDefaults.DragHandle() }
     ) {
-        Column(Modifier.padding(16.dp)) {
+        Column(
+            Modifier.padding(
+                start = 16.dp,
+                top = 16.dp,
+                end = 16.dp,
+                bottom = 16.dp
+            )
+        ) {
             Text(
                 text = stringResource(R.string.filter_title),
                 style = MaterialTheme.typography.titleLarge
             )
             Spacer(Modifier.height(16.dp))
 
-            Row(
+            Text(
+                text = stringResource(R.string.filter_sort_by),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.height(8.dp))
+            SortDropdown(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(R.string.filter_sort_by),
-                    modifier = Modifier
-                        .weight(0.5f)
-                        .padding(end = 8.dp),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                SortDropdown(
-                    modifier = Modifier.weight(0.5f),
-                    value = selectedSort,
-                    onChange = { selectedSort = it ?: EqsSortOption.DATE_DESC }
-                )
-            }
+                value = selectedSort,
+                onChange = { selectedSort = it ?: EqsSortOption.DATE_DESC }
+            )
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
 
-            Row(
+            Text(
+                text = stringResource(R.string.filter_min_magnitude_label),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.height(8.dp))
+            MinMagDropdown(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(R.string.filter_min_magnitude_label),
-                    modifier = Modifier
-                        .weight(0.5f)
-                        .padding(end = 8.dp),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                MinMagDropdown(
-                    modifier = Modifier.weight(0.5f),
-                    value = selectedMinMag,
-                    onChange = { selectedMinMag = it ?: MinMagnitude.MAG_3_0 }
-                )
-            }
+                value = selectedMinMag,
+                onChange = { selectedMinMag = it ?: MinMagnitude.MAG_3_0 }
+            )
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
 
-            Row(
+            Text(
+                text = stringResource(R.string.filter_time_period_filter_label),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.height(8.dp))
+            PeriodDropdown(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(R.string.filter_time_period_filter_label),
-                    modifier = Modifier
-                        .weight(0.5f)
-                        .padding(end = 8.dp),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                PeriodDropdown(
-                    modifier = Modifier.weight(0.5f),
-                    value = selectedInterval,
-                    onChange = { selectedInterval = it }
-                )
-            }
+                value = selectedInterval,
+                onChange = { selectedInterval = it }
+            )
 
             Spacer(modifier = Modifier.height(12.dp))
             SettingsItem(
@@ -166,4 +148,3 @@ fun FilterSheet(
         }
     }
 }
-

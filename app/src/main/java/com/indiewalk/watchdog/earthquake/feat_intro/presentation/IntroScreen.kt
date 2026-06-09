@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -136,7 +137,9 @@ fun IntroScreen_01(
                 Spacer(Modifier.height(32.dp))
 
                 Button(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 52.dp),
                     onClick = {
                         introViewModel.onPermissionRequestStarted()
                         fineLocationLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -149,6 +152,9 @@ fun IntroScreen_01(
                 Spacer(Modifier.height(16.dp))
 
                 Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 52.dp),
                     onClick = { navigateToHome(navController) },
                     shape = RoundedCornerShape(10.dp),
                 ) {
