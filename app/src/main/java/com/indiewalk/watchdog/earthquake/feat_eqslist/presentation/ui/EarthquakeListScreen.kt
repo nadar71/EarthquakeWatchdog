@@ -142,7 +142,10 @@ fun EarthquakeListScreen(
                 LazyColumn(
                     state = listState,
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = bottomInset)
+                    contentPadding = PaddingValues(
+                        top = topInset + 8.dp,
+                        bottom = bottomInset
+                    )
                 ) {
                     items(uiState.filteredEarthquakes, key = { it.id }) { eq ->
                         Column(modifier = Modifier.fillMaxSize()) {
