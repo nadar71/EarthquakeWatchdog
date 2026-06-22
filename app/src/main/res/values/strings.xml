@@ -1,141 +1,170 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
+    <!-- - - - - - - - - - - - - - - - - - - Generic - - - - -  - - - - - - - - - - - - - - - - -->
     <string name="app_name">EarthQuake Watchdog</string>
-    <string name="searching">Loading last earthquakes data&#8230;</string>
-
-    <!-- - - - - - - - - - - Strings For Title and other text - - - - - - - - - - - - - - - - - -->
-    <string name="my_position_ic_title">My Position</string>
-    <string name="refresh_ic_title">Refresh</string>
-    <string name="spinner_title">Map type</string>
-    <string name="title_activity_my_position">Map</string>
-    <string name="sugges_manual_loc_title">In case you prefer manual localization with NO gps.</string>
-    <string name="sugges_manual_loc_text">In settings,  above on the right, check \'Use manual localization\'
-        and follow instructions.\nIt uses no localization service nor gps.</string>
-    <string name="save_label">Save</string>
-    <string name="dont_ask_more">Don\'t show me again</string>
-    <string name="locationOffset_label">Near the</string>
-    <string name="earthquake_markers_label">Hide Earthquakes markers</string>
-    <string name="dialog_manual_loc_title">Manual Location setting active (Not using gps)</string>
-    <string name="dialog_manual_loc_msg">To set/override your position manually, long press on a map point.</string>
-    <string name="quick_settings_title">Quick settings</string>
-    <string name="last_update_label">Last update : </string>
-    <string name="time_range_label">Time range : </string>
-    <string name="your_position_label">Your position : </string>
-    <string name="use_of_map_forbidden">Sorry, can\'t visualize earthquakes on map with time range greatest of 24h, change the filter settings in General Settings please.</string>
-    <string name="title_activity_settings">Settings</string>
-    <string name="title_activity_maps_standard" translatable="false">Earthquakes Watchdog</string>
-    <string name="title_activity_maps_manual_localization_on">Manual Localization On</string>
     <string name="title_reduced" translatable="false">EQWatchdog</string>
+    <string name="show_no_more_label">Don\'t show me again</string>
+    <string name="generic_yes">Yes</string>
+    <string name="generic_unknown_location">Unknown Location</string>
+    <string name="generic_unknown_city">Unknown city</string>
+    <string name="generic_unknown_country_code">Unknown country code</string>
+    <string name="generic_unknown_address">Unknown Address</string>
+    <string name="generic_no">No</string>
+    <string name="generic_ok">Ok</string>
+    <string name="generic_cancel">Cancel</string>
+    <string name="generic_save_label">Save</string>
+    <string name="generic_confirm_label">Confirm</string>
+    <string name="generic_continue_label">Continue</string>
+    <string name="update_btn_label">Update</string>
+    <string name="generic_from_label">from</string>
+    <string name="generic_you_label">from you</string>
 
+    <!-- - - - - - - - - - - - - - - - - - - Navigation - - - - -  - - - - - - - - - - - - - - - -->
+    <string name="nav_bottom_intro_desc">Intro</string>
+    <string name="nav_bottom_home_desc">Home</string>
+    <string name="nav_bottom_eqs_desc">Map</string>
+    <string name="nav_bottom_settings_desc">Settings</string>
 
-    <!-- distance type -->
-    <string name="distance_from_default_location">from default location</string>
-    <string name="distance_from_user_location">from you</string>
+    <!-- - - - - - - - - - - - - - - - - - - Intro - - - - -  - - - - - - - - - - - - - - - - -->
+    <string name="intro_welcome">Welcome Aboard!</string>
+    <string name="intro_location_request_title">Localization permission</string>
+    <string name="intro_localization_permission_description">We use your location to calculate earthquakes distance from you and center the map near you .\n\nIf you don\'t allow it, we\'ll use a default location (Google HQ at Mountain View) or you can set a manual position later on the map.</string>
+    <string name="intro_permission_rationale">You can keep using the app with a default location or set a manual position later in the Map.</string>
+    <string name="intro_enable_localization">Enable Localization</string>
+    <string name="intro_allow">Allow</string>
+    <string name="intro_skip">Skip</string>
+    <string name="intro_permission_denied">Permission denied</string>
+    <string name="intro_enable_manual_position">You can enable after in app settings or set a manual position in map section</string>
+    <string name="intro_open_app_settings">Open App Settings</string>
+    <string name="intro_loading_label">Loading last earthquakes data&#8230;</string>
 
+    <!-- - - - - - - - - - - - - - - - - - - - - Home - - - - - - - - - - - - - - - - - - - - - -->
+    <string name="home_no_earthquakes_found">No earthquakes found. Reload or check filter settings</string>
+    <string name="home_dialog_goto_map_label">Earthquake position on map</string>
+    <string name="home_dialog_eq_details_label">More details</string>
+    <string name="home_dialog_eq_feelit_label">Feel it?</string>
 
-    <!-- Text to display in the list when there are no earthquakes -->
-    <string name="no_earthquakes">No earthquakes found. Try another filter.</string>
+    <!-- - - - - - - - - - - - - - - - Filter - - - -  - - - - - - - - - - - - - - - - - - - - -->
+    <string name="filter_title">Filters</string>
+    <string name="filter_sort_by">Sort by</string>
+    <string name="filter_none">None</string>
+    <string name="filter_min_magnitude_label">Min Magnitude</string>
 
-    <!-- Error message when there is no internet connectivity  -->
-    <string name="no_internet_connection">No internet connection.You need to connect at last the first time to download earthquakes data.</string>
+    <string name="filter_sort_mag_desc">Magnitude: high → low</string>
+    <string name="filter_sort_mag_asc">Magnitude: low → high</string>
+    <string name="filter_sort_date_desc">Date: newest → oldest\n(default)</string>
+    <string name="filter_sort_date_asc">Date: oldest → newest</string>
+    <string name="filter_sort_dist_asc">Distance: near → far</string>
+    <string name="filter_sort_dist_desc">Distance: far → near</string>
 
+    <string name="filter_0_0_min_magnitude_label">0.0+</string>
+    <string name="filter_1_0_min_magnitude_label">1.0+</string>
+    <string name="filter_2_0_min_magnitude_label">2.0+</string>
+    <string name="filter_3_0_min_magnitude_label">3.0+ (default)</string>
+    <string name="filter_4_0_min_magnitude_label">4.0+</string>
+    <string name="filter_4_5_min_magnitude_label">4.5+</string>
+    <string name="filter_5_0_min_magnitude_label">5.0+</string>
+    <string name="filter_5_5_min_magnitude_label">5.5+</string>
+    <string name="filter_6_0_min_magnitude_label">6.0+</string>
+    <string name="filter_6_5_min_magnitude_label">6.5+</string>
 
-    <!-- Spinner dialog stuff  -->
-    <string name="dialog_check_box_label">Save</string>
+    <string name="filter_time_period_filter_label">Time period </string>
+    <string name="filter_date_period_today_label">Today</string>
+    <string name="filter_date_period_24h_label">24h</string>
+    <string name="filter_date_period_48h_label">48h</string>
+    <string name="filter_date_period_week_label">Last Week</string>
+    <string name="filter_date_period_2_week_label">Last 2 Weeks</string>
+    <string name="filter_date_period_30_days_label">Last 30 Days (default)</string>
 
+    <string name="filter_last_refresh">Last refresh</string>
+    <string name="filter_start_date">Start date</string>
+    <string name="filter_eq_count_from_start_date">Number of earthquakes since start date</string>
 
-    <!-- - - - - - - - - - - Strings For Settings Menu - - - -  - - - - - - - - - - - - - - - - - - - - -->
-    <!-- Settings activity title -->
-    <string name="settings_title">Earthquake Settings</string>
-    <!-- Settings menu item -->
+    <!-- - - - - - - - - - - Maps - - - - - - - - - - - - - - - - - -->
+    <string name="maps_title" >Earthquakes World Map</string>
+    <string name="maps_my_position_label">My Position</string>
+    <string name="maps_refresh_label">Refresh</string>
+    <string name="maps_spinner_title">Map type</string>
+    <string name="maps_manual_loc_title">In case you prefer manual localization with NO gps.</string>
+    <string name="maps_manual_loc_text">In settings,  above on the right, check \'Use manual localization\'
+        and follow instructions.\nIt uses no localization service nor gps.</string>
+    <string name="maps_locationOffset_label">Near the</string>
+    <string name="maps_markers_hide_label">Hide Earthquakes markers</string>
+    <string name="maps_dialog_manual_loc_title">Manual Location setting active (Not using gps)</string>
+    <string name="maps_dialog_manual_loc_msg">To set/override your position manually, long press on a map point.</string>
+    <string name="maps_forbidden_label">Sorry, can\'t visualize earthquakes on map with time range greatest of 24h, change the filter settings in General Settings please.</string>
+    <string name="maps_manual_localization_on_label">Manual Localization On</string>
+    <string name="maps_dis_from_default_location_label">from default location</string>
+    <string name="maps_dis_from_user_location_label">from you</string>
+    <string name="maps_permission_rationale_title_label">Allow location access</string>
+    <string name="maps_permission_rationale_text_label">We use your location to compute earthquakes distances from your position. Earthquakes will be shown on map regardless of your choice.</string>
+    <string name="maps_permission_denied_title_label">Location permission denied</string>
+    <string name="maps_permission_denied_text_label">You can still browse the map, but we can’t show earthquakes distance from your position.\nTo enable location:\n\n• Open system Settings → App permissions → Location\n\n• Or continue without it and set a location manually later on right menu settings.</string>
+    <string name="maps_permission_settings_label">Open Settings</string>
+    <string name="maps_selected_location">Selected location</string>
+    <string name="maps_manual_selected">(manually selected)</string>
+    <string name="maps_default_location_label">(Default Location)</string>
+    <string name="maps_you_are_here">You are here</string>
+    <string name="maps_set_position_manually">Set position manually</string>
+    <string name="map_error_loading_earthquakes">Failed to load earthquakes</string>
+
+    <!-- - - - - - - - - - - - - - - - Settings - - - -  - - - - - - - - - - - - - - - - - - - - -->
+    <string name="settings_title">Settings</string>
     <string name="settings_menu_item">Settings</string>
-    <string name="settings_menu_item_quick">Quick Settings</string>
-    <string name="settings_menu_item_general">General settings</string>
-
-
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - -  - - - - - -  - - - - - - - - - - - - - -->
-    <!-- - - - - - - - - - - - - - - - - - PREFERENCES  - - - - - - -  - - - - - - - - - - - - - -->
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - -  - - - - - -  - - - - - - - - - - - - - -->
-
-    <!-- - - - - - - - - - - - - - - - - Category titles - - - - - - - - - - - - - - - - - - - - -->
-    <string name="category_settings_title">Settings</string>
-    <string name="category_help_title">Help</string>
-
-    <!-- - - - - - - - Strings For Order-By Preference [CHAR LIMIT=30] - - - - - - - - - - - - - -->
     <string name="settings_order_by_label">Ordered By : </string>
-    <string name="settings_order_by_key" translatable="false">order_by</string>
-    <string name="settings_order_by_default" translatable="false">@string/settings_order_by_desc_magnitude_value</string>
-
-    <!-- Label for order-by magnitude option [CHAR LIMIT=20] -->
-    <string name="settings_order_by_desc_magnitude_label">Magnitude (from higher one)</string>
-    <string name="settings_order_by_desc_magnitude_value" translatable="false">magnitude</string>
-    <!-- this value is for USGS query, and request in order by desc magnitude : DON'T CHANGE-->
-    <string name="settings_order_by_asc_magnitude_label">Magnitude (from lower one)</string>
-    <string name="settings_order_by_asc_magnitude_value" translatable="false">magnitude_asc</string>
-
-    <!-- Label for order-by most recent option [CHAR LIMIT=20] -->
-    <string name="settings_order_by_most_recent_label">Most Recent</string>
-    <string name="settings_order_by_most_recent_value" translatable="false">time</string>
-
-    <!-- Label for order-by most recent option [CHAR LIMIT=20] -->
-    <string name="settings_order_by_oldest_label">Oldest</string>
-    <string name="settings_order_by_oldest_value" translatable="false">time_oldest</string>
-
-
-    <!-- Label for order-by nearest to you  [CHAR LIMIT=20] -->
-    <string name="settings_order_by_nearest_label">Nearest to you</string>
-    <string name="settings_order_by_nearest_value" translatable="false">nearest</string>
-
-    <!-- Label for order-by nearest to you  [CHAR LIMIT=20] -->
-    <string name="settings_order_by_furthest_label">Furthest to you</string>
-    <string name="settings_order_by_furthest_value" translatable="false">furthest</string>
-
-
-    <!-- - - - - - - - Strings For Distance measure unit - - - - - - - - - - - - - -->
-    <string name="settings_distance_unit_label">Distance unit</string>
-    <string name="settings_distance_unit_by_key" translatable="false">distance unit</string>
-    <string name="settings_distance_unit_by_default" translatable="false">
-        @string/settings_km_distance_unit_value</string>
-
-    <!-- Label for order-by magnitude option [CHAR LIMIT=20] -->
+    <string name="settings_distance_unit_label">Distance unit system</string>
     <string name="settings_km_distance_unit_label">Km</string>
-    <string name="settings_km_distance_unit_value" translatable="false">km</string>
-
-    <!-- Label for order-by most recent option [CHAR LIMIT=20] -->
     <string name="settings_mi_distance_unit_label">Mi</string>
-    <string name="settings_mi_distance_unit_value" translatable="false">mi</string>
+    <string name="settings_unit_system_metric">Metric (km, °C)</string>
+    <string name="settings_unit_system_imperial">Imperial (mi, °F)</string>
+    <string name="settings_unit_system_title">Unit System</string>
+    <string name="settings_location_permissions_settings_label">System Localization Permissions settings </string>
+    <!-- Theme Mode Settings -->
+    <string name="settings_theme_mode_title">Theme Mode</string>
+    <string name="theme_mode_system">System</string>
+    <string name="theme_mode_light">Light</string>
+    <string name="theme_mode_dark">Dark</string>
+    <string name="settings_review_btn_summary">Like this app? Put a review please !</string>
+    <string name="settings_review_btn_title">App Review</string>
+    <string name="settings_send_email_chooser_title">Invia email con…</string>
+    <string name="settings_support_choose_email_client_fallback_label">È necessario avere installata un\'app di posta elettronica</string>
+    <string name="settings_support_btn_summary">Suggestions, bugs, errors, whatever? Drop a line here please :</string>
+    <string name="settings_support_btn_title">Support</string>
+    <string name="settings_disclaimer_label">Disclaimer</string>
+    <string name="settings_faq_btn_summary">What app can do and don\'t.</string>
+    <string name="settings_faq_text"><![CDATA[This app downloads and shows data about earthquakes (till the last 120 earthquakes happened) taken from <a href="https://earthquake.usgs.gov/fdsnws/event/1/">USGS.gov</a> online service. It is not in any way related to USGS nor it is an app from them. <br><br>It has only informative purposes, the data about earthquakes are not in real time (check <a href="https://earthquake.usgs.gov/fdsnws/event/1/">USGS.gov site</a> for details). <br><br>So it is not intended to be a real time earthquake alert app, do not use it as a life saving app. <br><br>I&apos;m not responsible for any improper use of this app.
 
+<br><br>In the map, it asks for user location permissions only for calculating the distance of earthquakes from the user, and the user&apos;s coordinates are stored for this purpose only. If location permissions are denied, it allows manual positioning by long-pressing on the map, without using GPS or any other localization system.
 
-    <!-- - - - - - - - - - - Strings For Minimum Magnitude Preference  - - - - - - - - - - - - - -->
-    <string name="settings_min_magnitude_label">Minimum Magnitude : </string>
-    <string name="settings_min_magnitude_key" translatable="false">min_magnitude</string>
-    <string name="settings_min_magnitude_default" translatable="false">@string/settings_4_5_min_magnitude_value</string>
+<br><br>If permissions are not granted and no manual localization is done, it uses the default location (Google location) and calculates earthquake distances from there.
 
-    <string name="settings_1_0_min_magnitude_label" translatable="false">1.0+</string>
-    <string name="settings_2_0_min_magnitude_label" translatable="false">2.0+</string>
-    <string name="settings_3_0_min_magnitude_label" translatable="false">3.0+</string>
-    <string name="settings_4_0_min_magnitude_label" translatable="false">4.0+</string>
-    <string name="settings_4_5_min_magnitude_label" translatable="false">4.5+</string>
-    <string name="settings_5_0_min_magnitude_label" translatable="false">5.0+</string>
-    <string name="settings_5_5_min_magnitude_label" translatable="false">5.5+</string>
-    <string name="settings_6_0_min_magnitude_label" translatable="false">6.0+</string>
-    <string name="settings_6_5_min_magnitude_label" translatable="false">6.5+</string>
+<br><br>Hope you&apos;ll enjoy my app and find it useful. Check out my other apps and games on my site: <a href="http://www.indie-walkabout.eu">http://www.indie-walkabout.eu</a>.
 
+<br><br>For suggestions, info, or bug reports, please contact me at <a href="mailto:indie.walkabout.1971@gmail.com">indie.walkabout.1971@gmail.com</a>]]></string>
+    <string name="settings_gdpr_btn_title">Privacy &amp; Ad Consent</string>
+    <string name="gdpr_btn_summary">Manage your ad personalization consent</string>
+    <string name="gdpr_dialog_will_show_again">Consent has been reset. You\'ll be asked again.</string>
+    <string name="gdpr_dialog_reset_done">Consent choice done.</string>
 
-    <string name="settings_1_0_min_magnitude_value" translatable="false">1.0</string>
-    <string name="settings_2_0_min_magnitude_value" translatable="false">2.0</string>
-    <string name="settings_3_0_min_magnitude_value" translatable="false">3.0</string>
-    <string name="settings_4_0_min_magnitude_value" translatable="false">4.0</string>
-    <string name="settings_4_5_min_magnitude_value" translatable="false">4.5</string>
-    <string name="settings_5_0_min_magnitude_value" translatable="false">5.0</string>
-    <string name="settings_5_5_min_magnitude_value" translatable="false">5.5</string>
-    <string name="settings_6_0_min_magnitude_value" translatable="false">6.0</string>
-    <string name="settings_6_5_min_magnitude_value" translatable="false">6.5</string>
+    <!-- - - - - - - - - - - - - - - - - - Credits - - - - - - - - - - -  - - - - - - - - - - - - - -->
+    <string name="credits_title_label">Credits</string>
+    <string name="credits_section_subtitle_summary">See credits and attributions here.</string>
+    <string name="credits_dev_design_label">Development and Design</string>
+    <string name="credits_dev_design_SM">Simone Mapelli</string>
+    <string name="credits_eqs_data_source_label">Earthquakes Data Source</string>
+    <string name="credits_eqs_data_source_description">USGS.gov ( This app is not in any way related to USGS nor it is an app from them. ) </string>
 
+    <!-- - - - - - - - - - - - - - - - - - Error - - - - - - - - - - -  - - - - - - - - - - - - - -->
+    <string name="no_earthquakes">No earthquakes found. Try another filter.</string>
+    <string name="no_internet_connection">No Internet connection. You need to connect at least the first time to download earthquake data.</string>
+    <!-- Generic error shown when loading earthquakes fails -->
+    <string name="error_loading_earthquakes">Error loading earthquakes data</string>
+    <string name="api_generic_error">Error performing remote request</string>
+    <string name="db_generic_error">Error performing database operation</string>
 
     <!-- - - - - - - - - - - Strings For how many equakes load  Preference  - - - - - - - - - - - - - -->
-    <string name="settings_max_equakes_label">How many Earthquakes display ?</string>
+<!--    <string name="settings_max_equakes_label">How many Earthquakes display ?</string>
     <string name="settings_max_equakes_key" translatable="false">equakes_num</string>
     <string name="settings_max_equakes_default" translatable="false">@string/settings_max_30_equakes_value</string>
 
@@ -147,64 +176,8 @@
     <string name="settings_max_30_equakes_value" translatable="false">30</string>
     <string name="settings_max_60_equakes_value" translatable="false">60</string>
     <string name="settings_max_90_equakes_value" translatable="false">90</string>
-    <string name="settings_max_120_equakes_value" translatable="false">120</string>
+    <string name="settings_max_120_equakes_value" translatable="false">120</string>-->
 
-
-    <!-- - - - - - - - - - - Strings For date filter  Preference  - - - - - - - - - - - - - -->
-    <string name="settings_date_filter_label">Date filter : </string>
-    <string name="settings_date_filter_key" translatable="false">date_filter</string>
-    <string name="settings_date_filter_default" translatable="false">@string/settings_date_period_today_value</string>
-
-    <string name="settings_date_period_today_label" translatable="true">Today</string>
-    <string name="settings_date_period_24h_label" translatable="true">24h</string>
-    <string name="settings_date_period_48h_label" translatable="true">48h</string>
-    <!-- <string name="settings_date_period_3_days_label" translatable="true">3 days ago</string>
-    <string name="settings_date_period_4_days_label" translatable="true">4 days ago</string> -->
-    <string name="settings_date_period_week_label" translatable="true">Last Week</string>
-    <string name="settings_date_period_2_week_label" translatable="true">Last 2 Weeks</string>
-    <!-- #68 <string name="settings_date_period_month_label" translatable="true">Last Month</string> -->
-
-    <string name="settings_date_period_today_value" translatable="false">0</string>
-    <string name="settings_date_period_24h_value" translatable="false">1</string>
-    <string name="settings_date_period_48h_value" translatable="false">2</string>
-    <!-- <string name="settings_date_period_3_days_value" translatable="false">3</string>
-    <string name="settings_date_period_4_days_value" translatable="false">4</string> -->
-    <string name="settings_date_period_week_value" translatable="false">7</string>
-    <string name="settings_date_period_2_week_value" translatable="false">14</string>
-    <!-- #68 <string name="settings_date_period_month_value" translatable="false">30</string> -->
-
-    <!-- - - - - - - - - - Help category for Preference - - - - - - - - - - - - - - - - - - - - -->
-    <string name="gdpr_btn_key" translatable="false">gdpr_withdraw</string>
-    <string name="gdpr_btn_title">GDPR</string>
-    <string name="gdpr_btn_summary">GDPR Consent Withdraw.</string>
-
-    <string name="faq_btn_title">Faq &amp; Disclaimer</string>
-    <string name="faq_btn_key" translatable="false">faq</string>
-    <string name="faq_btn_summary">What app can do and don\'t.</string>
-
-    <string name="faq_text">"         <b>FAQ &amp; DISCLAIMER</b>          This app downloads and shows data about earthquakes (till the last 120 earthquakes happened) taken from         <a href="https://earthquake.usgs.gov/earthquakes/"> USGS.gov </a> online service.         It is not in any way related to USGS nor it is an app from them.            It has only informative purposes, the datas about earthquakes are not in real time         (check <a href="https://earthquake.usgs.gov/earthquakes/"> USGS.gov site </a> for details)         So it has not intent to be a real time earthquake alert app,         not use it as a saving-life app, I\'m not responsible of every improper use of this app.            In map it asks for user location permissions only for calculating distance of         earthquake from user, and the users coordinates are stored for this purpose only.         If permissions for localization are negated, it allows anyway manual positioning         by long pressing on map, without using gps nor any other localization system,         check in map settings.          If permissions are not allowed nor a manual localization is done, it uses         the default location (Google location) and calculate earthquake distance from there.                     Hope you\'ll enjoy my app and find it useful, check out my other app and games on my site          <a href="http://www.indie-walkabout.eu">http://www.indie-walkabout.eu</a>.           For suggestions, info or bugs please contact me at           <a href="mailto:indie.walkabout.1971@gmail.com">indie.walkabout.1971@gmail.com</a>       "</string>
-
-    <!-- - - - - - - - - - Key Strings for Preference - - - - - - - - - - - - - - - - - - - - -->
-    <string name="location_coord" translatable="false">sharedPref</string>
-    <string name="device_lat" translatable="false">device_lat</string>
-    <string name="device_lng" translatable="false">device_lng</string>
-    <string name="manual_Localization_On" translatable="false">manual_Localization_On</string>
-    <string name="location_address" translatable="false">location_address</string>
-    <string name="last_update" translatable="false">last_update</string>
-
-    <!-- - - - - - - - - - - - -  Manual localization flag Preference  - - - - - - - - - - - - - -->
-    <string name="manual_localization_label">Use manual localization (no gps)</string>
-    <string name="manual_Localization_key" translatable="false">false</string>
-
-
-    <!-- - - - - - - - don't show me again Manual loc suggestion preference  - - - - - - - - - - -->
-    <string name="settings_dontshow_me_again" translatable="false">false</string>
-
-
-    <!-- - - - - - - - - - - - - - Spinner default label and value - - - - - - - - - - - - - - - -->
-    <string name="spinner_defaultchoice_label">Choose</string>
-    <string name="spinner_defaultchoice_value" translatable="false">choose</string>
-    <string name="data_update_toast">"Date update in the range of : "</string>
 
 
 </resources>
