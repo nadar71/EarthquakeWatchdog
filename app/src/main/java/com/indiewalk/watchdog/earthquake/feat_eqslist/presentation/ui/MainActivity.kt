@@ -7,11 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.ads.MobileAds
 import com.indiewalk.watchdog.earthquake.EarthquakeApp
 import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
-import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationGraph
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppNavigationHost
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.rememberAppNavigator
 import com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui.SettingsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.EQWatchdogTheme
@@ -43,11 +43,11 @@ class MainActivity() : AppCompatActivity() {
                     ThemeMode.System -> isSystemInDarkTheme()
                     ThemeMode.Light -> false
                     ThemeMode.Dark -> true
+                    else -> isSystemInDarkTheme()
                 }
                 EQWatchdogTheme(darkTheme = darkTheme) {
-                    val navController = rememberNavController()
-                    NavigationGraph(navController = navController)
-                    // EarthquakeListScreen(navController)
+                    val navigator = rememberAppNavigator()
+                    AppNavigationHost(navigator = navigator)
                 }
 
                 /*EQWatchdogTheme(darkTheme = isDark, dynamicColor = settings.dynamicColor) {

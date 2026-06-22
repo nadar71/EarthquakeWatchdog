@@ -40,17 +40,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationRoutes
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.openAppSettings
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun IntroScreen_01(
-    navController: NavHostController,
+    onContinueToHome: () -> Unit,
     introViewModel: IntroViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -76,7 +74,7 @@ fun IntroScreen_01(
     LaunchedEffect(Unit) {
         introViewModel.effects.collect { effect ->
             when (effect) {
-                IntroEffect.NavigateHome -> navigateToHome(navController)
+                IntroEffect.NavigateHome -> onContinueToHome()
                 IntroEffect.OpenAppSettings -> openAppSettings(context)
             }
         }
@@ -155,7 +153,7 @@ fun IntroScreen_01(
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(min = 52.dp),
-                    onClick = { navigateToHome(navController) },
+                    onClick = onContinueToHome,
                     shape = RoundedCornerShape(10.dp),
                 ) {
                     Text(
@@ -203,12 +201,5 @@ fun IntroScreen_01(
                 }
             }
         )
-    }
-}
-
-fun navigateToHome(navController: NavHostController) {
-    navController.navigate(NavigationRoutes.Home.route) {
-        popUpTo(NavigationRoutes.Intro.route) { inclusive = true }
-        launchSingleTop = true
     }
 }
