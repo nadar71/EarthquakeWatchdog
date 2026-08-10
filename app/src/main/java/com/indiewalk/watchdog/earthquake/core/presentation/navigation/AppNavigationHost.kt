@@ -15,7 +15,8 @@ import com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui.SettingsS
 
 @Composable
 fun AppNavigationHost(
-    navigator: AppNavigator<AppDestination>
+    navigator: AppNavigator<AppDestination>,
+    screenFactory: AppNavigationScreenFactory = DefaultAppNavigationScreenFactory
 ) {
     val currentDestination = navigator.currentDestination
 
@@ -33,12 +34,12 @@ fun AppNavigationHost(
         onBack = navigator::navigateBack,
         entryProvider = entryProvider {
             entry<AppDestination.Intro> {
-                IntroScreen_01(
+                screenFactory.Intro(
                     onContinueToHome = { navigator.replaceWith(AppDestination.Home) }
                 )
             }
             entry<AppDestination.Home> {
-                EarthquakeListScreen(
+                screenFactory.Home(
                     currentDestination = AppDestination.Home,
                     onTopLevelDestinationSelected = navigator::switchTopLevel,
                     onOpenDetails = { navigator.navigateTo(AppDestination.Details(it)) },
@@ -48,27 +49,27 @@ fun AppNavigationHost(
                 )
             }
             entry<AppDestination.Map> { destination ->
-                MapScreen(
+                screenFactory.Map(
                     currentDestination = destination,
                     onTopLevelDestinationSelected = navigator::switchTopLevel,
                     initialLatLng = destination.toLatLng()
                 )
             }
             entry<AppDestination.Settings> {
-                SettingsScreen(
+                screenFactory.Settings(
                     currentDestination = AppDestination.Settings,
                     onTopLevelDestinationSelected = navigator::switchTopLevel,
                     onOpenCredits = { navigator.navigateTo(AppDestination.Credits) }
                 )
             }
             entry<AppDestination.Credits> {
-                CreditsScreen(
+                screenFactory.Credits(
                     currentDestination = AppDestination.Credits,
                     onBack = navigator::navigateBack
                 )
             }
             entry<AppDestination.Details> { destination ->
-                DetailsScreen(
+                screenFactory.Details(
                     currentDestination = destination,
                     id = destination.id,
                     onBack = navigator::navigateBack
