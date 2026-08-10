@@ -83,6 +83,7 @@
 
     <!-- - - - - - - - - - - Maps - - - - - - - - - - - - - - - - - -->
     <string name="maps_title" >Earthquakes World Map</string>
+    <string name="maps_title_bottom_nav">Map</string>
     <string name="maps_my_position_label">My Position</string>
     <string name="maps_refresh_label">Refresh</string>
     <string name="maps_spinner_title">Map type</string>

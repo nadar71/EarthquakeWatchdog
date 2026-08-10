@@ -34,7 +34,7 @@ fun AppBottomBar(
         ),
         BottomBarItem(
             destination = AppDestination.Map(),
-            label = stringResource(R.string.maps_title),
+            label = stringResource(R.string.maps_title_bottom_nav),
             icon = { Icon(Icons.Filled.Map, contentDescription = stringResource(R.string.nav_bottom_eqs_desc)) }
         ),
         BottomBarItem(

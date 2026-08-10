@@ -82,6 +82,7 @@
 
     <!-- - - - - - - - - - - Maps - - - - - - - - - - - - - - - - - - -->
     <string name="maps_title">Mappa Mondiale Terremoti</string>
+    <string name="maps_title_bottom_nav">Mappa</string>
     <string name="maps_my_position_label">La mia posizione</string>
     <string name="maps_refresh_label">Aggiorna</string>
     <string name="maps_spinner_title">Tipo di mappa</string>
