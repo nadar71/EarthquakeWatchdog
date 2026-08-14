@@ -28,6 +28,7 @@ kotlinxCoroutinesTest = "1.8.0"
 ksp = "2.0.0-1.0.23"
 ktorClientContentNegotiation = "2.3.7"
 ktorClientLogging = "2.3.7"
+ktorClientMock = "2.3.7"
 ktorClientOkhttp = "2.3.7"
 ktorSerializationGson = "2.3.7"
 lifecycleLivedataKtx = "2.8.7"
@@ -116,6 +117,7 @@ kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-cor
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientContentNegotiation" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktorClientLogging" }
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktorClientMock" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktorClientOkhttp" }
 ktor-serialization-gson = { module = "io.ktor:ktor-serialization-gson", version.ref = "ktorSerializationGson" }
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
@@ -142,4 +144,3 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" } # from kotlin 2.0.0+
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-
