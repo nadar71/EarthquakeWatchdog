@@ -1,46 +1,64 @@
 package com.indiewalk.watchdog.earthquake.core.presentation.navigation
 
-import android.net.http.SslCertificate.restoreState
-import android.net.http.SslCertificate.saveState
-import android.util.Log
-import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
+import com.indiewalk.watchdog.earthquake.R
+
+private data class BottomBarItem(
+    val destination: AppDestination,
+    val label: String,
+    val icon: @Composable () -> Unit
+)
 
 @Composable
 fun AppBottomBar(
-    navController: NavHostController
+    currentDestination: AppDestination,
+    onDestinationSelected: (AppDestination) -> Unit
 ) {
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = backStackEntry?.destination
+    val items = listOf(
+        BottomBarItem(
+            destination = AppDestination.Home,
+            label = stringResource(R.string.nav_bottom_home_desc),
+            icon = { Icon(Icons.Filled.Home, contentDescription = stringResource(R.string.nav_bottom_home_desc)) }
+        ),
+        BottomBarItem(
+            destination = AppDestination.Map(),
+            label = stringResource(R.string.maps_title_bottom_nav),
+            icon = { Icon(Icons.Filled.Map, contentDescription = stringResource(R.string.nav_bottom_eqs_desc)) }
+        ),
+        BottomBarItem(
+            destination = AppDestination.Settings,
+            label = stringResource(R.string.settings_title),
+            icon = { Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.nav_bottom_settings_desc)) }
+        )
+    )
 
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surface,
         tonalElevation = 0.dp
     ) {
-        BottomBarDestinations.forEach { dest ->
-            val selected = currentDestination.matchesBaseRoute(dest.route)
+        items.forEach { item ->
+            val selected = currentDestination.matches(item.destination)
             NavigationBarItem(
                 selected = selected,
                 onClick = {
-                    if (!selected){
-                        val target = baseRoute(dest.route) ?: dest.route  // "map" for Map
-                        Log.d("AppBottomBar: ", "Navigate to ${target}")
-                        navController.navigate(target) {
-                            // Pop up to the start destination to avoid building up a large back stack
-                            popUpTo(navController.graph.startDestinationId) { saveState = true }
-                            launchSingleTop = true // avoid multiple copies of the same destination
-                            restoreState = true // Restore state when re-selecting a previously selected item
-                        }
+                    if (!selected) {
+                        onDestinationSelected(item.destination)
                     }
                 },
-                icon = { dest.icon?.let { Icon(it, dest.label) } },
-                label = { Text(dest.label) },
+                icon = item.icon,
+                label = { Text(item.label) },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.primary,
                     selectedTextColor = MaterialTheme.colorScheme.primary,
@@ -52,5 +70,3 @@ fun AppBottomBar(
         }
     }
 }
-
-

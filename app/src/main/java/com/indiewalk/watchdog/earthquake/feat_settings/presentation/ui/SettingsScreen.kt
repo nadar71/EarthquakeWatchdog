@@ -20,7 +20,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 import com.google.android.ump.UserMessagingPlatform
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants.support_email
@@ -28,7 +27,7 @@ import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
 import com.indiewalk.watchdog.earthquake.core.data.local.enums.UnitSystem
 import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
-import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationRoutes
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppDestination
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.text_16
 import com.indiewalk.watchdog.earthquake.core.util.GenericUtil.openAppStore
 import com.indiewalk.watchdog.earthquake.core.util.sendEmail
@@ -41,7 +40,9 @@ import com.indiewalk.watchdog.earthquake.feat_settings.presentation.components.S
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    navController: NavHostController,
+    currentDestination: AppDestination,
+    onTopLevelDestinationSelected: (AppDestination) -> Unit,
+    onOpenCredits: () -> Unit,
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     val TAG = "SettingsScreen"
@@ -54,7 +55,8 @@ fun SettingsScreen(
     val appPrefs by settingsViewModel.settings.collectAsStateWithLifecycle()
 
     ScaffoldModel(
-        navController = navController,
+        currentDestination = currentDestination,
+        onTopLevelDestinationSelected = onTopLevelDestinationSelected,
         topBar = {
             TopAppBar(
                 title = {
@@ -204,9 +206,7 @@ fun SettingsScreen(
                     subtitle = stringResource(id = R.string.credits_section_subtitle_summary),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable {
-                            navController.navigate(NavigationRoutes.CreditsScreen.route)
-                        }
+                        .clickable(onClick = onOpenCredits)
                 )
 
                 // --- GDPR ---

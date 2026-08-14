@@ -22,24 +22,28 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants.USGS_URL
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants.my_website
 import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppDestination
 import com.indiewalk.watchdog.earthquake.core.util.GenericUtil.openUrlInBrowserNotCompose
 import com.indiewalk.watchdog.earthquake.feat_ads.presentation.AdMobBannerView
 import com.indiewalk.watchdog.earthquake.feat_settings.presentation.components.SettingsItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreditsScreen(navController: NavHostController ) {
+fun CreditsScreen(
+    currentDestination: AppDestination,
+    onBack: () -> Unit
+) {
     val TAG = "CreditsScreen"
     val context = LocalContext.current
 
     ScaffoldModel(
-        navController = navController,
+        currentDestination = currentDestination,
+        onBack = onBack,
         topBar = {
             TopAppBar(
                 title = {
@@ -125,7 +129,6 @@ fun CreditsScreen(navController: NavHostController ) {
 
     }
 }
-
 
 
 

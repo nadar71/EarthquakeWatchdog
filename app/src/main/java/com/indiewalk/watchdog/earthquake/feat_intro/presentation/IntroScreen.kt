@@ -6,8 +6,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,17 +40,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.indiewalk.watchdog.earthquake.R
-import com.indiewalk.watchdog.earthquake.core.presentation.navigation.NavigationRoutes
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.openAppSettings
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun IntroScreen_01(
-    navController: NavHostController,
+    onContinueToHome: () -> Unit,
     introViewModel: IntroViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -76,7 +74,7 @@ fun IntroScreen_01(
     LaunchedEffect(Unit) {
         introViewModel.effects.collect { effect ->
             when (effect) {
-                IntroEffect.NavigateHome -> navigateToHome(navController)
+                IntroEffect.NavigateHome -> onContinueToHome()
                 IntroEffect.OpenAppSettings -> openAppSettings(context)
             }
         }
@@ -102,71 +100,79 @@ fun IntroScreen_01(
         }
     ) { padding ->
         if (!allGranted && !uiState.askedOnce) {
-            Column(
-                Modifier
+            BoxWithConstraints(
+                modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = stringResource(R.string.intro_location_request_title),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                val compactSpacing = if (maxHeight < 760.dp) 12.dp else 16.dp
+                val sectionSpacing = if (maxHeight < 760.dp) 20.dp else 28.dp
+                val imageMaxHeight = if (maxHeight < 760.dp) maxHeight * 0.30f else maxHeight * 0.38f
 
-                Spacer(Modifier.height(32.dp))
-                Image(
-                    painter = painterResource(id = R.drawable.map_img_permissions_req),
-                    contentDescription = null,
-                    contentScale = ContentScale.FillWidth,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min)
-                        .padding(top = 24.dp)
-                )
-
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = stringResource(R.string.intro_localization_permission_description),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-
-                Spacer(Modifier.height(32.dp))
-
-                Button(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 52.dp),
-                    onClick = {
-                        introViewModel.onPermissionRequestStarted()
-                        fineLocationLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                    },
-                    shape = RoundedCornerShape(10.dp),
-                ) {
-                    Text(stringResource(R.string.intro_enable_localization))
-                }
-
-                Spacer(Modifier.height(16.dp))
-
-                Button(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 52.dp),
-                    onClick = { navigateToHome(navController) },
-                    shape = RoundedCornerShape(10.dp),
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 24.dp, vertical = 20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        stringResource(
-                            if (!uiState.isPermissionRequestStarted) {
-                                R.string.intro_skip
-                            } else {
-                                R.string.intro_allow
-                            }
-                        )
+                        text = stringResource(R.string.intro_location_request_title),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
                     )
+
+                    Spacer(Modifier.height(sectionSpacing))
+                    Image(
+                        painter = painterResource(id = R.drawable.map_img_permissions_req),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = imageMaxHeight)
+                    )
+
+                    Spacer(Modifier.height(compactSpacing))
+                    Text(
+                        text = stringResource(R.string.intro_localization_permission_description),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    Spacer(Modifier.weight(1f))
+
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 52.dp),
+                        onClick = {
+                            introViewModel.onPermissionRequestStarted()
+                            fineLocationLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                        },
+                        shape = RoundedCornerShape(10.dp),
+                    ) {
+                        Text(stringResource(R.string.intro_enable_localization))
+                    }
+
+                    Spacer(Modifier.height(compactSpacing))
+
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 52.dp),
+                        onClick = onContinueToHome,
+                        shape = RoundedCornerShape(10.dp),
+                    ) {
+                        Text(
+                            stringResource(
+                                if (!uiState.isPermissionRequestStarted) {
+                                    R.string.intro_skip
+                                } else {
+                                    R.string.intro_allow
+                                }
+                            )
+                        )
+                    }
                 }
             }
         } else {
@@ -203,12 +209,5 @@ fun IntroScreen_01(
                 }
             }
         )
-    }
-}
-
-fun navigateToHome(navController: NavHostController) {
-    navController.navigate(NavigationRoutes.Home.route) {
-        popUpTo(NavigationRoutes.Intro.route) { inclusive = true }
-        launchSingleTop = true
     }
 }

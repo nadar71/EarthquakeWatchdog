@@ -104,7 +104,8 @@ dependencies {
     implementation(libs.androidx.material3.android)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.material)
-    implementation(libs.androidx.navigation.compose)
+    implementation("androidx.navigation3:navigation3-runtime:1.0.0")
+    implementation("androidx.navigation3:navigation3-ui:1.0.0")
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.animation.core.android)
@@ -328,7 +329,6 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling"
     implementation "androidx.compose.ui:ui-tooling-preview"
 
-    implementation "androidx.navigation:navigation-compose:$compose_navigation"
     implementation "androidx.constraintlayout:constraintlayout-compose:$compose_constraint"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$compose_viewmodel"
 
@@ -391,4 +391,3 @@ dependencies {
 
 
 }*/
-

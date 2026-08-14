@@ -36,7 +36,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.model.LatLng
@@ -44,13 +43,16 @@ import com.google.maps.android.compose.MapType
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppDestination
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraGreen_dark
 import com.indiewalk.watchdog.earthquake.feat_ads.presentation.AdMobBannerView
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.EarthquakeMapBottomInfoCard
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun EarthquakeMapScreen(
-    navController: NavHostController,
+    currentDestination: AppDestination,
+    onTopLevelDestinationSelected: (AppDestination) -> Unit,
     initialLatLng: LatLng? = null,
     mapViewModel: MapViewModel = hiltViewModel(),
 ) {
@@ -72,7 +74,8 @@ fun EarthquakeMapScreen(
     }
 
     ScaffoldModel(
-        navController = navController,
+        currentDestination = currentDestination,
+        onTopLevelDestinationSelected = onTopLevelDestinationSelected,
         topBar = {
             TopAppBar(
                 title = {
@@ -179,7 +182,20 @@ fun EarthquakeMapScreen(
                             recenterTarget = uiState.recenterTarget,
                             onRecenterHandled = mapViewModel::onRecenterHandled,
                             settings = uiState.settings,
+                            onEarthquakeSelected = mapViewModel::onEarthquakeSelected,
+                            onMapTapped = mapViewModel::onEarthquakeSelectionCleared,
                         )
+
+                        uiState.selectedEarthquake?.let { selectedEarthquake ->
+                            EarthquakeMapBottomInfoCard(
+                                earthquake = selectedEarthquake,
+                                unitSystem = uiState.settings.unitSystem,
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                                onDismiss = mapViewModel::onEarthquakeSelectionCleared
+                            )
+                        }
 
                         if (showOptions) {
                             MapOptionsOverlayCard(

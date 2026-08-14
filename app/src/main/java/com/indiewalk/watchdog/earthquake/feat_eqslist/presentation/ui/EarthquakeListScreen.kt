@@ -48,13 +48,12 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.presentation.animations.LogoAnimationForward
 import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldModel
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppDestination
 import com.indiewalk.watchdog.earthquake.feat_ads.presentation.AdMobBannerView
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.toEarthquakeUI
 import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.components.EarthquakeCard
@@ -68,7 +67,10 @@ import com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.preferences.F
 )
 @Composable
 fun EarthquakeListScreen(
-    navController: NavHostController,
+    currentDestination: AppDestination,
+    onTopLevelDestinationSelected: (AppDestination) -> Unit,
+    onOpenDetails: (String) -> Unit,
+    onOpenMap: (Double, Double) -> Unit,
     earthquakeListViewModel: EarthquakeListViewModel = hiltViewModel()
 ) {
     val listState = rememberLazyListState()
@@ -101,7 +103,8 @@ fun EarthquakeListScreen(
     )
 
     ScaffoldModel(
-        navController = navController,
+        currentDestination = currentDestination,
+        onTopLevelDestinationSelected = onTopLevelDestinationSelected,
         topBar = {
             TopAppBar(
                 title = {
@@ -257,11 +260,11 @@ fun EarthquakeListScreen(
             EqItemDialog(
                 eq = current,
                 onMapClick = {
-                    val route = "map/${current.longitude}/${current.latitude}"
-                    navController.navigate(route) {
-                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
+                    val latitude = current.latitude
+                    val longitude = current.longitude
+                    if (latitude != null && longitude != null) {
+                        earthquakeListViewModel.onEarthquakeDialogDismissed()
+                        onOpenMap(latitude, longitude)
                     }
                 },
                 onDismiss = earthquakeListViewModel::onEarthquakeDialogDismissed

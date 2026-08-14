@@ -60,6 +60,14 @@ class MapViewModel @Inject constructor(
         }
     }
 
+    fun onEarthquakeSelected(earthquake: com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity) {
+        _uiState.update { it.copy(selectedEarthquake = earthquake) }
+    }
+
+    fun onEarthquakeSelectionCleared() {
+        _uiState.update { it.copy(selectedEarthquake = null) }
+    }
+
     fun onRecenterHandled() {
         _uiState.update { it.copy(recenterTarget = null) }
     }
@@ -109,4 +117,3 @@ class MapViewModel @Inject constructor(
         }
     }
 }
-
