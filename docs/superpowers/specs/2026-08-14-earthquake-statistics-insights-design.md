@@ -18,7 +18,7 @@ The existing summary counts, strongest-today event, nearest-today event, navigat
 
 ## Architecture
 
-The existing Statistics repository will fetch one paged 30-day event dataset during refresh. A pure domain `StatisticsInsightsAnalyzer` will transform those events into an immutable `StatisticsInsights` model. The analyzer has no Android, network, database, or localization dependencies.
+The existing Statistics repository will fetch one paged 30-day event dataset during refresh. A pure domain `StatisticsInsightsAnalyzer` will transform those events into an immutable `StatisticsInsights` model. The analyzer accepts an app-owned latitude/longitude value and has no Android, Google Maps, network, database, or localization dependencies.
 
 `StatisticsSnapshot` will include the computed insights. The existing Room cache entity will be extended through a schema migration so summary and insight data share one atomic cache record and one 15-minute freshness timestamp. No second repository, cache, or refresh flow will be introduced.
 
