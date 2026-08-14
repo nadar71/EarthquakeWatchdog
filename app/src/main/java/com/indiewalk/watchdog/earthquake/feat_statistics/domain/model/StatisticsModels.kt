@@ -88,7 +88,9 @@ enum class StatisticsSection {
     MONTH_COUNT,
     YEAR_COUNT,
     STRONGEST,
-    NEAREST
+    NEAREST,
+    INSIGHTS,
+    NEARBY_TREND
 }
 
 data class StatisticsLoadResult(

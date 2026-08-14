@@ -16,6 +16,7 @@ import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.Statistics
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsWindow
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsWindows
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.time.StatisticsTimeProvider
+import com.indiewalk.watchdog.earthquake.feat_statistics.domain.analysis.StatisticsInsightsAnalyzer
 import com.indiewalk.watchdog.earthquake.sampleEqFeed
 import com.indiewalk.watchdog.earthquake.sampleEqFeature
 import kotlinx.coroutines.flow.toList
@@ -82,8 +83,8 @@ class EarthquakeStatisticsRepositoryImplTest {
             eventPages = mapOf(
                 1 to sampleEqFeed(
                     features = listOf(
-                        sampleEqFeature(id = "far", latitude = 46.0, longitude = 10.0),
-                        sampleEqFeature(id = "near", latitude = 45.01, longitude = 9.01)
+                        sampleEqFeature(id = "far", time = now.toEpochMilli(), latitude = 46.0, longitude = 10.0),
+                        sampleEqFeature(id = "near", time = now.toEpochMilli(), latitude = 45.01, longitude = 9.01)
                     )
                 )
             )
@@ -97,6 +98,8 @@ class EarthquakeStatisticsRepositoryImplTest {
         assertEquals("strongest", result.snapshot?.strongestToday?.id)
         assertEquals("near", result.snapshot?.nearestToday?.id)
         assertTrue(requireNotNull(result.snapshot?.nearestToday?.distanceKm) < 2.0)
+        assertEquals(2, result.snapshot?.insights?.globalTrend?.sumOf { it.count })
+        assertEquals(StatisticsPeriod.LAST_30_DAYS, remote.eventCalls.single { it.orderBy == "time" }.period)
         assertTrue(result.unavailableSections.isEmpty())
         assertEquals(1, cache.replacements.size)
     }
@@ -120,16 +123,16 @@ class EarthquakeStatisticsRepositoryImplTest {
     }
 
     @Test
-    fun nearestPagesPastTwentyThousandWhenRequired() = runTest {
+    fun insightPagesPastTwentyThousandUsingThirtyDayCount() = runTest {
         val remote = FakeStatisticsRemoteDataSource(
-            counts = defaultCounts + (StatisticsPeriod.TODAY to 20_001),
+            counts = defaultCounts + (StatisticsPeriod.LAST_30_DAYS to 20_001),
             strongestFeed = sampleEqFeed(features = emptyList()),
             eventPages = mapOf(
                 1 to sampleEqFeed(
-                    features = listOf(sampleEqFeature(id = "first", latitude = 46.0, longitude = 10.0))
+                    features = listOf(sampleEqFeature(id = "first", time = now.toEpochMilli(), latitude = 46.0, longitude = 10.0))
                 ),
                 20_001 to sampleEqFeed(
-                    features = listOf(sampleEqFeature(id = "last", latitude = 45.001, longitude = 9.001))
+                    features = listOf(sampleEqFeature(id = "last", time = now.toEpochMilli(), latitude = 45.001, longitude = 9.001))
                 )
             )
         )
@@ -150,7 +153,7 @@ class EarthquakeStatisticsRepositoryImplTest {
                 1 to sampleEqFeed(
                     features = listOf(
                         sampleEqFeature(id = "near-user", latitude = 45.0, longitude = 9.0),
-                        sampleEqFeature(id = "near-manual", latitude = 46.0, longitude = 10.0)
+                        sampleEqFeature(id = "near-manual", time = now.toEpochMilli(), latitude = 46.0, longitude = 10.0)
                     )
                 )
             )
@@ -170,10 +173,11 @@ class EarthquakeStatisticsRepositoryImplTest {
     }
 
     @Test
-    fun invalidEffectivePositionMarksNearestUnavailable() = runTest {
+    fun invalidEffectivePositionKeepsGlobalInsightsAndMarksLocationSectionsUnavailable() = runTest {
         val remote = FakeStatisticsRemoteDataSource(
             counts = defaultCounts,
-            strongestFeed = sampleEqFeed(features = emptyList())
+            strongestFeed = sampleEqFeed(features = emptyList()),
+            eventPages = mapOf(1 to sampleEqFeed(features = emptyList()))
         )
         val repository = repository(
             remote = remote,
@@ -183,8 +187,60 @@ class EarthquakeStatisticsRepositoryImplTest {
         val result = repository.load(forceRefresh = true).toList().single()
 
         assertTrue(StatisticsSection.NEAREST in result.unavailableSections)
+        assertTrue(StatisticsSection.NEARBY_TREND in result.unavailableSections)
+        assertTrue(StatisticsSection.INSIGHTS !in result.unavailableSections)
         assertNull(result.snapshot?.nearestToday)
-        assertTrue(remote.eventCalls.none { it.orderBy == "time" })
+        assertEquals(30, result.snapshot?.insights?.globalTrend?.size)
+        assertNull(result.snapshot?.insights?.nearbyTrend)
+        assertTrue(remote.eventCalls.any { it.orderBy == "time" })
+    }
+
+    @Test
+    fun nearestTodayIgnoresCloserEventsOutsideToday() = runTest {
+        val remote = FakeStatisticsRemoteDataSource(
+            counts = defaultCounts,
+            strongestFeed = sampleEqFeed(features = emptyList()),
+            eventPages = mapOf(
+                1 to sampleEqFeed(
+                    features = listOf(
+                        sampleEqFeature(
+                            id = "older-near",
+                            time = now.minusSeconds(2 * 24 * 60 * 60L).toEpochMilli(),
+                            latitude = 45.0,
+                            longitude = 9.0
+                        ),
+                        sampleEqFeature(
+                            id = "today-far",
+                            time = now.toEpochMilli(),
+                            latitude = 46.0,
+                            longitude = 10.0
+                        )
+                    )
+                )
+            )
+        )
+
+        val result = repository(remote = remote).load(forceRefresh = true).toList().single()
+
+        assertEquals("today-far", result.snapshot?.nearestToday?.id)
+        assertEquals(2, result.snapshot?.insights?.globalTrend?.sumOf { it.count })
+    }
+
+    @Test
+    fun failedInsightPageKeepsSummaryAndMarksInsightSectionsUnavailable() = runTest {
+        val remote = FakeStatisticsRemoteDataSource(
+            counts = defaultCounts,
+            strongestFeed = sampleEqFeed(features = emptyList()),
+            failedEventOffset = 1
+        )
+
+        val result = repository(remote = remote).load(forceRefresh = true).toList().single()
+
+        assertEquals(146, result.snapshot?.counts?.today)
+        assertNull(result.snapshot?.insights)
+        assertTrue(StatisticsSection.INSIGHTS in result.unavailableSections)
+        assertTrue(StatisticsSection.NEARBY_TREND in result.unavailableSections)
+        assertTrue(StatisticsSection.NEAREST in result.unavailableSections)
     }
 
     @Test(expected = CancellationException::class)
@@ -205,7 +261,8 @@ class EarthquakeStatisticsRepositoryImplTest {
         remote = remote,
         cacheDao = cache,
         appPreferencesRepository = FakeAppPreferencesRepository(settings),
-        timeProvider = timeProvider
+        timeProvider = timeProvider,
+        insightsAnalyzer = StatisticsInsightsAnalyzer()
     )
 
     private fun completeSnapshot(retrievedAt: Instant) = StatisticsSnapshot(
@@ -243,14 +300,20 @@ private class RecordingCacheDao(
     }
 }
 
-private data class EventCall(val orderBy: String, val limit: Int, val offset: Int)
+private data class EventCall(
+    val period: StatisticsPeriod,
+    val orderBy: String,
+    val limit: Int,
+    val offset: Int
+)
 
 private class FakeStatisticsRemoteDataSource(
     private val counts: Map<StatisticsPeriod, Int> = emptyMap(),
     private val failedCountPeriod: StatisticsPeriod? = null,
     private val cancelledCountPeriod: StatisticsPeriod? = null,
     private val strongestFeed: EQFeaturesCollectionDTO = sampleEqFeed(features = emptyList()),
-    private val eventPages: Map<Int, EQFeaturesCollectionDTO> = emptyMap()
+    private val eventPages: Map<Int, EQFeaturesCollectionDTO> = emptyMap(),
+    private val failedEventOffset: Int? = null
 ) : EarthquakeStatisticsRemoteDataSource {
     val countCalls = mutableListOf<StatisticsPeriod>()
     val eventCalls = mutableListOf<EventCall>()
@@ -269,7 +332,8 @@ private class FakeStatisticsRemoteDataSource(
         limit: Int,
         offset: Int
     ): EQFeaturesCollectionDTO {
-        eventCalls += EventCall(orderBy, limit, offset)
+        eventCalls += EventCall(window.period, orderBy, limit, offset)
+        if (offset == failedEventOffset) error("event page failed")
         return if (orderBy == "magnitude") strongestFeed else eventPages.getValue(offset)
     }
 }

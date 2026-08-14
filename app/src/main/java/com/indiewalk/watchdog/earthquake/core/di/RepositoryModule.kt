@@ -18,6 +18,7 @@ import com.indiewalk.watchdog.earthquake.feat_statistics.data.remote.EarthquakeS
 import com.indiewalk.watchdog.earthquake.feat_statistics.data.remote.EarthquakeStatisticsRemoteDataSource
 import com.indiewalk.watchdog.earthquake.feat_statistics.data.repository.EarthquakeStatisticsRepositoryImpl
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.repository.EarthquakeStatisticsRepository
+import com.indiewalk.watchdog.earthquake.feat_statistics.domain.analysis.StatisticsInsightsAnalyzer
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.time.StatisticsTimeProvider
 import dagger.Module
 import dagger.Provides
@@ -87,11 +88,13 @@ object RepositoryModule {
         remote: EarthquakeStatisticsRemoteDataSource,
         cacheDao: StatisticsCacheDao,
         appPreferencesRepository: AppPreferencesRepository,
-        timeProvider: StatisticsTimeProvider
+        timeProvider: StatisticsTimeProvider,
+        insightsAnalyzer: StatisticsInsightsAnalyzer
     ): EarthquakeStatisticsRepository = EarthquakeStatisticsRepositoryImpl(
         remote = remote,
         cacheDao = cacheDao,
         appPreferencesRepository = appPreferencesRepository,
-        timeProvider = timeProvider
+        timeProvider = timeProvider,
+        insightsAnalyzer = insightsAnalyzer
     )
 }

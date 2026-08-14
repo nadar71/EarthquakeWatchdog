@@ -8,8 +8,10 @@ import com.indiewalk.watchdog.earthquake.feat_statistics.data.local.toCacheEntit
 import com.indiewalk.watchdog.earthquake.feat_statistics.data.local.toSnapshot
 import com.indiewalk.watchdog.earthquake.feat_statistics.data.remote.EarthquakeStatisticsRemoteDataSource
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsCounts
+import com.indiewalk.watchdog.earthquake.feat_statistics.domain.analysis.StatisticsInsightsAnalyzer
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsEvent
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsLoadResult
+import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsLocation
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsPeriod
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsSection
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsSnapshot
@@ -38,7 +40,8 @@ class EarthquakeStatisticsRepositoryImpl(
     private val remote: EarthquakeStatisticsRemoteDataSource,
     private val cacheDao: StatisticsCacheDao,
     private val appPreferencesRepository: AppPreferencesRepository,
-    private val timeProvider: StatisticsTimeProvider
+    private val timeProvider: StatisticsTimeProvider,
+    private val insightsAnalyzer: StatisticsInsightsAnalyzer
 ) : EarthquakeStatisticsRepository {
 
     override fun load(forceRefresh: Boolean): Flow<StatisticsLoadResult> = flow {
@@ -79,9 +82,29 @@ class EarthquakeStatisticsRepositoryImpl(
 
             val countResults = countJobs.mapValues { it.value.await() }
             val strongestResult = strongestJob.await()
-            val nearestResult = when (val todayCount = countResults.getValue(StatisticsPeriod.TODAY)) {
-                is Attempt.Success -> attempt { findNearest(windows.today, todayCount.value) }
-                is Attempt.Failure -> Attempt.Failure(todayCount.error)
+            val eventsResult = when (val monthCount = countResults.getValue(StatisticsPeriod.LAST_30_DAYS)) {
+                is Attempt.Success -> attempt { loadEvents(windows.last30Days, monthCount.value) }
+                is Attempt.Failure -> Attempt.Failure(monthCount.error)
+            }
+            val originResult = attempt { effectiveLocation() }
+            val nearestResult = when {
+                eventsResult is Attempt.Failure -> Attempt.Failure(eventsResult.error)
+                originResult is Attempt.Failure -> Attempt.Failure(originResult.error)
+                originResult.valueOrNull() == null -> Attempt.Failure(
+                    IllegalStateException("Effective location is unavailable")
+                )
+                else -> attempt {
+                    findNearest(
+                        events = requireNotNull(eventsResult.valueOrNull()).filter {
+                            it.time >= windows.today.start.toEpochMilli() &&
+                                it.time <= windows.today.end.toEpochMilli()
+                        },
+                        origin = requireNotNull(originResult.valueOrNull())
+                    )
+                }
+            }
+            val insights = eventsResult.valueOrNull()?.let { events ->
+                insightsAnalyzer.analyze(events, windows.last30Days, originResult.valueOrNull())
             }
 
             val unavailable = buildSet {
@@ -91,10 +114,14 @@ class EarthquakeStatisticsRepositoryImpl(
                 if (countResults[StatisticsPeriod.YEAR] is Attempt.Failure) add(StatisticsSection.YEAR_COUNT)
                 if (strongestResult is Attempt.Failure) add(StatisticsSection.STRONGEST)
                 if (nearestResult is Attempt.Failure) add(StatisticsSection.NEAREST)
+                if (eventsResult is Attempt.Failure) add(StatisticsSection.INSIGHTS)
+                if (eventsResult is Attempt.Failure || originResult.valueOrNull() == null) {
+                    add(StatisticsSection.NEARBY_TREND)
+                }
             }
 
             val successfulSections = countResults.values.count { it is Attempt.Success } +
-                listOf(strongestResult, nearestResult).count { it is Attempt.Success }
+                listOf(strongestResult, nearestResult, eventsResult).count { it is Attempt.Success }
             if (successfulSections == 0) {
                 val cause = (countResults.values.firstOrNull() as? Attempt.Failure)?.error
                 throw EarthquakeStatisticsLoadException("Unable to load earthquake statistics", cause)
@@ -109,12 +136,19 @@ class EarthquakeStatisticsRepositoryImpl(
                 ),
                 strongestToday = strongestResult.valueOrNull(),
                 nearestToday = nearestResult.valueOrNull(),
+                insights = insights,
                 threshold = THRESHOLD,
                 retrievedAt = windows.today.end,
                 windows = windows
             )
 
-            if (unavailable.isEmpty() && snapshot.counts.isComplete()) {
+            val onlyLocationSectionsUnavailable = unavailable.all { it in LOCATION_SECTIONS }
+            if (
+                snapshot.counts.isComplete() &&
+                strongestResult is Attempt.Success &&
+                insights != null &&
+                onlyLocationSectionsUnavailable
+            ) {
                 cacheDao.replace(snapshot.toCacheEntity())
             }
 
@@ -124,12 +158,8 @@ class EarthquakeStatisticsRepositoryImpl(
             )
         }
 
-    private suspend fun findNearest(window: StatisticsWindow, eventCount: Int): StatisticsEvent? {
-        if (eventCount == 0) return null
-        val settings = appPreferencesRepository.getCurrentSettings()
-        val origin = if (settings.manualLocOn) settings.manualPosition else settings.userPosition
-        if (!origin.isValid()) throw IllegalStateException("Effective location is unavailable")
-
+    private suspend fun loadEvents(window: StatisticsWindow, eventCount: Int): List<StatisticsEvent> {
+        if (eventCount == 0) return emptyList()
         val pageOffsets = (1..eventCount step PAGE_SIZE).toList()
         val features = supervisorScope {
             pageOffsets.map { offset ->
@@ -145,19 +175,33 @@ class EarthquakeStatisticsRepositoryImpl(
             }.awaitAll().flatten()
         }
 
-        return features.mapNotNull { feature ->
-            val latitude = feature.geometry.latitude ?: return@mapNotNull null
-            val longitude = feature.geometry.longitude ?: return@mapNotNull null
-            feature.toStatisticsEvent(
+        return features.mapNotNull { it.toStatisticsEvent() }
+    }
+
+    private suspend fun effectiveLocation(): StatisticsLocation? {
+        val settings = appPreferencesRepository.getCurrentSettings()
+        val position = if (settings.manualLocOn) settings.manualPosition else settings.userPosition
+        return position.takeIf { it.isValid() }?.let {
+            StatisticsLocation(it.latitude, it.longitude)
+        }
+    }
+
+    private fun findNearest(
+        events: List<StatisticsEvent>,
+        origin: StatisticsLocation
+    ): StatisticsEvent? = events
+        .filter { it.latitude.isFinite() && it.longitude.isFinite() }
+        .map { event ->
+            event.copy(
                 distanceKm = haversineDistanceKm(
                     origin.latitude,
                     origin.longitude,
-                    latitude,
-                    longitude
+                    event.latitude,
+                    event.longitude
                 )
             )
-        }.minByOrNull { requireNotNull(it.distanceKm) }
-    }
+        }
+        .minByOrNull { requireNotNull(it.distanceKm) }
 
     private suspend fun <T> attempt(block: suspend () -> T): Attempt<T> = try {
         Attempt.Success(block())
@@ -218,5 +262,6 @@ class EarthquakeStatisticsRepositoryImpl(
         const val THRESHOLD = 2.5
         const val PAGE_SIZE = 20_000
         val CACHE_TTL: Duration = Duration.ofMinutes(15)
+        val LOCATION_SECTIONS = setOf(StatisticsSection.NEAREST, StatisticsSection.NEARBY_TREND)
     }
 }
