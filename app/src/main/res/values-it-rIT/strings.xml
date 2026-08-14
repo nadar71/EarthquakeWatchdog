@@ -170,8 +170,36 @@
 
     <!-- - - - - - - - - - - - - - - - - - Error - - - - - - - - - - -  - - - - - - - - - - - - - -->
     <string name="no_earthquakes">Nessun terremoto trovato. Prova un altro filtro.</string>
+    <string name="no_internet_connection">Nessuna connessione Internet. Devi connetterti almeno la prima volta per scaricare i dati sui terremoti.</string>
     <!-- Generic error shown when loading earthquakes fails -->
     <string name="error_loading_earthquakes">Errore nel caricamento dei dati dei terremoti</string>
     <string name="api_generic_error">Errore durante la richiesta remota</string>
     <string name="db_generic_error">Errore durante l\'operazione sul database</string>
+    <!-- Statistiche -->
+    <string name="statistics_title">Statistiche</string>
+    <string name="statistics_scope">Terremoti globali · M%1$s+</string>
+    <string name="statistics_updated">Aggiornato %1$s</string>
+    <string name="statistics_today">Oggi</string>
+    <string name="statistics_last_7_days">7 giorni</string>
+    <string name="statistics_last_30_days">30 giorni</string>
+    <string name="statistics_this_year">Anno</string>
+    <string name="statistics_count_today_cd">%1$s terremoti oggi</string>
+    <string name="statistics_count_week_cd">%1$s terremoti negli ultimi 7 giorni</string>
+    <string name="statistics_count_month_cd">%1$s terremoti negli ultimi 30 giorni</string>
+    <string name="statistics_count_year_cd">%1$s terremoti quest’anno</string>
+    <string name="statistics_count_unavailable">Non disponibile</string>
+    <string name="statistics_strongest_today">Più forte di oggi</string>
+    <string name="statistics_nearest_today">Più vicino di oggi</string>
+    <string name="statistics_depth">Profondità %1$s km</string>
+    <string name="statistics_distance_km">A %1$s km</string>
+    <string name="statistics_distance_mi">A %1$s mi</string>
+    <string name="statistics_no_strongest">Nessun terremoto corrispondente oggi.</string>
+    <string name="statistics_no_nearest">Nessun terremoto corrispondente oggi.</string>
+    <string name="statistics_nearest_unavailable">Il terremoto più vicino non è disponibile per la posizione selezionata.</string>
+    <string name="statistics_cached">Visualizzazione delle statistiche salvate.</string>
+    <string name="statistics_stale">Le statistiche potrebbero non essere aggiornate.</string>
+    <string name="statistics_partial">Alcune statistiche sono temporaneamente non disponibili.</string>
+    <string name="statistics_error">Impossibile caricare le statistiche sui terremoti.</string>
+    <string name="statistics_retry">Riprova</string>
+
 </resources>

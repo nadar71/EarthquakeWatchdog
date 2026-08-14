@@ -196,4 +196,31 @@
 
 
 
+    <!-- Statistics -->
+    <string name="statistics_title">Statistics</string>
+    <string name="statistics_scope">Global earthquakes · M%1$s+</string>
+    <string name="statistics_updated">Updated %1$s</string>
+    <string name="statistics_today">Today</string>
+    <string name="statistics_last_7_days">7 days</string>
+    <string name="statistics_last_30_days">30 days</string>
+    <string name="statistics_this_year">Year</string>
+    <string name="statistics_count_today_cd">%1$s earthquakes today</string>
+    <string name="statistics_count_week_cd">%1$s earthquakes in the last 7 days</string>
+    <string name="statistics_count_month_cd">%1$s earthquakes in the last 30 days</string>
+    <string name="statistics_count_year_cd">%1$s earthquakes this year</string>
+    <string name="statistics_count_unavailable">Unavailable</string>
+    <string name="statistics_strongest_today">Strongest today</string>
+    <string name="statistics_nearest_today">Nearest today</string>
+    <string name="statistics_depth">Depth %1$s km</string>
+    <string name="statistics_distance_km">%1$s km away</string>
+    <string name="statistics_distance_mi">%1$s mi away</string>
+    <string name="statistics_no_strongest">No qualifying earthquake today.</string>
+    <string name="statistics_no_nearest">No qualifying earthquake today.</string>
+    <string name="statistics_nearest_unavailable">Nearest earthquake is unavailable for the selected location.</string>
+    <string name="statistics_cached">Showing cached statistics.</string>
+    <string name="statistics_stale">Statistics may be out of date.</string>
+    <string name="statistics_partial">Some statistics are temporarily unavailable.</string>
+    <string name="statistics_error">Unable to load earthquake statistics.</string>
+    <string name="statistics_retry">Retry</string>
+
 </resources>

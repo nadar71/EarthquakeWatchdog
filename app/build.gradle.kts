@@ -88,7 +88,6 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
-    implementation(libs.androidx.ui.test.android)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx.v251)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)

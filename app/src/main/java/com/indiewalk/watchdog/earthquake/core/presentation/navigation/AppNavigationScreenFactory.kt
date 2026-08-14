@@ -8,6 +8,7 @@ import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui.MapScreen
 import com.indiewalk.watchdog.earthquake.feat_intro.presentation.IntroScreen_01
 import com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui.CreditsScreen
 import com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui.SettingsScreen
+import com.indiewalk.watchdog.earthquake.feat_statistics.presentation.ui.StatisticsScreen
 
 interface AppNavigationScreenFactory {
     @Composable
@@ -26,6 +27,13 @@ interface AppNavigationScreenFactory {
         currentDestination: AppDestination,
         onTopLevelDestinationSelected: (AppDestination) -> Unit,
         initialLatLng: LatLng?
+    )
+
+    @Composable
+    fun Statistics(
+        currentDestination: AppDestination,
+        onTopLevelDestinationSelected: (AppDestination) -> Unit,
+        onOpenDetails: (String) -> Unit
     )
 
     @Composable
@@ -80,6 +88,19 @@ object DefaultAppNavigationScreenFactory : AppNavigationScreenFactory {
             currentDestination = currentDestination,
             onTopLevelDestinationSelected = onTopLevelDestinationSelected,
             initialLatLng = initialLatLng
+        )
+    }
+
+    @Composable
+    override fun Statistics(
+        currentDestination: AppDestination,
+        onTopLevelDestinationSelected: (AppDestination) -> Unit,
+        onOpenDetails: (String) -> Unit
+    ) {
+        StatisticsScreen(
+            currentDestination = currentDestination,
+            onTopLevelDestinationSelected = onTopLevelDestinationSelected,
+            onOpenDetails = onOpenDetails
         )
     }
 

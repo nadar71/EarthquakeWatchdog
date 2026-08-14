@@ -3,6 +3,7 @@ package com.indiewalk.watchdog.earthquake.core.presentation.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.QueryStats
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +37,16 @@ fun AppBottomBar(
             destination = AppDestination.Map(),
             label = stringResource(R.string.maps_title_bottom_nav),
             icon = { Icon(Icons.Filled.Map, contentDescription = stringResource(R.string.nav_bottom_eqs_desc)) }
+        ),
+        BottomBarItem(
+            destination = AppDestination.Statistics,
+            label = stringResource(R.string.statistics_title),
+            icon = {
+                Icon(
+                    Icons.Filled.QueryStats,
+                    contentDescription = stringResource(R.string.statistics_title)
+                )
+            }
         ),
         BottomBarItem(
             destination = AppDestination.Settings,
