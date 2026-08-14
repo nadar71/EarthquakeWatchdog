@@ -43,6 +43,35 @@ data class StatisticsEvent(
     val distanceKm: Double? = null
 )
 
+data class StatisticsLocation(
+    val latitude: Double,
+    val longitude: Double
+)
+
+data class TrendPoint(
+    val start: Instant,
+    val end: Instant,
+    val count: Int
+)
+
+data class DistributionBucket(
+    val id: String,
+    val count: Int
+)
+
+data class ActiveRegion(
+    val name: String,
+    val count: Int
+)
+
+data class StatisticsInsights(
+    val globalTrend: List<TrendPoint>,
+    val magnitudeDistribution: List<DistributionBucket>,
+    val depthDistribution: List<DistributionBucket>,
+    val activeRegions: List<ActiveRegion>,
+    val nearbyTrend: List<TrendPoint>?
+)
+
 data class StatisticsSnapshot(
     val counts: StatisticsCounts,
     val strongestToday: StatisticsEvent?,
