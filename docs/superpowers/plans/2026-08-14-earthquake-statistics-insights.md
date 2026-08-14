@@ -27,7 +27,7 @@
 - Create: `app/src/test/java/com/indiewalk/watchdog/earthquake/feat_statistics/domain/analysis/StatisticsInsightsAnalyzerTest.kt`
 
 **Interfaces:**
-- Consumes: `StatisticsEvent`, `StatisticsWindow`, and optional `LatLng` origin.
+- Consumes: `StatisticsEvent`, `StatisticsWindow`, and optional app-owned `StatisticsLocation` origin.
 - Produces: `StatisticsLocation(latitude: Double, longitude: Double)`, `TrendPoint(start: Instant, end: Instant, count: Int)`, `DistributionBucket(id: String, count: Int)`, `ActiveRegion(name: String, count: Int)`, `StatisticsInsights`, and `StatisticsInsightsAnalyzer.analyze(events, window, origin)`.
 
 - [ ] **Step 1: Write failing analyzer tests**
