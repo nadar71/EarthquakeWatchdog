@@ -14,14 +14,8 @@ import io.ktor.http.path
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
-class EarthquakeStatisticsApi @Inject constructor(
-    @UsgsClient private val client: HttpClient
-) {
-    suspend fun count(window: StatisticsWindow, threshold: Double): Int =
-        client.get {
-            usgsPath("count")
-            commonParameters(window, threshold)
-        }.bodyAsText().trim().toInt()
+interface EarthquakeStatisticsRemoteDataSource {
+    suspend fun count(window: StatisticsWindow, threshold: Double): Int
 
     suspend fun events(
         window: StatisticsWindow,
@@ -29,6 +23,24 @@ class EarthquakeStatisticsApi @Inject constructor(
         orderBy: String,
         limit: Int,
         offset: Int = 1
+    ): EQFeaturesCollectionDTO
+}
+
+class EarthquakeStatisticsApi @Inject constructor(
+    @UsgsClient private val client: HttpClient
+) : EarthquakeStatisticsRemoteDataSource {
+    override suspend fun count(window: StatisticsWindow, threshold: Double): Int =
+        client.get {
+            usgsPath("count")
+            commonParameters(window, threshold)
+        }.bodyAsText().trim().toInt()
+
+    override suspend fun events(
+        window: StatisticsWindow,
+        threshold: Double,
+        orderBy: String,
+        limit: Int,
+        offset: Int
     ): EQFeaturesCollectionDTO = client.get {
         usgsPath("query")
         parameter("format", "geojson")
