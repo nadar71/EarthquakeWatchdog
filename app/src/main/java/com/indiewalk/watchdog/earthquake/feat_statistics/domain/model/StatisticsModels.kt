@@ -76,6 +76,7 @@ data class StatisticsSnapshot(
     val counts: StatisticsCounts,
     val strongestToday: StatisticsEvent?,
     val nearestToday: StatisticsEvent?,
+    val insights: StatisticsInsights? = null,
     val threshold: Double,
     val retrievedAt: Instant,
     val windows: StatisticsWindows

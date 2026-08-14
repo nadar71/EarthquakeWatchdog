@@ -1,11 +1,15 @@
 package com.indiewalk.watchdog.earthquake.feat_statistics.data.local
 
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsCounts
+import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.ActiveRegion
+import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.DistributionBucket
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsEvent
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsPeriod
+import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsInsights
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsSnapshot
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsWindow
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsWindows
+import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.TrendPoint
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.Instant
@@ -27,6 +31,13 @@ class StatisticsCacheEntityTest {
                 longitude = 178.0
             ),
             nearestToday = null,
+            insights = StatisticsInsights(
+                globalTrend = listOf(TrendPoint(now.minusSeconds(86_400), now, 12)),
+                magnitudeDistribution = listOf(DistributionBucket("m2_5_2_9", 8)),
+                depthDistribution = listOf(DistributionBucket("shallow", 10)),
+                activeRegions = listOf(ActiveRegion("Italy", 4)),
+                nearbyTrend = null
+            ),
             threshold = 2.5,
             retrievedAt = now,
             windows = StatisticsWindows(

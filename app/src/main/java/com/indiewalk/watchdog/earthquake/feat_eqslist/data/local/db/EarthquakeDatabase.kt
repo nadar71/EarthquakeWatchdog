@@ -32,13 +32,19 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
     }
 }
 
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE statistics_cache ADD COLUMN insightsJson TEXT")
+    }
+}
+
 @Database(
     entities = [
         EQEntity::class,
         EQFeedSnapshotEntity::class,
         StatisticsCacheEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = true
 )
 @TypeConverters(DateConverter::class)
@@ -57,7 +63,7 @@ abstract class EarthquakeDatabase : RoomDatabase() {
                 EarthquakeDatabase::class.java,
                 DBNAME
             )
-                .addMigrations(MIGRATION_4_5)
+                .addMigrations(MIGRATION_4_5, MIGRATION_5_6)
                 .build()
         }
     }
