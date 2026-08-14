@@ -201,5 +201,23 @@
     <string name="statistics_partial">Alcune statistiche sono temporaneamente non disponibili.</string>
     <string name="statistics_error">Impossibile caricare le statistiche sui terremoti.</string>
     <string name="statistics_retry">Riprova</string>
+    <string name="statistics_insights_title">Approfondimenti</string>
+    <string name="statistics_global_trend">Attività globale negli ultimi 30 giorni</string>
+    <string name="statistics_nearby_trend">Attività entro 1.000 km</string>
+    <string name="statistics_trend_summary">%1$s: %2$d terremoti, picco di %3$d in un giorno.</string>
+    <string name="statistics_magnitude_distribution">Distribuzione per magnitudo</string>
+    <string name="statistics_depth_distribution">Distribuzione per profondità</string>
+    <string name="statistics_active_regions">Regioni più attive</string>
+    <string name="statistics_no_regions">Nessuna regione identificata disponibile.</string>
+    <string name="statistics_insights_unavailable">Gli approfondimenti sono temporaneamente non disponibili.</string>
+    <string name="statistics_nearby_trend_unavailable">L’andamento nelle vicinanze non è disponibile per la posizione selezionata.</string>
+    <string name="statistics_mag_2_5_2_9">M2,5–2,9</string>
+    <string name="statistics_mag_3_0_3_9">M3,0–3,9</string>
+    <string name="statistics_mag_4_0_4_9">M4,0–4,9</string>
+    <string name="statistics_mag_5_0_5_9">M5,0–5,9</string>
+    <string name="statistics_mag_6_plus">M6,0+</string>
+    <string name="statistics_depth_shallow">Superficiali · meno di 70 km</string>
+    <string name="statistics_depth_intermediate">Intermedi · 70–300 km</string>
+    <string name="statistics_depth_deep">Profondi · oltre 300 km</string>
 
 </resources>

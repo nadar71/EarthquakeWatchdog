@@ -38,6 +38,10 @@ import com.indiewalk.watchdog.earthquake.core.util.FormatUtil
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsSection
 import com.indiewalk.watchdog.earthquake.feat_statistics.presentation.components.StatisticsCountStrip
 import com.indiewalk.watchdog.earthquake.feat_statistics.presentation.components.StatisticsEventCard
+import com.indiewalk.watchdog.earthquake.feat_statistics.presentation.components.LabeledDistributionBucket
+import com.indiewalk.watchdog.earthquake.feat_statistics.presentation.components.StatisticsActiveRegionsCard
+import com.indiewalk.watchdog.earthquake.feat_statistics.presentation.components.StatisticsDistributionCard
+import com.indiewalk.watchdog.earthquake.feat_statistics.presentation.components.StatisticsTrendChart
 import com.indiewalk.watchdog.earthquake.feat_statistics.presentation.state.StatisticsUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -126,7 +130,7 @@ private fun StatisticsDataContent(
 ) {
     val snapshot = requireNotNull(uiState.snapshot)
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().testTag("statistics-list"),
         contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
@@ -176,6 +180,81 @@ private fun StatisticsDataContent(
                 onEventClick = onEventClick
             )
         }
+        val insights = snapshot.insights
+        if (insights != null) {
+            item {
+                Text(
+                    text = stringResource(R.string.statistics_insights_title),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            item {
+                StatisticsTrendChart(
+                    title = stringResource(R.string.statistics_global_trend),
+                    trend = insights.globalTrend,
+                    semanticDescription = trendDescription(
+                        stringResource(R.string.statistics_global_trend),
+                        insights.globalTrend
+                    ),
+                    testTag = "statistics-global-trend"
+                )
+            }
+            item {
+                StatisticsDistributionCard(
+                    title = stringResource(R.string.statistics_magnitude_distribution),
+                    buckets = insights.magnitudeDistribution.map { bucket ->
+                        LabeledDistributionBucket(bucket, magnitudeLabel(bucket.id))
+                    },
+                    testTag = "statistics-magnitude-distribution"
+                )
+            }
+            item {
+                StatisticsDistributionCard(
+                    title = stringResource(R.string.statistics_depth_distribution),
+                    buckets = insights.depthDistribution.map { bucket ->
+                        LabeledDistributionBucket(bucket, depthLabel(bucket.id))
+                    },
+                    testTag = "statistics-depth-distribution"
+                )
+            }
+            item {
+                StatisticsActiveRegionsCard(
+                    title = stringResource(R.string.statistics_active_regions),
+                    regions = insights.activeRegions,
+                    emptyText = stringResource(R.string.statistics_no_regions),
+                    testTag = "statistics-active-regions"
+                )
+            }
+            item {
+                val nearbyTrend = insights.nearbyTrend
+                if (nearbyTrend == null || StatisticsSection.NEARBY_TREND in uiState.unavailableSections) {
+                    Text(
+                        text = stringResource(R.string.statistics_nearby_trend_unavailable),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    StatisticsTrendChart(
+                        title = stringResource(R.string.statistics_nearby_trend),
+                        trend = nearbyTrend,
+                        semanticDescription = trendDescription(
+                            stringResource(R.string.statistics_nearby_trend),
+                            nearbyTrend
+                        ),
+                        testTag = "statistics-nearby-trend"
+                    )
+                }
+            }
+        } else if (StatisticsSection.INSIGHTS in uiState.unavailableSections) {
+            item {
+                Text(
+                    text = stringResource(R.string.statistics_insights_unavailable),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
         if (uiState.isFromCache || uiState.isStale || uiState.unavailableSections.isNotEmpty()) {
             item {
                 Text(
@@ -191,6 +270,37 @@ private fun StatisticsDataContent(
         }
     }
 }
+
+@Composable
+private fun trendDescription(
+    title: String,
+    trend: List<com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.TrendPoint>
+): String = stringResource(
+    R.string.statistics_trend_summary,
+    title,
+    trend.sumOf { it.count },
+    trend.maxOfOrNull { it.count } ?: 0
+)
+
+@Composable
+private fun magnitudeLabel(id: String): String = stringResource(
+    when (id) {
+        "m2_5_2_9" -> R.string.statistics_mag_2_5_2_9
+        "m3_0_3_9" -> R.string.statistics_mag_3_0_3_9
+        "m4_0_4_9" -> R.string.statistics_mag_4_0_4_9
+        "m5_0_5_9" -> R.string.statistics_mag_5_0_5_9
+        else -> R.string.statistics_mag_6_plus
+    }
+)
+
+@Composable
+private fun depthLabel(id: String): String = stringResource(
+    when (id) {
+        "shallow" -> R.string.statistics_depth_shallow
+        "intermediate" -> R.string.statistics_depth_intermediate
+        else -> R.string.statistics_depth_deep
+    }
+)
 
 @Composable
 private fun HighlightSection(
