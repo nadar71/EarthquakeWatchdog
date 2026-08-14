@@ -84,6 +84,21 @@
     <!-- - - - - - - - - - - Maps - - - - - - - - - - - - - - - - - -->
     <string name="maps_title" >Earthquakes World Map</string>
     <string name="maps_title_bottom_nav">Map</string>
+    <string name="maps_marker_selected_subtitle">Selected earthquake details</string>
+    <string name="maps_marker_magnitude_label">Magnitude</string>
+    <string name="maps_marker_magnitude_type_format">Type: %1$s</string>
+    <string name="maps_marker_date_label">Date</string>
+    <string name="maps_marker_depth_label">Depth</string>
+    <string name="maps_marker_location_label">Location</string>
+    <string name="maps_marker_distance_label">Distance</string>
+    <string name="maps_marker_magnitude_impact_unknown">Impact information unavailable</string>
+    <string name="maps_marker_magnitude_impact_micro">Micro - Usually not felt</string>
+    <string name="maps_marker_magnitude_impact_minor">Minor - Often felt, rarely causes damage</string>
+    <string name="maps_marker_magnitude_impact_light">Light - Noticeable shaking, limited damage</string>
+    <string name="maps_marker_magnitude_impact_moderate">Moderate - Felt by many, some damage possible</string>
+    <string name="maps_marker_magnitude_impact_strong">Strong - Can damage weak structures</string>
+    <string name="maps_marker_magnitude_impact_major">Major - Serious damage in affected areas</string>
+    <string name="maps_marker_magnitude_impact_great">Great - Severe, widespread damage possible</string>
     <string name="maps_my_position_label">My Position</string>
     <string name="maps_refresh_label">Refresh</string>
     <string name="maps_spinner_title">Map type</string>

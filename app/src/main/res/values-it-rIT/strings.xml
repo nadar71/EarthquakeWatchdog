@@ -83,6 +83,21 @@
     <!-- - - - - - - - - - - Maps - - - - - - - - - - - - - - - - - - -->
     <string name="maps_title">Mappa Mondiale Terremoti</string>
     <string name="maps_title_bottom_nav">Mappa</string>
+    <string name="maps_marker_selected_subtitle">Dettagli del terremoto selezionato</string>
+    <string name="maps_marker_magnitude_label">Magnitudo</string>
+    <string name="maps_marker_magnitude_type_format">Tipo: %1$s</string>
+    <string name="maps_marker_date_label">Data</string>
+    <string name="maps_marker_depth_label">Profondità</string>
+    <string name="maps_marker_location_label">Posizione</string>
+    <string name="maps_marker_distance_label">Distanza</string>
+    <string name="maps_marker_magnitude_impact_unknown">Informazioni sull\'impatto non disponibili</string>
+    <string name="maps_marker_magnitude_impact_micro">Micro - Solitamente non percepito</string>
+    <string name="maps_marker_magnitude_impact_minor">Minore - Spesso percepito, raramente provoca danni</string>
+    <string name="maps_marker_magnitude_impact_light">Leggero - Scossa percepibile, danni limitati</string>
+    <string name="maps_marker_magnitude_impact_moderate">Moderato - Percepito da molti, possibili alcuni danni</string>
+    <string name="maps_marker_magnitude_impact_strong">Forte - Può danneggiare strutture deboli</string>
+    <string name="maps_marker_magnitude_impact_major">Maggiore - Danni seri nelle aree colpite</string>
+    <string name="maps_marker_magnitude_impact_great">Grande - Possibili danni gravi e diffusi</string>
     <string name="maps_my_position_label">La mia posizione</string>
     <string name="maps_refresh_label">Aggiorna</string>
     <string name="maps_spinner_title">Tipo di mappa</string>

@@ -54,6 +54,8 @@ fun EarthquakeMapContent(
     recenterTarget: LatLng?,
     onRecenterHandled: () -> Unit,
     settings: AppSettings,
+    onEarthquakeSelected: (EQEntity) -> Unit,
+    onMapTapped: () -> Unit,
 ) {
     val TAG = "EarthquakeMapContent"
     Log.d(TAG, "EarthquakeMapContent Opened")
@@ -165,7 +167,8 @@ fun EarthquakeMapContent(
         cameraPositionState = cameraPositionState,
         properties = properties,
         uiSettings = uiSettings,
-        onMapLoaded = { mapLoaded = true }
+        onMapLoaded = { mapLoaded = true },
+        onMapClick = { onMapTapped() }
     ) {
 
         // Build a BitmapDescriptor from a vector/PNG drawable
@@ -192,19 +195,15 @@ fun EarthquakeMapContent(
             if (lat != null && lng != null) {
                 val pos = LatLng(lat, lng)
                 val title = eq.place ?: eq.id
-                val magText = eq.mag?.let { "M %.1f".format(it) } ?: "M ?"
-                val depthText = eq.depthKm?.let { "Depth: %.0f km".format(it) } ?: ""
-                val snippet =
-                    listOf(magText, depthText).filter { it.isNotBlank() }.joinToString(" • ")
-
-
                 EarthquakeMarker(
                     state = rememberMarkerState(position = pos),
                     title = title,
-                    snippet = snippet,
                     eq = eq,
-                    onClick = {true}
-                    )
+                    onClick = {
+                        onEarthquakeSelected(it)
+                        true
+                    }
+                )
             }
         }
 
@@ -255,4 +254,3 @@ fun EarthquakeMapContent(
         }
     }
 }
-

@@ -10,7 +10,7 @@ data class MapUiState(
     val earthquakes: List<EQEntity> = emptyList(),
     val settings: AppSettings = AppSettings(),
     val hasLocationPermission: Boolean = false,
+    val selectedEarthquake: EQEntity? = null,
     val recenterTarget: LatLng? = null,
     val error: AppError? = null
 )
-

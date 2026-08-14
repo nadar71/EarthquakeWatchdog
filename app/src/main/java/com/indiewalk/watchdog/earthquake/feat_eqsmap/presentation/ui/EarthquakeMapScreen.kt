@@ -46,6 +46,7 @@ import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldMo
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppDestination
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraGreen_dark
 import com.indiewalk.watchdog.earthquake.feat_ads.presentation.AdMobBannerView
+import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.EarthquakeMapBottomInfoCard
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -181,7 +182,20 @@ fun EarthquakeMapScreen(
                             recenterTarget = uiState.recenterTarget,
                             onRecenterHandled = mapViewModel::onRecenterHandled,
                             settings = uiState.settings,
+                            onEarthquakeSelected = mapViewModel::onEarthquakeSelected,
+                            onMapTapped = mapViewModel::onEarthquakeSelectionCleared,
                         )
+
+                        uiState.selectedEarthquake?.let { selectedEarthquake ->
+                            EarthquakeMapBottomInfoCard(
+                                earthquake = selectedEarthquake,
+                                unitSystem = uiState.settings.unitSystem,
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                                onDismiss = mapViewModel::onEarthquakeSelectionCleared
+                            )
+                        }
 
                         if (showOptions) {
                             MapOptionsOverlayCard(
