@@ -20,17 +20,27 @@ class CrashReportingPolicyTest {
             mapOf("diagnostic_category" to "STORAGE"),
             gateway.reports.single().metadata.values
         )
-        assertTrue(gateway.collectionStates.isEmpty())
+        assertTrue(gateway.collectionOverrides.isEmpty())
     }
 
     @Test
-    fun startupExplicitlyReplacesDebugCollectionOverrideForRelease() {
+    fun startupClearsDebugCollectionOverrideForRelease() {
         val gateway = RecordingCrashlyticsGateway()
 
         CrashlyticsStartup.configure(isDebugBuild = true) { gateway }
         CrashlyticsStartup.configure(isDebugBuild = false) { gateway }
 
-        assertEquals(listOf(false, true), gateway.collectionStates)
+        assertEquals(listOf(false, null), gateway.collectionOverrides)
+    }
+
+    @Test
+    fun startupDisablesCollectionAfterReleaseOverrideIsClearedForDebug() {
+        val gateway = RecordingCrashlyticsGateway()
+
+        CrashlyticsStartup.configure(isDebugBuild = false) { gateway }
+        CrashlyticsStartup.configure(isDebugBuild = true) { gateway }
+
+        assertEquals(listOf(null, false), gateway.collectionOverrides)
     }
 
     @Test
@@ -45,7 +55,7 @@ class CrashReportingPolicyTest {
         )
 
         val reports = mutableListOf<Report>()
-        val collectionStates = mutableListOf<Boolean>()
+        val collectionOverrides = mutableListOf<Boolean?>()
 
         override fun recordException(throwable: Throwable, metadata: CrashlyticsReportMetadata) {
             reports += Report(throwable, metadata)
@@ -53,8 +63,8 @@ class CrashReportingPolicyTest {
 
         override fun log(event: DiagnosticEvent) = Unit
 
-        override fun setCollectionEnabled(enabled: Boolean) {
-            collectionStates += enabled
+        override fun setCollectionOverride(enabled: Boolean?) {
+            collectionOverrides += enabled
         }
     }
 }

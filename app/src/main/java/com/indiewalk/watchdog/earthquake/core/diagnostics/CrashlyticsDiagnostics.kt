@@ -6,7 +6,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 internal interface CrashlyticsGateway {
     fun recordException(throwable: Throwable, metadata: CrashlyticsReportMetadata)
     fun log(event: DiagnosticEvent)
-    fun setCollectionEnabled(enabled: Boolean)
+    fun setCollectionOverride(enabled: Boolean?)
 }
 
 internal class CrashlyticsDiagnosticsAdapter(
@@ -38,8 +38,8 @@ internal object CrashlyticsStartup {
         isDebugBuild: Boolean,
         initializeGateway: () -> CrashlyticsGateway?
     ) {
-        initializeGateway()?.setCollectionEnabled(
-            CrashReportingPolicy.isCollectionEnabled(isDebugBuild)
+        initializeGateway()?.setCollectionOverride(
+            CrashReportingPolicy.collectionOverrideForBuild(isDebugBuild)
         )
     }
 }
@@ -58,7 +58,7 @@ internal class FirebaseCrashlyticsGateway(
         crashlytics.log(event.name)
     }
 
-    override fun setCollectionEnabled(enabled: Boolean) {
+    override fun setCollectionOverride(enabled: Boolean?) {
         crashlytics.setCrashlyticsCollectionEnabled(enabled)
     }
 }

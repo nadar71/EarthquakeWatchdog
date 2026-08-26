@@ -48,7 +48,8 @@ object AppDiagnostics {
 }
 
 internal object CrashReportingPolicy {
-    fun isCollectionEnabled(isDebugBuild: Boolean): Boolean = !isDebugBuild
+    fun collectionOverrideForBuild(isDebugBuild: Boolean): Boolean? =
+        if (isDebugBuild) false else null
 
     fun shouldReport(category: DiagnosticCategory, throwable: Throwable): Boolean =
         DiagnosticReportingPolicy.shouldReport(category, throwable)
