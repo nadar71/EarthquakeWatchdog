@@ -125,14 +125,27 @@ readonly TEST_KEYSTORE_FILE="$TEMP_DIRECTORY/release-test.keystore"
 readonly TEST_KEY_ALIAS="release-test-alias"
 readonly TEST_KEY_PASSWORD="release-test-password"
 readonly TEST_MAPS_KEY="release-test-maps-key"
+readonly FIREBASE_CONFIG_FILE="$PROJECT_ROOT/app/google-services.json"
+readonly FIREBASE_CONFIG_BACKUP="$TEMP_DIRECTORY/google-services.json.backup"
+had_existing_firebase_config=false
 
 cleanup() {
+    if [[ "$had_existing_firebase_config" == true ]]; then
+        mv "$FIREBASE_CONFIG_BACKUP" "$FIREBASE_CONFIG_FILE"
+    else
+        rm -f "$FIREBASE_CONFIG_FILE"
+    fi
     rm -rf "$TEMP_DIRECTORY"
 }
 
 trap cleanup EXIT
 
 : > "$EMPTY_SECRETS_FILE"
+
+if [[ -f "$FIREBASE_CONFIG_FILE" ]]; then
+    mv "$FIREBASE_CONFIG_FILE" "$FIREBASE_CONFIG_BACKUP"
+    had_existing_firebase_config=true
+fi
 
 expect_release_configuration_failure() {
     local task_selector="$1"
@@ -188,6 +201,68 @@ if ! keytool -genkeypair \
     exit 1
 fi
 
+if "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
+    -PreleaseSecretsFile="$EMPTY_SECRETS_FILE" \
+    -Prelease_keyAlias="$TEST_KEY_ALIAS" \
+    -Prelease_keyPassword="$TEST_KEY_PASSWORD" \
+    -Prelease_storeFile="$TEST_KEYSTORE_FILE" \
+    -Prelease_storePassword="$TEST_KEY_PASSWORD" \
+    -PMAPS_API_KEY_RELEASE="$TEST_MAPS_KEY" \
+    :app:bundleRelease --dry-run --offline > "$TEMP_DIRECTORY/missing-firebase-config.log" 2>&1; then
+    printf 'FAIL: :app:bundleRelease configured without Firebase configuration\n' >&2
+    exit 1
+fi
+
+if ! grep -Fq 'Missing required Firebase configuration: app/google-services.json.' "$TEMP_DIRECTORY/missing-firebase-config.log"; then
+    tail -40 "$TEMP_DIRECTORY/missing-firebase-config.log" >&2
+    printf 'FAIL: missing Firebase configuration failure was not clear\n' >&2
+    exit 1
+fi
+
+cat > "$FIREBASE_CONFIG_FILE" <<'EOF'
+{
+  "project_info": {
+    "project_number": "123456789012",
+    "project_id": "synthetic-release-verification",
+    "storage_bucket": "synthetic-release-verification.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:123456789012:android:abcdef1234567890",
+        "android_client_info": {
+          "package_name": "com.indiewalk.watchdog.earthquake"
+        }
+      },
+      "api_key": [
+        {
+          "current_key": "synthetic-release-verification-key"
+        }
+      ]
+    }
+  ],
+  "configuration_version": "1"
+}
+EOF
+
+if "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
+    -PreleaseSecretsFile="$EMPTY_SECRETS_FILE" \
+    -Prelease_keyAlias="$TEST_KEY_ALIAS" \
+    -Prelease_keyPassword="$TEST_KEY_PASSWORD" \
+    -Prelease_storeFile="$TEST_KEYSTORE_FILE" \
+    -Prelease_storePassword="$TEST_KEY_PASSWORD" \
+    -PMAPS_API_KEY_RELEASE="$TEST_MAPS_KEY" \
+    :app:validateStoreReleaseConfiguration --offline > "$TEMP_DIRECTORY/store-mapping-opt-in.log" 2>&1; then
+    printf 'FAIL: store release validation accepted mapping upload without explicit opt-in\n' >&2
+    exit 1
+fi
+
+if ! grep -Fq 'Store release requires -PcrashlyticsMappingUploadEnabled=true' "$TEMP_DIRECTORY/store-mapping-opt-in.log"; then
+    tail -40 "$TEMP_DIRECTORY/store-mapping-opt-in.log" >&2
+    printf 'FAIL: store mapping upload failure was not clear\n' >&2
+    exit 1
+fi
+
 if ! "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
     -PreleaseSecretsFile="$EMPTY_SECRETS_FILE" \
     -Prelease_keyAlias="$TEST_KEY_ALIAS" \
@@ -195,6 +270,20 @@ if ! "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
     -Prelease_storeFile="$TEST_KEYSTORE_FILE" \
     -Prelease_storePassword="$TEST_KEY_PASSWORD" \
     -PMAPS_API_KEY_RELEASE="$TEST_MAPS_KEY" \
+    -PcrashlyticsMappingUploadEnabled=true \
+    :app:validateStoreReleaseConfiguration --offline > "$TEMP_DIRECTORY/store-mapping-opt-in-success.log" 2>&1; then
+    printf 'FAIL: store release validation rejected explicit mapping upload opt-in\n' >&2
+    exit 1
+fi
+
+if ! "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
+    -PreleaseSecretsFile="$EMPTY_SECRETS_FILE" \
+    -Prelease_keyAlias="$TEST_KEY_ALIAS" \
+    -Prelease_keyPassword="$TEST_KEY_PASSWORD" \
+    -Prelease_storeFile="$TEST_KEYSTORE_FILE" \
+    -Prelease_storePassword="$TEST_KEY_PASSWORD" \
+    -PMAPS_API_KEY_RELEASE="$TEST_MAPS_KEY" \
+    -PcrashlyticsMappingUploadEnabled=false \
     :app:bundleRelease --rerun-tasks --offline > "$TEMP_DIRECTORY/release-build.log" 2>&1; then
     printf 'FAIL: synthetic minified release bundle verification failed\n' >&2
     exit 1

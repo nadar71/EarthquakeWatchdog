@@ -30,7 +30,7 @@ object AppDiagnostics {
     private var sink: DiagnosticSink = PlatformDiagnostics
 
     fun recordNonFatal(category: DiagnosticCategory, throwable: Throwable) {
-        if (!DiagnosticReportingPolicy.shouldReport(category, throwable)) return
+        if (!CrashReportingPolicy.shouldReport(category, throwable)) return
         sink.recordNonFatal(category, SanitizedDiagnosticException(category, throwable))
     }
 
@@ -45,6 +45,13 @@ object AppDiagnostics {
     internal fun resetSinkForTests() {
         sink = PlatformDiagnostics
     }
+}
+
+internal object CrashReportingPolicy {
+    fun isCollectionEnabled(isDebugBuild: Boolean): Boolean = !isDebugBuild
+
+    fun shouldReport(category: DiagnosticCategory, throwable: Throwable): Boolean =
+        DiagnosticReportingPolicy.shouldReport(category, throwable)
 }
 
 private class SanitizedDiagnosticException(

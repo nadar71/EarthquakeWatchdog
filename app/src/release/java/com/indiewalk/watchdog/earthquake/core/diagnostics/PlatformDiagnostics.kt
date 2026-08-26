@@ -1,10 +1,14 @@
 package com.indiewalk.watchdog.earthquake.core.diagnostics
 
-/**
- * Task 4 replaces this no-op adapter with the consent-aware Crashlytics implementation.
- */
-internal object PlatformDiagnostics : DiagnosticSink {
-    override fun recordNonFatal(category: DiagnosticCategory, throwable: Throwable) = Unit
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 
-    override fun breadcrumb(event: DiagnosticEvent) = Unit
+internal object PlatformDiagnostics : DiagnosticSink {
+    override fun recordNonFatal(category: DiagnosticCategory, throwable: Throwable) {
+        FirebaseCrashlytics.getInstance().setCustomKey("diagnostic_category", category.name)
+        FirebaseCrashlytics.getInstance().recordException(throwable)
+    }
+
+    override fun breadcrumb(event: DiagnosticEvent) {
+        FirebaseCrashlytics.getInstance().log(event.name)
+    }
 }

@@ -14,6 +14,9 @@ datastorePreferences = "1.1.7"
 desugar_jdk_libs = "2.1.5"
 espressoCore = "3.5.0"
 foundationAndroid = "1.8.0"
+firebaseBom = "34.18.0"
+firebaseCrashlyticsGradle = "3.0.8"
+googleServicesGradle = "4.5.0"
 gsonVersion = "2.11.0"
 hilt = "2.51.1"
 hiltCommon = "1.2.0"
@@ -107,6 +110,8 @@ converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 foundation = { module = "androidx.compose.foundation:foundation" }
 foundation-layout = { module = "androidx.compose.foundation:foundation-layout" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gsonVersion" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
@@ -144,3 +149,5 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" } # from kotlin 2.0.0+
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServicesGradle" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsGradle" }

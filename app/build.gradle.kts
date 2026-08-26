@@ -1,6 +1,8 @@
 import org.gradle.api.Action
 import org.gradle.api.execution.TaskExecutionGraph
 import org.gradle.kotlin.dsl.implementation
+import org.gradle.kotlin.dsl.configure
+import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import java.util.Properties
 import java.io.FileInputStream
 
@@ -13,6 +15,8 @@ val keystoreProperties = Properties().apply {
         FileInputStream(keystorePropertiesFile).use { load(it) }
     }
 }
+val firebaseConfigurationFile = project.file("google-services.json")
+val hasFirebaseConfiguration = firebaseConfigurationFile.isFile
 
 val requiredReleaseSecretNames = listOf(
     "release_keyAlias",
@@ -50,6 +54,10 @@ fun validateReleaseTaskGraph() {
             check(missing.isEmpty()) {
                 "Missing required release secrets: ${missing.joinToString(", ")}"
             }
+            check(hasFirebaseConfiguration) {
+                "Missing required Firebase configuration: app/google-services.json. " +
+                    "Provision it from the protected release environment before packaging a store build."
+            }
         }
     })
 }
@@ -60,6 +68,11 @@ plugins { // plugin application
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
+}
+
+if (hasFirebaseConfiguration) {
+    pluginManager.apply("com.google.gms.google-services")
+    pluginManager.apply("com.google.firebase.crashlytics")
 }
 
 validateReleaseTaskGraph()
@@ -99,6 +112,15 @@ android {
             )
             signingConfig = signingConfigs.getByName("release")
             manifestPlaceholders["MAPS_API_KEY"] = releaseSecret("MAPS_API_KEY_RELEASE") ?: ""
+            manifestPlaceholders["CRASHLYTICS_COLLECTION_ENABLED"] = "true"
+            if (hasFirebaseConfiguration) {
+                extensions.configure<CrashlyticsExtension> {
+                    mappingFileUploadEnabled = providers.gradleProperty("crashlyticsMappingUploadEnabled")
+                        .orNull
+                        ?.toBooleanStrictOrNull()
+                        ?: false
+                }
+            }
         }
 
         debug {
@@ -106,6 +128,7 @@ android {
             manifestPlaceholders["MAPS_API_KEY"] = releaseSecret("MAPS_API_KEY_DEBUG")
                 ?: releaseSecret("MAPS_API_KEY")
                 ?: ""
+            manifestPlaceholders["CRASHLYTICS_COLLECTION_ENABLED"] = "false"
         }
     }
 
@@ -131,6 +154,22 @@ tasks.register("validateReleaseSecrets") {
         val missing = missingReleaseSecrets()
         check(missing.isEmpty()) {
             "Missing required release secrets: ${missing.joinToString(", ")}"
+        }
+    }
+}
+
+tasks.register("validateStoreReleaseConfiguration") {
+    group = "verification"
+    description = "Checks Firebase configuration and explicit Crashlytics mapping upload for a store artifact."
+    dependsOn("validateReleaseSecrets")
+
+    doLast {
+        check(hasFirebaseConfiguration) {
+            "Missing required Firebase configuration: app/google-services.json. " +
+                "Provision it from the protected release environment before packaging a store build."
+        }
+        check(providers.gradleProperty("crashlyticsMappingUploadEnabled").orNull == "true") {
+            "Store release requires -PcrashlyticsMappingUploadEnabled=true to upload the R8 mapping file."
         }
     }
 }
@@ -189,6 +228,11 @@ dependencies {
 
     // gson
     implementation(libs.gson)
+
+    // Firebase Crashlytics. The Gradle plugins are enabled only when a local or CI
+    // google-services.json is present; release packaging validates that it is required.
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
 
     // Room
     implementation(libs.androidx.room.runtime)
