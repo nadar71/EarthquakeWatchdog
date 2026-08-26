@@ -1,0 +1,16 @@
+EarthQuake Watchdog helps you explore recent earthquake activity around the world through a clear, map-focused interface.
+
+Browse the latest reported events, inspect their location and magnitude, and open detailed information for the earthquakes that matter to you. Flexible filters make it easier to focus on a time range, magnitude, or geographic area, while statistics provide a useful overview of recent seismic activity.
+
+Features:
+- Browse recently reported earthquakes worldwide
+- Explore events on an interactive map
+- View magnitude, location, depth, time, and event details
+- Filter earthquake data to focus your search
+- Review statistics and activity summaries
+- Configure location and display preferences
+- Use your device location or choose a location manually
+
+Earthquake information is sourced from the U.S. Geological Survey (USGS). Data availability and update timing depend on the source service.
+
+EarthQuake Watchdog is an informational tool. It is not an emergency warning system and should not be used as a substitute for official alerts, instructions, or advice from local authorities.
