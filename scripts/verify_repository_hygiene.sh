@@ -51,6 +51,26 @@ check_executable_source() {
                     return $index;
                 }
 
+                sub scan_block_comment {
+                    my ($index, $allow_nested_comments) = @_;
+                    $comment_depth = 1;
+                    $index += 2;
+                    while ($index < @characters - 1 && $comment_depth > 0) {
+                        if ($allow_nested_comments && join("", @characters[$index .. $index + 1]) eq "/*") {
+                            $comment_depth++;
+                            $index += 2;
+                            next;
+                        }
+                        if (join("", @characters[$index .. $index + 1]) eq "*/") {
+                            $comment_depth--;
+                            $index += 2;
+                            next;
+                        }
+                        $index++;
+                    }
+                    return $index;
+                }
+
                 sub scan_string {
                     my ($index, $raw_string) = @_;
                     $index += $raw_string ? 3 : 1;
@@ -85,9 +105,7 @@ check_executable_source() {
                             next;
                         }
                         if (join("", @characters[$index .. $index + 1]) eq "/*") {
-                            $index += 2;
-                            $index++ while $index < @characters - 1 && join("", @characters[$index .. $index + 1]) ne "*/";
-                            $index += 2 if $index < @characters - 1;
+                            $index = scan_block_comment($index, $ARGV =~ /\.kt$/);
                             next;
                         }
                         if (join("", @characters[$index .. $index + 2]) eq $double_quote x 3) {
