@@ -2,6 +2,27 @@ import org.gradle.kotlin.dsl.implementation
 import java.util.Properties
 import java.io.FileInputStream
 
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        FileInputStream(keystorePropertiesFile).use { load(it) }
+    }
+}
+
+val requiredReleaseSecretNames = listOf(
+    "release_keyAlias",
+    "release_keyPassword",
+    "release_storeFile",
+    "release_storePassword",
+    "MAPS_API_KEY_RELEASE"
+)
+
+fun releaseSecret(name: String): String? = sequenceOf(
+    providers.gradleProperty(name).orNull,
+    providers.environmentVariable(name).orNull,
+    keystoreProperties.getProperty(name)
+).firstOrNull { !it.isNullOrBlank() }
+
 plugins { // plugin application
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -14,27 +35,13 @@ android {
     namespace = "com.indiewalk.watchdog.earthquake"
     compileSdk = 36
 
-
-    // Load keystore properties
-    val keystorePropertiesFile = rootProject.file("keystore.properties")
-    val keystoreProperties = Properties()
-    if (keystorePropertiesFile.exists()) {
-        keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-    }
-
     signingConfigs {
-        // This is the existing release config - it's correct.
         create("release") {
-            keyAlias = keystoreProperties.getProperty("release_keyAlias")
-            keyPassword = keystoreProperties.getProperty("release_keyPassword")
-            storeFile = if (keystoreProperties.getProperty("release_storeFile") != null) {
-                rootProject.file(keystoreProperties.getProperty("release_storeFile"))
-            } else {
-                null
-            }
-            storePassword = keystoreProperties.getProperty("release_storePassword")
+            keyAlias = releaseSecret("release_keyAlias")
+            keyPassword = releaseSecret("release_keyPassword")
+            storeFile = releaseSecret("release_storeFile")?.let(rootProject::file)
+            storePassword = releaseSecret("release_storePassword")
         }
-
     }
 
 
@@ -50,19 +57,22 @@ android {
     }
 
     buildTypes {
-        release{
-            isMinifyEnabled = false
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("release")
-            manifestPlaceholders["MAPS_API_KEY"] = keystoreProperties.getProperty("MAPS_API_KEY", "")
+            manifestPlaceholders["MAPS_API_KEY"] = releaseSecret("MAPS_API_KEY_RELEASE") ?: ""
         }
 
-        debug{
+        debug {
             signingConfig = signingConfigs.getByName("debug")
-            manifestPlaceholders["MAPS_API_KEY"] = keystoreProperties.getProperty("MAPS_API_KEY", "")
+            manifestPlaceholders["MAPS_API_KEY"] = releaseSecret("MAPS_API_KEY_DEBUG")
+                ?: releaseSecret("MAPS_API_KEY")
+                ?: ""
         }
     }
 
@@ -77,6 +87,22 @@ android {
         compose = true
     }
     sourceSets["androidTest"].assets.srcDir("$projectDir/schemas")
+}
+
+tasks.register("validateReleaseSecrets") {
+    group = "verification"
+    description = "Checks that release signing and Maps secrets are configured."
+
+    doLast {
+        val missing = requiredReleaseSecretNames.filter { releaseSecret(it).isNullOrBlank() }
+        check(missing.isEmpty()) {
+            "Missing required release secrets: ${missing.joinToString(", ")}"
+        }
+    }
+}
+
+tasks.matching { it.name == "preReleaseBuild" }.configureEach {
+    dependsOn("validateReleaseSecrets")
 }
 
 ksp {
@@ -99,7 +125,6 @@ dependencies {
     implementation(libs.androidx.runtime)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.foundation)
     implementation(libs.foundation.layout)
