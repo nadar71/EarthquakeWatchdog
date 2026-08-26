@@ -1,5 +1,9 @@
 package com.indiewalk.watchdog.earthquake.core.diagnostics
 
+import java.io.IOException
+import java.util.Collections
+import java.util.IdentityHashMap
+
 enum class DiagnosticCategory {
     NETWORK,
     STORAGE,
@@ -25,7 +29,7 @@ object AppDiagnostics {
     private var sink: DiagnosticSink = PlatformDiagnostics
 
     fun recordNonFatal(category: DiagnosticCategory, throwable: Throwable) {
-        if (!DiagnosticReportingPolicy.shouldReport(throwable)) return
+        if (!DiagnosticReportingPolicy.shouldReport(category, throwable)) return
         sink.recordNonFatal(category, SanitizedDiagnosticException(category, throwable))
     }
 
@@ -57,12 +61,23 @@ private class SanitizedDiagnosticException(
 }
 
 internal object DiagnosticReportingPolicy {
-    fun shouldReport(throwable: Throwable): Boolean = when (throwable) {
-        is java.io.IOException,
-        is SecurityException -> false
-        else -> true
+    fun shouldReport(category: DiagnosticCategory, throwable: Throwable): Boolean = when (category) {
+        DiagnosticCategory.NETWORK -> !throwable.hasCauseMatching { it is IOException }
+        DiagnosticCategory.LOCATION -> !throwable.hasCauseMatching {
+            it is IOException || it is SecurityException
+        }
+        DiagnosticCategory.STATISTICS -> !(
+            throwable is StatisticsLoadFailure &&
+                throwable.hasCauseMatching { it is IOException }
+            )
+        DiagnosticCategory.STORAGE,
+        DiagnosticCategory.MAP,
+        DiagnosticCategory.EXTERNAL_INTENT -> true
     }
 }
+
+/** Marks the single statistics load wrapper recognized by the reporting policy. */
+internal interface StatisticsLoadFailure
 
 private fun captureBoundaryStack(): Array<StackTraceElement> = Throwable()
     .stackTrace
@@ -75,8 +90,18 @@ private val diagnosticInternalClassNames = setOf(
     "${AppDiagnostics::class.java.name}Kt"
 )
 
+private fun Throwable.hasCauseMatching(predicate: (Throwable) -> Boolean): Boolean {
+    val visited = Collections.newSetFromMap(IdentityHashMap<Throwable, Boolean>())
+    var current: Throwable? = this
+    while (current != null && visited.add(current)) {
+        if (predicate(current)) return true
+        current = current.cause
+    }
+    return false
+}
+
 private fun Throwable.toSafeFailureType(): SafeFailureType = when (this) {
-    is java.io.IOException -> SafeFailureType.IO
+    is IOException -> SafeFailureType.IO
     is SecurityException -> SafeFailureType.SECURITY
     is IllegalArgumentException -> SafeFailureType.ILLEGAL_ARGUMENT
     is IllegalStateException -> SafeFailureType.ILLEGAL_STATE

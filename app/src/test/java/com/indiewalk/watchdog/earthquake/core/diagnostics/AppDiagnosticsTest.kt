@@ -1,5 +1,6 @@
 package com.indiewalk.watchdog.earthquake.core.diagnostics
 
+import com.indiewalk.watchdog.earthquake.feat_statistics.data.repository.EarthquakeStatisticsLoadException
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -118,6 +119,57 @@ class AppDiagnosticsTest {
     }
 
     @Test
+    fun reportingPolicyOnlySuppressesExpectedFailuresForTheirCategory() {
+        val reports = mutableListOf<Pair<DiagnosticCategory, Throwable>>()
+        AppDiagnostics.setSinkForTests(recordingSink(reports))
+
+        AppDiagnostics.recordNonFatal(DiagnosticCategory.NETWORK, IOException("offline"))
+        AppDiagnostics.recordNonFatal(
+            DiagnosticCategory.NETWORK,
+            IllegalStateException("network wrapper", IOException("offline"))
+        )
+        AppDiagnostics.recordNonFatal(DiagnosticCategory.LOCATION, IOException("geocoder unavailable"))
+        AppDiagnostics.recordNonFatal(DiagnosticCategory.LOCATION, SecurityException("permission denied"))
+        AppDiagnostics.recordNonFatal(
+            DiagnosticCategory.STATISTICS,
+            EarthquakeStatisticsLoadException("offline", IOException("offline"))
+        )
+        AppDiagnostics.recordNonFatal(DiagnosticCategory.NETWORK, SecurityException("unexpected"))
+        AppDiagnostics.recordNonFatal(DiagnosticCategory.LOCATION, IllegalStateException("unexpected"))
+        AppDiagnostics.recordNonFatal(DiagnosticCategory.STATISTICS, IOException("unexpected statistics io"))
+        AppDiagnostics.recordNonFatal(DiagnosticCategory.STORAGE, IOException("database io"))
+        AppDiagnostics.recordNonFatal(DiagnosticCategory.MAP, SecurityException("map security"))
+        AppDiagnostics.recordNonFatal(DiagnosticCategory.EXTERNAL_INTENT, IOException("intent io"))
+
+        assertEquals(
+            listOf(
+                DiagnosticCategory.NETWORK,
+                DiagnosticCategory.LOCATION,
+                DiagnosticCategory.STATISTICS,
+                DiagnosticCategory.STORAGE,
+                DiagnosticCategory.MAP,
+                DiagnosticCategory.EXTERNAL_INTENT
+            ),
+            reports.map { it.first }
+        )
+    }
+
+    @Test
+    fun reportingPolicyHandlesCyclicCausesWithoutTraversingForever() {
+        val reports = mutableListOf<Pair<DiagnosticCategory, Throwable>>()
+        AppDiagnostics.setSinkForTests(recordingSink(reports))
+        val first = IllegalStateException("first")
+        val second = IllegalArgumentException("second")
+        first.initCause(second)
+        second.initCause(first)
+
+        AppDiagnostics.recordNonFatal(DiagnosticCategory.NETWORK, first)
+
+        assertEquals(1, reports.size)
+        assertEquals(DiagnosticCategory.NETWORK, reports.single().first)
+    }
+
+    @Test
     fun breadcrumbOnlyForwardsClosedEvents() {
         val events = mutableListOf<DiagnosticEvent>()
         AppDiagnostics.setSinkForTests(
@@ -134,4 +186,13 @@ class AppDiagnosticsTest {
 
         assertEquals(listOf(DiagnosticEvent.EARTHQUAKE_REFRESH_REQUESTED), events)
     }
+
+    private fun recordingSink(reports: MutableList<Pair<DiagnosticCategory, Throwable>>) =
+        object : DiagnosticSink {
+            override fun recordNonFatal(category: DiagnosticCategory, throwable: Throwable) {
+                reports += category to throwable
+            }
+
+            override fun breadcrumb(event: DiagnosticEvent) = Unit
+        }
 }

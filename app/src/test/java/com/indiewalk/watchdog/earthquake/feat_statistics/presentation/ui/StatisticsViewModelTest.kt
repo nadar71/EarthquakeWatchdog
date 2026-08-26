@@ -2,6 +2,10 @@ package com.indiewalk.watchdog.earthquake.feat_statistics.presentation.ui
 
 import com.indiewalk.watchdog.earthquake.FakeAppPreferencesRepository
 import com.indiewalk.watchdog.earthquake.MainDispatcherRule
+import com.indiewalk.watchdog.earthquake.core.diagnostics.AppDiagnostics
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticCategory
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticEvent
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticSink
 import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticsTestRule
 import com.indiewalk.watchdog.earthquake.core.domain.model.AppError
 import com.indiewalk.watchdog.earthquake.feat_statistics.data.repository.EarthquakeStatisticsLoadException
@@ -92,6 +96,30 @@ class StatisticsViewModelTest {
         assertEquals(snapshot, viewModel.uiState.value.snapshot)
         assertTrue(viewModel.uiState.value.error is AppError.Network)
         assertFalse(viewModel.uiState.value.isRefreshing)
+    }
+
+    @Test
+    fun wrappedOfflineFailureDoesNotEmitStatisticsDiagnostic() = runTest {
+        val reports = mutableListOf<DiagnosticCategory>()
+        AppDiagnostics.setSinkForTests(
+            object : DiagnosticSink {
+                override fun recordNonFatal(category: DiagnosticCategory, throwable: Throwable) {
+                    reports += category
+                }
+
+                override fun breadcrumb(event: DiagnosticEvent) = Unit
+            }
+        )
+        val repository = FakeStatisticsRepository {
+            flow { throw EarthquakeStatisticsLoadException("offline", java.io.IOException("offline")) }
+        }
+        val viewModel = viewModel(repository)
+
+        viewModel.onScreenStarted()
+        advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.error is AppError.Network)
+        assertTrue(reports.isEmpty())
     }
 
     private fun viewModel(repository: EarthquakeStatisticsRepository) = StatisticsViewModel(

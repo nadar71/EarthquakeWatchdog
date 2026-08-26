@@ -9,6 +9,8 @@ import android.net.Uri
 import android.provider.Settings
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
+import com.indiewalk.watchdog.earthquake.core.diagnostics.AppDiagnostics
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticCategory
 import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQGeometryDTO
 import kotlinx.coroutines.tasks.await
@@ -69,7 +71,8 @@ object MapsUtils {
             val fused = LocationServices.getFusedLocationProviderClient(context)
             val loc = fused.lastLocation.await() ?: return null
             LatLng(loc.latitude, loc.longitude)
-        } catch (_: Exception) {
+        } catch (error: Exception) {
+            AppDiagnostics.recordNonFatal(DiagnosticCategory.LOCATION, error)
             null
         }
     }
@@ -82,7 +85,8 @@ object MapsUtils {
             .addOnSuccessListener { location ->
                 onResult(location?.let { LatLng(it.latitude, it.longitude) })
             }
-            .addOnFailureListener {
+            .addOnFailureListener { error ->
+                AppDiagnostics.recordNonFatal(DiagnosticCategory.LOCATION, error)
                 onResult(null)
             }
     }
@@ -95,7 +99,8 @@ object MapsUtils {
         return try {
             val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
             addresses?.firstOrNull() // Return 1st address found, or null if empty
-        } catch (_: Exception) {
+        } catch (error: Exception) {
+            AppDiagnostics.recordNonFatal(DiagnosticCategory.LOCATION, error)
             null
         }
     }
@@ -105,7 +110,8 @@ object MapsUtils {
         val geocoder = Geocoder(context, Locale.getDefault())
         val list = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
         list?.firstOrNull()?.getAddressLine(0)
-    } catch (_: Exception) {
+    } catch (error: Exception) {
+        AppDiagnostics.recordNonFatal(DiagnosticCategory.LOCATION, error)
         null
     }
 

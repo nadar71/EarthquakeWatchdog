@@ -75,3 +75,27 @@ Completed pending commit. This report contains no credential, location, address,
 - `bash scripts/verify_repository_hygiene.sh`: passed.
 - Debug and release lint reports contain zero errors (`298` and `249` existing warnings respectively); debug APK and release lint report were generated.
 - `./gradlew --offline :app:compileDebugKotlin :app:compileReleaseKotlin :app:lintDebug :app:lintRelease :app:assembleDebug`: passed.
+
+## Fix Round 2
+
+- Made `DiagnosticReportingPolicy` category-aware. `NETWORK` suppresses only cause chains containing `IOException`; `LOCATION` suppresses only cause chains containing routine `IOException` or `SecurityException`; and `STATISTICS` suppresses only the known `StatisticsLoadFailure` wrapper when its cause chain contains `IOException`.
+- `STORAGE`, `MAP`, and `EXTERNAL_INTENT` always report, as do unexpected category/type combinations such as `NETWORK/SecurityException`, `LOCATION/IllegalStateException`, and direct `STATISTICS/IOException`.
+- Added the core-owned `StatisticsLoadFailure` marker to the existing statistics load wrapper, avoiding a core dependency on the statistics feature type while keeping the exception classification explicit.
+- Cause-chain inspection uses an identity set, so cyclic causes terminate safely. It performs type classification only; neither cause objects nor their messages are retained in the sanitized diagnostic sent to a sink.
+- Restored `MapsUtils` calls through `AppDiagnostics`. Expected location/geocoder failures are suppressed by the location policy, while unexpected platform failures remain sanitized, reportable non-fatals with the existing null fallback.
+
+## Fix Round 2 RED/GREEN Evidence
+
+- RED: the category matrix reported only `NETWORK`, `STATISTICS`, and `LOCATION` where storage/map/external failures should remain visible, and it reported the known wrapped offline statistics failure.
+- GREEN: the matrix now suppresses only expected category/type combinations and observes `NETWORK`, `LOCATION`, `STATISTICS`, `STORAGE`, `MAP`, and `EXTERNAL_INTENT` for their unexpected cases.
+- RED: `wrappedOfflineFailureDoesNotEmitStatisticsDiagnostic` observed a non-fatal for `EarthquakeStatisticsLoadException` caused by offline `IOException`.
+- GREEN: the StatisticsViewModel retains its existing user-facing network error while emitting no statistics diagnostic for that expected wrapped offline failure.
+- Cycle regression: a two-node cause cycle terminates and produces the expected single unexpected network diagnostic.
+
+## Fix Round 2 Verification
+
+- `./gradlew :app:testDebugUnitTest --tests '*AppDiagnosticsTest' --tests '*StatisticsViewModelTest'`: passed.
+- `./gradlew :app:testDebugUnitTest`: passed.
+- `bash scripts/verify_repository_hygiene.sh`: passed.
+- `./gradlew --offline :app:compileDebugKotlin :app:compileReleaseKotlin :app:lintDebug :app:lintRelease :app:assembleDebug`: passed.
+- Debug and release lint reports contain zero errors (`298` and `249` existing warnings respectively).
