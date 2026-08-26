@@ -1,0 +1,1 @@
+La versione 3.0.0 rinnova elenco dei terremoti, mappa, filtri, statistiche e impostazioni, con ulteriori miglioramenti alla stabilità.

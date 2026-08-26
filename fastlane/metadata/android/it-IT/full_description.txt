@@ -1,0 +1,16 @@
+EarthQuake Watchdog ti aiuta a esplorare l'attività sismica recente in tutto il mondo attraverso un'interfaccia chiara e incentrata sulla mappa.
+
+Consulta gli ultimi eventi segnalati, controlla posizione e magnitudo e apri le informazioni relative ai terremoti che ti interessano. I filtri flessibili permettono di concentrarti su un intervallo temporale, una magnitudo o un'area geografica, mentre le statistiche offrono una panoramica utile dell'attività sismica recente.
+
+Funzionalità:
+- Consulta i terremoti segnalati di recente in tutto il mondo
+- Esplora gli eventi su una mappa interattiva
+- Visualizza magnitudo, posizione, profondità, orario e dettagli dell'evento
+- Filtra i dati per affinare la ricerca
+- Consulta statistiche e riepiloghi dell'attività
+- Configura posizione e preferenze di visualizzazione
+- Utilizza la posizione del dispositivo oppure scegline una manualmente
+
+Le informazioni sui terremoti provengono dallo United States Geological Survey (USGS). La disponibilità e i tempi di aggiornamento dei dati dipendono dal servizio di origine.
+
+EarthQuake Watchdog è uno strumento informativo. Non è un sistema di allerta di emergenza e non deve essere utilizzato in sostituzione di allerte ufficiali, istruzioni o indicazioni delle autorità locali.
