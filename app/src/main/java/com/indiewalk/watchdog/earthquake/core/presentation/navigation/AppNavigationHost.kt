@@ -63,6 +63,13 @@ fun AppNavigationHost(
                         initialLatLng = destination.toLatLng()
                     )
                 }
+                entry<AppDestination.Statistics> {
+                    screenFactory.Statistics(
+                        currentDestination = AppDestination.Statistics,
+                        onTopLevelDestinationSelected = navigator::switchTopLevel,
+                        onOpenDetails = { navigator.navigateTo(AppDestination.Details(it)) }
+                    )
+                }
                 entry<AppDestination.Settings> {
                     screenFactory.Settings(
                         currentDestination = AppDestination.Settings,

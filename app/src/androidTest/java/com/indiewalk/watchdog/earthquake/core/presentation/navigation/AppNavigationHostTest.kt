@@ -6,6 +6,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -73,12 +74,32 @@ class AppNavigationHostTest {
         composeRule.onNodeWithText("settings-screen").assertExists()
     }
 
+    @Test
+    fun statistics_opens_details_and_back_returns_to_statistics() {
+        setHostContent()
+
+        composeRule.onNodeWithTag("intro-continue").performClick()
+        composeRule.onNodeWithTag("home-open-statistics").performClick()
+        composeRule.onNodeWithText("statistics-screen").assertExists()
+
+        composeRule.onNodeWithTag("statistics-open-details").performClick()
+        composeRule.onNodeWithText("details:eq-statistics").assertExists()
+
+        composeRule.activityRule.scenario.onActivity { activity ->
+            activity.onBackPressedDispatcher.onBackPressed()
+        }
+
+        composeRule.onNodeWithText("statistics-screen").assertExists()
+    }
+
     private fun setHostContent() {
         composeRule.setContent {
-            val navigator = AppNavigator(
-                initialBackStack = mutableStateListOf<AppDestination>(AppDestination.Intro),
-                topLevelDestinations = appTopLevelDestinationClasses
-            )
+            val navigator = remember {
+                AppNavigator(
+                    initialBackStack = mutableStateListOf<AppDestination>(AppDestination.Intro),
+                    topLevelDestinations = appTopLevelDestinationClasses
+                )
+            }
             AppNavigationHost(
                 navigator = navigator,
                 screenFactory = FakeAppNavigationScreenFactory
@@ -127,6 +148,29 @@ private object FakeAppNavigationScreenFactory : AppNavigationScreenFactory {
                 modifier = androidx.compose.ui.Modifier.testTag("home-open-settings")
             ) {
                 Text("settings")
+            }
+            Button(
+                onClick = { onTopLevelDestinationSelected(AppDestination.Statistics) },
+                modifier = androidx.compose.ui.Modifier.testTag("home-open-statistics")
+            ) {
+                Text("statistics")
+            }
+        }
+    }
+
+    @Composable
+    override fun Statistics(
+        currentDestination: AppDestination,
+        onTopLevelDestinationSelected: (AppDestination) -> Unit,
+        onOpenDetails: (String) -> Unit
+    ) {
+        Column {
+            Text("statistics-screen")
+            Button(
+                onClick = { onOpenDetails("eq-statistics") },
+                modifier = androidx.compose.ui.Modifier.testTag("statistics-open-details")
+            ) {
+                Text("details")
             }
         }
     }

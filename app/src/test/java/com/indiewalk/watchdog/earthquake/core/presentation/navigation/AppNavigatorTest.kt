@@ -120,9 +120,27 @@ class AppNavigatorTest {
     }
 
     @Test
+    fun statistics_is_a_top_level_destination_without_duplicates() {
+        val navigator = AppNavigator(
+            initialBackStack = mutableListOf<AppDestination>(AppDestination.Home),
+            topLevelDestinations = appTopLevelDestinationClasses
+        )
+
+        navigator.switchTopLevel(AppDestination.Statistics)
+        navigator.switchTopLevel(AppDestination.Statistics)
+
+        assertEquals(
+            listOf(AppDestination.Home, AppDestination.Statistics),
+            navigator.backStack
+        )
+        assertEquals(AppDestination.Statistics, navigator.currentDestination)
+    }
+
+    @Test
     fun top_level_destinations_are_explicit() {
         assertTrue(AppDestination.Home.isTopLevel)
         assertTrue(AppDestination.Map().isTopLevel)
+        assertTrue(AppDestination.Statistics.isTopLevel)
         assertTrue(AppDestination.Settings.isTopLevel)
         assertFalse(AppDestination.Intro.isTopLevel)
         assertFalse(AppDestination.Credits.isTopLevel)

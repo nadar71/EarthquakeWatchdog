@@ -196,4 +196,52 @@
 
 
 
+    <!-- Statistics -->
+    <string name="statistics_title">Statistics</string>
+    <string name="statistics_scope">Global earthquakes · M%1$s+</string>
+    <string name="statistics_updated">Updated %1$s</string>
+    <string name="statistics_today">Today</string>
+    <string name="statistics_last_7_days">7 days</string>
+    <string name="statistics_last_30_days">30 days</string>
+    <string name="statistics_this_year">Year</string>
+    <string name="statistics_count_today_cd">%1$s earthquakes today</string>
+    <string name="statistics_count_week_cd">%1$s earthquakes in the last 7 days</string>
+    <string name="statistics_count_month_cd">%1$s earthquakes in the last 30 days</string>
+    <string name="statistics_count_year_cd">%1$s earthquakes this year</string>
+    <string name="statistics_count_unavailable">Unavailable</string>
+    <string name="statistics_strongest_today">Strongest today</string>
+    <string name="statistics_nearest_today">Nearest today</string>
+    <string name="statistics_depth">Depth %1$s km</string>
+    <string name="statistics_distance_km">%1$s km away</string>
+    <string name="statistics_distance_mi">%1$s mi away</string>
+    <string name="statistics_no_strongest">No qualifying earthquake today.</string>
+    <string name="statistics_no_nearest">No qualifying earthquake today.</string>
+    <string name="statistics_nearest_unavailable">Nearest earthquake is unavailable for the selected location.</string>
+    <string name="statistics_cached">Showing cached statistics.</string>
+    <string name="statistics_stale">Statistics may be out of date.</string>
+    <string name="statistics_partial">Some statistics are temporarily unavailable.</string>
+    <string name="statistics_error">Unable to load earthquake statistics.</string>
+    <string name="statistics_retry">Retry</string>
+    <string name="statistics_insights_title">Insights</string>
+    <string name="statistics_global_trend">Global activity over 30 days</string>
+    <string name="statistics_nearby_trend">Nearby activity within 1,000 km</string>
+    <string name="statistics_trend_summary">%1$s: %2$d earthquakes, peak %3$d in one day.</string>
+    <string name="statistics_magnitude_distribution">Magnitude distribution</string>
+    <string name="statistics_depth_distribution">Depth distribution</string>
+    <string name="statistics_active_regions">Most active regions</string>
+    <string name="statistics_no_regions">No named regions are available.</string>
+    <string name="statistics_insights_unavailable">Insights are temporarily unavailable.</string>
+    <string name="statistics_nearby_trend_unavailable">Nearby trend is unavailable for the selected location.</string>
+    <string name="statistics_mag_2_5_2_9">M2.5–2.9</string>
+    <string name="statistics_mag_3_0_3_9">M3.0–3.9</string>
+    <string name="statistics_mag_4_0_4_9">M4.0–4.9</string>
+    <string name="statistics_mag_5_0_5_9">M5.0–5.9</string>
+    <string name="statistics_mag_6_plus">M6.0+</string>
+    <string name="statistics_depth_shallow">Shallow · under 70 km</string>
+    <string name="statistics_depth_intermediate">Intermediate · 70–300 km</string>
+    <string name="statistics_depth_deep">Deep · over 300 km</string>
+    <string name="statistics_axis_dates_cd">Dates: %1$s</string>
+    <string name="statistics_axis_count_cd">Earthquake count: 0 to %1$d</string>
+    <string name="statistics_axis_y_title">Earthquakes</string>
+
 </resources>

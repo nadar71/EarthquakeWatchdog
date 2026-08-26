@@ -111,3 +111,6 @@ app/release/output-metadata.json
 app/release/baselineProfiles/1/app-release.dm
 
 app/release/baselineProfiles/0/app-release.dm
+
+# Local visual brainstorming sessions
+.superpowers/

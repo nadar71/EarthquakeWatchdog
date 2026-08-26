@@ -1,0 +1,397 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 5,
+    "identityHash": "ac1c0cd70fa56b249d2ca5ef63a2b06f",
+    "entities": [
+      {
+        "tableName": "earthquakes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `feed_generated` INTEGER, `mag` REAL, `place` TEXT, `time` INTEGER, `updated` INTEGER, `tz` INTEGER, `url` TEXT, `detail` TEXT, `felt` INTEGER, `cdi` REAL, `mmi` REAL, `alert` TEXT, `status` TEXT, `tsunami` INTEGER, `sig` INTEGER, `net` TEXT, `code` TEXT, `ids` TEXT, `sources` TEXT, `types` TEXT, `nst` INTEGER, `dmin` REAL, `rms` REAL, `gap` REAL, `magType` TEXT, `event_type` TEXT, `geometry_type` TEXT NOT NULL DEFAULT 'Point', `longitude` REAL, `latitude` REAL, `depth_km` REAL, `distanceFromUser` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`feed_generated`) REFERENCES `feed_snapshot`(`generated`) ON UPDATE CASCADE ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "feedGenerated",
+            "columnName": "feed_generated",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "mag",
+            "columnName": "mag",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "place",
+            "columnName": "place",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "time",
+            "columnName": "time",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "updated",
+            "columnName": "updated",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "tz",
+            "columnName": "tz",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "detail",
+            "columnName": "detail",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "felt",
+            "columnName": "felt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "cdi",
+            "columnName": "cdi",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "mmi",
+            "columnName": "mmi",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "alert",
+            "columnName": "alert",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "tsunami",
+            "columnName": "tsunami",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "sig",
+            "columnName": "sig",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "net",
+            "columnName": "net",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "code",
+            "columnName": "code",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "ids",
+            "columnName": "ids",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "sources",
+            "columnName": "sources",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "types",
+            "columnName": "types",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "nst",
+            "columnName": "nst",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "dmin",
+            "columnName": "dmin",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "rms",
+            "columnName": "rms",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "gap",
+            "columnName": "gap",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "magType",
+            "columnName": "magType",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "eventType",
+            "columnName": "event_type",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "geometryType",
+            "columnName": "geometry_type",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'Point'"
+          },
+          {
+            "fieldPath": "longitude",
+            "columnName": "longitude",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "latitude",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "depthKm",
+            "columnName": "depth_km",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "distanceFromUser",
+            "columnName": "distanceFromUser",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_earthquakes_feed_generated",
+            "unique": false,
+            "columnNames": [
+              "feed_generated"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_earthquakes_feed_generated` ON `${TABLE_NAME}` (`feed_generated`)"
+          },
+          {
+            "name": "index_earthquakes_time",
+            "unique": false,
+            "columnNames": [
+              "time"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_earthquakes_time` ON `${TABLE_NAME}` (`time`)"
+          },
+          {
+            "name": "index_earthquakes_mag",
+            "unique": false,
+            "columnNames": [
+              "mag"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_earthquakes_mag` ON `${TABLE_NAME}` (`mag`)"
+          },
+          {
+            "name": "index_earthquakes_place",
+            "unique": false,
+            "columnNames": [
+              "place"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_earthquakes_place` ON `${TABLE_NAME}` (`place`)"
+          },
+          {
+            "name": "index_earthquakes_latitude_longitude",
+            "unique": false,
+            "columnNames": [
+              "latitude",
+              "longitude"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_earthquakes_latitude_longitude` ON `${TABLE_NAME}` (`latitude`, `longitude`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "feed_snapshot",
+            "onDelete": "SET NULL",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "feed_generated"
+            ],
+            "referencedColumns": [
+              "generated"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "feed_snapshot",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`generated` INTEGER NOT NULL, `url` TEXT NOT NULL, `title` TEXT NOT NULL, `api` TEXT NOT NULL, `count` INTEGER NOT NULL, `status` INTEGER NOT NULL, `minLon` REAL, `minLat` REAL, `minDepth` REAL, `maxLon` REAL, `maxLat` REAL, `maxDepth` REAL, PRIMARY KEY(`generated`))",
+        "fields": [
+          {
+            "fieldPath": "generated",
+            "columnName": "generated",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "api",
+            "columnName": "api",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "count",
+            "columnName": "count",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minLon",
+            "columnName": "minLon",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "minLat",
+            "columnName": "minLat",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "minDepth",
+            "columnName": "minDepth",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "maxLon",
+            "columnName": "maxLon",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "maxLat",
+            "columnName": "maxLat",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "maxDepth",
+            "columnName": "maxDepth",
+            "affinity": "REAL"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "generated"
+          ]
+        }
+      },
+      {
+        "tableName": "statistics_cache",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cacheId` INTEGER NOT NULL, `todayCount` INTEGER NOT NULL, `weekCount` INTEGER NOT NULL, `monthCount` INTEGER NOT NULL, `yearCount` INTEGER NOT NULL, `threshold` REAL NOT NULL, `retrievedAtEpochMillis` INTEGER NOT NULL, `windowsJson` TEXT NOT NULL, `strongestEventJson` TEXT, `nearestEventJson` TEXT, PRIMARY KEY(`cacheId`))",
+        "fields": [
+          {
+            "fieldPath": "cacheId",
+            "columnName": "cacheId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "todayCount",
+            "columnName": "todayCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weekCount",
+            "columnName": "weekCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "monthCount",
+            "columnName": "monthCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "yearCount",
+            "columnName": "yearCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "threshold",
+            "columnName": "threshold",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "retrievedAtEpochMillis",
+            "columnName": "retrievedAtEpochMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "windowsJson",
+            "columnName": "windowsJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "strongestEventJson",
+            "columnName": "strongestEventJson",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "nearestEventJson",
+            "columnName": "nearestEventJson",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "cacheId"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ac1c0cd70fa56b249d2ca5ef63a2b06f')"
+    ]
+  }
+}

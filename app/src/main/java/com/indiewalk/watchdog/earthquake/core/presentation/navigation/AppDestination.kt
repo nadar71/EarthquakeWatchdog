@@ -8,6 +8,7 @@ sealed interface AppDestination {
         val longitude: Double? = null
     ) : AppDestination
 
+    data object Statistics : AppDestination
     data object Settings : AppDestination
     data object Credits : AppDestination
     data class Details(val id: String) : AppDestination
@@ -17,6 +18,7 @@ val AppDestination.isTopLevel: Boolean
     get() = when (this) {
         AppDestination.Home,
         is AppDestination.Map,
+        AppDestination.Statistics,
         AppDestination.Settings -> true
         AppDestination.Intro,
         AppDestination.Credits,
@@ -32,5 +34,6 @@ fun AppDestination.matches(other: AppDestination): Boolean =
 val appTopLevelDestinationClasses = setOf(
     AppDestination.Home::class,
     AppDestination.Map::class,
+    AppDestination.Statistics::class,
     AppDestination.Settings::class
 )
