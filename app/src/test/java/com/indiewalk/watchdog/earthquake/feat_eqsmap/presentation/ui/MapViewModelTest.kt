@@ -9,6 +9,7 @@ import com.indiewalk.watchdog.earthquake.sampleLocationInfo
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LNG
 import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticsTestRule
 import com.indiewalk.watchdog.earthquake.core.domain.model.AppError
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.domain.use_cases.ObserveEarthquakesUseCase
 import com.google.android.gms.maps.model.LatLng
@@ -23,10 +24,14 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MapViewModelTest {
+
+    @get:Rule
+    val diagnosticsTestRule = DiagnosticsTestRule()
 
     @Test
     fun `sets recenter target when manual location is confirmed`() = runViewModelTest {

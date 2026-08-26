@@ -2,6 +2,7 @@ package com.indiewalk.watchdog.earthquake.feat_statistics.presentation.ui
 
 import com.indiewalk.watchdog.earthquake.FakeAppPreferencesRepository
 import com.indiewalk.watchdog.earthquake.MainDispatcherRule
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticsTestRule
 import com.indiewalk.watchdog.earthquake.core.domain.model.AppError
 import com.indiewalk.watchdog.earthquake.feat_statistics.data.repository.EarthquakeStatisticsLoadException
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsCounts
@@ -31,6 +32,9 @@ class StatisticsViewModelTest {
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
+
+    @get:Rule
+    val diagnosticsTestRule = DiagnosticsTestRule()
 
     @Test
     fun startupLoadsOnceAndExposesSnapshot() = runTest {

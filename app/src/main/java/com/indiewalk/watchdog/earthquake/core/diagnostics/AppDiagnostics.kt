@@ -25,6 +25,7 @@ object AppDiagnostics {
     private var sink: DiagnosticSink = PlatformDiagnostics
 
     fun recordNonFatal(category: DiagnosticCategory, throwable: Throwable) {
+        if (!DiagnosticReportingPolicy.shouldReport(throwable)) return
         sink.recordNonFatal(category, SanitizedDiagnosticException(category, throwable))
     }
 
@@ -51,9 +52,28 @@ private class SanitizedDiagnosticException(
     true
 ) {
     init {
-        stackTrace = throwable.stackTrace.copyOf()
+        stackTrace = captureBoundaryStack()
     }
 }
+
+internal object DiagnosticReportingPolicy {
+    fun shouldReport(throwable: Throwable): Boolean = when (throwable) {
+        is java.io.IOException,
+        is SecurityException -> false
+        else -> true
+    }
+}
+
+private fun captureBoundaryStack(): Array<StackTraceElement> = Throwable()
+    .stackTrace
+    .dropWhile { frame -> frame.className in diagnosticInternalClassNames }
+    .toTypedArray()
+
+private val diagnosticInternalClassNames = setOf(
+    AppDiagnostics::class.java.name,
+    SanitizedDiagnosticException::class.java.name,
+    "${AppDiagnostics::class.java.name}Kt"
+)
 
 private fun Throwable.toSafeFailureType(): SafeFailureType = when (this) {
     is java.io.IOException -> SafeFailureType.IO

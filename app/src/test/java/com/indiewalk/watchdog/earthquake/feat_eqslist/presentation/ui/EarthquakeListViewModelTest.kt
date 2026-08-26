@@ -8,6 +8,7 @@ import com.indiewalk.watchdog.earthquake.sampleEqEntity
 import com.indiewalk.watchdog.earthquake.sampleLatLng
 import com.indiewalk.watchdog.earthquake.sampleLocationInfo
 import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticsTestRule
 import com.indiewalk.watchdog.earthquake.core.domain.model.AppError
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.MinMagnitude
@@ -26,10 +27,14 @@ import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class EarthquakeListViewModelTest {
+
+    @get:Rule
+    val diagnosticsTestRule = DiagnosticsTestRule()
 
     @Test
     fun `updates filtered list when filters change`() = runViewModelTest {

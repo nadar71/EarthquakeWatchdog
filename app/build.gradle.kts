@@ -120,9 +120,6 @@ android {
         compose = true
         buildConfig = true
     }
-    testOptions {
-        unitTests.isReturnDefaultValues = true
-    }
     sourceSets["androidTest"].assets.srcDir("$projectDir/schemas")
 }
 

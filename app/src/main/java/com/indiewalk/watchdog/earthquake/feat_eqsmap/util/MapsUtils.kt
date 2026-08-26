@@ -9,8 +9,6 @@ import android.net.Uri
 import android.provider.Settings
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
-import com.indiewalk.watchdog.earthquake.core.diagnostics.AppDiagnostics
-import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticCategory
 import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQGeometryDTO
 import kotlinx.coroutines.tasks.await
@@ -71,8 +69,7 @@ object MapsUtils {
             val fused = LocationServices.getFusedLocationProviderClient(context)
             val loc = fused.lastLocation.await() ?: return null
             LatLng(loc.latitude, loc.longitude)
-        } catch (e: Exception) {
-            AppDiagnostics.recordNonFatal(DiagnosticCategory.LOCATION, e)
+        } catch (_: Exception) {
             null
         }
     }
@@ -85,8 +82,7 @@ object MapsUtils {
             .addOnSuccessListener { location ->
                 onResult(location?.let { LatLng(it.latitude, it.longitude) })
             }
-            .addOnFailureListener { e ->
-                AppDiagnostics.recordNonFatal(DiagnosticCategory.LOCATION, e)
+            .addOnFailureListener {
                 onResult(null)
             }
     }
@@ -99,8 +95,7 @@ object MapsUtils {
         return try {
             val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
             addresses?.firstOrNull() // Return 1st address found, or null if empty
-        } catch (e: Exception) {
-            AppDiagnostics.recordNonFatal(DiagnosticCategory.LOCATION, e)
+        } catch (_: Exception) {
             null
         }
     }

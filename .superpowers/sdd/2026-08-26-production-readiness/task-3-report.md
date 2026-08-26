@@ -50,3 +50,28 @@ Completed pending commit. This report contains no credential, location, address,
 
 - `bash scripts/verify_release_configuration.sh` was started with its disposable keystore and reached `:app:minifyReleaseWithR8`, but was intentionally stopped after approximately eight minutes at the user's request to stop internal waiting. It is not claimed as a passed Task 3 verification.
 - `bundletool` and `adb` are unavailable, so bundle validation and device smoke testing remain pending.
+
+## Fix Round 1
+
+- Replaced caller-controlled throwable stack copying with a boundary-owned stack. Diagnostic internals are trimmed so the first remaining frame is the app ownership call site; caller-provided class, method, and file-name strings are never read or forwarded.
+- Added `DiagnosticReportingPolicy`, a closed policy that suppresses routine `IOException` and `SecurityException` outcomes. This keeps offline requests, permission denial/revocation, and geocoder unavailability out of Task 4 Crashlytics reporting while unexpected failures still produce one sanitized non-fatal.
+- Removed location/geocoder non-fatal reporting from `MapsUtils`; those APIs now return their existing null fallback for expected platform unavailability.
+- Removed the global `unitTests.isReturnDefaultValues = true` setting. A test-only `DiagnosticsTestRule` injects a no-op sink into the three ViewModel test classes that intentionally exercise diagnostics, so JVM tests remain strict about unmocked Android APIs.
+
+## Fix Round 1 RED/GREEN Evidence
+
+- RED: hostile `StackTraceElement` values containing a coordinate, API key, and advertising ID reached the sink; the new privacy test failed with `ComparisonFailure`.
+- GREEN: the hostile-stack test passed after diagnostics captured and trimmed its own stack. It verifies sensitive values are absent from the message, cause, suppressed data, stack rendering, and sink payload.
+- RED: the expected-failure policy test observed three non-fatals for offline, permission, and geocoder failures.
+- GREEN: it now observes no expected-failure reports and exactly one `STORAGE/ILLEGAL_STATE` report for an unexpected failure.
+- RED: removing `unitTests.isReturnDefaultValues` caused eight affected ViewModel tests to fail through the unmocked debug Logcat adapter.
+- GREEN: injecting `DiagnosticsTestRule` into only those fixtures restored all affected tests without relaxing framework stubs globally.
+
+## Fix Round 1 Verification
+
+- `./gradlew :app:testDebugUnitTest --tests '*AppDiagnosticsTest'`: passed.
+- `./gradlew :app:testDebugUnitTest --tests '*EarthquakeListViewModelTest' --tests '*MapViewModelTest' --tests '*StatisticsViewModelTest'`: passed with strict Android stubs.
+- `./gradlew :app:testDebugUnitTest`: passed.
+- `bash scripts/verify_repository_hygiene.sh`: passed.
+- Debug and release lint reports contain zero errors (`298` and `249` existing warnings respectively); debug APK and release lint report were generated.
+- `./gradlew --offline :app:compileDebugKotlin :app:compileReleaseKotlin :app:lintDebug :app:lintRelease :app:assembleDebug`: passed.
