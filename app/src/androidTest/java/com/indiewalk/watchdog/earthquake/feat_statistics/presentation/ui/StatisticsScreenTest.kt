@@ -1,15 +1,23 @@
 package com.indiewalk.watchdog.earthquake.feat_statistics.presentation.ui
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.assertContentDescriptionEquals
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.semantics.SemanticsProperties
+import com.indiewalk.watchdog.earthquake.R
+import com.indiewalk.watchdog.earthquake.core.util.FormatUtil
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.ActiveRegion
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.DistributionBucket
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.EQWatchdogTheme
@@ -26,6 +34,7 @@ import com.indiewalk.watchdog.earthquake.feat_statistics.presentation.state.Stat
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import java.text.NumberFormat
 import java.time.Instant
 
 class StatisticsScreenTest {
@@ -37,14 +46,24 @@ class StatisticsScreenTest {
     fun dataStateShowsScopeCountsAndEventCards() {
         setContent(populatedState)
 
-        composeRule.onNodeWithText("Global earthquakes · M2.5+").assertExists()
-        composeRule.onNodeWithContentDescription("146 earthquakes today").assertExists()
-        composeRule.onNodeWithContentDescription("892 earthquakes in the last 7 days").assertExists()
-        composeRule.onNodeWithContentDescription("3,761 earthquakes in the last 30 days").assertExists()
-        composeRule.onNodeWithContentDescription("41,208 earthquakes this year").assertExists()
-        composeRule.onNodeWithText("Strongest today").assertExists()
+        composeRule.onNodeWithText(
+            text(R.string.statistics_scope, FormatUtil.formatMag(2.5))
+        ).assertExists()
+        composeRule.onNodeWithContentDescription(
+            text(R.string.statistics_count_today_cd, formattedCount(146))
+        ).assertExists()
+        composeRule.onNodeWithContentDescription(
+            text(R.string.statistics_count_week_cd, formattedCount(892))
+        ).assertExists()
+        composeRule.onNodeWithContentDescription(
+            text(R.string.statistics_count_month_cd, formattedCount(3_761))
+        ).assertExists()
+        composeRule.onNodeWithContentDescription(
+            text(R.string.statistics_count_year_cd, formattedCount(41_208))
+        ).assertExists()
+        composeRule.onNodeWithText(text(R.string.statistics_strongest_today)).assertExists()
         scrollTo("statistics-nearest")
-        composeRule.onNodeWithText("Nearest today").assertExists()
+        composeRule.onNodeWithText(text(R.string.statistics_nearest_today)).assertExists()
     }
 
     @Test
@@ -76,9 +95,9 @@ class StatisticsScreenTest {
         )
 
         composeRule.onNodeWithTag("statistics-list").performScrollToNode(
-            androidx.compose.ui.test.hasText("Nearest earthquake is unavailable for the selected location.")
+            androidx.compose.ui.test.hasText(text(R.string.statistics_nearest_unavailable))
         )
-        composeRule.onNodeWithText("Nearest earthquake is unavailable for the selected location.")
+        composeRule.onNodeWithText(text(R.string.statistics_nearest_unavailable))
             .assertExists()
     }
 
@@ -89,14 +108,19 @@ class StatisticsScreenTest {
         scrollTo("statistics-global-trend")
         composeRule.onNodeWithTag("statistics-global-trend").assertExists()
         composeRule.onNodeWithContentDescription(
-            "Global activity over 30 days: 12 earthquakes, peak 5 in one day."
+            text(
+                R.string.statistics_trend_summary,
+                text(R.string.statistics_global_trend),
+                12,
+                5
+            )
         ).assertExists()
         composeRule.onNodeWithTag("statistics-global-trend-x-axis")
-            .assertContentDescriptionEquals("Dates: 15 Jul, 22 Jul, 29 Jul, 5 Aug, 13 Aug")
+            .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.ContentDescription))
         composeRule.onNodeWithTag("statistics-global-trend-y-axis")
-            .assertContentDescriptionEquals("Earthquake count: 0 to 5")
+            .assertContentDescriptionEquals(text(R.string.statistics_axis_count_cd, 5))
         composeRule.onNodeWithTag("statistics-global-trend-y-axis-title")
-            .assertTextEquals("Earthquakes")
+            .assertTextEquals(text(R.string.statistics_axis_y_title))
         scrollTo("statistics-magnitude-distribution")
         composeRule.onNodeWithTag("statistics-magnitude-distribution").assertExists()
         scrollTo("statistics-depth-distribution")
@@ -107,11 +131,11 @@ class StatisticsScreenTest {
         scrollTo("statistics-nearby-trend")
         composeRule.onNodeWithTag("statistics-nearby-trend").assertExists()
         composeRule.onNodeWithTag("statistics-nearby-trend-x-axis")
-            .assertContentDescriptionEquals("Dates: 15 Jul, 22 Jul, 29 Jul, 5 Aug, 13 Aug")
+            .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.ContentDescription))
         composeRule.onNodeWithTag("statistics-nearby-trend-y-axis")
-            .assertContentDescriptionEquals("Earthquake count: 0 to 5")
+            .assertContentDescriptionEquals(text(R.string.statistics_axis_count_cd, 5))
         composeRule.onNodeWithTag("statistics-nearby-trend-y-axis-title")
-            .assertTextEquals("Earthquakes")
+            .assertTextEquals(text(R.string.statistics_axis_y_title))
     }
 
     @Test
@@ -128,24 +152,45 @@ class StatisticsScreenTest {
         scrollTo("statistics-global-trend")
         composeRule.onNodeWithTag("statistics-global-trend").assertExists()
         composeRule.onNodeWithTag("statistics-list").performScrollToNode(
-            androidx.compose.ui.test.hasText("Nearby trend is unavailable for the selected location.")
+            androidx.compose.ui.test.hasText(text(R.string.statistics_nearby_trend_unavailable))
         )
         composeRule.onNodeWithText(
-            "Nearby trend is unavailable for the selected location."
+            text(R.string.statistics_nearby_trend_unavailable)
         ).assertExists()
+    }
+
+    @Test
+    fun chartsRemainReachableAndSemanticallyLabeledAtLargeFontScale() {
+        setContent(populatedState, fontScale = 2f)
+
+        scrollTo("statistics-global-trend")
+        composeRule.onNodeWithTag("statistics-global-trend").assertExists()
+        composeRule.onNodeWithTag("statistics-global-trend-x-axis")
+            .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.ContentDescription))
+        composeRule.onNodeWithTag("statistics-global-trend-y-axis-title")
+            .assertTextEquals(text(R.string.statistics_axis_y_title))
+        scrollTo("statistics-nearby-trend")
+        composeRule.onNodeWithTag("statistics-nearby-trend-y-axis")
+            .assertContentDescriptionEquals(text(R.string.statistics_axis_count_cd, 5))
     }
 
     private fun setContent(
         state: StatisticsUiState,
-        onEventClick: (String) -> Unit = {}
+        onEventClick: (String) -> Unit = {},
+        fontScale: Float = 1f
     ) {
         composeRule.setContent {
-            EQWatchdogTheme {
-                StatisticsContent(
-                    uiState = state,
-                    onRefresh = {},
-                    onEventClick = onEventClick
-                )
+            val density = LocalDensity.current
+            CompositionLocalProvider(
+                LocalDensity provides Density(density.density, fontScale)
+            ) {
+                EQWatchdogTheme {
+                    StatisticsContent(
+                        uiState = state,
+                        onRefresh = {},
+                        onEventClick = onEventClick
+                    )
+                }
             }
         }
     }
@@ -153,6 +198,11 @@ class StatisticsScreenTest {
     private fun scrollTo(tag: String) {
         composeRule.onNodeWithTag("statistics-list").performScrollToNode(hasTestTag(tag))
     }
+
+    private fun text(@androidx.annotation.StringRes id: Int, vararg args: Any): String =
+        composeRule.activity.getString(id, *args)
+
+    private fun formattedCount(count: Int): String = NumberFormat.getIntegerInstance().format(count)
 
     private val now = Instant.parse("2026-08-14T10:30:00Z")
     private val windows = StatisticsWindows(

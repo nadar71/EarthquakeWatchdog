@@ -136,6 +136,22 @@ class MapViewModelTest {
 
         assertTrue(viewModel.uiState.value.error is AppError.Storage)
     }
+
+    @Test
+    fun `marker selection shows detail state and dismiss clears it`() = runViewModelTest {
+        val earthquake = sampleEqEntity()
+        val viewModel = MapViewModel(
+            observeEarthquakesUseCase = ObserveEarthquakesUseCase(FakeEQRepository(listOf(earthquake))),
+            appPreferencesRepository = FakeAppPreferencesRepository(),
+            locationRepository = FakeLocationRepository()
+        )
+
+        viewModel.onEarthquakeSelected(earthquake)
+        assertEquals(earthquake, viewModel.uiState.value.selectedEarthquake)
+
+        viewModel.onEarthquakeSelectionCleared()
+        assertEquals(null, viewModel.uiState.value.selectedEarthquake)
+    }
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)

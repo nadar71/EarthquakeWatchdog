@@ -14,6 +14,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.android.gms.maps.model.LatLng
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,6 +24,8 @@ class AppNavigationHostTest {
 
     @get:Rule
     val composeRule = createAndroidComposeRule<ComponentActivity>()
+
+    private lateinit var navigator: AppNavigator<AppDestination>
 
     @Test
     fun intro_continue_navigates_to_home() {
@@ -56,6 +59,19 @@ class AppNavigationHostTest {
         composeRule.onNodeWithTag("home-open-map").performClick()
 
         composeRule.onNodeWithText("map:10.0,20.0").assertExists()
+    }
+
+    @Test
+    fun selectingExistingHomeDestinationRemovesMapFromBackStack() {
+        setHostContent()
+
+        composeRule.onNodeWithTag("intro-continue").performClick()
+        composeRule.onNodeWithTag("home-open-map").performClick()
+        composeRule.onNodeWithTag("map-open-home").performClick()
+
+        composeRule.runOnIdle {
+            assertEquals(listOf(AppDestination.Home), navigator.backStack)
+        }
     }
 
     @Test
@@ -94,7 +110,7 @@ class AppNavigationHostTest {
 
     private fun setHostContent() {
         composeRule.setContent {
-            val navigator = remember {
+            navigator = remember {
                 AppNavigator(
                     initialBackStack = mutableStateListOf<AppDestination>(AppDestination.Intro),
                     topLevelDestinations = appTopLevelDestinationClasses
