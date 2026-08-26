@@ -8,7 +8,8 @@ pending check as passed without its recorded device and build evidence.
 
 | Area | Evidence | Result |
 | --- | --- | --- |
-| Navigation 3 host and deterministic core journey | `AppNavigationHostTest`, `CoreJourneyTest` | Runs without Hilt, Maps tiles, ads, consent, location, or USGS. |
+| Navigation 3 routing and restoration | `AppNavigationHostTest`, `AppNavigationHostRestorationTest`, `AppNavigationHostRoutingJourneyTest` | Covers host routing plus top-level and details-route restoration through `scenario.recreate()`. The debug-only restoration host has no feature dependencies. |
+| Production state-driven feature content | `ProductionUiContentTest`, `StatisticsScreenTest` | Exercises real list refresh/filter callbacks, all bottom destinations, selected-map detail dismissal, settings callbacks/state, and statistics event details without live USGS, Maps tiles, ads, consent, or location. |
 | Statistics rendering and chart accessibility | `StatisticsScreenTest`, `AccessibilitySmokeTest` | Renders supplied UI state only, including text scale and chart semantics. |
 | Room upgrade paths | `StatisticsMigrationTest` | Covers `4 -> 5`, `5 -> 6`, and `4 -> 6`; preserves a seeded earthquake row and validates the destination statistics-cache columns. |
 | Map selected-event state | `MapViewModelTest` | Verifies selected marker detail state and dismissal without Google Maps rendering. |
@@ -17,9 +18,9 @@ pending check as passed without its recorded device and build evidence.
 
 | Device | API | Build | Checks | Result | Evidence |
 | --- | --- | --- | --- | --- | --- |
-| `Medium_Phone` | 36 | Debug instrumentation | Accessibility smoke: bottom navigation touch targets, `2.0x` intro text scale, scrollable filter sheet | Passed | `:app:connectedDebugAndroidTest` with `AccessibilitySmokeTest` |
+| `Medium_Phone` | 36 | Debug instrumentation | Focused Navigation 3, production-content, statistics, and accessibility tests: 1.3x/2.0x intro and filter reachability, 48dp actions, icon semantics | Passed: 26 tests | Focused `:app:connectedDebugAndroidTest` run on 2026-08-27 |
 | `Medium_Phone` | 36 | Debug instrumentation | Room migrations `4 -> 5`, `5 -> 6`, `4 -> 6` | Passed | `:app:connectedDebugAndroidTest` with `StatisticsMigrationTest` |
-| `Medium_Phone` | 36 | Debug instrumentation | Navigation host, core journey, statistics UI, accessibility, and Room migrations | Passed | Full `:app:connectedDebugAndroidTest`: 20 tests, 0 failures. |
+| `Medium_Phone` | 36 | Debug instrumentation | Navigation host, production content, statistics UI, accessibility, and Room migrations | Passed: 29 tests, 0 failures | Full `:app:connectedDebugAndroidTest` run on 2026-08-27. |
 
 The emulator-only tests deliberately do not load USGS, Google Maps tiles, ads,
 consent, external geocoding, or device location. Those dependencies remain

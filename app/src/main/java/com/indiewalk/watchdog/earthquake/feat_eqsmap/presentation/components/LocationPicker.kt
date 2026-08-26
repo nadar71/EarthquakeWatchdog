@@ -162,7 +162,9 @@ fun LocationPicker(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.MyLocation,
-                                contentDescription = "Current Location",
+                                contentDescription = stringResource(
+                                    R.string.maps_recenter_current_location
+                                ),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }

@@ -13,6 +13,7 @@
     <string name="generic_no">No</string>
     <string name="generic_ok">Ok</string>
     <string name="generic_cancel">Annulla</string>
+    <string name="navigation_back">Indietro</string>
     <string name="generic_save_label">Salva</string>
     <string name="generic_confirm_label">Conferma</string>
     <string name="generic_continue_label">Continua</string>
@@ -100,6 +101,8 @@
     <string name="maps_marker_magnitude_impact_great">Grande - Possibili danni gravi e diffusi</string>
     <string name="maps_my_position_label">La mia posizione</string>
     <string name="maps_refresh_label">Aggiorna</string>
+    <string name="maps_settings_content_description">Impostazioni mappa</string>
+    <string name="maps_recenter_current_location">Ricentra sulla posizione corrente</string>
     <string name="maps_spinner_title">Tipo di mappa</string>
     <string name="maps_manual_loc_title">Se preferisci la localizzazione manuale SENZA GPS.</string>
     <string name="maps_manual_loc_text">Nelle impostazioni, in alto a destra, seleziona \'Usa localizzazione manuale\'e segui le istruzioni.\nNon utilizza alcun servizio di localizzazione né GPS.</string>

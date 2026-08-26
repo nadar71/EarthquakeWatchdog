@@ -46,6 +46,8 @@ import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldMo
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppDestination
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraGreen_dark
 import com.indiewalk.watchdog.earthquake.feat_ads.presentation.AdMobBannerView
+import androidx.compose.ui.platform.testTag
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.EarthquakeMapBottomInfoCard
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
@@ -101,7 +103,7 @@ fun EarthquakeMapScreen(
                         Box {
                             Icon(
                                 imageVector = Icons.Filled.Settings,
-                                contentDescription = "Map settings",
+                                contentDescription = stringResource(R.string.maps_settings_content_description),
                                 tint = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                             if (uiState.settings.manualLocOn) {
@@ -111,7 +113,7 @@ fun EarthquakeMapScreen(
                                         .align(Alignment.TopEnd)
                                         .offset(x = 2.dp, y = (-2).dp),
                                     painter = painterResource(id = R.drawable.ic_hand),
-                                    contentDescription = "Manual location on badge",
+                                    contentDescription = null,
                                     tint = extraGreen_dark
                                 )
                             }
@@ -186,16 +188,14 @@ fun EarthquakeMapScreen(
                             onMapTapped = mapViewModel::onEarthquakeSelectionCleared,
                         )
 
-                        uiState.selectedEarthquake?.let { selectedEarthquake ->
-                            EarthquakeMapBottomInfoCard(
-                                earthquake = selectedEarthquake,
-                                unitSystem = uiState.settings.unitSystem,
-                                modifier = Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                                onDismiss = mapViewModel::onEarthquakeSelectionCleared
-                            )
-                        }
+                        SelectedEarthquakeDetail(
+                            earthquake = uiState.selectedEarthquake,
+                            unitSystem = uiState.settings.unitSystem,
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(horizontal = 16.dp, vertical = 16.dp),
+                            onDismiss = mapViewModel::onEarthquakeSelectionCleared
+                        )
 
                         if (showOptions) {
                             MapOptionsOverlayCard(
@@ -228,5 +228,22 @@ fun EarthquakeMapScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun SelectedEarthquakeDetail(
+    earthquake: EQEntity?,
+    unitSystem: com.indiewalk.watchdog.earthquake.core.data.local.enums.UnitSystem,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    earthquake?.let { selectedEarthquake ->
+        EarthquakeMapBottomInfoCard(
+            earthquake = selectedEarthquake,
+            unitSystem = unitSystem,
+            modifier = modifier.testTag("map-selected-earthquake-detail"),
+            onDismiss = onDismiss
+        )
     }
 }

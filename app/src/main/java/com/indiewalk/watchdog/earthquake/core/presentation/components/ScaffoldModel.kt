@@ -13,6 +13,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppBottomBar
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppDestination
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.isTopLevel
@@ -44,7 +46,10 @@ fun ScaffoldModel(
                 navigationIcon = navigationIcon ?: {
                     if (showBackButton) {
                         IconButton(onClick = { onBack?.invoke() }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.navigation_back)
+                            )
                         }
                     }
                 },

@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -135,66 +136,12 @@ fun SettingsScreen(
                     )
                 }
 
-                // --- Unit System ---
-                Spacer(modifier = Modifier.height(32.dp))
-                Text(
-                    text = stringResource(R.string.settings_unit_system_title),
-                    style = text_16(MaterialTheme.colorScheme.primary, false),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-                SingleChoiceSegmentedButtonRow(
+                SettingsPreferencesContent(
+                    settings = appPrefs,
+                    onUnitSystemSelected = settingsViewModel::setUnitSystem,
+                    onThemeModeSelected = settingsViewModel::setThemeMode,
                     modifier = Modifier.fillMaxWidth()
-                ) {
-                    UnitSystem.entries.forEach { unitSystem ->
-                        SegmentedButton(
-                            selected = appPrefs.unitSystem == unitSystem,
-                            onClick = { settingsViewModel.setUnitSystem(unitSystem) },
-                            shape = SegmentedButtonDefaults.itemShape(
-                                index = unitSystem.ordinal,
-                                count = UnitSystem.entries.size
-                            )
-                        ) {
-                            Text(
-                                text = when (unitSystem) {
-                                    UnitSystem.METRIC -> stringResource(R.string.settings_unit_system_metric)
-                                    UnitSystem.IMPERIAL -> stringResource(R.string.settings_unit_system_imperial)
-                                }
-                            )
-                        }
-                    }
-                }
-
-                // --- Theme Mode Selector ---
-                Spacer(modifier = Modifier.height(32.dp))
-                Text(
-                    text = stringResource(R.string.settings_theme_mode_title),
-                    style = text_16(MaterialTheme.colorScheme.primary, false),
-                    modifier = Modifier.padding(bottom = 8.dp)
                 )
-
-                SingleChoiceSegmentedButtonRow(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    ThemeMode.entries.forEach { themeMode ->
-                        SegmentedButton(
-                            selected = appPrefs.mode == themeMode,
-                            onClick = { settingsViewModel.setThemeMode(themeMode) },
-                            shape = SegmentedButtonDefaults.itemShape(
-                                index = themeMode.ordinal,
-                                count = ThemeMode.entries.size
-                            )
-                        ) {
-                            Text(
-                                text = when (themeMode) {
-                                    ThemeMode.System -> stringResource(R.string.theme_mode_system)
-                                    ThemeMode.Light -> stringResource(R.string.theme_mode_light)
-                                    ThemeMode.Dark -> stringResource(R.string.theme_mode_dark)
-                                }
-                            )
-                        }
-                    }
-                }
 
                 // --- Credits ---
                 Spacer(modifier = Modifier.height(32.dp))
@@ -299,5 +246,74 @@ fun SettingsScreen(
 
 
 
+    }
+}
+
+@Composable
+fun SettingsPreferencesContent(
+    settings: com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings,
+    onUnitSystemSelected: (UnitSystem) -> Unit,
+    onThemeModeSelected: (ThemeMode) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Spacer(modifier = Modifier.height(32.dp))
+        Text(
+            text = stringResource(R.string.settings_unit_system_title),
+            style = text_16(MaterialTheme.colorScheme.primary, false),
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            UnitSystem.entries.forEach { unitSystem ->
+                SegmentedButton(
+                    selected = settings.unitSystem == unitSystem,
+                    onClick = { onUnitSystemSelected(unitSystem) },
+                    modifier = Modifier.testTag("settings-unit-${unitSystem.name}"),
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = unitSystem.ordinal,
+                        count = UnitSystem.entries.size
+                    )
+                ) {
+                    Text(
+                        text = when (unitSystem) {
+                            UnitSystem.METRIC -> stringResource(R.string.settings_unit_system_metric)
+                            UnitSystem.IMPERIAL -> stringResource(R.string.settings_unit_system_imperial)
+                        }
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+        Text(
+            text = stringResource(R.string.settings_theme_mode_title),
+            style = text_16(MaterialTheme.colorScheme.primary, false),
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            ThemeMode.entries.forEach { themeMode ->
+                SegmentedButton(
+                    selected = settings.mode == themeMode,
+                    onClick = { onThemeModeSelected(themeMode) },
+                    modifier = Modifier.testTag("settings-theme-${themeMode.name}"),
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = themeMode.ordinal,
+                        count = ThemeMode.entries.size
+                    )
+                ) {
+                    Text(
+                        text = when (themeMode) {
+                            ThemeMode.System -> stringResource(R.string.theme_mode_system)
+                            ThemeMode.Light -> stringResource(R.string.theme_mode_light)
+                            ThemeMode.Dark -> stringResource(R.string.theme_mode_dark)
+                        }
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }

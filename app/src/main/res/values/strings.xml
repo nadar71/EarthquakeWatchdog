@@ -13,6 +13,7 @@
     <string name="generic_no">No</string>
     <string name="generic_ok">Ok</string>
     <string name="generic_cancel">Cancel</string>
+    <string name="navigation_back">Back</string>
     <string name="generic_save_label">Save</string>
     <string name="generic_confirm_label">Confirm</string>
     <string name="generic_continue_label">Continue</string>
@@ -101,6 +102,8 @@
     <string name="maps_marker_magnitude_impact_great">Great - Severe, widespread damage possible</string>
     <string name="maps_my_position_label">My Position</string>
     <string name="maps_refresh_label">Refresh</string>
+    <string name="maps_settings_content_description">Map settings</string>
+    <string name="maps_recenter_current_location">Recenter on current location</string>
     <string name="maps_spinner_title">Map type</string>
     <string name="maps_manual_loc_title">In case you prefer manual localization with NO gps.</string>
     <string name="maps_manual_loc_text">In settings,  above on the right, check \'Use manual localization\'

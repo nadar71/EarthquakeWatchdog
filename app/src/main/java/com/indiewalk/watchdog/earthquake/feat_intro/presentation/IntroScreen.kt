@@ -163,6 +163,7 @@ fun IntroLocationPermissionContent(
         val fontScale = LocalDensity.current.fontScale
         val compactLayout = maxHeight < 760.dp || fontScale >= 1.3f
         val largeTextLayout = fontScale >= 1.5f
+        val shouldScroll = compactLayout
         val scrollState = rememberScrollState()
         val compactSpacing = if (compactLayout) 8.dp else 16.dp
         val sectionSpacing = if (compactLayout) 12.dp else 28.dp
@@ -177,7 +178,7 @@ fun IntroLocationPermissionContent(
             Modifier
                 .fillMaxSize()
                 .then(
-                    if (largeTextLayout) Modifier.verticalScroll(scrollState) else Modifier
+                    if (shouldScroll) Modifier.verticalScroll(scrollState) else Modifier
                 )
                 .testTag("intro-location-permission-content")
                 .padding(horizontal = 24.dp, vertical = verticalPadding),
@@ -207,7 +208,7 @@ fun IntroLocationPermissionContent(
                 color = MaterialTheme.colorScheme.primary
             )
 
-            if (largeTextLayout) {
+            if (shouldScroll) {
                 Spacer(Modifier.height(compactSpacing))
             } else {
                 Spacer(Modifier.weight(1f))

@@ -5,17 +5,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppDestination
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppNavigationHost
@@ -24,49 +20,35 @@ import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppNavigat
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.appTopLevelDestinationClasses
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class CoreJourneyTest {
+/** Routing-only coverage. Production feature content is tested separately. */
+class AppNavigationHostRoutingJourneyTest {
 
     @get:Rule
     val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
-    fun deterministicCoreJourneyCoversAllDestinationsAndTransientDetailFlows() {
+    fun routesAcrossTopLevelAndDetailDestinationsThenReturns() {
         setHostContent()
 
-        composeRule.onNodeWithTag("journey-intro-continue").performClick()
+        composeRule.onNodeWithTag("routing-intro-continue").performClick()
         composeRule.onNodeWithText("home").assertExists()
 
-        composeRule.onNodeWithTag("journey-home-refresh").performClick()
-        composeRule.onNodeWithText("home-refreshes:1").assertExists()
-        composeRule.onNodeWithTag("journey-home-filter").performClick()
-        composeRule.onNodeWithText("home-filter:open").assertExists()
-
-        composeRule.onNodeWithTag("journey-home-map").performClick()
+        composeRule.onNodeWithTag("routing-home-map").performClick()
         composeRule.onNodeWithText("map:41.9,12.5").assertExists()
-        composeRule.onNodeWithTag("journey-map-marker").performClick()
-        composeRule.onNodeWithText("map-detail:eq-map").assertExists()
-        composeRule.onNodeWithTag("journey-map-dismiss").performClick()
-        composeRule.onNodeWithText("map-detail:eq-map").assertDoesNotExist()
 
-        composeRule.onNodeWithTag("journey-map-statistics").performClick()
+        composeRule.onNodeWithTag("routing-map-statistics").performClick()
         composeRule.onNodeWithText("statistics").assertExists()
-        composeRule.onNodeWithTag("journey-statistics-details").performClick()
+        composeRule.onNodeWithTag("routing-statistics-details").performClick()
         composeRule.onNodeWithText("details:eq-statistics").assertExists()
-        composeRule.activityRule.scenario.onActivity { activity ->
-            activity.onBackPressedDispatcher.onBackPressed()
-        }
+        composeRule.onNodeWithTag("routing-details-back").performClick()
         composeRule.onNodeWithText("statistics").assertExists()
 
-        composeRule.onNodeWithTag("journey-statistics-settings").performClick()
+        composeRule.onNodeWithTag("routing-statistics-settings").performClick()
         composeRule.onNodeWithText("settings").assertExists()
-        composeRule.onNodeWithTag("journey-settings-theme").performClick()
-        composeRule.onNodeWithText("settings-theme:dark").assertExists()
-        composeRule.onNodeWithTag("journey-settings-credits").performClick()
+        composeRule.onNodeWithTag("routing-settings-credits").performClick()
         composeRule.onNodeWithText("credits").assertExists()
-        composeRule.onNodeWithTag("journey-credits-back").performClick()
+        composeRule.onNodeWithTag("routing-credits-back").performClick()
         composeRule.onNodeWithText("settings").assertExists()
     }
 
@@ -80,15 +62,15 @@ class CoreJourneyTest {
                     topLevelDestinations = appTopLevelDestinationClasses
                 )
             }
-            AppNavigationHost(navigator = navigator, screenFactory = JourneyScreenFactory)
+            AppNavigationHost(navigator = navigator, screenFactory = RoutingScreenFactory)
         }
     }
 }
 
-private object JourneyScreenFactory : AppNavigationScreenFactory {
+private object RoutingScreenFactory : AppNavigationScreenFactory {
     @Composable
-    override fun Intro(onContinueToHome: () -> Unit) = JourneyButton(
-        tag = "journey-intro-continue",
+    override fun Intro(onContinueToHome: () -> Unit) = RoutingButton(
+        tag = "routing-intro-continue",
         label = "intro",
         onClick = onContinueToHome
     )
@@ -99,17 +81,9 @@ private object JourneyScreenFactory : AppNavigationScreenFactory {
         onTopLevelDestinationSelected: (AppDestination) -> Unit,
         onOpenDetails: (String) -> Unit,
         onOpenMap: (Double, Double) -> Unit
-    ) {
-        var refreshes by remember { mutableStateOf(0) }
-        var filterOpen by remember { mutableStateOf(false) }
-        Column {
-            Text("home")
-            Text("home-refreshes:$refreshes")
-            Text("home-filter:${if (filterOpen) "open" else "closed"}")
-            JourneyButton("journey-home-refresh", "refresh") { refreshes++ }
-            JourneyButton("journey-home-filter", "filter") { filterOpen = true }
-            JourneyButton("journey-home-map", "map") { onOpenMap(41.9, 12.5) }
-        }
+    ) = Column {
+        Text("home")
+        RoutingButton("routing-home-map", "map") { onOpenMap(41.9, 12.5) }
     }
 
     @Composable
@@ -117,18 +91,10 @@ private object JourneyScreenFactory : AppNavigationScreenFactory {
         currentDestination: AppDestination,
         onTopLevelDestinationSelected: (AppDestination) -> Unit,
         initialLatLng: LatLng?
-    ) {
-        var markerSelected by remember { mutableStateOf(false) }
-        Column {
-            Text("map:${initialLatLng?.latitude},${initialLatLng?.longitude}")
-            if (markerSelected) {
-                Text("map-detail:eq-map")
-                JourneyButton("journey-map-dismiss", "dismiss") { markerSelected = false }
-            }
-            JourneyButton("journey-map-marker", "marker") { markerSelected = true }
-            JourneyButton("journey-map-statistics", "statistics") {
-                onTopLevelDestinationSelected(AppDestination.Statistics)
-            }
+    ) = Column {
+        Text("map:${initialLatLng?.latitude},${initialLatLng?.longitude}")
+        RoutingButton("routing-map-statistics", "statistics") {
+            onTopLevelDestinationSelected(AppDestination.Statistics)
         }
     }
 
@@ -139,10 +105,10 @@ private object JourneyScreenFactory : AppNavigationScreenFactory {
         onOpenDetails: (String) -> Unit
     ) = Column {
         Text("statistics")
-        JourneyButton("journey-statistics-details", "details") {
+        RoutingButton("routing-statistics-details", "details") {
             onOpenDetails("eq-statistics")
         }
-        JourneyButton("journey-statistics-settings", "settings") {
+        RoutingButton("routing-statistics-settings", "settings") {
             onTopLevelDestinationSelected(AppDestination.Settings)
         }
     }
@@ -152,31 +118,26 @@ private object JourneyScreenFactory : AppNavigationScreenFactory {
         currentDestination: AppDestination,
         onTopLevelDestinationSelected: (AppDestination) -> Unit,
         onOpenCredits: () -> Unit
-    ) {
-        var darkTheme by remember { mutableStateOf(false) }
-        Column {
-            Text("settings")
-            Text("settings-theme:${if (darkTheme) "dark" else "light"}")
-            JourneyButton("journey-settings-theme", "theme") { darkTheme = !darkTheme }
-            JourneyButton("journey-settings-credits", "credits", onOpenCredits)
-        }
+    ) = Column {
+        Text("settings")
+        RoutingButton("routing-settings-credits", "credits", onOpenCredits)
     }
 
     @Composable
     override fun Credits(currentDestination: AppDestination, onBack: () -> Unit) = Column {
         Text("credits")
-        JourneyButton("journey-credits-back", "back", onBack)
+        RoutingButton("routing-credits-back", "back", onBack)
     }
 
     @Composable
     override fun Details(currentDestination: AppDestination, id: String, onBack: () -> Unit) = Column {
         Text("details:$id")
-        JourneyButton("journey-details-back", "back", onBack)
+        RoutingButton("routing-details-back", "back", onBack)
     }
 }
 
 @Composable
-private fun JourneyButton(tag: String, label: String, onClick: () -> Unit) {
+private fun RoutingButton(tag: String, label: String, onClick: () -> Unit) {
     Button(onClick = onClick, modifier = Modifier.testTag(tag)) {
         Text(label)
     }

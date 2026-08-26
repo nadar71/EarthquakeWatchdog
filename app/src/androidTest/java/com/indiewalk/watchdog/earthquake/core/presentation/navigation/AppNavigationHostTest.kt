@@ -67,6 +67,7 @@ class AppNavigationHostTest {
 
         composeRule.onNodeWithTag("intro-continue").performClick()
         composeRule.onNodeWithTag("home-open-map").performClick()
+        composeRule.onNodeWithText("map:10.0,20.0").assertExists()
         composeRule.onNodeWithTag("map-open-home").performClick()
 
         composeRule.runOnIdle {
@@ -121,6 +122,36 @@ class AppNavigationHostTest {
                 screenFactory = FakeAppNavigationScreenFactory
             )
         }
+    }
+
+}
+
+@RunWith(AndroidJUnit4::class)
+class AppNavigationHostRestorationTest {
+
+    @get:Rule
+    val composeRule = createAndroidComposeRule<DebugNavigationTestActivity>()
+
+    @Test
+    fun topLevelDestinationIsRestoredAfterActivityRecreation() {
+        composeRule.onNodeWithTag("intro-continue").performClick()
+        composeRule.onNodeWithTag("home-open-settings").performClick()
+        composeRule.onNodeWithText("settings-screen").assertExists()
+
+        composeRule.activityRule.scenario.recreate()
+
+        composeRule.onNodeWithText("settings-screen").assertExists()
+    }
+
+    @Test
+    fun detailsDestinationIsRestoredAfterActivityRecreation() {
+        composeRule.onNodeWithTag("intro-continue").performClick()
+        composeRule.onNodeWithTag("home-open-details").performClick()
+        composeRule.onNodeWithText("details:eq-42").assertExists()
+
+        composeRule.activityRule.scenario.recreate()
+
+        composeRule.onNodeWithText("details:eq-42").assertExists()
     }
 }
 

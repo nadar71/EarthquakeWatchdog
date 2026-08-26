@@ -46,28 +46,49 @@ fun FilterSheet(
     onConfirm: (EqsSortOption, MinMagnitude, TimeInterval) -> Unit,
     onDismiss: () -> Unit
 ) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        dragHandle = { BottomSheetDefaults.DragHandle() }
+    ) {
+        FilterSheetContent(
+            eqsCount = eqsCount,
+            lastRefreshTime = lastRefreshTime,
+            startDate = startDate,
+            filterSettings = filterSettings,
+            onConfirm = onConfirm,
+            onDismiss = onDismiss
+        )
+    }
+}
+
+@Composable
+fun FilterSheetContent(
+    eqsCount: Int = 0,
+    lastRefreshTime: String = "",
+    startDate: String = "",
+    filterSettings: FilterSettings,
+    onConfirm: (EqsSortOption, MinMagnitude, TimeInterval) -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     var selectedSort by remember(filterSettings.sortOption) { mutableStateOf(filterSettings.sortOption) }
     var selectedMinMag by remember(filterSettings.minMag) { mutableStateOf(filterSettings.minMag) }
     var selectedInterval by remember(filterSettings.timeInterval) {
         mutableStateOf(filterSettings.timeInterval)
     }
 
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        dragHandle = { BottomSheetDefaults.DragHandle() }
+    Column(
+        modifier
+            .fillMaxWidth()
+            .testTag("filter-sheet-content")
+            .verticalScroll(rememberScrollState())
+            .padding(
+                start = 16.dp,
+                top = 16.dp,
+                end = 16.dp,
+                bottom = 16.dp
+            )
     ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .testTag("filter-sheet-content")
-                .verticalScroll(rememberScrollState())
-                .padding(
-                    start = 16.dp,
-                    top = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp
-                )
-        ) {
             Text(
                 text = stringResource(R.string.filter_title),
                 style = MaterialTheme.typography.titleLarge
@@ -141,14 +162,23 @@ fun FilterSheet(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                TextButton(onClick = onDismiss) {
+                TextButton(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .height(48.dp)
+                        .testTag("filter-sheet-cancel")
+                ) {
                     Text(stringResource(R.string.generic_cancel))
                 }
                 Spacer(Modifier.width(8.dp))
-                Button(onClick = { onConfirm(selectedSort, selectedMinMag, selectedInterval) }) {
+                Button(
+                    onClick = { onConfirm(selectedSort, selectedMinMag, selectedInterval) },
+                    modifier = Modifier
+                        .height(48.dp)
+                        .testTag("filter-sheet-confirm")
+                ) {
                     Text(stringResource(R.string.generic_ok))
                 }
             }
-        }
     }
 }
