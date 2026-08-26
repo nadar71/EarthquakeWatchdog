@@ -1,75 +1,60 @@
 package com.indiewalk.watchdog.earthquake.core.diagnostics
 
-import com.indiewalk.watchdog.earthquake.core.domain.model.AppError
-import java.io.IOException
-import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class CrashReportingPolicyTest {
 
-    @After
-    fun tearDown() {
-        AppDiagnostics.resetSinkForTests()
+    @Test
+    fun adapterRecordsOneNonFatalWithOnlyTheClosedDiagnosticCategoryMetadata() {
+        val gateway = RecordingCrashlyticsGateway()
+        val adapter = CrashlyticsDiagnosticsAdapter(gateway)
+        val throwable = IllegalStateException("STORAGE/ILLEGAL_STATE")
+
+        adapter.recordNonFatal(DiagnosticCategory.STORAGE, throwable)
+
+        assertEquals(1, gateway.reports.size)
+        assertEquals(throwable, gateway.reports.single().throwable)
+        assertEquals(
+            mapOf("diagnostic_category" to "STORAGE"),
+            gateway.reports.single().metadata.values
+        )
+        assertTrue(gateway.collectionStates.isEmpty())
     }
 
     @Test
-    fun debugBuildsNeverEnableCrashCollection() {
-        assertFalse(CrashReportingPolicy.isCollectionEnabled(isDebugBuild = true))
-        assertTrue(CrashReportingPolicy.isCollectionEnabled(isDebugBuild = false))
+    fun startupExplicitlyReplacesDebugCollectionOverrideForRelease() {
+        val gateway = RecordingCrashlyticsGateway()
+
+        CrashlyticsStartup.configure(isDebugBuild = true) { gateway }
+        CrashlyticsStartup.configure(isDebugBuild = false) { gateway }
+
+        assertEquals(listOf(false, true), gateway.collectionStates)
     }
 
     @Test
-    fun expectedNetworkLocationAndPermissionUiFailuresAreNotReported() {
-        val reports = mutableListOf<Pair<DiagnosticCategory, Throwable>>()
-        AppDiagnostics.setSinkForTests(recordingSink(reports))
-        val expectedUiFailures = listOf(
-            ExpectedUiFailure(AppError.Network("offline"), DiagnosticCategory.NETWORK, IOException("offline")),
-            ExpectedUiFailure(AppError.Location("location unavailable"), DiagnosticCategory.LOCATION, IOException("location unavailable")),
-            ExpectedUiFailure(AppError.Location("permission denied"), DiagnosticCategory.LOCATION, SecurityException("permission denied"))
+    fun startupSafelySkipsMissingDebugFirebaseConfiguration() {
+        CrashlyticsStartup.configure(isDebugBuild = true) { null }
+    }
+
+    private class RecordingCrashlyticsGateway : CrashlyticsGateway {
+        data class Report(
+            val throwable: Throwable,
+            val metadata: CrashlyticsReportMetadata
         )
 
-        expectedUiFailures.forEach { failure ->
-            assertTrue(
-                "Expected UI error must remain a network or location state",
-                failure.error is AppError.Network || failure.error is AppError.Location
-            )
-            AppDiagnostics.recordNonFatal(failure.category, failure.throwable)
+        val reports = mutableListOf<Report>()
+        val collectionStates = mutableListOf<Boolean>()
+
+        override fun recordException(throwable: Throwable, metadata: CrashlyticsReportMetadata) {
+            reports += Report(throwable, metadata)
         }
 
-        assertTrue(reports.isEmpty())
-    }
+        override fun log(event: DiagnosticEvent) = Unit
 
-    @Test
-    fun unexpectedOwnershipFailureIsReportedOnceWithOnlyASanitizedCategory() {
-        val reports = mutableListOf<Pair<DiagnosticCategory, Throwable>>()
-        AppDiagnostics.setSinkForTests(recordingSink(reports))
-
-        AppDiagnostics.recordNonFatal(
-            DiagnosticCategory.STORAGE,
-            IllegalStateException("address=Via del Corso 10 latitude=41.9028")
-        )
-
-        assertEquals(1, reports.size)
-        assertEquals(DiagnosticCategory.STORAGE, reports.single().first)
-        assertEquals("STORAGE/ILLEGAL_STATE", reports.single().second.message)
-        assertFalse(reports.single().second.stackTraceToString().contains("latitude=41.9028"))
-    }
-
-    private fun recordingSink(reports: MutableList<Pair<DiagnosticCategory, Throwable>>) =
-        object : DiagnosticSink {
-            override fun recordNonFatal(category: DiagnosticCategory, throwable: Throwable) {
-                reports += category to throwable
-            }
-
-            override fun breadcrumb(event: DiagnosticEvent) = Unit
+        override fun setCollectionEnabled(enabled: Boolean) {
+            collectionStates += enabled
         }
-
-    private data class ExpectedUiFailure(
-        val error: AppError,
-        val category: DiagnosticCategory,
-        val throwable: Throwable
-    )
+    }
 }

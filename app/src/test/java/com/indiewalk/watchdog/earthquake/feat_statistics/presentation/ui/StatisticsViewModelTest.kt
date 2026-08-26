@@ -38,7 +38,7 @@ class StatisticsViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     @get:Rule
-    val diagnosticsTestRule = DiagnosticsTestRule()
+    internal val diagnosticsTestRule = DiagnosticsTestRule()
 
     @Test
     fun startupLoadsOnceAndExposesSnapshot() = runTest {

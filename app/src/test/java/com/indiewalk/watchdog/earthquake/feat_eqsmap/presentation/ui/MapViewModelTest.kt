@@ -31,7 +31,7 @@ import org.junit.Test
 class MapViewModelTest {
 
     @get:Rule
-    val diagnosticsTestRule = DiagnosticsTestRule()
+    internal val diagnosticsTestRule = DiagnosticsTestRule()
 
     @Test
     fun `sets recenter target when manual location is confirmed`() = runViewModelTest {

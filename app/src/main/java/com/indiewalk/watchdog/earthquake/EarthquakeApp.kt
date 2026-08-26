@@ -4,7 +4,8 @@ import android.app.Application
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.indiewalk.watchdog.earthquake.core.diagnostics.CrashReportingPolicy
+import com.indiewalk.watchdog.earthquake.core.diagnostics.CrashlyticsStartup
+import com.indiewalk.watchdog.earthquake.core.diagnostics.FirebaseCrashlyticsGateway
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -16,20 +17,18 @@ class EarthquakeApp : Application() {
     }
     override fun onCreate() {
         super.onCreate()
-        disableDebugCrashCollection()
+        configureCrashCollection()
         TEST_DEVICE_ID = applicationContext.getString(R.string.admob_key_test_device)
         // init admob ads
         MobileAds.initialize(this) {}
     }
 
-    private fun disableDebugCrashCollection() {
-        if (!BuildConfig.DEBUG) return
-
+    private fun configureCrashCollection() {
         // A missing local google-services.json returns null, keeping open-source debug builds usable.
-        FirebaseApp.initializeApp(this)?.let {
-            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(
-                CrashReportingPolicy.isCollectionEnabled(isDebugBuild = true)
-            )
+        CrashlyticsStartup.configure(isDebugBuild = BuildConfig.DEBUG) {
+            FirebaseApp.initializeApp(this)?.let {
+                FirebaseCrashlyticsGateway(FirebaseCrashlytics.getInstance())
+            }
         }
     }
 }

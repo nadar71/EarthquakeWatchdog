@@ -4,10 +4,12 @@ import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 
-class DiagnosticsTestRule : TestRule {
+internal class DiagnosticsTestRule(
+    private val diagnosticSink: DiagnosticSink = NoOpDiagnosticSink
+) : TestRule {
     override fun apply(base: Statement, description: Description): Statement = object : Statement() {
         override fun evaluate() {
-            AppDiagnostics.setSinkForTests(NoOpDiagnosticSink)
+            AppDiagnostics.setSinkForTests(diagnosticSink)
             try {
                 base.evaluate()
             } finally {

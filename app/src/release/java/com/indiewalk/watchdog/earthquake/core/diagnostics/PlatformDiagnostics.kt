@@ -3,12 +3,15 @@ package com.indiewalk.watchdog.earthquake.core.diagnostics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 internal object PlatformDiagnostics : DiagnosticSink {
+    private val adapter by lazy {
+        CrashlyticsDiagnosticsAdapter(FirebaseCrashlyticsGateway(FirebaseCrashlytics.getInstance()))
+    }
+
     override fun recordNonFatal(category: DiagnosticCategory, throwable: Throwable) {
-        FirebaseCrashlytics.getInstance().setCustomKey("diagnostic_category", category.name)
-        FirebaseCrashlytics.getInstance().recordException(throwable)
+        adapter.recordNonFatal(category, throwable)
     }
 
     override fun breadcrumb(event: DiagnosticEvent) {
-        FirebaseCrashlytics.getInstance().log(event.name)
+        adapter.breadcrumb(event)
     }
 }

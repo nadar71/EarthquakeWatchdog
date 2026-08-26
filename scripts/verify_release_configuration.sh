@@ -129,6 +129,19 @@ readonly FIREBASE_CONFIG_FILE="$PROJECT_ROOT/app/google-services.json"
 readonly FIREBASE_CONFIG_BACKUP="$TEMP_DIRECTORY/google-services.json.backup"
 had_existing_firebase_config=false
 
+print_gradle_log_tail() {
+    local log_file="$1"
+    local description="$2"
+
+    if [[ -s "$log_file" ]]; then
+        printf '\n--- %s (last 80 lines, sensitive test inputs redacted) ---\n' "$description" >&2
+        tail -80 "$log_file" | sed \
+            -e "s/${TEST_KEY_PASSWORD}/[REDACTED]/g" \
+            -e "s/${TEST_KEY_ALIAS}/[REDACTED]/g" \
+            -e "s/${TEST_MAPS_KEY}/[REDACTED]/g" >&2
+    fi
+}
+
 cleanup() {
     if [[ "$had_existing_firebase_config" == true ]]; then
         mv "$FIREBASE_CONFIG_BACKUP" "$FIREBASE_CONFIG_FILE"
@@ -154,11 +167,13 @@ expect_release_configuration_failure() {
     if "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
         -PreleaseSecretsFile="$EMPTY_SECRETS_FILE" \
         "$task_selector" --dry-run --offline > "$log_file" 2>&1; then
+        print_gradle_log_tail "$log_file" "$task_selector"
         printf 'FAIL: %s configured without required release secrets\n' "$task_selector" >&2
         exit 1
     fi
 
     if ! grep -Fq 'Missing required release secrets: release_keyAlias, release_keyPassword, release_storeFile, release_storePassword, MAPS_API_KEY_RELEASE' "$log_file"; then
+        print_gradle_log_tail "$log_file" "$task_selector"
         printf 'FAIL: %s did not name every missing secret\n' "$task_selector" >&2
         exit 1
     fi
@@ -171,6 +186,7 @@ done
 if ! "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
     -PreleaseSecretsFile="$EMPTY_SECRETS_FILE" \
     :app:assembleDebug --dry-run --offline > "$TEMP_DIRECTORY/assemble-debug.log" 2>&1; then
+    print_gradle_log_tail "$TEMP_DIRECTORY/assemble-debug.log" "assembleDebug"
     printf 'FAIL: :app:assembleDebug unexpectedly required release secrets\n' >&2
     exit 1
 fi
@@ -178,6 +194,7 @@ fi
 if ! "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
     -PreleaseSecretsFile="$EMPTY_SECRETS_FILE" \
     :app:lintRelease --offline > "$TEMP_DIRECTORY/lint-release.log" 2>&1; then
+    print_gradle_log_tail "$TEMP_DIRECTORY/lint-release.log" "lintRelease"
     printf 'FAIL: :app:lintRelease unexpectedly required release secrets\n' >&2
     exit 1
 fi
@@ -209,12 +226,13 @@ if "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
     -Prelease_storePassword="$TEST_KEY_PASSWORD" \
     -PMAPS_API_KEY_RELEASE="$TEST_MAPS_KEY" \
     :app:bundleRelease --dry-run --offline > "$TEMP_DIRECTORY/missing-firebase-config.log" 2>&1; then
+    print_gradle_log_tail "$TEMP_DIRECTORY/missing-firebase-config.log" "missing Firebase configuration"
     printf 'FAIL: :app:bundleRelease configured without Firebase configuration\n' >&2
     exit 1
 fi
 
 if ! grep -Fq 'Missing required Firebase configuration: app/google-services.json.' "$TEMP_DIRECTORY/missing-firebase-config.log"; then
-    tail -40 "$TEMP_DIRECTORY/missing-firebase-config.log" >&2
+    print_gradle_log_tail "$TEMP_DIRECTORY/missing-firebase-config.log" "missing Firebase configuration"
     printf 'FAIL: missing Firebase configuration failure was not clear\n' >&2
     exit 1
 fi
@@ -253,12 +271,13 @@ if "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
     -Prelease_storePassword="$TEST_KEY_PASSWORD" \
     -PMAPS_API_KEY_RELEASE="$TEST_MAPS_KEY" \
     :app:validateStoreReleaseConfiguration --offline > "$TEMP_DIRECTORY/store-mapping-opt-in.log" 2>&1; then
+    print_gradle_log_tail "$TEMP_DIRECTORY/store-mapping-opt-in.log" "store mapping upload opt-in"
     printf 'FAIL: store release validation accepted mapping upload without explicit opt-in\n' >&2
     exit 1
 fi
 
 if ! grep -Fq 'Store release requires -PcrashlyticsMappingUploadEnabled=true' "$TEMP_DIRECTORY/store-mapping-opt-in.log"; then
-    tail -40 "$TEMP_DIRECTORY/store-mapping-opt-in.log" >&2
+    print_gradle_log_tail "$TEMP_DIRECTORY/store-mapping-opt-in.log" "store mapping upload opt-in"
     printf 'FAIL: store mapping upload failure was not clear\n' >&2
     exit 1
 fi
@@ -272,6 +291,7 @@ if ! "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
     -PMAPS_API_KEY_RELEASE="$TEST_MAPS_KEY" \
     -PcrashlyticsMappingUploadEnabled=true \
     :app:validateStoreReleaseConfiguration --offline > "$TEMP_DIRECTORY/store-mapping-opt-in-success.log" 2>&1; then
+    print_gradle_log_tail "$TEMP_DIRECTORY/store-mapping-opt-in-success.log" "store mapping upload opt-in"
     printf 'FAIL: store release validation rejected explicit mapping upload opt-in\n' >&2
     exit 1
 fi
@@ -285,16 +305,19 @@ if ! "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
     -PMAPS_API_KEY_RELEASE="$TEST_MAPS_KEY" \
     -PcrashlyticsMappingUploadEnabled=false \
     :app:bundleRelease --rerun-tasks --offline > "$TEMP_DIRECTORY/release-build.log" 2>&1; then
+    print_gradle_log_tail "$TEMP_DIRECTORY/release-build.log" "synthetic minified release bundle"
     printf 'FAIL: synthetic minified release bundle verification failed\n' >&2
     exit 1
 fi
 
 if [[ ! -s "$PROJECT_ROOT/app/build/outputs/mapping/release/mapping.txt" ]]; then
+    print_gradle_log_tail "$TEMP_DIRECTORY/release-build.log" "synthetic minified release bundle"
     printf 'FAIL: R8 mapping output was not generated\n' >&2
     exit 1
 fi
 
 if [[ ! -s "$PROJECT_ROOT/app/build/outputs/bundle/release/app-release.aab" ]]; then
+    print_gradle_log_tail "$TEMP_DIRECTORY/release-build.log" "synthetic minified release bundle"
     printf 'FAIL: release AAB output was not generated\n' >&2
     exit 1
 fi
@@ -306,7 +329,8 @@ if ! "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
     -Prelease_storeFile="$TEST_KEYSTORE_FILE" \
     -Prelease_storePassword="$TEST_KEY_PASSWORD" \
     -PMAPS_API_KEY_RELEASE="$TEST_MAPS_KEY" \
-    :app:validateReleaseSecrets --quiet; then
+    :app:validateReleaseSecrets --quiet > "$TEMP_DIRECTORY/validate-release-secrets.log" 2>&1; then
+    print_gradle_log_tail "$TEMP_DIRECTORY/validate-release-secrets.log" "release secret validation"
     printf 'FAIL: release secret validation rejected non-empty test inputs\n' >&2
     exit 1
 fi
