@@ -1,3 +1,5 @@
+import org.gradle.api.Action
+import org.gradle.api.execution.TaskExecutionGraph
 import org.gradle.kotlin.dsl.implementation
 import java.util.Properties
 import java.io.FileInputStream
@@ -29,25 +31,27 @@ fun releaseSecret(name: String): String? = sequenceOf(
 fun missingReleaseSecrets(): List<String> =
     requiredReleaseSecretNames.filter { releaseSecret(it).isNullOrBlank() }
 
-fun validateRequestedReleaseSecrets() {
-    val releasePackagingTasks = setOf(
+fun validateReleaseTaskGraph() {
+    val releasePackagingTaskNames = setOf(
         "assembleRelease",
         "bundleRelease",
         "minifyReleaseWithR8",
         "packageReleaseBundle",
-        "preReleaseBuild",
         "signReleaseBundle"
     )
-    val isReleasePackagingRequested = gradle.startParameter.taskNames
-        .map { it.substringAfterLast(':') }
-        .any(releasePackagingTasks::contains)
 
-    if (isReleasePackagingRequested) {
-        val missing = missingReleaseSecrets()
-        check(missing.isEmpty()) {
-            "Missing required release secrets: ${missing.joinToString(", ")}"
+    gradle.taskGraph.whenReady(Action<TaskExecutionGraph> {
+        val releasePackagingIsPlanned = allTasks.any { task ->
+            task.project == project && task.name in releasePackagingTaskNames
         }
-    }
+
+        if (releasePackagingIsPlanned) {
+            val missing = missingReleaseSecrets()
+            check(missing.isEmpty()) {
+                "Missing required release secrets: ${missing.joinToString(", ")}"
+            }
+        }
+    })
 }
 
 plugins { // plugin application
@@ -58,7 +62,7 @@ plugins { // plugin application
     alias(libs.plugins.hilt.android)
 }
 
-validateRequestedReleaseSecrets()
+validateReleaseTaskGraph()
 
 android {
     namespace = "com.indiewalk.watchdog.earthquake"

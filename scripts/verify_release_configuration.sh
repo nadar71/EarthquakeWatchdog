@@ -52,7 +52,7 @@ require_text "$BUILD_FILE" "isShrinkResources = true" "release resource shrinkin
 require_absent_text "$BUILD_FILE" "implementation(libs.androidx.ui.tooling)" "release Compose preview tooling"
 require_text "$BUILD_FILE" "tasks.register(\"validateReleaseSecrets\")" "release secret validation task"
 require_text "$BUILD_FILE" "dependsOn(\"validateReleaseSecrets\")" "pre-release secret validation dependency"
-require_text "$BUILD_FILE" "validateRequestedReleaseSecrets()" "configuration-time release secret validation"
+require_text "$BUILD_FILE" "validateReleaseTaskGraph()" "task-graph release secret validation"
 
 for secret_name in release_keyAlias release_keyPassword release_storeFile release_storePassword MAPS_API_KEY_RELEASE; do
     require_text "$BUILD_FILE" "\"$secret_name\"" "required release secret name $secret_name"
@@ -135,17 +135,35 @@ trap cleanup EXIT
 
 : > "$EMPTY_SECRETS_FILE"
 
-if "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
-    -PreleaseSecretsFile="$EMPTY_SECRETS_FILE" \
-    :app:bundleRelease --dry-run --offline > "$TEMP_DIRECTORY/missing-secrets.log" 2>&1; then
-    printf 'FAIL: release packaging configured without required secrets\n' >&2
-    exit 1
-fi
+expect_release_configuration_failure() {
+    local task_selector="$1"
+    local log_file="$TEMP_DIRECTORY/${task_selector//[:]/_}.log"
 
-if ! grep -Fq 'Missing required release secrets: release_keyAlias, release_keyPassword, release_storeFile, release_storePassword, MAPS_API_KEY_RELEASE' "$TEMP_DIRECTORY/missing-secrets.log"; then
-    printf 'FAIL: release configuration did not name every missing secret\n' >&2
-    exit 1
-fi
+    if "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
+        -PreleaseSecretsFile="$EMPTY_SECRETS_FILE" \
+        "$task_selector" --dry-run --offline > "$log_file" 2>&1; then
+        printf 'FAIL: %s configured without required release secrets\n' "$task_selector" >&2
+        exit 1
+    fi
+
+    if ! grep -Fq 'Missing required release secrets: release_keyAlias, release_keyPassword, release_storeFile, release_storePassword, MAPS_API_KEY_RELEASE' "$log_file"; then
+        printf 'FAIL: %s did not name every missing secret\n' "$task_selector" >&2
+        exit 1
+    fi
+}
+
+for release_task in :app:bundleRelease :app:bundle :app:assemble :app:bundleR; do
+    expect_release_configuration_failure "$release_task"
+done
+
+for non_packaging_task in :app:assembleDebug :app:lintRelease; do
+    if ! "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
+        -PreleaseSecretsFile="$EMPTY_SECRETS_FILE" \
+        "$non_packaging_task" --dry-run --offline > "$TEMP_DIRECTORY/${non_packaging_task//[:]/_}.log" 2>&1; then
+        printf 'FAIL: %s unexpectedly required release secrets\n' "$non_packaging_task" >&2
+        exit 1
+    fi
+done
 
 if ! command -v keytool >/dev/null 2>&1; then
     printf 'FAIL: keytool is required for release configuration verification\n' >&2
