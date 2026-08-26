@@ -6,6 +6,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import kotlinx.coroutines.CancellationException
 import java.io.IOException
 
 class AppDiagnosticsTest {
@@ -167,6 +168,22 @@ class AppDiagnosticsTest {
 
         assertEquals(1, reports.size)
         assertEquals(DiagnosticCategory.NETWORK, reports.single().first)
+    }
+
+    @Test
+    fun reportingPolicyNeverReportsDirectOrWrappedCancellationForAnyCategory() {
+        val reports = mutableListOf<Pair<DiagnosticCategory, Throwable>>()
+        AppDiagnostics.setSinkForTests(recordingSink(reports))
+
+        DiagnosticCategory.entries.forEach { category ->
+            AppDiagnostics.recordNonFatal(category, CancellationException("cancelled"))
+            AppDiagnostics.recordNonFatal(
+                category,
+                IllegalStateException("wrapper", CancellationException("cancelled"))
+            )
+        }
+
+        assertTrue(reports.isEmpty())
     }
 
     @Test

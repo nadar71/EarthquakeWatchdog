@@ -3,6 +3,7 @@ package com.indiewalk.watchdog.earthquake.core.diagnostics
 import java.io.IOException
 import java.util.Collections
 import java.util.IdentityHashMap
+import kotlinx.coroutines.CancellationException
 
 enum class DiagnosticCategory {
     NETWORK,
@@ -61,18 +62,23 @@ private class SanitizedDiagnosticException(
 }
 
 internal object DiagnosticReportingPolicy {
-    fun shouldReport(category: DiagnosticCategory, throwable: Throwable): Boolean = when (category) {
-        DiagnosticCategory.NETWORK -> !throwable.hasCauseMatching { it is IOException }
-        DiagnosticCategory.LOCATION -> !throwable.hasCauseMatching {
-            it is IOException || it is SecurityException
+    fun shouldReport(category: DiagnosticCategory, throwable: Throwable): Boolean {
+        // Cancellation is control flow, never an application failure to diagnose.
+        if (throwable.hasCauseMatching { it is CancellationException }) return false
+
+        return when (category) {
+            DiagnosticCategory.NETWORK -> !throwable.hasCauseMatching { it is IOException }
+            DiagnosticCategory.LOCATION -> !throwable.hasCauseMatching {
+                it is IOException || it is SecurityException
+            }
+            DiagnosticCategory.STATISTICS -> !(
+                throwable is StatisticsLoadFailure &&
+                    throwable.hasCauseMatching { it is IOException }
+                )
+            DiagnosticCategory.STORAGE,
+            DiagnosticCategory.MAP,
+            DiagnosticCategory.EXTERNAL_INTENT -> true
         }
-        DiagnosticCategory.STATISTICS -> !(
-            throwable is StatisticsLoadFailure &&
-                throwable.hasCauseMatching { it is IOException }
-            )
-        DiagnosticCategory.STORAGE,
-        DiagnosticCategory.MAP,
-        DiagnosticCategory.EXTERNAL_INTENT -> true
     }
 }
 

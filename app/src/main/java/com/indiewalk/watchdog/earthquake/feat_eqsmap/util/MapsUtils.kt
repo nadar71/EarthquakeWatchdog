@@ -13,6 +13,7 @@ import com.indiewalk.watchdog.earthquake.core.diagnostics.AppDiagnostics
 import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticCategory
 import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQGeometryDTO
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
 import kotlin.math.atan2
@@ -67,13 +68,10 @@ object MapsUtils {
     // with suspend function
     @SuppressLint("MissingPermission")
     suspend fun getLastKnownLatLng(context: Context): LatLng? {
-        return try {
+        return resolveLocationResultOrNull {
             val fused = LocationServices.getFusedLocationProviderClient(context)
-            val loc = fused.lastLocation.await() ?: return null
+            val loc = fused.lastLocation.await() ?: return@resolveLocationResultOrNull null
             LatLng(loc.latitude, loc.longitude)
-        } catch (error: Exception) {
-            AppDiagnostics.recordNonFatal(DiagnosticCategory.LOCATION, error)
-            null
         }
     }
     // Get user's last location and updates creating a fused Location client provider
@@ -115,4 +113,13 @@ object MapsUtils {
         null
     }
 
+}
+
+internal suspend fun <T> resolveLocationResultOrNull(block: suspend () -> T): T? = try {
+    block()
+} catch (error: CancellationException) {
+    throw error
+} catch (error: Exception) {
+    AppDiagnostics.recordNonFatal(DiagnosticCategory.LOCATION, error)
+    null
 }

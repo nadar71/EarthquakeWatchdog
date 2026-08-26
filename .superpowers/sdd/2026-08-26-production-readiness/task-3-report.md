@@ -2,7 +2,7 @@
 
 ## Status
 
-Completed pending commit. This report contains no credential, location, address, advertising identifier, or consent payload.
+Completed. This report contains no credential, location, address, advertising identifier, or consent payload.
 
 ## Implemented
 
@@ -99,3 +99,23 @@ Completed pending commit. This report contains no credential, location, address,
 - `bash scripts/verify_repository_hygiene.sh`: passed.
 - `./gradlew --offline :app:compileDebugKotlin :app:compileReleaseKotlin :app:lintDebug :app:lintRelease :app:assembleDebug`: passed.
 - Debug and release lint reports contain zero errors (`298` and `249` existing warnings respectively).
+
+## Fix Round 3
+
+- `MapsUtils.getLastKnownLatLng` now executes its platform lookup through a small suspend boundary that rethrows `CancellationException` unchanged before handling ordinary failures. Structured coroutine cancellation therefore reaches its caller and cannot be converted into the existing null fallback.
+- `DiagnosticReportingPolicy` now checks the cycle-safe cause chain for `CancellationException` before applying its category rules. Direct and wrapped cancellation are suppressed for every diagnostic category, including `STORAGE`, `MAP`, and `EXTERNAL_INTENT`.
+- The cancellation check performs type classification only. It does not retain a cancellation message, cause, stack frame, or any other caller-controlled payload.
+
+## Fix Round 3 RED/GREEN Evidence
+
+- RED: `./gradlew :app:testDebugUnitTest --tests '*AppDiagnosticsTest' --tests '*MapsUtilsTest'` failed to compile because `resolveLocationResultOrNull` did not exist.
+- GREEN: the same focused command passed after the cancellation-aware boundary was introduced. The diagnostics matrix proves direct and wrapped cancellation produce no sink reports for every category.
+- GREEN: `MapsUtilsTest.locationResultRethrowsCancellationWithoutReportingIt` proves the exact cancellation instance is returned to the caller and the injected diagnostic sink remains empty, without Android framework mocking.
+
+## Fix Round 3 Verification
+
+- `./gradlew :app:testDebugUnitTest --tests '*AppDiagnosticsTest' --tests '*MapsUtilsTest'`: passed.
+- `./gradlew :app:testDebugUnitTest`: passed.
+- `bash scripts/verify_repository_hygiene.sh`: passed.
+- `git diff --check`: passed.
+- The attempted follow-up offline lint invocation was interrupted when Gradle received a daemon stop command, so this round does not claim a new lint result. The prior Fix Round 2 lint evidence remains unchanged.
