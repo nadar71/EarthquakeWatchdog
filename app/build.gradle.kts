@@ -2,7 +2,10 @@ import org.gradle.kotlin.dsl.implementation
 import java.util.Properties
 import java.io.FileInputStream
 
-val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystorePropertiesFile = providers.gradleProperty("releaseSecretsFile")
+    .orNull
+    ?.let(rootProject::file)
+    ?: rootProject.file("keystore.properties")
 val keystoreProperties = Properties().apply {
     if (keystorePropertiesFile.exists()) {
         FileInputStream(keystorePropertiesFile).use { load(it) }
@@ -23,6 +26,30 @@ fun releaseSecret(name: String): String? = sequenceOf(
     keystoreProperties.getProperty(name)
 ).firstOrNull { !it.isNullOrBlank() }
 
+fun missingReleaseSecrets(): List<String> =
+    requiredReleaseSecretNames.filter { releaseSecret(it).isNullOrBlank() }
+
+fun validateRequestedReleaseSecrets() {
+    val releasePackagingTasks = setOf(
+        "assembleRelease",
+        "bundleRelease",
+        "minifyReleaseWithR8",
+        "packageReleaseBundle",
+        "preReleaseBuild",
+        "signReleaseBundle"
+    )
+    val isReleasePackagingRequested = gradle.startParameter.taskNames
+        .map { it.substringAfterLast(':') }
+        .any(releasePackagingTasks::contains)
+
+    if (isReleasePackagingRequested) {
+        val missing = missingReleaseSecrets()
+        check(missing.isEmpty()) {
+            "Missing required release secrets: ${missing.joinToString(", ")}"
+        }
+    }
+}
+
 plugins { // plugin application
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -30,6 +57,8 @@ plugins { // plugin application
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
 }
+
+validateRequestedReleaseSecrets()
 
 android {
     namespace = "com.indiewalk.watchdog.earthquake"
@@ -94,7 +123,7 @@ tasks.register("validateReleaseSecrets") {
     description = "Checks that release signing and Maps secrets are configured."
 
     doLast {
-        val missing = requiredReleaseSecretNames.filter { releaseSecret(it).isNullOrBlank() }
+        val missing = missingReleaseSecrets()
         check(missing.isEmpty()) {
             "Missing required release secrets: ${missing.joinToString(", ")}"
         }

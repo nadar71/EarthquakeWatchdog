@@ -11,6 +11,7 @@ import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.Statistics
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.StatisticsWindows
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.model.TrendPoint
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Instant
 
@@ -28,7 +29,8 @@ class StatisticsCacheEntityTest {
                 time = 1_786_700_000_000,
                 depthKm = 28.0,
                 latitude = -24.0,
-                longitude = 178.0
+                longitude = 178.0,
+                distanceKm = 132.0
             ),
             nearestToday = null,
             insights = StatisticsInsights(
@@ -48,8 +50,35 @@ class StatisticsCacheEntityTest {
             )
         )
 
-        val restored = snapshot.toCacheEntity().toSnapshot()
+        val cached = snapshot.toCacheEntity()
+        val restored = cached.toSnapshot()
 
         assertEquals(snapshot, restored)
+        assertTrue(cached.windowsJson.contains("\"last7Days\""))
+        assertTrue(requireNotNull(cached.strongestEventJson).contains("\"distanceKm\""))
+        assertTrue(requireNotNull(cached.insightsJson).contains("\"globalTrend\""))
+    }
+
+    @Test
+    fun persistedCacheJsonWithStableFieldNamesRestoresAfterAnUpgrade() {
+        val cached = StatisticsCacheEntity(
+            todayCount = 1,
+            weekCount = 2,
+            monthCount = 3,
+            yearCount = 4,
+            threshold = 2.5,
+            retrievedAtEpochMillis = 1_720_000_000_000,
+            windowsJson = """{"today":{"startEpochMillis":1,"endEpochMillis":2},"last7Days":{"startEpochMillis":3,"endEpochMillis":4},"last30Days":{"startEpochMillis":5,"endEpochMillis":6},"year":{"startEpochMillis":7,"endEpochMillis":8}}""",
+            strongestEventJson = """{"id":"strongest","magnitude":6.1,"place":"Test","time":9,"depthKm":10.0,"latitude":11.0,"longitude":12.0,"distanceKm":13.0}""",
+            nearestEventJson = null,
+            insightsJson = """{"globalTrend":[{"startEpochMillis":1,"endEpochMillis":2,"count":3}],"magnitudeDistribution":[{"id":"magnitude","count":4}],"depthDistribution":[{"id":"depth","count":5}],"activeRegions":[{"name":"Italy","count":6}],"nearbyTrend":null}"""
+        )
+
+        val restored = cached.toSnapshot()
+
+        assertEquals(3L, restored.windows.last7Days.start.toEpochMilli())
+        assertEquals(13.0, restored.strongestToday?.distanceKm)
+        assertEquals(3, restored.insights?.globalTrend?.single()?.count)
+        assertEquals("Italy", restored.insights?.activeRegions?.single()?.name)
     }
 }
