@@ -1,6 +1,5 @@
 package com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui
 
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.clickable
@@ -45,8 +44,6 @@ fun SettingsScreen(
     onOpenCredits: () -> Unit,
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
-    val TAG = "SettingsScreen"
-    Log.d(TAG, "SettingsScreen on")
     val context = LocalContext.current
     val activity = LocalActivity.current
 

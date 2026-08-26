@@ -1,6 +1,5 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.preferences
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,8 +43,6 @@ fun FilterSheet(
     onConfirm: (EqsSortOption, MinMagnitude, TimeInterval) -> Unit,
     onDismiss: () -> Unit
 ) {
-    Log.d("FilterSheet", "eqsCount=$eqsCount, lastRefreshTime=$lastRefreshTime, startDate=$startDate")
-
     var selectedSort by remember(filterSettings.sortOption) { mutableStateOf(filterSettings.sortOption) }
     var selectedMinMag by remember(filterSettings.minMag) { mutableStateOf(filterSettings.minMag) }
     var selectedInterval by remember(filterSettings.timeInterval) {

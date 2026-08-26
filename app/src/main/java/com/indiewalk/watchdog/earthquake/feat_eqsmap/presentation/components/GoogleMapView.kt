@@ -1,7 +1,6 @@
 package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,8 +32,6 @@ fun GoogleMapView(
     onMapClick: (LatLng) -> Unit,
     onMapLoaded: () -> Unit
 ) {
-    val TAG = "GoogleMapView"
-    Log.d(TAG, "GoogleMapView Opened")
     val context = LocalContext.current
 
     // State to keep track of the marker position
@@ -88,4 +85,3 @@ fun GoogleMapView(
         }
     }
 }
-

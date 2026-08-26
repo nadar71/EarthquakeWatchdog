@@ -1,6 +1,5 @@
 package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -57,9 +56,6 @@ fun EarthquakeMapContent(
     onEarthquakeSelected: (EQEntity) -> Unit,
     onMapTapped: () -> Unit,
 ) {
-    val TAG = "EarthquakeMapContent"
-    Log.d(TAG, "EarthquakeMapContent Opened")
-    Log.d(TAG, "settings manualLocOn : ${settings.manualLocOn}")
     val context = LocalContext.current
 
     val showGrid by rememberSaveable { mutableStateOf(true) }
@@ -102,7 +98,6 @@ fun EarthquakeMapContent(
 
         // if manual is on, center map in manual location
         val didCenterOnManual = if (settings.manualLocOn) {
-            Log.d("EarthquakeMapContent", "Centering on manual location: ${settings.manualPosition}")
             cameraPositionState.animate(CameraUpdateFactory
                 .newLatLngZoom(settings.manualPosition, 7f))
             true
@@ -112,7 +107,6 @@ fun EarthquakeMapContent(
         if (!didCenterOnManual) {
             val didCenterOnUser = if (hasLocationPermissions) {
                 val userPosition = settings.userPosition
-                Log.d("EarthquakeMapContent", "Centering on user location: $userPosition")
                 if (userPosition.latitude != DEFAULT_LAT || userPosition.longitude != DEFAULT_LNG) {
                     cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(userPosition, 7f))
                     true
@@ -123,7 +117,6 @@ fun EarthquakeMapContent(
 
             // ...else center in bound or in default location
             if (!didCenterOnUser) {
-                Log.d("EarthquakeMapContent", "Centering on default location")
                 cameraPositionState.move(
                     CameraUpdateFactory.newLatLngZoom(LatLng(DEFAULT_LAT, DEFAULT_LNG), 7f))
             }
@@ -209,7 +202,6 @@ fun EarthquakeMapContent(
 
         // Default location marker
         if (!hasLocationPermissions && !settings.manualLocOn) {
-            Log.d("EarthquakeMapContent", "Default location on, set marker at : $DEFAULT_POSITION")
             val markerState = rememberMarkerState(position = DEFAULT_POSITION)
 
             // Update marker position when it changes
@@ -228,7 +220,6 @@ fun EarthquakeMapContent(
 
         // Manual location marker (if enabled)
         if (settings.manualLocOn) {
-            Log.d("EarthquakeMapContent", "Manual location on, set marker at : ${settings.manualPosition}")
             val markerState = rememberMarkerState(position = settings.manualPosition)
             
             // Update marker position when it changes

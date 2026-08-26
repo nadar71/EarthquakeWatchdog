@@ -2,6 +2,9 @@ package com.indiewalk.watchdog.earthquake.feat_statistics.presentation.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.indiewalk.watchdog.earthquake.core.diagnostics.AppDiagnostics
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticCategory
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticEvent
 import com.indiewalk.watchdog.earthquake.core.domain.model.AppError
 import com.indiewalk.watchdog.earthquake.core.domain.repository.AppPreferencesRepository
 import com.indiewalk.watchdog.earthquake.feat_statistics.domain.use_cases.LoadEarthquakeStatisticsUseCase
@@ -47,6 +50,7 @@ class StatisticsViewModel @Inject constructor(
     }
 
     private fun load(forceRefresh: Boolean) {
+        AppDiagnostics.breadcrumb(DiagnosticEvent.STATISTICS_LOAD_REQUESTED)
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
             _uiState.update { current ->
@@ -72,6 +76,7 @@ class StatisticsViewModel @Inject constructor(
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Exception) {
+                AppDiagnostics.recordNonFatal(DiagnosticCategory.STATISTICS, error)
                 _uiState.update { current ->
                     current.copy(
                         isInitialLoading = false,
