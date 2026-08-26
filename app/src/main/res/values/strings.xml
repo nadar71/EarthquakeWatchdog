@@ -240,5 +240,8 @@
     <string name="statistics_depth_shallow">Shallow · under 70 km</string>
     <string name="statistics_depth_intermediate">Intermediate · 70–300 km</string>
     <string name="statistics_depth_deep">Deep · over 300 km</string>
+    <string name="statistics_axis_dates_cd">Dates: %1$s</string>
+    <string name="statistics_axis_count_cd">Earthquake count: 0 to %1$d</string>
+    <string name="statistics_axis_y_title">Earthquakes</string>
 
 </resources>

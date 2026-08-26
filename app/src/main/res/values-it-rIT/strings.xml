@@ -219,5 +219,8 @@
     <string name="statistics_depth_shallow">Superficiali · meno di 70 km</string>
     <string name="statistics_depth_intermediate">Intermedi · 70–300 km</string>
     <string name="statistics_depth_deep">Profondi · oltre 300 km</string>
+    <string name="statistics_axis_dates_cd">Date: %1$s</string>
+    <string name="statistics_axis_count_cd">Numero di terremoti: da 0 a %1$d</string>
+    <string name="statistics_axis_y_title">Terremoti</string>
 
 </resources>

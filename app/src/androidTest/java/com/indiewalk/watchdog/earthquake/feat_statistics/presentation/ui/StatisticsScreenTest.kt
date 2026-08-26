@@ -2,6 +2,8 @@ package com.indiewalk.watchdog.earthquake.feat_statistics.presentation.ui
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.assertContentDescriptionEquals
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -89,6 +91,12 @@ class StatisticsScreenTest {
         composeRule.onNodeWithContentDescription(
             "Global activity over 30 days: 12 earthquakes, peak 5 in one day."
         ).assertExists()
+        composeRule.onNodeWithTag("statistics-global-trend-x-axis")
+            .assertContentDescriptionEquals("Dates: 15 Jul, 22 Jul, 29 Jul, 5 Aug, 13 Aug")
+        composeRule.onNodeWithTag("statistics-global-trend-y-axis")
+            .assertContentDescriptionEquals("Earthquake count: 0 to 5")
+        composeRule.onNodeWithTag("statistics-global-trend-y-axis-title")
+            .assertTextEquals("Earthquakes")
         scrollTo("statistics-magnitude-distribution")
         composeRule.onNodeWithTag("statistics-magnitude-distribution").assertExists()
         scrollTo("statistics-depth-distribution")
@@ -98,6 +106,12 @@ class StatisticsScreenTest {
         composeRule.onNodeWithText("Italy · 4", substring = true).assertExists()
         scrollTo("statistics-nearby-trend")
         composeRule.onNodeWithTag("statistics-nearby-trend").assertExists()
+        composeRule.onNodeWithTag("statistics-nearby-trend-x-axis")
+            .assertContentDescriptionEquals("Dates: 15 Jul, 22 Jul, 29 Jul, 5 Aug, 13 Aug")
+        composeRule.onNodeWithTag("statistics-nearby-trend-y-axis")
+            .assertContentDescriptionEquals("Earthquake count: 0 to 5")
+        composeRule.onNodeWithTag("statistics-nearby-trend-y-axis-title")
+            .assertTextEquals("Earthquakes")
     }
 
     @Test
@@ -183,8 +197,10 @@ class StatisticsScreenTest {
         )
     )
 
-    private fun trend(vararg counts: Int): List<TrendPoint> = counts.mapIndexed { index, count ->
-        val start = now.minusSeconds((counts.size - index).toLong() * 86_400)
+    private fun trend(vararg trailingCounts: Int): List<TrendPoint> = List(30) { index ->
+        val start = now.minusSeconds((30 - index).toLong() * 86_400)
+        val firstCountIndex = 30 - trailingCounts.size
+        val count = trailingCounts.getOrElse(index - firstCountIndex) { 0 }
         TrendPoint(start, start.plusSeconds(86_400), count)
     }
 }
