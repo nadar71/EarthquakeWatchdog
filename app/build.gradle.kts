@@ -134,10 +134,6 @@ tasks.register("validateReleaseSecrets") {
     }
 }
 
-tasks.matching { it.name == "preReleaseBuild" }.configureEach {
-    dependsOn("validateReleaseSecrets")
-}
-
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }

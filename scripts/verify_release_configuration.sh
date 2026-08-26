@@ -51,7 +51,6 @@ require_text "$BUILD_FILE" "isMinifyEnabled = true" "release minification"
 require_text "$BUILD_FILE" "isShrinkResources = true" "release resource shrinking"
 require_absent_text "$BUILD_FILE" "implementation(libs.androidx.ui.tooling)" "release Compose preview tooling"
 require_text "$BUILD_FILE" "tasks.register(\"validateReleaseSecrets\")" "release secret validation task"
-require_text "$BUILD_FILE" "dependsOn(\"validateReleaseSecrets\")" "pre-release secret validation dependency"
 require_text "$BUILD_FILE" "validateReleaseTaskGraph()" "task-graph release secret validation"
 
 for secret_name in release_keyAlias release_keyPassword release_storeFile release_storePassword MAPS_API_KEY_RELEASE; do
@@ -156,14 +155,19 @@ for release_task in :app:bundleRelease :app:bundle :app:assemble :app:bundleR; d
     expect_release_configuration_failure "$release_task"
 done
 
-for non_packaging_task in :app:assembleDebug :app:lintRelease; do
-    if ! "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
-        -PreleaseSecretsFile="$EMPTY_SECRETS_FILE" \
-        "$non_packaging_task" --dry-run --offline > "$TEMP_DIRECTORY/${non_packaging_task//[:]/_}.log" 2>&1; then
-        printf 'FAIL: %s unexpectedly required release secrets\n' "$non_packaging_task" >&2
-        exit 1
-    fi
-done
+if ! "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
+    -PreleaseSecretsFile="$EMPTY_SECRETS_FILE" \
+    :app:assembleDebug --dry-run --offline > "$TEMP_DIRECTORY/assemble-debug.log" 2>&1; then
+    printf 'FAIL: :app:assembleDebug unexpectedly required release secrets\n' >&2
+    exit 1
+fi
+
+if ! "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
+    -PreleaseSecretsFile="$EMPTY_SECRETS_FILE" \
+    :app:lintRelease --offline > "$TEMP_DIRECTORY/lint-release.log" 2>&1; then
+    printf 'FAIL: :app:lintRelease unexpectedly required release secrets\n' >&2
+    exit 1
+fi
 
 if ! command -v keytool >/dev/null 2>&1; then
     printf 'FAIL: keytool is required for release configuration verification\n' >&2
