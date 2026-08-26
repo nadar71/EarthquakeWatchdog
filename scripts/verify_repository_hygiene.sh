@@ -24,73 +24,109 @@ check_executable_source() {
     # Strip comments and quoted literals before checking executable Kotlin/Java calls.
     matches=$(rg --files -g '*.kt' -g '*.java' "$SOURCE_DIRECTORY" \
         | while IFS= read -r file; do
-            LC_ALL=C perl -ne '
-                BEGIN {
-                    $block_comment = 0;
-                    $triple_quote = 0;
-                    $line_number = 0;
-                    $double_quote = chr(34);
-                    $single_quote = chr(39);
-                    $backslash = chr(92);
+            LC_ALL=C perl -e '
+                $source = do { local $/; <> };
+                @characters = split //, $source;
+                @output = map { $_ eq "\n" ? "\n" : " " } @characters;
+                $double_quote = chr(34);
+                $single_quote = chr(39);
+                $backslash = chr(92);
+                $dollar = chr(36);
+
+                sub mark_code {
+                    $output[$_[0]] = $characters[$_[0]];
                 }
-                $line_number++;
-                $raw_line = $_;
-                $code = "";
-                for ($index = 0; $index < length($raw_line); ) {
-                    if ($block_comment) {
-                        if (substr($raw_line, $index, 2) eq "*/") {
-                            $block_comment = 0;
-                            $index += 2;
-                        } else {
-                            $index++;
-                        }
-                        next;
-                    }
-                    if ($triple_quote) {
-                        if (substr($raw_line, $index, 3) eq $double_quote x 3) {
-                            $triple_quote = 0;
-                            $index += 3;
-                        } else {
-                            $index++;
-                        }
-                        next;
-                    }
-                    if (substr($raw_line, $index, 2) eq "//") {
-                        last;
-                    }
-                    if (substr($raw_line, $index, 2) eq "/*") {
-                        $block_comment = 1;
-                        $index += 2;
-                        next;
-                    }
-                    if (substr($raw_line, $index, 3) eq $double_quote x 3) {
-                        $triple_quote = 1;
-                        $index += 3;
-                        next;
-                    }
-                    $character = substr($raw_line, $index, 1);
-                    if ($character eq $double_quote || $character eq $single_quote) {
-                        $quote = $character;
-                        $index++;
-                        while ($index < length($raw_line)) {
-                            $character = substr($raw_line, $index, 1);
-                            $index++;
-                            if ($character eq $backslash) {
-                                $index++;
-                                next;
-                            }
-                            last if $character eq $quote;
-                        }
-                        next;
-                    }
-                    $code .= $character;
+
+                sub scan_character_literal {
+                    my ($index) = @_;
                     $index++;
+                    while ($index < @characters) {
+                        $character = $characters[$index++];
+                        if ($character eq $backslash) {
+                            $index++;
+                            next;
+                        }
+                        return $index if $character eq $single_quote;
+                    }
+                    return $index;
                 }
-                if ($code =~ /(?<![[:alnum:]_])(TODO|println|printStackTrace)\s*\(/) {
-                    print "$ARGV:$line_number:$raw_line";
+
+                sub scan_string {
+                    my ($index, $raw_string) = @_;
+                    $index += $raw_string ? 3 : 1;
+                    while ($index < @characters) {
+                        if ($raw_string && join("", @characters[$index .. $index + 2]) eq $double_quote x 3) {
+                            return $index + 3;
+                        }
+                        $character = $characters[$index];
+                        if (!$raw_string && $character eq $double_quote) {
+                            return $index + 1;
+                        }
+                        if (!$raw_string && $character eq $backslash) {
+                            $index += 2;
+                            next;
+                        }
+                        if ($character eq $dollar && $characters[$index + 1] eq "{") {
+                            $index = scan_code($index + 2, 1);
+                            next;
+                        }
+                        $index++;
+                    }
+                    return $index;
+                }
+
+                sub scan_code {
+                    my ($index, $stop_at_template_end) = @_;
+                    $template_brace_depth = 0;
+                    while ($index < @characters) {
+                        if (join("", @characters[$index .. $index + 1]) eq "//") {
+                            $index += 2;
+                            $index++ while $index < @characters && $characters[$index] ne "\n";
+                            next;
+                        }
+                        if (join("", @characters[$index .. $index + 1]) eq "/*") {
+                            $index += 2;
+                            $index++ while $index < @characters - 1 && join("", @characters[$index .. $index + 1]) ne "*/";
+                            $index += 2 if $index < @characters - 1;
+                            next;
+                        }
+                        if (join("", @characters[$index .. $index + 2]) eq $double_quote x 3) {
+                            $index = scan_string($index, 1);
+                            next;
+                        }
+                        $character = $characters[$index];
+                        if ($character eq $double_quote) {
+                            $index = scan_string($index, 0);
+                            next;
+                        }
+                        if ($character eq $single_quote) {
+                            $index = scan_character_literal($index);
+                            next;
+                        }
+                        if ($stop_at_template_end && $character eq "}" && $template_brace_depth == 0) {
+                            return $index + 1;
+                        }
+                        if ($stop_at_template_end && $character eq "{") {
+                            $template_brace_depth++;
+                        } elsif ($stop_at_template_end && $character eq "}") {
+                            $template_brace_depth--;
+                        }
+                        mark_code($index);
+                        $index++;
+                    }
+                    return $index;
+                }
+
+                scan_code(0, 0);
+                @raw_lines = split /\n/, $source, -1;
+                @code_lines = split /\n/, join("", @output), -1;
+                for ($line_number = 0; $line_number < @raw_lines; $line_number++) {
+                    if ($code_lines[$line_number] =~ /(?<![[:alnum:]_])(TODO|println|printStackTrace)\s*\(/) {
+                        print "$ARGV:" . ($line_number + 1) . ":$raw_lines[$line_number]\n";
+                    }
                 }
             ' "$file"
-        done || true)
+        done)
     if [[ -n "$matches" ]]; then
         report_failure "executable TODO, println, or printStackTrace" "$matches"
     fi
