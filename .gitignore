@@ -96,13 +96,12 @@ build/
 
 # Local configuration file (sdk path, etc)
 local.properties
-google_maps_api.xml
-admob_key.xml
-keystore.properties
-ads_key_ids.xml
 
 # Production credentials and decoded CI signing material
 **/google-services.json
+**/google_maps_api.xml
+**/admob_key.xml
+**/ads_key_ids.xml
 **/keystore.properties
 *.jks
 *.keystore
@@ -116,6 +115,7 @@ proguard/
 # Release and benchmark outputs. Keep source baseline profiles and Room schemas tracked.
 *.aab
 *.apks
+*.ap_
 *.dm
 benchmarkData.json
 *.trace
