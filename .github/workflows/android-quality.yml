@@ -11,8 +11,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: android-quality-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: android-quality-${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
 
 jobs:
   repository-hygiene:

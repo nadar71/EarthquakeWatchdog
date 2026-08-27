@@ -104,17 +104,24 @@ class GitHubActionsContractTest(unittest.TestCase):
             self.assertEqual(job.count(kvm_setup), 1)
             self.assertLess(job.index(kvm_setup), job.index(emulator_runner))
 
-    def test_instrumentation_concurrency_isolated_by_event_type(self) -> None:
-        self.assertIn(
-            "group: android-instrumentation-${{ github.workflow }}-"
-            "${{ github.event_name }}-${{ github.ref }}",
-            self.instrumentation,
-        )
-        self.assertIn(
-            "cancel-in-progress: ${{ github.event_name == 'pull_request' || "
-            "github.event_name == 'push' }}",
-            self.instrumentation,
-        )
+    def test_workflow_concurrency_isolates_manual_runs_from_pushes(self) -> None:
+        workflows = {
+            "android-quality": self.quality,
+            "android-instrumentation": self.instrumentation,
+        }
+
+        for workflow_name, workflow in workflows.items():
+            with self.subTest(workflow=workflow_name):
+                self.assertIn(
+                    f"group: {workflow_name}-${{{{ github.workflow }}}}-"
+                    "${{ github.event_name }}-${{ github.ref }}",
+                    workflow,
+                )
+                self.assertIn(
+                    "cancel-in-progress: ${{ github.event_name == 'pull_request' || "
+                    "github.event_name == 'push' }}",
+                    workflow,
+                )
 
     def test_benchmark_monitoring_is_non_blocking_and_checks_task_7_outputs(self) -> None:
         self.assertRegex(
