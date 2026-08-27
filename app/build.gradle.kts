@@ -109,6 +109,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["MAPS_API_KEY"] = ""
+        manifestPlaceholders["EXTERNAL_SDK_AUTO_INIT_ENABLED"] = "true"
     }
 
     buildTypes {
@@ -154,6 +155,15 @@ android {
         buildConfig = true
     }
     sourceSets["androidTest"].assets.srcDir("$projectDir/schemas")
+}
+
+androidComponents {
+    onVariants { variant ->
+        if (variant.name == "nonMinifiedRelease") {
+            variant.manifestPlaceholders.put("EXTERNAL_SDK_AUTO_INIT_ENABLED", "false")
+            variant.manifestPlaceholders.put("CRASHLYTICS_COLLECTION_ENABLED", "false")
+        }
+    }
 }
 
 tasks.register("validateReleaseSecrets") {

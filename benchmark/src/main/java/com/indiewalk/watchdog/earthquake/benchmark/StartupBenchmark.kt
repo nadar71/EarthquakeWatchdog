@@ -25,6 +25,6 @@ class StartupBenchmark {
         startupMode = StartupMode.COLD
     ) {
         startActivityAndWait()
-        device.waitForSelector("benchmark-home-list")
+        device.waitForSelector("earthquake-list-content")
     }
 }

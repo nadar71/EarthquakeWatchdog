@@ -13,12 +13,15 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.indiewalk.watchdog.earthquake.R
 
 private data class BottomBarItem(
     val destination: AppDestination,
     val label: String,
+    val testTag: String,
     val icon: @Composable () -> Unit
 )
 
@@ -31,16 +34,19 @@ fun AppBottomBar(
         BottomBarItem(
             destination = AppDestination.Home,
             label = stringResource(R.string.nav_bottom_home_desc),
+            testTag = "bottom-nav-home",
             icon = { Icon(Icons.Filled.Home, contentDescription = stringResource(R.string.nav_bottom_home_desc)) }
         ),
         BottomBarItem(
             destination = AppDestination.Map(),
             label = stringResource(R.string.maps_title_bottom_nav),
+            testTag = "bottom-nav-map",
             icon = { Icon(Icons.Filled.Map, contentDescription = stringResource(R.string.nav_bottom_eqs_desc)) }
         ),
         BottomBarItem(
             destination = AppDestination.Statistics,
             label = stringResource(R.string.statistics_title),
+            testTag = "bottom-nav-statistics",
             icon = {
                 Icon(
                     Icons.Filled.QueryStats,
@@ -51,6 +57,7 @@ fun AppBottomBar(
         BottomBarItem(
             destination = AppDestination.Settings,
             label = stringResource(R.string.settings_title),
+            testTag = "bottom-nav-settings",
             icon = { Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.nav_bottom_settings_desc)) }
         )
     )
@@ -62,6 +69,7 @@ fun AppBottomBar(
         items.forEach { item ->
             val selected = currentDestination.matches(item.destination)
             NavigationBarItem(
+                modifier = Modifier.testTag(item.testTag),
                 selected = selected,
                 onClick = {
                     if (!selected) {

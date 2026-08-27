@@ -6,6 +6,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.ads.MobileAds
 import com.indiewalk.watchdog.earthquake.EarthquakeApp
@@ -27,8 +30,20 @@ class MainActivity() : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        BenchmarkRuntime.createScreenOrNull()?.let { benchmarkScreen ->
-            setContent { benchmarkScreen.Content() }
+        BenchmarkRuntime.screenFactoryOrNull()?.let { benchmarkScreenFactory ->
+            setContent {
+                EQWatchdogTheme(darkTheme = false) {
+                    androidx.compose.foundation.layout.Box(
+                        modifier = Modifier.semantics { testTagsAsResourceId = true }
+                    ) {
+                        val navigator = rememberAppNavigator()
+                        AppNavigationHost(
+                            navigator = navigator,
+                            screenFactory = benchmarkScreenFactory
+                        )
+                    }
+                }
+            }
             return
         }
 

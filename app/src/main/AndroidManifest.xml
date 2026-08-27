@@ -46,6 +46,18 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
+        <provider
+            android:name="com.google.android.gms.ads.MobileAdsInitProvider"
+            android:enabled="${EXTERNAL_SDK_AUTO_INIT_ENABLED}"
+            android:authorities="${applicationId}.mobileadsinitprovider"
+            android:exported="false" />
+        <provider
+            android:name="com.google.firebase.provider.FirebaseInitProvider"
+            android:enabled="${EXTERNAL_SDK_AUTO_INIT_ENABLED}"
+            android:authorities="${applicationId}.firebaseinitprovider"
+            android:directBootAware="true"
+            android:exported="false"
+            android:initOrder="100" />
     </application>
 
 </manifest>

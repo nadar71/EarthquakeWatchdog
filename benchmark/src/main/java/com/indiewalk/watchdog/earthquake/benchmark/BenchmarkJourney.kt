@@ -17,7 +17,7 @@ internal fun UiDevice.startBenchmarkApp() {
             addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
     )
-    waitForSelector("benchmark-home-list")
+    waitForSelector("earthquake-list-content")
 }
 
 internal fun UiDevice.waitForSelector(tag: String) {

@@ -22,23 +22,23 @@ class BaselineProfileGenerator {
     ) {
         pressHome()
         startActivityAndWait()
-        device.waitForSelector("benchmark-home-list")
+        device.waitForSelector("earthquake-list-content")
     }
 
     @Test
     fun coreJourneys() = baselineProfileRule.collect(packageName = TARGET_PACKAGE) {
         pressHome()
         startActivityAndWait()
-        device.tap("benchmark-filter-open")
-        device.waitForSelector("benchmark-filter-sheet")
+        device.tap("earthquake-list-filter")
+        device.waitForSelector("filter-sheet-content")
 
-        device.tap("benchmark-nav-map")
-        device.tap("benchmark-map-marker")
-        device.waitForSelector("benchmark-map-marker-detail")
+        device.tap("bottom-nav-map")
+        device.tap("map-earthquake-marker")
+        device.waitForSelector("map-selected-earthquake-detail")
 
-        device.tap("benchmark-nav-statistics")
-        device.waitForSelector("benchmark-statistics-content")
-        device.tap("benchmark-nav-settings")
-        device.waitForSelector("benchmark-settings-content")
+        device.tap("bottom-nav-statistics")
+        device.waitForSelector("statistics-list")
+        device.tap("bottom-nav-settings")
+        device.waitForSelector("settings-content")
     }
 }

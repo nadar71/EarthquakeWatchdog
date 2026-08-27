@@ -24,7 +24,7 @@ unzip -p "$AAB" 'base/dex/classes*.dex' > "$TEMP_DIRECTORY/release-aab.dex"
 for dex_file in "$TEMP_DIRECTORY/release-apk.dex" "$TEMP_DIRECTORY/release-aab.dex"; do
     strings "$dex_file" > "$dex_file.strings"
 
-    if grep -E -q 'BenchmarkHarness|benchmark-(home|filter|map|statistics|settings)' "$dex_file.strings"; then
+    if grep -E -q 'BenchmarkHarness|BenchmarkAppNavigationScreenFactory|benchmark-earthquake-|benchmark-(home|filter|map|statistics|settings)' "$dex_file.strings"; then
         printf 'FAIL: benchmark-only implementation leaked into %s\n' "$(basename "$dex_file")" >&2
         exit 1
     fi

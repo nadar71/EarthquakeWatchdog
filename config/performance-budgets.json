@@ -1,0 +1,37 @@
+{
+  "minimumIterations": 10,
+  "benchmarks": {
+    "StartupBenchmark#coldStartup": {
+      "timeToInitialDisplayMs.median": 825.292,
+      "timeToInitialDisplayMs.maximum": 1418.983
+    },
+    "CoreJourneyBenchmark#listScroll": {
+      "frameDurationCpuMs.P50": 37.564,
+      "frameDurationCpuMs.P90": 49.566,
+      "frameDurationCpuMs.P95": 56.591,
+      "frameDurationCpuMs.P99": 77.385,
+      "frameOverrunMs.P50": 19.107,
+      "frameOverrunMs.P90": 41.616,
+      "frameOverrunMs.P95": 56.945,
+      "frameOverrunMs.P99": 87.326,
+      "memoryHeapSizeMaxKb.median": 15006.250,
+      "memoryHeapSizeMaxKb.maximum": 23345.000,
+      "memoryRssAnonMaxKb.median": 77535.000,
+      "memoryRssAnonMaxKb.maximum": 84610.000
+    },
+    "CoreJourneyBenchmark#topLevelNavigation": {
+      "frameDurationCpuMs.P50": 36.398,
+      "frameDurationCpuMs.P90": 56.137,
+      "frameDurationCpuMs.P95": 58.731,
+      "frameDurationCpuMs.P99": 74.105,
+      "frameOverrunMs.P50": 19.110,
+      "frameOverrunMs.P90": 44.514,
+      "frameOverrunMs.P95": 56.946,
+      "frameOverrunMs.P99": 70.422,
+      "memoryHeapSizeMaxKb.median": 14199.375,
+      "memoryHeapSizeMaxKb.maximum": 21831.250,
+      "memoryRssAnonMaxKb.median": 76462.500,
+      "memoryRssAnonMaxKb.maximum": 81725.000
+    }
+  }
+}
