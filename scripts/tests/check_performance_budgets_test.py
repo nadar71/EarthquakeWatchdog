@@ -69,22 +69,34 @@ class PerformanceBudgetCheckerTest(unittest.TestCase):
             ],
             {
                 "minimumIterations": 10,
-                "benchmarks": {
+                "enforcedBudgets": {
                     "StartupBenchmark#coldStartup": {
                         "timeToInitialDisplayMs.median": 1_000.0,
                     },
                     "CoreJourneyBenchmark#listScroll": {
                         "frameDurationCpuMs.P50": 40.0,
-                        "frameDurationCpuMs.P95": 100.0,
-                        "frameOverrunMs.P95": 60.0,
-                        "memoryRssAnonMaxKb.median": 140_000.0,
+                        "frameOverrunMs.P50": 60.0,
                     },
+                },
+                "observations": {
+                    "CoreJourneyBenchmark#listScroll": [
+                        "frameDurationCpuMs.P95",
+                        "memoryRssAnonMaxKb.median",
+                    ]
                 },
             },
         )
 
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertIn("Performance budget verification passed", result.stdout)
+        self.assertIn(
+            "OBSERVE: CoreJourneyBenchmark#listScroll frameDurationCpuMs.P95: 80.000",
+            result.stdout,
+        )
+        self.assertIn(
+            "OBSERVE: CoreJourneyBenchmark#listScroll memoryRssAnonMaxKb.median: 120000.000",
+            result.stdout,
+        )
 
     def test_fails_when_a_metric_exceeds_its_budget(self) -> None:
         result = self.run_checker(
@@ -97,11 +109,12 @@ class PerformanceBudgetCheckerTest(unittest.TestCase):
             ],
             {
                 "minimumIterations": 10,
-                "benchmarks": {
+                "enforcedBudgets": {
                     "StartupBenchmark#coldStartup": {
                         "timeToInitialDisplayMs.median": 1_000.0,
                     }
                 },
+                "observations": {},
             },
         )
 
@@ -113,16 +126,70 @@ class PerformanceBudgetCheckerTest(unittest.TestCase):
             [],
             {
                 "minimumIterations": 10,
-                "benchmarks": {
+                "enforcedBudgets": {
                     "StartupBenchmark#coldStartup": {
                         "timeToInitialDisplayMs.median": 1_000.0,
                     }
                 },
+                "observations": {},
             },
         )
 
         self.assertNotEqual(0, result.returncode)
         self.assertIn("missing benchmark", result.stderr.lower())
+
+    def test_observed_metrics_are_required_but_never_compared_to_a_limit(self) -> None:
+        result = self.run_checker(
+            [
+                benchmark(
+                    "listScroll",
+                    "com.example.CoreJourneyBenchmark",
+                    {},
+                    {"frameDurationCpuMs": {"P99": 99_999.0}},
+                )
+            ],
+            {
+                "minimumIterations": 10,
+                "enforcedBudgets": {},
+                "observations": {
+                    "CoreJourneyBenchmark#listScroll": [
+                        "frameDurationCpuMs.P99",
+                    ]
+                },
+            },
+        )
+
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn("frameDurationCpuMs.P99: 99999.000", result.stdout)
+
+        missing_result = self.run_checker(
+            [benchmark("listScroll", "com.example.CoreJourneyBenchmark", {})],
+            {
+                "minimumIterations": 10,
+                "enforcedBudgets": {},
+                "observations": {
+                    "CoreJourneyBenchmark#listScroll": [
+                        "frameDurationCpuMs.P99",
+                    ]
+                },
+            },
+        )
+
+        self.assertNotEqual(0, missing_result.returncode)
+        self.assertIn("missing metric frameDurationCpuMs", missing_result.stderr)
+
+    def test_rejects_legacy_or_incomplete_budget_schema(self) -> None:
+        result = self.run_checker(
+            [],
+            {
+                "minimumIterations": 10,
+                "benchmarks": {},
+            },
+        )
+
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("enforcedBudgets", result.stderr)
+        self.assertIn("observations", result.stderr)
 
 
 if __name__ == "__main__":

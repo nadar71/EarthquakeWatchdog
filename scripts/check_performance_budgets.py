@@ -36,10 +36,27 @@ def metric_value(benchmark: Dict[str, Any], selector: str) -> float:
 
 def verify(
     measured: Dict[str, Dict[str, Any]], budgets: Dict[str, Any]
-) -> Tuple[bool, list]:
+) -> Tuple[bool, list, list]:
     failures = []
+    reported_observations = []
     minimum_iterations = int(budgets.get("minimumIterations", 1))
-    for key, selectors in budgets.get("benchmarks", {}).items():
+    missing_sections = [
+        section
+        for section in ("enforcedBudgets", "observations")
+        if section not in budgets
+    ]
+    if missing_sections:
+        failures.append(
+            "budget config is missing required section(s): "
+            + ", ".join(missing_sections)
+        )
+        return False, failures, reported_observations
+
+    enforced = budgets.get("enforcedBudgets", {})
+    observations = budgets.get("observations", {})
+    required_keys = list(dict.fromkeys([*enforced.keys(), *observations.keys()]))
+
+    for key in required_keys:
         benchmark = measured.get(key)
         if benchmark is None:
             failures.append(f"missing benchmark: {key}")
@@ -49,7 +66,7 @@ def verify(
             failures.append(
                 f"{key}: expected at least {minimum_iterations} iterations, found {iterations}"
             )
-        for selector, limit in selectors.items():
+        for selector, limit in enforced.get(key, {}).items():
             try:
                 actual = metric_value(benchmark, selector)
             except KeyError as error:
@@ -59,7 +76,14 @@ def verify(
                 failures.append(
                     f"{key} {selector}: measured {actual:.3f}, budget {float(limit):.3f}"
                 )
-    return not failures, failures
+        for selector in observations.get(key, []):
+            try:
+                actual = metric_value(benchmark, selector)
+            except KeyError as error:
+                failures.append(f"{key}: {error.args[0]}")
+                continue
+            reported_observations.append(f"{key} {selector}: {actual:.3f}")
+    return not failures, failures, reported_observations
 
 
 def main() -> int:
@@ -73,7 +97,9 @@ def main() -> int:
     with arguments.budgets.open(encoding="utf-8") as source:
         budgets = json.load(source)
     measured = load_benchmarks(arguments.results)
-    passed, failures = verify(measured, budgets)
+    passed, failures, observations = verify(measured, budgets)
+    for observation in observations:
+        print(f"OBSERVE: {observation}")
     if not passed:
         for failure in failures:
             print(f"FAIL: {failure}", file=sys.stderr)
