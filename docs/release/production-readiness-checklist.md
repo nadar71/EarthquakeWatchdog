@@ -208,7 +208,7 @@ Task 10 adds:
 
 | Area | Status | Evidence |
 | --- | --- | --- |
-| Foreground location scope | `CODE-VERIFIED` | Fine/coarse permissions exist; no background permission/service exists; intro disclosure precedes the permission launcher. Approximate-only device behavior remains pending. |
+| Foreground location scope | `CODE-VERIFIED` | Fine/coarse permissions exist and `ACCESS_BACKGROUND_LOCATION` is not declared; there is no app-authored foreground service or background-location worker. The merged release manifest includes WorkManager's dependency-provided `SystemForegroundService`, which does not by itself imply background-location access or use. Intro disclosure precedes the permission launcher. Approximate-only device behavior remains pending. |
 | Local retention/backups | `CODE-VERIFIED` | Exact user/manual position and reverse-geocoded text persist in DataStore; earthquake/statistics data persist in Room; database/preferences/shared preferences/cache are excluded from backup/transfer and clear storage/uninstall deletes them. |
 | First-party network | `CODE-VERIFIED` | USGS HTTPS queries do not include selected user/manual coordinates; Maps, Geocoder, Ads/UMP, Crashlytics, and Play Services retain separate SDK disclosure obligations. |
 | Diagnostics sanitization | `CODE-VERIFIED` | App-added categories/types exclude messages, causes, caller frames, coordinates, addresses, consent values, and ad IDs; automatic SDK metadata still requires declaration. |
