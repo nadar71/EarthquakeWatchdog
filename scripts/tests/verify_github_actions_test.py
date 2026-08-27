@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[2]
 QUALITY = ROOT / ".github" / "workflows" / "android-quality.yml"
 INSTRUMENTATION = ROOT / ".github" / "workflows" / "android-instrumentation.yml"
 SETUP = ROOT / ".github" / "actions" / "setup-android" / "action.yml"
+ENABLE_KVM = ROOT / ".github" / "actions" / "enable-kvm" / "action.yml"
 
 
 class GitHubActionsContractTest(unittest.TestCase):
@@ -17,8 +18,11 @@ class GitHubActionsContractTest(unittest.TestCase):
         cls.quality = QUALITY.read_text(encoding="utf-8")
         cls.instrumentation = INSTRUMENTATION.read_text(encoding="utf-8")
         cls.setup = SETUP.read_text(encoding="utf-8")
+        cls.enable_kvm = (
+            ENABLE_KVM.read_text(encoding="utf-8") if ENABLE_KVM.exists() else ""
+        )
         cls.all_configuration = "\n".join(
-            (cls.quality, cls.instrumentation, cls.setup)
+            (cls.quality, cls.instrumentation, cls.setup, cls.enable_kvm)
         )
 
     def test_required_pull_request_check_names_are_stable(self) -> None:
@@ -77,6 +81,38 @@ class GitHubActionsContractTest(unittest.TestCase):
         self.assertIn(
             "if: github.event_name != 'pull_request' && "
             "steps.api-35-avd-cache.outputs.cache-hit != 'true'",
+            self.instrumentation,
+        )
+
+    def test_every_emulator_job_enables_linux_kvm_access(self) -> None:
+        emulator_runner = "uses: reactivecircus/android-emulator-runner@"
+        kvm_setup = "uses: ./.github/actions/enable-kvm"
+
+        self.assertIn("shell: bash", self.enable_kvm)
+        self.assertIn("set -euo pipefail", self.enable_kvm)
+        self.assertIn("sudo tee /etc/udev/rules.d/99-kvm4all.rules", self.enable_kvm)
+        self.assertIn("sudo udevadm control --reload-rules", self.enable_kvm)
+        self.assertIn("sudo udevadm trigger --name-match=kvm", self.enable_kvm)
+
+        job_blocks = re.findall(
+            r"(?ms)^  [A-Za-z0-9_-]+:\n.*?(?=^  [A-Za-z0-9_-]+:\n|\Z)",
+            self.instrumentation,
+        )
+        emulator_jobs = [job for job in job_blocks if emulator_runner in job]
+        self.assertTrue(emulator_jobs)
+        for job in emulator_jobs:
+            self.assertEqual(job.count(kvm_setup), 1)
+            self.assertLess(job.index(kvm_setup), job.index(emulator_runner))
+
+    def test_instrumentation_concurrency_isolated_by_event_type(self) -> None:
+        self.assertIn(
+            "group: android-instrumentation-${{ github.workflow }}-"
+            "${{ github.event_name }}-${{ github.ref }}",
+            self.instrumentation,
+        )
+        self.assertIn(
+            "cancel-in-progress: ${{ github.event_name == 'pull_request' || "
+            "github.event_name == 'push' }}",
             self.instrumentation,
         )
 

@@ -13,8 +13,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: android-instrumentation-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: android-instrumentation-${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
 
 jobs:
   instrumentation:
@@ -24,6 +24,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Enable Linux KVM access
+        uses: ./.github/actions/enable-kvm
 
       - name: Set up Android build
         uses: ./.github/actions/setup-android
@@ -81,6 +84,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
+      - name: Enable Linux KVM access
+        uses: ./.github/actions/enable-kvm
+
       - name: Set up Android build
         uses: ./.github/actions/setup-android
 
@@ -133,6 +139,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Enable Linux KVM access
+        uses: ./.github/actions/enable-kvm
 
       - name: Set up Android build
         uses: ./.github/actions/setup-android

@@ -38,6 +38,12 @@ pull requests therefore run only against public repository content. Artifact
 uploads use GitHub's job-scoped artifact token and do not require a broader
 repository permission.
 
+Every Ubuntu emulator job runs the shared local `enable-kvm` composite action
+after checkout and before `android-emulator-runner`. The action installs the
+runner-recommended udev rule for `/dev/kvm`, reloads the rules, and triggers the
+KVM device so hardware acceleration is available consistently without copying
+privileged shell commands across jobs.
+
 ### Required Pull-Request Checks
 
 | Check | Trigger | Command / coverage | Artifact policy |
@@ -65,6 +71,11 @@ The job has `continue-on-error: true`: cloud-emulator timing variance is visible
 but cannot become a noisy required pull-request check. A failed structural
 profile or benchmark check still appears in that job and its artifact.
 
+Instrumentation concurrency includes the GitHub event type as well as the ref.
+Only pull-request and push runs cancel an older run in their own event group;
+scheduled and manually dispatched compatibility/benchmark runs are never
+canceled by a push to `develop`.
+
 ### Immutable Action Pins
 
 Pins were resolved from the official upstream Git repositories with
@@ -87,7 +98,7 @@ use a repository-relative path.
 
 | Verification | Command | Result |
 | --- | --- | --- |
-| Structural workflow contract | `python3 scripts/tests/verify_github_actions_test.py` | Passed: 8 tests verify names, permissions, pins, commands, triggers, API coverage, benchmark policy, artifacts, and secret absence. |
+| Structural workflow contract | `python3 scripts/tests/verify_github_actions_test.py` | Passed: 10 tests verify names, permissions, pins, commands, triggers, API coverage, KVM setup, concurrency isolation, benchmark policy, artifacts, and secret absence. |
 | YAML parsing | Ruby `YAML.safe_load` for both workflows and the composite action | Parsed successfully. |
 | GitHub Actions semantics | Checksum-verified `actionlint 1.7.12` binary from the official release | Both workflows passed. The binary was used from a temporary directory and was not committed. |
 | Action pin provenance | `git ls-remote` against each official upstream repository and version tag | Every configured SHA matched its tag or peeled annotated-tag commit. |
