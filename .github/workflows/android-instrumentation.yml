@@ -1,0 +1,211 @@
+name: Android Instrumentation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - develop
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-instrumentation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  instrumentation:
+    name: instrumentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Android build
+        uses: ./.github/actions/setup-android
+
+      - name: Restore API 35 emulator cache
+        id: api-35-avd-cache
+        uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        with:
+          path: ~/.android/avd
+          key: avd-v1-${{ runner.os }}-api-35
+
+      - name: Run API 35 instrumentation suite
+        uses: reactivecircus/android-emulator-runner@1dcd0090116d15e7c562f8db72807de5e036a4ed # v2.34.0
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          cores: 2
+          ram-size: 4096M
+          force-avd-creation: false
+          disable-animations: true
+          disable-linux-hw-accel: false
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -accel on
+          script: ./gradlew :app:connectedDebugAndroidTest
+
+      - name: Save API 35 emulator cache
+        if: github.event_name != 'pull_request' && steps.api-35-avd-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        with:
+          path: ~/.android/avd
+          key: avd-v1-${{ runner.os }}-api-35
+
+      - name: Upload API 35 instrumentation reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: instrumentation-api-35-reports
+          path: |
+            app/build/reports/androidTests/connected/debug/
+            app/build/outputs/androidTest-results/connected/debug/
+          if-no-files-found: warn
+          retention-days: 7
+
+  compatibility-instrumentation:
+    name: compatibility-api-${{ matrix.api-level }}
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        api-level: [26, 36]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Android build
+        uses: ./.github/actions/setup-android
+
+      - name: Restore API ${{ matrix.api-level }} emulator cache
+        id: compatibility-avd-cache
+        uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        with:
+          path: ~/.android/avd
+          key: avd-v1-${{ runner.os }}-api-${{ matrix.api-level }}
+
+      - name: Run API ${{ matrix.api-level }} instrumentation suite
+        uses: reactivecircus/android-emulator-runner@1dcd0090116d15e7c562f8db72807de5e036a4ed # v2.34.0
+        with:
+          api-level: ${{ matrix.api-level }}
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          cores: 2
+          ram-size: 4096M
+          force-avd-creation: false
+          disable-animations: true
+          disable-linux-hw-accel: false
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -accel on
+          script: ./gradlew :app:connectedDebugAndroidTest
+
+      - name: Save API ${{ matrix.api-level }} emulator cache
+        if: steps.compatibility-avd-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        with:
+          path: ~/.android/avd
+          key: avd-v1-${{ runner.os }}-api-${{ matrix.api-level }}
+
+      - name: Upload API ${{ matrix.api-level }} instrumentation reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: instrumentation-api-${{ matrix.api-level }}-reports
+          path: |
+            app/build/reports/androidTests/connected/debug/
+            app/build/outputs/androidTest-results/connected/debug/
+          if-no-files-found: warn
+          retention-days: 7
+
+  benchmark-monitoring:
+    name: benchmark-monitoring-non-blocking
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Android build
+        uses: ./.github/actions/setup-android
+
+      - name: Restore API 35 benchmark emulator cache
+        id: benchmark-avd-cache
+        uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        with:
+          path: ~/.android/avd
+          key: benchmark-avd-v1-${{ runner.os }}-api-35
+
+      - name: Run selector, profile, and Macrobenchmark monitoring
+        uses: reactivecircus/android-emulator-runner@1dcd0090116d15e7c562f8db72807de5e036a4ed # v2.34.0
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          cores: 4
+          ram-size: 4096M
+          force-avd-creation: false
+          disable-animations: true
+          disable-linux-hw-accel: false
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -accel on
+          script: |
+            set -euo pipefail
+            mkdir -p benchmark-results
+            ./gradlew :benchmark:connectedNonMinifiedReleaseAndroidTest \
+              -Pandroid.testInstrumentationRunnerArguments.class=com.indiewalk.watchdog.earthquake.benchmark.BenchmarkSelectorContractTest
+            ./gradlew :app:generateBaselineProfile
+            bash scripts/verify_baseline_profile.sh \
+              app/src/release/generated/baselineProfiles/baseline-prof.txt
+
+            ./gradlew :benchmark:clean
+            ./gradlew :benchmark:connectedNonMinifiedReleaseAndroidTest \
+              -Pandroid.testInstrumentationRunnerArguments.class=com.indiewalk.watchdog.earthquake.benchmark.StartupBenchmark \
+              -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=Macrobenchmark \
+              -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.suppressErrors=EMULATOR
+            startup_result="$(find benchmark/build/outputs -type f -name '*benchmarkData.json' -print -quit)"
+            test -n "$startup_result"
+            cp "$startup_result" benchmark-results/startup-benchmarkData.json
+
+            ./gradlew :benchmark:clean
+            ./gradlew :benchmark:connectedNonMinifiedReleaseAndroidTest \
+              -Pandroid.testInstrumentationRunnerArguments.class=com.indiewalk.watchdog.earthquake.benchmark.CoreJourneyBenchmark \
+              -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=Macrobenchmark \
+              -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.suppressErrors=EMULATOR
+            core_result="$(find benchmark/build/outputs -type f -name '*benchmarkData.json' -print -quit)"
+            test -n "$core_result"
+            cp "$core_result" benchmark-results/core-benchmarkData.json
+
+            scripts/check_performance_budgets.py \
+              --budgets config/performance-budgets.json \
+              benchmark-results/startup-benchmarkData.json \
+              benchmark-results/core-benchmarkData.json
+
+      - name: Save API 35 benchmark emulator cache
+        if: steps.benchmark-avd-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        with:
+          path: ~/.android/avd
+          key: benchmark-avd-v1-${{ runner.os }}-api-35
+
+      - name: Upload benchmark monitoring evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: benchmark-monitoring-evidence
+          path: |
+            benchmark-results/
+            benchmark/build/reports/androidTests/
+            benchmark/build/outputs/androidTest-results/
+            benchmark/build/outputs/connected_android_test_additional_output/
+            app/src/release/generated/baselineProfiles/
+          if-no-files-found: warn
+          retention-days: 14
