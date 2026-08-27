@@ -1,6 +1,8 @@
 # Production Readiness Checklist
 
-This checklist records the reproducible Task 1 baseline. Results remain pending until the corresponding command is run.
+This checklist records reproducible production-readiness work. Historical
+results remain as evidence; current external gates stay `PENDING` until the
+named owner executes them and attaches evidence.
 
 ## Expected Artifacts
 
@@ -177,3 +179,67 @@ symbols, JSON provenance, and `SHA256SUMS` for manual internal-track upload.
   being verified.
 - Upload the verified AAB manually to Play internal testing and complete every
   device/external-service check in `release-runbook.md` before Task 10 rollout.
+
+Task 9 final implementation commits are `58ad19e` and `694a0d9`; the latter
+hardened verified mapping-delivery provenance after review. No protected
+environment, real credential, tag, Firebase upload, or Play upload was changed.
+
+## Task 10 Production Operations And Compliance
+
+Repository documentation status: `CODE-VERIFIED`. Production readiness and all
+external execution: `PENDING`. Known implementation/policy mismatches:
+`BLOCKED`. Inapplicable reviewed requirements: `NOT APPLICABLE` with rationale.
+
+Task 10 adds:
+
+- `play-compliance-checklist.md` for Play policy/declaration, Maps/app-signing,
+  AdMob/UMP, Crashlytics, store-content, internal, closed, and physical gates.
+- `data-safety-inventory.md` for location, Room/DataStore, backup/deletion,
+  USGS/network/geocoding, sharing/browser, diagnostics, and every production
+  SDK family.
+- `rollout-record.md` for Task 9 artifact identity and 5%, 20%, 50%, and 100%
+  promotion decisions with quantitative stop criteria.
+- `incident-template.md` for rollout containment, sanitized evidence
+  preservation, and a higher-version-code hotfix.
+- `scripts/tests/verify_production_operations_docs_test.py` to prevent missing
+  gates/fields or an external claim being represented as code-verified.
+
+### Task 10 Code-Verified Findings
+
+| Area | Status | Evidence |
+| --- | --- | --- |
+| Foreground location scope | `CODE-VERIFIED` | Fine/coarse permissions exist; no background permission/service exists; intro disclosure precedes the permission launcher. Approximate-only device behavior remains pending. |
+| Local retention/backups | `CODE-VERIFIED` | Exact user/manual position and reverse-geocoded text persist in DataStore; earthquake/statistics data persist in Room; database/preferences/shared preferences/cache are excluded from backup/transfer and clear storage/uninstall deletes them. |
+| First-party network | `CODE-VERIFIED` | USGS HTTPS queries do not include selected user/manual coordinates; Maps, Geocoder, Ads/UMP, Crashlytics, and Play Services retain separate SDK disclosure obligations. |
+| Diagnostics sanitization | `CODE-VERIFIED` | App-added categories/types exclude messages, causes, caller frames, coordinates, addresses, consent values, and ad IDs; automatic SDK metadata still requires declaration. |
+| Immutable release interface | `CODE-VERIFIED` | Task 9 artifact/provenance/checksum/mapping identity is required unchanged across internal, closed, and production stages. |
+
+### Task 10 Release Blockers
+
+- `BLOCKED`: `targetSdk = 35`; updates submitted on or after 2026-08-31 must
+  meet the current API 36 target requirement.
+- `BLOCKED`: no tracked public privacy-policy URL exists in both the app and
+  store configuration.
+- `BLOCKED`: production AdMob resources are ignored/untracked and not generated
+  by the protected workflow, so clean-checkout signed-artifact provenance is
+  missing.
+- `BLOCKED`: Settings uses UMP `reset()`, documented for testing rather than a
+  production withdrawal/privacy-options flow.
+
+### Task 10 Owner-Only Remaining Gates
+
+- Privacy/product owner: publish and link the public policy; reconcile and
+  submit Data safety, Contains ads, content rating, target audience, and EN/IT
+  store listing for the exact artifact.
+- Android owner: resolve target API, approximate-only permission behavior,
+  production AdMob provisioning/verifier coverage, and UMP withdrawal code.
+- Cloud/release owner: verify Maps package plus Play App Signing SHA-1/API
+  restrictions and upload-certificate SHA-256 without exposing credentials.
+- QA/privacy owner: execute EEA/non-EEA/regulated-US consent, withdrawal,
+  relaunch/offline, Maps/network/location, fresh/current-public upgrade, API 26
+  and current API, low/mid/current physical-device, and performance scenarios.
+- Firebase owner: verify internal-build Crashlytics fatal/nonfatal delivery,
+  version, deobfuscation, and matching mapping receipt.
+- Release owner: upload/promote the exact Task 9 artifact through internal,
+  closed, 5%, 20%, 50%, and 100%; attach every metric/evidence/approval and keep
+  the initiative `PENDING` until post-100% monitoring closes cleanly.

@@ -152,9 +152,11 @@
     <string name="settings_support_btn_title">Support</string>
     <string name="settings_disclaimer_label">Disclaimer</string>
     <string name="settings_faq_btn_summary">What app can do and don\'t.</string>
-    <string name="settings_faq_text"><![CDATA[This app downloads and shows data about earthquakes (till the last 120 earthquakes happened) taken from <a href="https://earthquake.usgs.gov/fdsnws/event/1/">USGS.gov</a> online service. It is not in any way related to USGS nor it is an app from them. <br><br>It has only informative purposes, the data about earthquakes are not in real time (check <a href="https://earthquake.usgs.gov/fdsnws/event/1/">USGS.gov site</a> for details). <br><br>So it is not intended to be a real time earthquake alert app, do not use it as a life saving app. <br><br>I&apos;m not responsible for any improper use of this app.
+    <string name="settings_faq_text"><![CDATA[This app downloads and shows earthquake data from the last 30 days (up to 200 events per list refresh) from the <a href="https://earthquake.usgs.gov/fdsnws/event/1/">USGS.gov</a> online service. It is not affiliated with or published by USGS. <br><br>It has only informative purposes, the data about earthquakes are not in real time (check the <a href="https://earthquake.usgs.gov/fdsnws/event/1/">USGS.gov site</a> for details). <br><br>It is not intended to be a real-time earthquake alert app, so do not use it as a life-saving app. <br><br>I&apos;m not responsible for any improper use of this app.
 
-<br><br>In the map, it asks for user location permissions only for calculating the distance of earthquakes from the user, and the user&apos;s coordinates are stored for this purpose only. If location permissions are denied, it allows manual positioning by long-pressing on the map, without using GPS or any other localization system.
+<br><br>When permission is granted, the app uses your last-known foreground location to calculate earthquake distances, center the map, and provide nearest and nearby statistics. Coordinates and reverse-geocoded city, country, and address are stored in the app&apos;s local preferences until replaced, app storage is cleared, or the app is uninstalled. No background location is used. Maps and the device geocoding service may process the selected position to provide those features.
+
+<br><br>If location permission is denied, you can set a manual position by long-pressing on the map without using GPS. The manual coordinates and location text are stored locally and used for the same map, distance, and nearby statistics features.
 
 <br><br>If permissions are not granted and no manual localization is done, it uses the default location (Google location) and calculates earthquake distances from there.
 

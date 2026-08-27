@@ -1,23 +1,41 @@
 # Verified Android Release Runbook
 
 This runbook creates one immutable, signed, checksummed AAB for manual Google
-Play internal testing. It does not upload to Play or promote any track.
+Play internal testing and controls its later promotion. Automation does not
+upload to Play or promote any track.
+
+Use these records together:
+
+- `play-compliance-checklist.md`: policy/declaration and external configuration gates.
+- `data-safety-inventory.md`: code/SDK data flow, retention, backup, and deletion evidence.
+- `rollout-record.md`: immutable artifact identity, internal/closed gates, and
+  5%, 20%, 50%, and 100% decisions.
+- `incident-template.md`: containment, evidence preservation, and hotfix process.
+- `production-readiness-checklist.md`: repository verification ledger.
 
 ## 1. Preflight
 
 1. Confirm the release commit is on the intended protected branch and the
    required `repository-hygiene`, `unit-lint-build`, and `instrumentation`
    checks are green.
-2. Complete the pending physical-device, Maps, location, ads/consent, Room
-   upgrade, Crashlytics delivery, and representative-device performance checks
-   in the production-readiness checklist.
-3. Update `versionCode` and `versionName` in `app/build.gradle.kts`. A tag build
+2. Resolve every `BLOCKED` item in `play-compliance-checklist.md`. As reviewed
+   on 2026-08-27, this includes target API 36 for updates submitted on/after
+   2026-08-31, a public in-app/store privacy-policy link, clean-checkout
+   production AdMob resource provenance, and removal of the UMP test-reset path.
+3. Keep physical-device, Maps, location, ads/consent, Room upgrade, Crashlytics
+   delivery, and representative-device performance checks `PENDING` until the
+   owner completes them and attaches evidence. Do not convert code inspection
+   into external verification.
+4. Update `versionCode` and `versionName` in `app/build.gradle.kts`. A tag build
    is accepted only when the tag is exactly `v<versionName>`.
-4. Confirm the `production-release` environment approval and credentials in
+5. Confirm the `production-release` environment approval and credentials in
    `docs/release/github-secrets.md`. In Play Console, compare the upload-key
    fingerprint with `RELEASE_CERT_SHA256`.
-5. Review third-party SDK and Data Safety declarations before producing a
-   candidate intended for store review.
+6. Reconcile the exact resolved third-party SDK graph and signed artifact with
+   `data-safety-inventory.md`, the privacy policy, Data safety, Contains ads,
+   content rating, target audience, and localized store listing.
+7. Create a release-specific copy of `rollout-record.md`; assign all owners and
+   leave every unexecuted external field `PENDING`.
 
 ## 2. Generate the Candidate
 
@@ -74,7 +92,7 @@ shasum -a 256 -c SHA256SUMS
 
 Read `release-provenance.json` and record its commit SHA, source ref, app
 identity, certificate fingerprint, AAB checksum, mapping checksum, bundletool
-checksum, and mapping-upload request in the release record. Provenance records
+checksum, and mapping-upload request in `rollout-record.md`. Provenance records
 that upload is not completed at verification time. Only the separate receipt,
 written after the explicit Gradle upload task succeeds, records completion and
 is then included in `SHA256SUMS`. Treat any mismatch as a rejected candidate;
@@ -99,20 +117,45 @@ owner's approved release evidence store.
    cached data, and a historical database upgrade.
 7. Confirm Crashlytics collection/deobfuscation in the intended Firebase
    project without committing or retaining a test-crash trigger.
+8. Confirm production Maps key restrictions use package
+   `com.indiewalk.watchdog.earthquake` and the Play App Signing SHA-1, not only
+   the upload key; verify Maps from the Play-installed build.
+9. Confirm the production AdMob app ID in the signed manifest and banner ID in
+   signed resources after resolving their clean-checkout provenance.
+10. Execute UMP EEA, non-EEA, regulated-US, withdrawal, relaunch, and offline
+    scenarios without recording consent payload values.
+11. Complete fresh-install/current-public-upgrade, API 26/current API,
+    low/mid-tier/current physical device, and physical performance rows.
 
 Do not rebuild between internal, closed, and production tracks. Task 10 must
 promote this same Play artifact by version code and recorded SHA-256.
 
-## 5. Reject or Escalate
+## 5. Closed Testing And Production Promotion
+
+1. Promote the same Play-accepted version to closed testing. Do not rebuild.
+2. Record representative tester/device/locale coverage, defects, Crashlytics
+   and Android-vitals metrics, support signals, and Maps/network/consent health.
+3. Require zero open release blockers and explicit Android, privacy/ads,
+   product/store, and release-owner approval.
+4. Promote the same artifact through 5%, 20%, 50%, and 100%, completing every
+   field in `rollout-record.md`. Do not promote on elapsed time alone.
+5. At each stage apply the documented Google Play ANR/crash thresholds and the
+   stricter project stop conditions. Low sample volume means extend/observe;
+   it does not mean healthy.
+6. After 100%, monitor for the recorded 48-hour project window. Close only when
+   no stop condition exists and all evidence/signatures are attached.
+
+## 6. Reject, Halt, Or Escalate
 
 Reject the candidate for any failed check, unexpected SDK initialization,
 wrong package/version/certificate, checksum drift, missing profile or mapping,
 Firebase project mismatch, Data Safety mismatch, or smoke-test regression.
-Preserve logs that contain no credentials, revoke exposed credentials if any
-secret handling failed, and create a new version code for a corrected AAB.
-
-Production rollout and rollback decisions are intentionally deferred to the
-Task 10 compliance and staged-rollout process.
+Preserve logs that contain no credentials or unnecessary personal data, revoke
+exposed credentials if any secret handling failed, and create a new version
+code for a corrected AAB. During production, halt for the stop conditions in
+`rollout-record.md`, open `incident-template.md`, preserve artifact/mapping/CI/
+vitals evidence before cleanup, and use a separately verified higher-version-
+code hotfix. Never mutate or replace the accepted artifact.
 
 ## Local Disposable Dry Run
 
