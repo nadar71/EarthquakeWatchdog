@@ -13,10 +13,12 @@ updates:
       firebase:
         patterns:
           - "com.google.firebase:*"
+          - "com.google.firebase.*"
       google-play-services:
         patterns:
           - "com.google.android.gms:*"
           - "com.google.android.ump:*"
+          - "com.google.gms.*"
 
   - package-ecosystem: github-actions
     directory: /

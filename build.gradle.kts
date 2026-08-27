@@ -14,4 +14,3 @@ tasks.register("verifyStaticQuality") {
     description = "Runs the debug and release Android lint gates used by CI."
     dependsOn(":app:lintDebug", ":app:lintRelease")
 }
-
