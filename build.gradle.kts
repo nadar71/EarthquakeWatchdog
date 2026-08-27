@@ -9,5 +9,9 @@ plugins { // plugin declaration as alias
     alias(libs.plugins.firebase.crashlytics) apply false
 }
 
-
+tasks.register("verifyStaticQuality") {
+    group = "verification"
+    description = "Runs the debug and release Android lint gates used by CI."
+    dependsOn(":app:lintDebug", ":app:lintRelease")
+}
 

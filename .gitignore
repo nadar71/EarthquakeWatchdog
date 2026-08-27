@@ -129,3 +129,6 @@ app/release/baselineProfiles/0/app-release.dm
 
 # Local visual brainstorming sessions
 .superpowers/
+
+# This versioned quality policy must override the developer-global XML ignore rule.
+!config/lint/lint.xml

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- Production quality policy: no issues are suppressed in this project. -->
+    <issue id="MissingTranslation" severity="error" />
+    <issue id="ContentDescription" severity="error" />
+    <issue id="TouchTargetSize" severity="error" />
+    <issue id="ExportedReceiver" severity="error" />
+    <issue id="ExportedService" severity="error" />
+    <issue id="ExportedProvider" severity="error" />
+    <issue id="CleartextTrafficPermitted" severity="error" />
+    <issue id="TrustAllX509TrustManager" severity="error" />
+    <issue id="ObsoleteSdkInt" severity="error" />
+</lint>
