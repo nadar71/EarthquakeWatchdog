@@ -231,6 +231,17 @@ class ProductionOperationsDocsTest(unittest.TestCase):
         self.assertIn("Play Console public policy URL", compliance)
         self.assertNotIn("targetSdk = 35", compliance)
 
+    def test_background_location_evidence_distinguishes_dependency_service(self) -> None:
+        compliance = self.read("docs/release/play-compliance-checklist.md")
+
+        self.assertIn("no app-authored foreground service", compliance)
+        self.assertIn("SystemForegroundService", compliance)
+        self.assertIn("does not by itself imply background-location", compliance)
+        self.assertNotIn(
+            "No `ACCESS_BACKGROUND_LOCATION`, foreground service, or background location worker exists",
+            compliance,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
