@@ -214,25 +214,27 @@ Task 10 adds:
 | Diagnostics sanitization | `CODE-VERIFIED` | App-added categories/types exclude messages, causes, caller frames, coordinates, addresses, consent values, and ad IDs; automatic SDK metadata still requires declaration. |
 | Immutable release interface | `CODE-VERIFIED` | Task 9 artifact/provenance/checksum/mapping identity is required unchanged across internal, closed, and production stages. |
 
-### Task 10 Release Blockers
+### Task 10 Code-Level Resolution
 
-- `BLOCKED`: `targetSdk = 35`; updates submitted on or after 2026-08-31 must
-  meet the current API 36 target requirement.
-- `BLOCKED`: no tracked public privacy-policy URL exists in both the app and
-  store configuration.
-- `BLOCKED`: production AdMob resources are ignored/untracked and not generated
-  by the protected workflow, so clean-checkout signed-artifact provenance is
-  missing.
-- `BLOCKED`: Settings uses UMP `reset()`, documented for testing rather than a
-  production withdrawal/privacy-options flow.
+- `CODE-VERIFIED`: `targetSdk` is 36 and release instrumentation targets API 36.
+- `CODE-VERIFIED`: Settings opens a dedicated bilingual privacy screen; release
+  builds require an HTTPS `PRIVACY_POLICY_URL_RELEASE` while debug safely omits
+  the external link.
+- `CODE-VERIFIED`: clean debug builds use generated Google test ad IDs; protected
+  release builds require validated AdMob app/banner variables and the signed-AAB
+  verifier checks their embedded values.
+- `CODE-VERIFIED`: UMP eligibility defaults false, Mobile Ads auto-init is
+  disabled, initialization occurs once only after `canRequestAds()`, and
+  Settings uses the production privacy-options form rather than `reset()`.
 
 ### Task 10 Owner-Only Remaining Gates
 
-- Privacy/product owner: publish and link the public policy; reconcile and
+- Privacy/product owner: host the public policy, configure the protected URL,
+  enter the same Play Console public policy URL, and reconcile and
   submit Data safety, Contains ads, content rating, target audience, and EN/IT
   store listing for the exact artifact.
-- Android owner: resolve target API, approximate-only permission behavior,
-  production AdMob provisioning/verifier coverage, and UMP withdrawal code.
+- Android owner: resolve approximate-only permission behavior and review the
+  final merged target/API, consent, privacy-link, and ad-resource configuration.
 - Cloud/release owner: verify Maps package plus Play App Signing SHA-1/API
   restrictions and upload-certificate SHA-256 without exposing credentials.
 - QA/privacy owner: execute EEA/non-EEA/regulated-US consent, withdrawal,

@@ -64,11 +64,17 @@ private object DebugNavigationScreenFactory : AppNavigationScreenFactory {
     override fun Settings(
         currentDestination: AppDestination,
         onTopLevelDestinationSelected: (AppDestination) -> Unit,
-        onOpenCredits: () -> Unit
+        onOpenCredits: () -> Unit,
+        onOpenPrivacyPolicy: () -> Unit,
+        onManageAdPrivacy: () -> Unit
     ) = Text("settings-screen")
 
     @Composable
     override fun Credits(currentDestination: AppDestination, onBack: () -> Unit) = Text("credits-screen")
+
+    @Composable
+    override fun PrivacyPolicy(currentDestination: AppDestination, onBack: () -> Unit) =
+        Text("privacy-policy-screen")
 
     @Composable
     override fun Details(currentDestination: AppDestination, id: String, onBack: () -> Unit) =

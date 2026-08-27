@@ -92,6 +92,20 @@ class AppNavigationHostTest {
     }
 
     @Test
+    fun settings_open_privacy_policy_and_back_returns_to_settings() {
+        setHostContent()
+
+        composeRule.onNodeWithTag("intro-continue").performClick()
+        composeRule.onNodeWithTag("home-open-settings").performClick()
+        composeRule.onNodeWithTag("settings-open-privacy-policy").performClick()
+        composeRule.onNodeWithText("privacy-policy-screen").assertExists()
+
+        composeRule.onNodeWithTag("privacy-policy-back").performClick()
+
+        composeRule.onNodeWithText("settings-screen").assertExists()
+    }
+
+    @Test
     fun statistics_opens_details_and_back_returns_to_statistics() {
         setHostContent()
 
@@ -248,7 +262,9 @@ private object FakeAppNavigationScreenFactory : AppNavigationScreenFactory {
     override fun Settings(
         currentDestination: AppDestination,
         onTopLevelDestinationSelected: (AppDestination) -> Unit,
-        onOpenCredits: () -> Unit
+        onOpenCredits: () -> Unit,
+        onOpenPrivacyPolicy: () -> Unit,
+        onManageAdPrivacy: () -> Unit
     ) {
         Column {
             Text("settings-screen")
@@ -257,6 +273,12 @@ private object FakeAppNavigationScreenFactory : AppNavigationScreenFactory {
                 modifier = androidx.compose.ui.Modifier.testTag("settings-open-credits")
             ) {
                 Text("credits")
+            }
+            Button(
+                onClick = onOpenPrivacyPolicy,
+                modifier = androidx.compose.ui.Modifier.testTag("settings-open-privacy-policy")
+            ) {
+                Text("privacy policy")
             }
         }
     }
@@ -271,6 +293,19 @@ private object FakeAppNavigationScreenFactory : AppNavigationScreenFactory {
             Button(
                 onClick = onBack,
                 modifier = androidx.compose.ui.Modifier.testTag("credits-back")
+            ) {
+                Text("back")
+            }
+        }
+    }
+
+    @Composable
+    override fun PrivacyPolicy(currentDestination: AppDestination, onBack: () -> Unit) {
+        Column {
+            Text("privacy-policy-screen")
+            Button(
+                onClick = onBack,
+                modifier = androidx.compose.ui.Modifier.testTag("privacy-policy-back")
             ) {
                 Text("back")
             }

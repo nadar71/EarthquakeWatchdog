@@ -185,7 +185,9 @@ class BenchmarkAppNavigationScreenFactory : AppNavigationScreenFactory {
     override fun Settings(
         currentDestination: AppDestination,
         onTopLevelDestinationSelected: (AppDestination) -> Unit,
-        onOpenCredits: () -> Unit
+        onOpenCredits: () -> Unit,
+        onOpenPrivacyPolicy: () -> Unit,
+        onManageAdPrivacy: () -> Unit
     ) {
         var settings by remember { mutableStateOf(BENCHMARK_SETTINGS) }
         ScaffoldModel(
@@ -210,6 +212,11 @@ class BenchmarkAppNavigationScreenFactory : AppNavigationScreenFactory {
     @Composable
     override fun Credits(currentDestination: AppDestination, onBack: () -> Unit) {
         Text("Credits")
+    }
+
+    @Composable
+    override fun PrivacyPolicy(currentDestination: AppDestination, onBack: () -> Unit) {
+        Text("Privacy policy")
     }
 
     @Composable

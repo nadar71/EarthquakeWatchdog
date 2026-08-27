@@ -11,6 +11,9 @@ readonly REQUIRED_ENV=(
     MAPS_API_KEY_RELEASE
     FIREBASE_PROJECT_ID
     FIREBASE_APP_ID
+    ADMOB_APP_ID_RELEASE
+    ADMOB_BANNER_ID_RELEASE
+    PRIVACY_POLICY_URL_RELEASE
 )
 
 fail() {
@@ -139,6 +142,9 @@ export RELEASE_FIREBASE_HASH_PATH="$firebase_hash_file"
 export RELEASE_EXPECTED_PACKAGE="$EXPECTED_PACKAGE"
 export RELEASE_EXPECTED_FIREBASE_PROJECT_ID="$FIREBASE_PROJECT_ID"
 export RELEASE_EXPECTED_FIREBASE_APP_ID="$FIREBASE_APP_ID"
+export RELEASE_ADMOB_APP_ID="$ADMOB_APP_ID_RELEASE"
+export RELEASE_ADMOB_BANNER_ID="$ADMOB_BANNER_ID_RELEASE"
+export RELEASE_PRIVACY_POLICY_URL="$PRIVACY_POLICY_URL_RELEASE"
 
 python3 <<'PY'
 import base64
@@ -146,6 +152,7 @@ import hashlib
 import json
 import os
 import re
+import urllib.parse
 
 
 def decode_env(name: str) -> bytes:
@@ -228,6 +235,29 @@ if not any(
 ):
     raise SystemExit("ERROR: Firebase app id does not match the approved production Android app")
 
+admob_app_id = os.environ["RELEASE_ADMOB_APP_ID"]
+admob_banner_id = os.environ["RELEASE_ADMOB_BANNER_ID"]
+test_publisher = "ca-app-pub-3940256099942544"
+if not re.fullmatch(r"ca-app-pub-[0-9]{16}~[0-9]{10}", admob_app_id):
+    raise SystemExit("ERROR: ADMOB_APP_ID_RELEASE has an unsupported format")
+if not re.fullmatch(r"ca-app-pub-[0-9]{16}/[0-9]{10}", admob_banner_id):
+    raise SystemExit("ERROR: ADMOB_BANNER_ID_RELEASE has an unsupported format")
+if admob_app_id.startswith(test_publisher) or admob_banner_id.startswith(test_publisher):
+    raise SystemExit("ERROR: release AdMob configuration must not use Google test ids")
+if admob_app_id.split("~", 1)[0] != admob_banner_id.split("/", 1)[0]:
+    raise SystemExit("ERROR: release AdMob app and banner ids must use the same publisher")
+
+privacy_url = os.environ["RELEASE_PRIVACY_POLICY_URL"]
+parsed_policy_url = urllib.parse.urlsplit(privacy_url)
+if (
+    parsed_policy_url.scheme != "https"
+    or not parsed_policy_url.hostname
+    or parsed_policy_url.username
+    or parsed_policy_url.password
+    or parsed_policy_url.fragment
+):
+    raise SystemExit("ERROR: PRIVACY_POLICY_URL_RELEASE must be a public HTTPS URL")
+
 exclusive_write(os.environ["RELEASE_KEYSTORE_PATH"], keystore)
 exclusive_write(os.environ["RELEASE_FIREBASE_DESTINATION"], firebase)
 
@@ -237,6 +267,9 @@ properties = {
     "release_storeFile": os.environ["RELEASE_KEYSTORE_PATH"],
     "release_storePassword": os.environ["release_storePassword"],
     "MAPS_API_KEY_RELEASE": os.environ["MAPS_API_KEY_RELEASE"],
+    "ADMOB_APP_ID_RELEASE": admob_app_id,
+    "ADMOB_BANNER_ID_RELEASE": admob_banner_id,
+    "PRIVACY_POLICY_URL_RELEASE": privacy_url,
 }
 properties_payload = "".join(
     f"{key}={escape_property(value)}\n" for key, value in properties.items()

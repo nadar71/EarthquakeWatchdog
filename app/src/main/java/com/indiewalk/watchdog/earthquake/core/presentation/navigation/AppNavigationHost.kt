@@ -19,7 +19,8 @@ import com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui.SettingsS
 @Composable
 fun AppNavigationHost(
     navigator: AppNavigator<AppDestination>,
-    screenFactory: AppNavigationScreenFactory = DefaultAppNavigationScreenFactory
+    screenFactory: AppNavigationScreenFactory = DefaultAppNavigationScreenFactory,
+    onManageAdPrivacy: () -> Unit = {}
 ) {
     val currentDestination = navigator.currentDestination
     val navigationEventDispatcherOwner =
@@ -74,12 +75,22 @@ fun AppNavigationHost(
                     screenFactory.Settings(
                         currentDestination = AppDestination.Settings,
                         onTopLevelDestinationSelected = navigator::switchTopLevel,
-                        onOpenCredits = { navigator.navigateTo(AppDestination.Credits) }
+                        onOpenCredits = { navigator.navigateTo(AppDestination.Credits) },
+                        onOpenPrivacyPolicy = {
+                            navigator.navigateTo(AppDestination.PrivacyPolicy)
+                        },
+                        onManageAdPrivacy = onManageAdPrivacy
                     )
                 }
                 entry<AppDestination.Credits> {
                     screenFactory.Credits(
                         currentDestination = AppDestination.Credits,
+                        onBack = navigator::navigateBack
+                    )
+                }
+                entry<AppDestination.PrivacyPolicy> {
+                    screenFactory.PrivacyPolicy(
+                        currentDestination = AppDestination.PrivacyPolicy,
                         onBack = navigator::navigateBack
                     )
                 }

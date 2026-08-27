@@ -1,7 +1,5 @@
 package com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui
 
-import android.widget.Toast
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,7 +18,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.android.ump.UserMessagingPlatform
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants.support_email
 import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
@@ -32,7 +29,7 @@ import com.indiewalk.watchdog.earthquake.core.presentation.theme.text_16
 import com.indiewalk.watchdog.earthquake.core.util.GenericUtil.openAppStore
 import com.indiewalk.watchdog.earthquake.core.util.sendEmail
 import com.indiewalk.watchdog.earthquake.feat_ads.presentation.AdMobBannerView
-import com.indiewalk.watchdog.earthquake.feat_ads.util.ConsentManager
+import com.indiewalk.watchdog.earthquake.feat_ads.presentation.LocalAdsConsentState
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.openAppSettings
 import com.indiewalk.watchdog.earthquake.feat_settings.presentation.components.DisclaimerDialog
 import com.indiewalk.watchdog.earthquake.feat_settings.presentation.components.SettingsItem
@@ -43,10 +40,12 @@ fun SettingsScreen(
     currentDestination: AppDestination,
     onTopLevelDestinationSelected: (AppDestination) -> Unit,
     onOpenCredits: () -> Unit,
+    onOpenPrivacyPolicy: () -> Unit,
+    onManageAdPrivacy: () -> Unit,
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val activity = LocalActivity.current
+    val adsConsentState = LocalAdsConsentState.current
 
     var showDisclaimer by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
@@ -153,32 +152,27 @@ fun SettingsScreen(
                         .clickable(onClick = onOpenCredits)
                 )
 
-                // --- GDPR ---
+                // --- Privacy policy ---
                 Spacer(modifier = Modifier.height(32.dp))
                 SettingsItem(
+                    title = stringResource(id = R.string.privacy_policy_title),
+                    subtitle = stringResource(id = R.string.privacy_policy_settings_summary),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onOpenPrivacyPolicy)
+                )
+
+                // UMP requires this entry point only when a privacy-options form is available.
+                if (adsConsentState.privacyOptionsRequired) {
+                    Spacer(modifier = Modifier.height(32.dp))
+                    SettingsItem(
                     title = stringResource(id = R.string.settings_gdpr_btn_title),
                     subtitle = stringResource(id = R.string.gdpr_btn_summary),
-                    modifier = Modifier.clickable {
-                        UserMessagingPlatform.getConsentInformation(context).reset()
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.gdpr_dialog_will_show_again),
-                            Toast.LENGTH_LONG
-                        ).show()
-                        // Trigger re-consent
-                        ConsentManager.requestConsent(
-                            context = context,
-                            activity = activity,
-                            onConsentReady = { canRequestAds ->
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.gdpr_dialog_reset_done),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        )
-                    }
-                )
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = onManageAdPrivacy)
+                    )
+                }
 
                 // --- Review ---
                 Spacer(modifier = Modifier.height(32.dp))

@@ -11,6 +11,9 @@ readonly FIREBASE_SOURCE="$TEST_ROOT/google-services.json"
 readonly SECRET_MARKER="task9-secret-must-not-leak"
 readonly FIREBASE_PROJECT_ID="earthquake-task9-test"
 readonly FIREBASE_APP_ID="1:123456789:android:abcdef"
+readonly ADMOB_APP_ID_RELEASE="ca-app-pub-1234567890123456~1234567890"
+readonly ADMOB_BANNER_ID_RELEASE="ca-app-pub-1234567890123456/1234567890"
+readonly PRIVACY_POLICY_URL_RELEASE="https://example.invalid/earthquake-watchdog/privacy"
 
 cleanup_test() {
     chmod -R u+w "$TEST_ROOT" 2>/dev/null || true
@@ -87,6 +90,9 @@ readonly REQUIRED_ENV=(
     MAPS_API_KEY_RELEASE
     FIREBASE_PROJECT_ID
     FIREBASE_APP_ID
+    ADMOB_APP_ID_RELEASE
+    ADMOB_BANNER_ID_RELEASE
+    PRIVACY_POLICY_URL_RELEASE
 )
 
 run_prepare() {
@@ -105,6 +111,9 @@ run_prepare() {
     [[ "${MISSING_ENV:-}" == "MAPS_API_KEY_RELEASE" ]] || environment+=("MAPS_API_KEY_RELEASE=maps-$SECRET_MARKER")
     [[ "${MISSING_ENV:-}" == "FIREBASE_PROJECT_ID" ]] || environment+=("FIREBASE_PROJECT_ID=${OVERRIDE_FIREBASE_PROJECT_ID:-$FIREBASE_PROJECT_ID}")
     [[ "${MISSING_ENV:-}" == "FIREBASE_APP_ID" ]] || environment+=("FIREBASE_APP_ID=${OVERRIDE_FIREBASE_APP_ID:-$FIREBASE_APP_ID}")
+    [[ "${MISSING_ENV:-}" == "ADMOB_APP_ID_RELEASE" ]] || environment+=("ADMOB_APP_ID_RELEASE=${OVERRIDE_ADMOB_APP_ID_RELEASE:-$ADMOB_APP_ID_RELEASE}")
+    [[ "${MISSING_ENV:-}" == "ADMOB_BANNER_ID_RELEASE" ]] || environment+=("ADMOB_BANNER_ID_RELEASE=${OVERRIDE_ADMOB_BANNER_ID_RELEASE:-$ADMOB_BANNER_ID_RELEASE}")
+    [[ "${MISSING_ENV:-}" == "PRIVACY_POLICY_URL_RELEASE" ]] || environment+=("PRIVACY_POLICY_URL_RELEASE=${OVERRIDE_PRIVACY_POLICY_URL_RELEASE:-$PRIVACY_POLICY_URL_RELEASE}")
 
     "${environment[@]}" \
         "$SCRIPT" prepare \
@@ -125,6 +134,40 @@ for missing_name in "${REQUIRED_ENV[@]}"; do
     assert_no_secret_output "$log_file"
     [[ ! -e "$output_dir" ]] || fail "partial secret directory remained after missing $missing_name"
     [[ ! -e "$firebase_destination" ]] || fail "Firebase config remained after missing $missing_name"
+done
+
+for invalid_config in admob-app admob-banner privacy-url test-admob-app test-admob-banner; do
+    output_dir="$TEST_ROOT/invalid-$invalid_config/secrets"
+    firebase_destination="$TEST_ROOT/invalid-$invalid_config/app/google-services.json"
+    log_file="$TEST_ROOT/invalid-$invalid_config.log"
+    mkdir -p "$(dirname "$firebase_destination")"
+
+    case "$invalid_config" in
+        admob-app)
+            override=("OVERRIDE_ADMOB_APP_ID_RELEASE=invalid")
+            ;;
+        admob-banner)
+            override=("OVERRIDE_ADMOB_BANNER_ID_RELEASE=invalid")
+            ;;
+        privacy-url)
+            override=("OVERRIDE_PRIVACY_POLICY_URL_RELEASE=http://example.com/privacy")
+            ;;
+        test-admob-app)
+            override=("OVERRIDE_ADMOB_APP_ID_RELEASE=ca-app-pub-3940256099942544~3347511713")
+            ;;
+        test-admob-banner)
+            override=("OVERRIDE_ADMOB_BANNER_ID_RELEASE=ca-app-pub-3940256099942544/6300978111")
+            ;;
+    esac
+
+    if (
+        export "${override[@]}"
+        run_prepare "$output_dir" "$firebase_destination"
+    ) >"$log_file" 2>&1; then
+        fail "invalid $invalid_config release configuration was accepted"
+    fi
+    [[ ! -e "$output_dir" ]] || fail "partial output remained after invalid $invalid_config"
+    [[ ! -e "$firebase_destination" ]] || fail "Firebase config remained after invalid $invalid_config"
 done
 
 for identity_name in project app; do
@@ -163,6 +206,9 @@ done
 grep -Fq 'release_keyAlias=release-test-alias' "$VALID_OUTPUT/release.properties" || fail "release alias property is missing"
 grep -Fq 'release_storeFile=' "$VALID_OUTPUT/release.properties" || fail "release store path property is missing"
 grep -Fq 'MAPS_API_KEY_RELEASE=maps-' "$VALID_OUTPUT/release.properties" || fail "release Maps property is missing"
+grep -Fq "ADMOB_APP_ID_RELEASE=$ADMOB_APP_ID_RELEASE" "$VALID_OUTPUT/release.properties" || fail "release AdMob app id is missing"
+grep -Fq "ADMOB_BANNER_ID_RELEASE=$ADMOB_BANNER_ID_RELEASE" "$VALID_OUTPUT/release.properties" || fail "release AdMob banner id is missing"
+grep -Fq 'PRIVACY_POLICY_URL_RELEASE=https\://example.invalid/earthquake-watchdog/privacy' "$VALID_OUTPUT/release.properties" || fail "release privacy-policy URL is missing"
 assert_no_secret_output "$TEST_ROOT/valid.log"
 
 "$SCRIPT" cleanup \

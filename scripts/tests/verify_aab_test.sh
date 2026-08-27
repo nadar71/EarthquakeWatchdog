@@ -8,6 +8,9 @@ readonly MAPPING="${MAPPING_FIXTURE:-$PROJECT_ROOT/app/build/outputs/mapping/rel
 readonly BUNDLETOOL="${BUNDLETOOL_FIXTURE:?Set BUNDLETOOL_FIXTURE to the checksum-verified bundletool JAR}"
 readonly BUNDLETOOL_VERSION="${BUNDLETOOL_VERSION:-1.18.3}"
 readonly BUNDLETOOL_SHA256="${BUNDLETOOL_SHA256:-a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29}"
+readonly EXPECTED_ADMOB_APP_ID="${EXPECTED_ADMOB_APP_ID:-ca-app-pub-1234567890123456~1234567890}"
+readonly EXPECTED_ADMOB_BANNER_ID="${EXPECTED_ADMOB_BANNER_ID:-ca-app-pub-1234567890123456/1234567890}"
+readonly EXPECTED_PRIVACY_POLICY_URL="${EXPECTED_PRIVACY_POLICY_URL:-https://example.invalid/earthquake-watchdog/privacy}"
 readonly TEST_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/verify_aab_test.XXXXXX")"
 
 cleanup() {
@@ -52,6 +55,9 @@ verify() {
         --expected-version-code "$version_code" \
         --expected-version-name "$version_name" \
         --expected-cert-sha256 "$fingerprint" \
+        --expected-admob-app-id "$EXPECTED_ADMOB_APP_ID" \
+        --expected-admob-banner-id "$EXPECTED_ADMOB_BANNER_ID" \
+        --expected-privacy-policy-url "$EXPECTED_PRIVACY_POLICY_URL" \
         --output-dir "$output"
 }
 

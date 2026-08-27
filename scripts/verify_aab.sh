@@ -11,7 +11,9 @@ usage() {
 Usage: verify_aab.sh \
   --aab FILE --mapping FILE --bundletool FILE --bundletool-version VERSION \
   --bundletool-sha256 HEX --expected-package ID --expected-version-code NUMBER \
-  --expected-version-name NAME --expected-cert-sha256 HEX --output-dir DIRECTORY
+  --expected-version-name NAME --expected-cert-sha256 HEX \
+  --expected-admob-app-id ID --expected-admob-banner-id ID \
+  --expected-privacy-policy-url URL --output-dir DIRECTORY
 EOF
     exit 2
 }
@@ -38,6 +40,9 @@ expected_package=""
 expected_version_code=""
 expected_version_name=""
 expected_cert_sha256=""
+expected_admob_app_id=""
+expected_admob_banner_id=""
+expected_privacy_policy_url=""
 output_dir=""
 native_symbols=""
 
@@ -52,6 +57,9 @@ while [[ $# -gt 0 ]]; do
         --expected-version-code) expected_version_code="${2:-}"; shift 2 ;;
         --expected-version-name) expected_version_name="${2:-}"; shift 2 ;;
         --expected-cert-sha256) expected_cert_sha256="${2:-}"; shift 2 ;;
+        --expected-admob-app-id) expected_admob_app_id="${2:-}"; shift 2 ;;
+        --expected-admob-banner-id) expected_admob_banner_id="${2:-}"; shift 2 ;;
+        --expected-privacy-policy-url) expected_privacy_policy_url="${2:-}"; shift 2 ;;
         --output-dir) output_dir="${2:-}"; shift 2 ;;
         --native-symbols) native_symbols="${2:-}"; shift 2 ;;
         *) usage ;;
@@ -60,7 +68,8 @@ done
 
 for value in "$aab" "$mapping" "$bundletool" "$bundletool_version" "$bundletool_sha256" \
     "$expected_package" "$expected_version_code" "$expected_version_name" \
-    "$expected_cert_sha256" "$output_dir"; do
+    "$expected_cert_sha256" "$expected_admob_app_id" "$expected_admob_banner_id" \
+    "$expected_privacy_policy_url" "$output_dir"; do
     [[ -n "$value" ]] || usage
 done
 
@@ -75,6 +84,9 @@ fi
 [[ "$expected_version_code" =~ ^[1-9][0-9]*$ ]] || fail "expected version code is invalid"
 [[ "$expected_version_name" =~ ^[0-9A-Za-z][0-9A-Za-z._+-]{0,63}$ ]] || fail "expected version name is invalid"
 [[ "$bundletool_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || fail "bundletool version is invalid"
+[[ "$expected_admob_app_id" =~ ^ca-app-pub-[0-9]{16}~[0-9]{10}$ ]] || fail "expected AdMob app id is invalid"
+[[ "$expected_admob_banner_id" =~ ^ca-app-pub-[0-9]{16}/[0-9]{10}$ ]] || fail "expected AdMob banner id is invalid"
+[[ "$expected_privacy_policy_url" =~ ^https://[^[:space:]#]+$ ]] || fail "expected privacy policy URL is invalid"
 
 bundletool_sha256="$(printf '%s' "$bundletool_sha256" | tr '[:upper:]' '[:lower:]')"
 expected_cert_sha256="$(printf '%s' "$expected_cert_sha256" | tr -d ':[:space:]' | tr '[:upper:]' '[:lower:]')"
@@ -116,6 +128,16 @@ actual_cert_sha256="$(openssl x509 -in "$temp_dir/certificate.pem" -noout -finge
 
 java -jar "$bundletool" validate --bundle="$aab" >"$temp_dir/bundletool-validate.log"
 java -jar "$bundletool" dump manifest --bundle="$aab" --module=base >"$temp_dir/manifest.xml"
+unzip -p "$aab" base/resources.pb >"$temp_dir/resources.pb"
+
+for expected_resource_value in \
+    "$expected_admob_app_id" \
+    "$expected_admob_banner_id" \
+    "$expected_privacy_policy_url"; do
+    if ! grep -aFq -- "$expected_resource_value" "$temp_dir/resources.pb"; then
+        fail "AAB resources do not contain the expected protected release configuration"
+    fi
+done
 
 python3 - "$temp_dir/manifest.xml" "$expected_package" "$expected_version_code" "$expected_version_name" <<'PY'
 import sys
@@ -138,6 +160,23 @@ for name, expected_value in expected.items():
     if actual[name] != expected_value:
         raise SystemExit(
             f"ERROR: manifest {name} mismatch: expected {expected_value!r}, got {actual[name]!r}"
+        )
+
+application = root.find("application")
+if application is None:
+    raise SystemExit("ERROR: manifest application element is missing")
+
+provider_states = {
+    provider.attrib.get(android + "name"): provider.attrib.get(android + "enabled", "true")
+    for provider in application.findall("provider")
+}
+for provider_name in (
+    "com.google.android.gms.ads.MobileAdsInitProvider",
+    "com.google.firebase.provider.FirebaseInitProvider",
+):
+    if provider_states.get(provider_name) != "false":
+        raise SystemExit(
+            f"ERROR: external SDK auto-initializer is not disabled: {provider_name}"
         )
 PY
 

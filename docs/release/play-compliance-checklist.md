@@ -12,17 +12,17 @@ Google Play, Firebase, AdMob, Google Cloud, or physical-device check has run.
 - `BLOCKED`: a known mismatch must be resolved before release promotion.
 - `NOT APPLICABLE`: the reviewed requirement does not apply, with a reason.
 
-## Release Blockers
+## Code Readiness And External Blockers
 
 | Gate | Status | Code evidence | Responsible action | Evidence path |
 | --- | --- | --- | --- | --- |
-| Target API for an update submitted on or after 2026-08-31 | `BLOCKED` | `app/build.gradle.kts` has `targetSdk = 35`; the current policy requires API 36 from 2026-08-31. | Android owner: migrate to and verify target API 36 before submitting an update on/after the deadline. | CI links plus final merged manifest and AAB identity in `rollout-record.md` |
-| Public privacy policy | `BLOCKED` | No tracked in-app privacy-policy URL or dedicated privacy screen exists. The FAQ is not a substitute for the required public policy. | Privacy owner: publish an active, public, non-PDF policy naming the app/developer; add its URL to the app and store configuration; reconcile it with `data-safety-inventory.md`. | URL, dated screenshot from app, and dated store-configuration screenshot |
-| Production AdMob resource provenance | `BLOCKED` | `app/src/main/AndroidManifest.xml` references `@string/admob_key_app_id`; screens reference `admob_key_bottom_banner`. `app/src/main/res/values/ads_key_ids.xml` is ignored and absent from `HEAD`, while the protected workflow does not create it. A clean protected build therefore has no repository-proven resource. | Android/ads owner: choose tracked public IDs or generate the resource in the protected workflow; then extend signed-AAB verification to confirm the expected app ID in the merged manifest and banner ID in resources. Never record a secret as an ad unit ID. | Protected workflow link, redacted resource provenance, and signed-manifest verification output |
-| Production consent withdrawal | `BLOCKED` | `SettingsScreen.kt` invokes `ConsentInformation.reset()`. Google's UMP documentation defines `reset()` for testing; production privacy choices should use the privacy-options form/status. The callback also does not synchronize the app-wide ad eligibility flag. | Android/privacy owner: replace the test reset flow, expose the required privacy-options entry point, synchronize ad eligibility, and add regression tests before the candidate build. | Code review, tests, and EEA/non-EEA device evidence |
+| Target API for an update submitted on or after 2026-08-31 | `CODE-VERIFIED` | `app/build.gradle.kts` has `compileSdk = 36` and `targetSdk = 36`; release CI runs instrumentation on API 36. | Release owner: confirm Play accepts the exact signed candidate and retain the merged-manifest/AAB evidence. | CI links plus final merged manifest and AAB identity in `rollout-record.md` |
+| Public privacy policy | `PENDING` | A dedicated bilingual in-app screen is reachable from Settings. `PRIVACY_POLICY_URL_RELEASE` is required, HTTPS-validated, and embedded in release resources. Debug builds leave the external link disabled. | Privacy owner: publish an active, public, non-PDF policy naming the app/developer, set the protected variable, enter the same Play Console public policy URL, and reconcile it with `data-safety-inventory.md`. | Hosted URL, dated in-app screenshot, protected-run verifier output, and dated store-configuration screenshot |
+| AdMob release resource provenance | `CODE-VERIFIED` | Clean builds generate safe Google test IDs for debug. Protected release preparation requires and validates `ADMOB_APP_ID_RELEASE` and `ADMOB_BANNER_ID_RELEASE`, rejects Google test IDs, and the signed-AAB verifier checks both embedded resource values. The ignored local `ads_key_ids.xml` is excluded from every source set. | Ads owner: configure approved protected variables and verify delivery only through the internal track. | Protected workflow link, verifier output, and internal-track evidence |
+| Consent gating and withdrawal | `CODE-VERIFIED` | `AdsConsentCoordinator` defaults eligibility to false, initializes Mobile Ads once only after UMP `canRequestAds()`, disables ad composition while unresolved/withdrawn, and Settings uses `showPrivacyOptionsForm()` only when required. Auto-init is disabled in the merged manifest. | Privacy/QA owner: execute the regional, withdrawal, relaunch, and offline matrix against the published UMP configuration. | Unit/UI test reports plus regional device evidence |
 
-Do not create a release candidate until every `BLOCKED` row is resolved in a
-new commit and re-reviewed. Local untracked files are not acceptable evidence.
+Do not promote a release candidate while a required `PENDING` external gate or
+any `BLOCKED` row lacks owner evidence. Local untracked files are not evidence.
 
 ## App And Permission Reconciliation
 
@@ -55,11 +55,11 @@ new commit and re-reviewed. Local untracked files are not acceptable evidence.
 | Maps API restriction | `PENDING` | Google Cloud owner: restrict the key to Maps SDK for Android and remove unrelated APIs. | Redacted API-restriction screenshot |
 | Play App Signing certificate match | `PENDING` | Release owner: compare the Play app-signing certificate to the Maps restriction and compare the upload certificate SHA-256 to `RELEASE_CERT_SHA256`. | Dated certificate screenshots and signed-AAB verifier output |
 | Maps package/install check | `PENDING` | QA owner: install from the internal track and verify tiles, marker selection, manual position, recentering, and offline failure behavior. | Device-matrix result and screenshots |
-| production AdMob app/banner IDs in signed artifact | `PENDING` | Ads/release owner: after resolving resource provenance, verify the signed manifest/resource table uses approved production IDs, while the configured test device alone receives test ads. | Redacted verifier output and internal-track screenshots |
+| production AdMob app/banner IDs in signed artifact | `PENDING` | Ads/release owner: confirm protected variables contain the approved IDs, review signed-AAB verifier evidence, and verify the internal-track build receives production inventory under the final consent configuration. | Redacted verifier output and internal-track screenshots |
 | EEA consent | `PENDING` | Privacy owner: use UMP debug geography on a registered test device; verify first-run form, accept/reject paths, privacy-options visibility, withdrawal, relaunch, and ad eligibility. | Dated test sheet/screenshots; no consent payload values |
 | non-EEA consent | `PENDING` | Privacy owner: test non-EEA/default geography and confirm UMP status and ad behavior match configured messages. | Dated test sheet/screenshots |
 | Regulated US consent | `PENDING` | Privacy owner: test configured US-state messaging and opt-out/privacy-options behavior where applicable. | Dated test sheet/screenshots |
-| Consent withdrawal | `PENDING` | QA owner: after the code blocker is fixed, change consent through the production privacy-options entry point and verify app-wide banner eligibility updates without process restart. | Screen recording and diagnostic categories only |
+| Consent withdrawal | `PENDING` | QA owner: change consent through the production privacy-options entry point and verify app-wide banner eligibility updates without process restart. | Screen recording and diagnostic categories only |
 | Consent offline/failure | `PENDING` | QA owner: cold start and relaunch offline, with stale/no consent info; verify UI remains usable and ads are not requested unless UMP reports `canRequestAds()`. | Network-condition matrix and screenshots |
 | Crashlytics delivery | `PENDING` | Firebase owner: verify a controlled nonfatal/fatal from the internal build reaches the intended project, has correct version, and is deobfuscated using the matching mapping receipt. Remove the trigger afterward. | Redacted event screenshot, CI link, mapping receipt |
 
@@ -71,7 +71,7 @@ rebuild between tracks.
 | Gate | Status | Responsible action | Required evidence |
 | --- | --- | --- | --- |
 | internal testing install | `PENDING` | Release owner: upload the verified AAB manually, install from the Play link, and match package/version/certificate to provenance. | Play acceptance screenshot, install result, provenance hashes |
-| API/device matrix | `PENDING` | QA owner: cover API 26 minimum, API 35/36, a low/mid-tier physical device, a current physical device, EN/IT, light/dark, large text, and representative screen sizes. | Completed `device-test-matrix.md` with serials redacted |
+| API/device matrix | `PENDING` | QA owner: cover API 26 minimum, API 36, a low/mid-tier physical device, a current physical device, EN/IT, light/dark, large text, and representative screen sizes. | Completed `device-test-matrix.md` with serials redacted |
 | Fresh install and permission paths | `PENDING` | QA owner: test precise, approximate-only, denied, permanent denial, manual/default location, and process restart. | Completed matrix and screenshots |
 | current-public upgrade | `PENDING` | QA/release owner: install the actual current public version from Play, preserve data, upgrade through internal testing, and verify Room/DataStore behavior. | Before/after version and data evidence |
 | Ads/consent/Maps/network/offline | `PENDING` | QA/privacy owner: execute every scenario above on internal-track builds. | Scenario table and timestamps |

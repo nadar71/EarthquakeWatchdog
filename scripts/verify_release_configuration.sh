@@ -55,9 +55,15 @@ require_absent_text "$BUILD_FILE" "implementation(libs.androidx.ui.tooling)" "re
 require_text "$BUILD_FILE" "tasks.register(\"validateReleaseSecrets\")" "release secret validation task"
 require_text "$BUILD_FILE" "validateReleaseTaskGraph()" "task-graph release secret validation"
 
-for secret_name in release_keyAlias release_keyPassword release_storeFile release_storePassword MAPS_API_KEY_RELEASE; do
+for secret_name in \
+    release_keyAlias release_keyPassword release_storeFile release_storePassword \
+    MAPS_API_KEY_RELEASE ADMOB_APP_ID_RELEASE ADMOB_BANNER_ID_RELEASE \
+    PRIVACY_POLICY_URL_RELEASE; do
     require_text "$BUILD_FILE" "\"$secret_name\"" "required release secret name $secret_name"
 done
+
+require_text "$BUILD_FILE" "targetSdk = 36" "Play target API 36"
+require_text "$BUILD_FILE" 'manifestPlaceholders["EXTERNAL_SDK_AUTO_INIT_ENABLED"] = "false"' "consent-gated external SDK initialization"
 
 require_text "$BUILD_FILE" "MAPS_API_KEY_DEBUG" "separate debug Maps key"
 require_text "$BUILD_FILE" "manifestPlaceholders[\"MAPS_API_KEY\"] = releaseSecret" "release Maps key placeholder"
@@ -127,6 +133,9 @@ readonly TEST_KEYSTORE_FILE="$TEMP_DIRECTORY/release-test.keystore"
 readonly TEST_KEY_ALIAS="release-test-alias"
 readonly TEST_KEY_PASSWORD="release-test-password"
 readonly TEST_MAPS_KEY="release-test-maps-key"
+readonly TEST_ADMOB_APP_ID="ca-app-pub-1234567890123456~1234567890"
+readonly TEST_ADMOB_BANNER_ID="ca-app-pub-1234567890123456/1234567890"
+readonly TEST_PRIVACY_POLICY_URL="https://example.invalid/earthquake-watchdog/privacy"
 readonly FIREBASE_CONFIG_FILE="$PROJECT_ROOT/app/google-services.json"
 readonly FIREBASE_CONFIG_BACKUP="$TEMP_DIRECTORY/google-services.json.backup"
 had_existing_firebase_config=false
@@ -174,7 +183,7 @@ expect_release_configuration_failure() {
         exit 1
     fi
 
-    if ! grep -Fq 'Missing required release secrets: release_keyAlias, release_keyPassword, release_storeFile, release_storePassword, MAPS_API_KEY_RELEASE' "$log_file"; then
+    if ! grep -Fq 'Missing required release secrets: release_keyAlias, release_keyPassword, release_storeFile, release_storePassword, MAPS_API_KEY_RELEASE, ADMOB_APP_ID_RELEASE, ADMOB_BANNER_ID_RELEASE, PRIVACY_POLICY_URL_RELEASE' "$log_file"; then
         print_gradle_log_tail "$log_file" "$task_selector"
         printf 'FAIL: %s did not name every missing secret\n' "$task_selector" >&2
         exit 1
@@ -227,6 +236,9 @@ if "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
     -Prelease_storeFile="$TEST_KEYSTORE_FILE" \
     -Prelease_storePassword="$TEST_KEY_PASSWORD" \
     -PMAPS_API_KEY_RELEASE="$TEST_MAPS_KEY" \
+    -PADMOB_APP_ID_RELEASE="$TEST_ADMOB_APP_ID" \
+    -PADMOB_BANNER_ID_RELEASE="$TEST_ADMOB_BANNER_ID" \
+    -PPRIVACY_POLICY_URL_RELEASE="$TEST_PRIVACY_POLICY_URL" \
     :app:bundleRelease --dry-run --offline > "$TEMP_DIRECTORY/missing-firebase-config.log" 2>&1; then
     print_gradle_log_tail "$TEMP_DIRECTORY/missing-firebase-config.log" "missing Firebase configuration"
     printf 'FAIL: :app:bundleRelease configured without Firebase configuration\n' >&2
@@ -272,6 +284,9 @@ if "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
     -Prelease_storeFile="$TEST_KEYSTORE_FILE" \
     -Prelease_storePassword="$TEST_KEY_PASSWORD" \
     -PMAPS_API_KEY_RELEASE="$TEST_MAPS_KEY" \
+    -PADMOB_APP_ID_RELEASE="$TEST_ADMOB_APP_ID" \
+    -PADMOB_BANNER_ID_RELEASE="$TEST_ADMOB_BANNER_ID" \
+    -PPRIVACY_POLICY_URL_RELEASE="$TEST_PRIVACY_POLICY_URL" \
     :app:validateStoreReleaseConfiguration --offline > "$TEMP_DIRECTORY/store-mapping-opt-in.log" 2>&1; then
     print_gradle_log_tail "$TEMP_DIRECTORY/store-mapping-opt-in.log" "store mapping upload opt-in"
     printf 'FAIL: store release validation accepted mapping upload without explicit opt-in\n' >&2
@@ -291,6 +306,9 @@ if ! "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
     -Prelease_storeFile="$TEST_KEYSTORE_FILE" \
     -Prelease_storePassword="$TEST_KEY_PASSWORD" \
     -PMAPS_API_KEY_RELEASE="$TEST_MAPS_KEY" \
+    -PADMOB_APP_ID_RELEASE="$TEST_ADMOB_APP_ID" \
+    -PADMOB_BANNER_ID_RELEASE="$TEST_ADMOB_BANNER_ID" \
+    -PPRIVACY_POLICY_URL_RELEASE="$TEST_PRIVACY_POLICY_URL" \
     -PcrashlyticsMappingUploadEnabled=true \
     :app:validateStoreReleaseConfiguration --offline > "$TEMP_DIRECTORY/store-mapping-opt-in-success.log" 2>&1; then
     print_gradle_log_tail "$TEMP_DIRECTORY/store-mapping-opt-in-success.log" "store mapping upload opt-in"
@@ -305,6 +323,9 @@ if ! "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
     -Prelease_storeFile="$TEST_KEYSTORE_FILE" \
     -Prelease_storePassword="$TEST_KEY_PASSWORD" \
     -PMAPS_API_KEY_RELEASE="$TEST_MAPS_KEY" \
+    -PADMOB_APP_ID_RELEASE="$TEST_ADMOB_APP_ID" \
+    -PADMOB_BANNER_ID_RELEASE="$TEST_ADMOB_BANNER_ID" \
+    -PPRIVACY_POLICY_URL_RELEASE="$TEST_PRIVACY_POLICY_URL" \
     -PcrashlyticsMappingUploadEnabled=false \
     :app:bundleRelease --rerun-tasks --offline > "$TEMP_DIRECTORY/release-build.log" 2>&1; then
     print_gradle_log_tail "$TEMP_DIRECTORY/release-build.log" "synthetic minified release bundle"
@@ -331,6 +352,9 @@ if ! "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
     -Prelease_storeFile="$TEST_KEYSTORE_FILE" \
     -Prelease_storePassword="$TEST_KEY_PASSWORD" \
     -PMAPS_API_KEY_RELEASE="$TEST_MAPS_KEY" \
+    -PADMOB_APP_ID_RELEASE="$TEST_ADMOB_APP_ID" \
+    -PADMOB_BANNER_ID_RELEASE="$TEST_ADMOB_BANNER_ID" \
+    -PPRIVACY_POLICY_URL_RELEASE="$TEST_PRIVACY_POLICY_URL" \
     -PcrashlyticsMappingUploadEnabled=false \
     :app:assembleRelease --rerun-tasks --offline > "$TEMP_DIRECTORY/release-apk-build.log" 2>&1; then
     print_gradle_log_tail "$TEMP_DIRECTORY/release-apk-build.log" "synthetic minified release APK"
@@ -365,6 +389,9 @@ if ! "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
     -Prelease_storeFile="$TEST_KEYSTORE_FILE" \
     -Prelease_storePassword="$TEST_KEY_PASSWORD" \
     -PMAPS_API_KEY_RELEASE="$TEST_MAPS_KEY" \
+    -PADMOB_APP_ID_RELEASE="$TEST_ADMOB_APP_ID" \
+    -PADMOB_BANNER_ID_RELEASE="$TEST_ADMOB_BANNER_ID" \
+    -PPRIVACY_POLICY_URL_RELEASE="$TEST_PRIVACY_POLICY_URL" \
     :app:validateReleaseSecrets --quiet > "$TEMP_DIRECTORY/validate-release-secrets.log" 2>&1; then
     print_gradle_log_tail "$TEMP_DIRECTORY/validate-release-secrets.log" "release secret validation"
     printf 'FAIL: release secret validation rejected non-empty test inputs\n' >&2

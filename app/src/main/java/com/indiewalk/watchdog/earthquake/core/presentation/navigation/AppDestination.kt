@@ -27,6 +27,9 @@ sealed interface AppDestination : NavKey {
     data object Credits : AppDestination
 
     @Serializable
+    data object PrivacyPolicy : AppDestination
+
+    @Serializable
     data class Details(val id: String) : AppDestination
 }
 
@@ -38,6 +41,7 @@ val AppDestination.isTopLevel: Boolean
         AppDestination.Settings -> true
         AppDestination.Intro,
         AppDestination.Credits,
+        AppDestination.PrivacyPolicy,
         is AppDestination.Details -> false
     }
 

@@ -18,10 +18,11 @@ Use these records together:
 1. Confirm the release commit is on the intended protected branch and the
    required `repository-hygiene`, `unit-lint-build`, and `instrumentation`
    checks are green.
-2. Resolve every `BLOCKED` item in `play-compliance-checklist.md`. As reviewed
-   on 2026-08-27, this includes target API 36 for updates submitted on/after
-   2026-08-31, a public in-app/store privacy-policy link, clean-checkout
-   production AdMob resource provenance, and removal of the UMP test-reset path.
+2. Confirm every code-level row in `play-compliance-checklist.md` remains
+   `CODE-VERIFIED`: target API 36, fail-closed UMP/ad gating, generated release
+   AdMob resources, and the bilingual in-app privacy screen. The hosted policy,
+   Play Console public policy URL, protected production values, and regional
+   consent behavior remain external `PENDING` gates until owners attach evidence.
 3. Keep physical-device, Maps, location, ads/consent, Room upgrade, Crashlytics
    delivery, and representative-device performance checks `PENDING` until the
    owner completes them and attaches evidence. Do not convert code inspection

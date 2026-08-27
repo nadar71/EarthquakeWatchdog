@@ -58,7 +58,8 @@ class ProductionOperationsDocsTest(unittest.TestCase):
             self.assertIn(topic.casefold(), content.casefold(), topic)
 
         self.assertIn("com.indiewalk.watchdog.earthquake", content)
-        self.assertIn("ads_key_ids.xml", content)
+        self.assertIn("ADMOB_APP_ID_RELEASE", content)
+        self.assertIn("PRIVACY_POLICY_URL_RELEASE", content)
         self.assertIn("Responsible action", content)
         self.assertIn("Evidence path", content)
 
@@ -209,6 +210,26 @@ class ProductionOperationsDocsTest(unittest.TestCase):
             ledger = ledger_path.read_text(encoding="utf-8")
             self.assertIn("Task 10", ledger)
             self.assertIn("PENDING", ledger)
+
+    def test_code_level_release_blockers_are_resolved_without_claiming_external_completion(self) -> None:
+        build = self.read("app/build.gradle.kts")
+        consent = self.read(
+            "app/src/main/java/com/indiewalk/watchdog/earthquake/feat_ads/data/UmpConsentClient.kt"
+        )
+        app = self.read("app/src/main/java/com/indiewalk/watchdog/earthquake/EarthquakeApp.kt")
+        settings = self.read(
+            "app/src/main/java/com/indiewalk/watchdog/earthquake/feat_settings/presentation/ui/SettingsScreen.kt"
+        )
+        compliance = self.read("docs/release/play-compliance-checklist.md")
+
+        self.assertIn("targetSdk = 36", build)
+        self.assertIn('EXTERNAL_SDK_AUTO_INIT_ENABLED\"] = \"false', build)
+        self.assertIn("showPrivacyOptionsForm", consent)
+        self.assertNotIn(".reset()", settings)
+        self.assertNotIn("MobileAds.initialize", app)
+        self.assertIn("PRIVACY_POLICY_URL_RELEASE", compliance)
+        self.assertIn("Play Console public policy URL", compliance)
+        self.assertNotIn("targetSdk = 35", compliance)
 
 
 if __name__ == "__main__":

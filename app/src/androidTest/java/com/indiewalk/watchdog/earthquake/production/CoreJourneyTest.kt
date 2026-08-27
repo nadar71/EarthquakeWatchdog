@@ -50,6 +50,10 @@ class AppNavigationHostRoutingJourneyTest {
         composeRule.onNodeWithText("credits").assertExists()
         composeRule.onNodeWithTag("routing-credits-back").performClick()
         composeRule.onNodeWithText("settings").assertExists()
+        composeRule.onNodeWithTag("routing-settings-privacy").performClick()
+        composeRule.onNodeWithText("privacy-policy").assertExists()
+        composeRule.onNodeWithTag("routing-privacy-back").performClick()
+        composeRule.onNodeWithText("settings").assertExists()
     }
 
     private fun setHostContent() {
@@ -117,16 +121,25 @@ private object RoutingScreenFactory : AppNavigationScreenFactory {
     override fun Settings(
         currentDestination: AppDestination,
         onTopLevelDestinationSelected: (AppDestination) -> Unit,
-        onOpenCredits: () -> Unit
+        onOpenCredits: () -> Unit,
+        onOpenPrivacyPolicy: () -> Unit,
+        onManageAdPrivacy: () -> Unit
     ) = Column {
         Text("settings")
         RoutingButton("routing-settings-credits", "credits", onOpenCredits)
+        RoutingButton("routing-settings-privacy", "privacy", onOpenPrivacyPolicy)
     }
 
     @Composable
     override fun Credits(currentDestination: AppDestination, onBack: () -> Unit) = Column {
         Text("credits")
         RoutingButton("routing-credits-back", "back", onBack)
+    }
+
+    @Composable
+    override fun PrivacyPolicy(currentDestination: AppDestination, onBack: () -> Unit) = Column {
+        Text("privacy-policy")
+        RoutingButton("routing-privacy-back", "back", onBack)
     }
 
     @Composable

@@ -5,6 +5,7 @@ import org.gradle.kotlin.dsl.configure
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import java.util.Properties
 import java.io.FileInputStream
+import java.net.URI
 
 val keystorePropertiesFile = providers.gradleProperty("releaseSecretsFile")
     .orNull
@@ -23,7 +24,10 @@ val requiredReleaseSecretNames = listOf(
     "release_keyPassword",
     "release_storeFile",
     "release_storePassword",
-    "MAPS_API_KEY_RELEASE"
+    "MAPS_API_KEY_RELEASE",
+    "ADMOB_APP_ID_RELEASE",
+    "ADMOB_BANNER_ID_RELEASE",
+    "PRIVACY_POLICY_URL_RELEASE"
 )
 
 fun releaseSecret(name: String): String? = sequenceOf(
@@ -34,6 +38,36 @@ fun releaseSecret(name: String): String? = sequenceOf(
 
 fun missingReleaseSecrets(): List<String> =
     requiredReleaseSecretNames.filter { releaseSecret(it).isNullOrBlank() }
+
+fun validateProtectedReleaseConfiguration() {
+    val appId = releaseSecret("ADMOB_APP_ID_RELEASE").orEmpty()
+    val bannerId = releaseSecret("ADMOB_BANNER_ID_RELEASE").orEmpty()
+    val privacyPolicyUrl = releaseSecret("PRIVACY_POLICY_URL_RELEASE").orEmpty()
+    val testPublisher = "ca-app-pub-3940256099942544"
+
+    check(Regex("ca-app-pub-[0-9]{16}~[0-9]{10}").matches(appId)) {
+        "ADMOB_APP_ID_RELEASE has an unsupported format"
+    }
+    check(Regex("ca-app-pub-[0-9]{16}/[0-9]{10}").matches(bannerId)) {
+        "ADMOB_BANNER_ID_RELEASE has an unsupported format"
+    }
+    check(!appId.startsWith(testPublisher) && !bannerId.startsWith(testPublisher)) {
+        "Release AdMob configuration must not use Google test ids"
+    }
+    check(appId.substringBefore('~') == bannerId.substringBefore('/')) {
+        "Release AdMob app and banner ids must use the same publisher"
+    }
+
+    val uri = runCatching { URI(privacyPolicyUrl) }.getOrNull()
+    check(
+        uri?.scheme == "https" &&
+            !uri.host.isNullOrBlank() &&
+            uri.userInfo == null &&
+            uri.fragment == null
+    ) {
+        "PRIVACY_POLICY_URL_RELEASE must be a public HTTPS URL"
+    }
+}
 
 fun validateReleaseTaskGraph() {
     val releasePackagingTaskNames = setOf(
@@ -58,6 +92,7 @@ fun validateReleaseTaskGraph() {
                 "Missing required Firebase configuration: app/google-services.json. " +
                     "Provision it from the protected release environment before packaging a store build."
             }
+            validateProtectedReleaseConfiguration()
         }
     })
 }
@@ -103,13 +138,16 @@ android {
     defaultConfig {
         applicationId = "com.indiewalk.watchdog.earthquake"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 11
         versionName = "3.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["MAPS_API_KEY"] = ""
-        manifestPlaceholders["EXTERNAL_SDK_AUTO_INIT_ENABLED"] = "true"
+        manifestPlaceholders["EXTERNAL_SDK_AUTO_INIT_ENABLED"] = "false"
+        resValue("string", "admob_key_app_id", "ca-app-pub-3940256099942544~3347511713")
+        resValue("string", "admob_key_bottom_banner", "ca-app-pub-3940256099942544/6300978111")
+        resValue("string", "privacy_policy_public_url", "")
     }
 
     buildTypes {
@@ -123,6 +161,9 @@ android {
             signingConfig = signingConfigs.getByName("release")
             manifestPlaceholders["MAPS_API_KEY"] = releaseSecret("MAPS_API_KEY_RELEASE") ?: ""
             manifestPlaceholders["CRASHLYTICS_COLLECTION_ENABLED"] = "true"
+            resValue("string", "admob_key_app_id", releaseSecret("ADMOB_APP_ID_RELEASE") ?: "")
+            resValue("string", "admob_key_bottom_banner", releaseSecret("ADMOB_BANNER_ID_RELEASE") ?: "")
+            resValue("string", "privacy_policy_public_url", releaseSecret("PRIVACY_POLICY_URL_RELEASE") ?: "")
             if (hasFirebaseConfiguration) {
                 extensions.configure<CrashlyticsExtension> {
                     mappingFileUploadEnabled = providers.gradleProperty("crashlyticsMappingUploadEnabled")
@@ -155,6 +196,7 @@ android {
         buildConfig = true
     }
     sourceSets["androidTest"].assets.srcDir("$projectDir/schemas")
+    sourceSets["main"].res.exclude("values/ads_key_ids.xml")
 }
 
 androidComponents {
@@ -175,6 +217,7 @@ tasks.register("validateReleaseSecrets") {
         check(missing.isEmpty()) {
             "Missing required release secrets: ${missing.joinToString(", ")}"
         }
+        validateProtectedReleaseConfiguration()
     }
 }
 

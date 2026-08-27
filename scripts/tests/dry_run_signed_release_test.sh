@@ -39,6 +39,9 @@ export release_storePassword="task9-disposable-store-password"
 export MAPS_API_KEY_RELEASE="task9-disposable-maps-placeholder"
 export FIREBASE_PROJECT_ID="earthquake-task9-disposable"
 export FIREBASE_APP_ID="1:123456789:android:task9disposable"
+export ADMOB_APP_ID_RELEASE="ca-app-pub-1234567890123456~1234567890"
+export ADMOB_BANNER_ID_RELEASE="ca-app-pub-1234567890123456/1234567890"
+export PRIVACY_POLICY_URL_RELEASE="https://example.invalid/earthquake-watchdog/privacy"
 
 keytool -genkeypair \
     -alias "$release_keyAlias" \
@@ -113,6 +116,9 @@ CRASHLYTICS_MAPPING_UPLOAD_REQUESTED=false \
         --expected-version-code 11 \
         --expected-version-name 3.0.0 \
         --expected-cert-sha256 "$CERT_SHA256" \
+        --expected-admob-app-id "$ADMOB_APP_ID_RELEASE" \
+        --expected-admob-banner-id "$ADMOB_BANNER_ID_RELEASE" \
+        --expected-privacy-policy-url "$PRIVACY_POLICY_URL_RELEASE" \
         --output-dir "$VERIFIED_DIR"
 
 BUNDLETOOL_FIXTURE="$BUNDLETOOL" \

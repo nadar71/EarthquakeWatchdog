@@ -45,10 +45,14 @@ Set these non-secret variables on `production-release`:
 | `RELEASE_CERT_SHA256` | Approved SHA-256 fingerprint of the Play upload certificate. |
 | `FIREBASE_PROJECT_ID` | Exact `project_info.project_id` from the production Firebase configuration. |
 | `FIREBASE_APP_ID` | Exact `client_info.mobilesdk_app_id` for the production Android client with package `com.indiewalk.watchdog.earthquake`. |
+| `ADMOB_APP_ID_RELEASE` | Approved production AdMob app ID in `ca-app-pub-<16 digits>~<10 digits>` format. Google test IDs are rejected. |
+| `ADMOB_BANNER_ID_RELEASE` | Approved production banner unit ID for the same publisher in `ca-app-pub-<16 digits>/<10 digits>` format. Google test IDs are rejected. |
+| `PRIVACY_POLICY_URL_RELEASE` | Public HTTPS privacy-policy URL, without credentials or a fragment. It is embedded in the in-app policy screen and must match Play Console. |
 
-Do not invent either Firebase identifier and do not commit them solely to make
-CI pass. Read both from the approved production Firebase project and compare
-them with the decoded configuration before the first protected run.
+Do not invent Firebase or AdMob identifiers and do not commit them solely to
+make CI pass. Read them from the approved production projects. Publish and
+review the policy before setting `PRIVACY_POLICY_URL_RELEASE`; the workflow
+validates syntax and artifact embedding, not public availability or legal text.
 
 `RELEASE_CERT_SHA256` may include colons. Obtain it from the keystore while
 allowing `keytool` to prompt for the password:

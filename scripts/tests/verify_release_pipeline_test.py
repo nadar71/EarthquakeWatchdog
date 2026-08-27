@@ -47,6 +47,9 @@ class ReleasePipelineContractTest(unittest.TestCase):
             "GOOGLE_SERVICES_JSON_BASE64",
             "FIREBASE_PROJECT_ID",
             "FIREBASE_APP_ID",
+            "ADMOB_APP_ID_RELEASE",
+            "ADMOB_BANNER_ID_RELEASE",
+            "PRIVACY_POLICY_URL_RELEASE",
         ):
             self.assertIn(name, self.workflow)
             self.assertIn(name, self.prepare)
@@ -64,7 +67,7 @@ class ReleasePipelineContractTest(unittest.TestCase):
         self.assertIn("scripts/verify_repository_hygiene.sh", self.workflow)
         self.assertIn("scripts/tests/verify_github_actions_test.py", self.workflow)
         self.assertIn("scripts/tests/verify_release_pipeline_test.py", self.workflow)
-        self.assertIn("name: release-instrumentation-api-35", self.workflow)
+        self.assertIn("name: release-instrumentation-api-36", self.workflow)
         self.assertIn("uses: ./.github/actions/enable-kvm", self.workflow)
         self.assertIn(":app:connectedDebugAndroidTest", self.workflow)
         self.assertRegex(
@@ -96,6 +99,17 @@ class ReleasePipelineContractTest(unittest.TestCase):
         self.assertIn("FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID }}", self.workflow)
         self.assertIn('os.environ["RELEASE_EXPECTED_FIREBASE_PROJECT_ID"]', self.prepare)
         self.assertIn('os.environ["RELEASE_EXPECTED_FIREBASE_APP_ID"]', self.prepare)
+
+    def test_ads_and_policy_configuration_come_from_protected_environment_variables(self) -> None:
+        for name in (
+            "ADMOB_APP_ID_RELEASE",
+            "ADMOB_BANNER_ID_RELEASE",
+            "PRIVACY_POLICY_URL_RELEASE",
+        ):
+            self.assertIn(f"{name}: ${{{{ vars.{name} }}}}", self.workflow)
+            self.assertIn(name, self.prepare)
+        self.assertIn("ca-app-pub-3940256099942544", self.prepare)
+        self.assertIn("https", self.prepare)
 
     def test_mapping_upload_receipt_is_written_only_after_upload_task(self) -> None:
         upload = self.workflow.index(":app:uploadCrashlyticsMappingFileRelease")
@@ -132,6 +146,8 @@ class ReleasePipelineContractTest(unittest.TestCase):
             "proguard.map",
             "SHA256SUMS",
             "release-provenance.json",
+            "MobileAdsInitProvider",
+            "FirebaseInitProvider",
         ):
             self.assertIn(required, self.verify)
 
