@@ -69,6 +69,7 @@ plugins { // plugin application
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
+    alias(libs.plugins.androidx.baselineprofile)
 }
 
 if (hasFirebaseConfiguration) {
@@ -138,6 +139,7 @@ android {
                 ?: ""
             manifestPlaceholders["CRASHLYTICS_COLLECTION_ENABLED"] = "false"
         }
+
     }
 
     compileOptions {
@@ -236,6 +238,7 @@ dependencies {
     // google-services.json is present; release packaging validates that it is required.
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
+    implementation(libs.androidx.profileinstaller)
 
     // Room
     implementation(libs.androidx.room.runtime)
@@ -275,5 +278,11 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    baselineProfile(project(":benchmark"))
 
+}
+
+baselineProfile {
+    // Generation is an explicit connected-device task; release packaging uses checked-in rules.
+    automaticGenerationDuringBuild = false
 }

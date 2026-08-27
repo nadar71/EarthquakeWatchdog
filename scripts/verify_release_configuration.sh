@@ -8,6 +8,7 @@ readonly MANIFEST_FILE="$PROJECT_ROOT/app/src/main/AndroidManifest.xml"
 readonly BACKUP_RULES_FILE="$PROJECT_ROOT/app/src/main/res/xml/backup_rules.xml"
 readonly EXTRACTION_RULES_FILE="$PROJECT_ROOT/app/src/main/res/xml/data_extraction_rules.xml"
 readonly NETWORK_CONFIG_FILE="$PROJECT_ROOT/app/src/main/res/xml/network_security_config.xml"
+readonly BENCHMARK_ISOLATION_VERIFIER="$PROJECT_ROOT/scripts/verify_benchmark_isolation.sh"
 
 failures=0
 
@@ -46,6 +47,7 @@ require_absent_text() {
 require_file "$BUILD_FILE" "app Gradle configuration"
 require_file "$PROGUARD_FILE" "ProGuard configuration"
 require_file "$MANIFEST_FILE" "Android manifest"
+require_file "$BENCHMARK_ISOLATION_VERIFIER" "benchmark isolation verifier"
 
 require_text "$BUILD_FILE" "isMinifyEnabled = true" "release minification"
 require_text "$BUILD_FILE" "isShrinkResources = true" "release resource shrinking"
@@ -319,6 +321,40 @@ fi
 if [[ ! -s "$PROJECT_ROOT/app/build/outputs/bundle/release/app-release.aab" ]]; then
     print_gradle_log_tail "$TEMP_DIRECTORY/release-build.log" "synthetic minified release bundle"
     printf 'FAIL: release AAB output was not generated\n' >&2
+    exit 1
+fi
+
+if ! "$PROJECT_ROOT/gradlew" -p "$PROJECT_ROOT" \
+    -PreleaseSecretsFile="$EMPTY_SECRETS_FILE" \
+    -Prelease_keyAlias="$TEST_KEY_ALIAS" \
+    -Prelease_keyPassword="$TEST_KEY_PASSWORD" \
+    -Prelease_storeFile="$TEST_KEYSTORE_FILE" \
+    -Prelease_storePassword="$TEST_KEY_PASSWORD" \
+    -PMAPS_API_KEY_RELEASE="$TEST_MAPS_KEY" \
+    -PcrashlyticsMappingUploadEnabled=false \
+    :app:assembleRelease --rerun-tasks --offline > "$TEMP_DIRECTORY/release-apk-build.log" 2>&1; then
+    print_gradle_log_tail "$TEMP_DIRECTORY/release-apk-build.log" "synthetic minified release APK"
+    printf 'FAIL: synthetic minified release APK verification failed\n' >&2
+    exit 1
+fi
+
+if [[ ! -s "$PROJECT_ROOT/app/build/outputs/apk/release/app-release.apk" ]]; then
+    print_gradle_log_tail "$TEMP_DIRECTORY/release-apk-build.log" "synthetic minified release APK"
+    printf 'FAIL: release APK output was not generated\n' >&2
+    exit 1
+fi
+
+if ! unzip -Z1 "$PROJECT_ROOT/app/build/outputs/bundle/release/app-release.aab" > "$TEMP_DIRECTORY/release-aab-contents.txt" \
+    || ! grep -Eq '(^|/)(baseline\.prof|baseline\.profm)$' "$TEMP_DIRECTORY/release-aab-contents.txt"; then
+    print_gradle_log_tail "$TEMP_DIRECTORY/release-build.log" "synthetic minified release bundle"
+    printf 'FAIL: release AAB does not package a baseline profile\n' >&2
+    exit 1
+fi
+
+if ! "$BENCHMARK_ISOLATION_VERIFIER" \
+    "$PROJECT_ROOT/app/build/outputs/apk/release/app-release.apk" \
+    "$PROJECT_ROOT/app/build/outputs/bundle/release/app-release.aab"; then
+    printf 'FAIL: release artifact contains benchmark-only code\n' >&2
     exit 1
 fi
 

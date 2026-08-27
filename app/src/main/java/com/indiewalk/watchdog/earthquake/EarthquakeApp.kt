@@ -6,6 +6,7 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.indiewalk.watchdog.earthquake.core.diagnostics.CrashlyticsStartup
 import com.indiewalk.watchdog.earthquake.core.diagnostics.FirebaseCrashlyticsGateway
+import com.indiewalk.watchdog.earthquake.core.performance.BenchmarkRuntime
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -17,6 +18,7 @@ class EarthquakeApp : Application() {
     }
     override fun onCreate() {
         super.onCreate()
+        if (BenchmarkRuntime.isEnabled) return
         configureCrashCollection()
         TEST_DEVICE_ID = applicationContext.getString(R.string.admob_key_test_device)
         // init admob ads

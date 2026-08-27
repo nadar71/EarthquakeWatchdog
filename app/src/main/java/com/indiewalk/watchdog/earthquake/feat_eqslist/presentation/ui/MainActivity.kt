@@ -12,6 +12,7 @@ import com.indiewalk.watchdog.earthquake.EarthquakeApp
 import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppNavigationHost
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.rememberAppNavigator
+import com.indiewalk.watchdog.earthquake.core.performance.BenchmarkRuntime
 import com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui.SettingsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.EQWatchdogTheme
@@ -25,6 +26,11 @@ class MainActivity() : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        BenchmarkRuntime.createScreenOrNull()?.let { benchmarkScreen ->
+            setContent { benchmarkScreen.Content() }
+            return
+        }
 
         // Set your test devices.
         RequestConfigurationUtils.setTestDeviceIds()
