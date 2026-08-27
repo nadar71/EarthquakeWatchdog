@@ -125,3 +125,55 @@ and invert one deterministic Compose/navigation instrumentation assertion for
 `instrumentation`. Confirm each named check blocks the PR, then revert every
 probe commit and require all three checks to turn green before merging. Never
 use real credentials or generated release artifacts as failure probes.
+
+## Task 9 Protected Signed AAB
+
+The `Android Release Bundle` workflow accepts exact `v*` version tags and
+manual dispatches that select that same exact version tag. Its
+`signed-release-aab` job is bound to the protected
+`production-release` environment, has read-only repository permission, never
+runs for pull requests, and never uploads to Google Play. Concurrent release
+runs do not cancel one another.
+
+The release transport and Gradle names are documented in
+`docs/release/github-secrets.md`. Secret preparation fails before writing files
+when any required value is absent, validates the disposable keystore and
+Firebase package, writes mode-`600` material under a mode-`700` directory, and
+uses guarded explicit/trap cleanup. Only the credential-bearing build step can
+read environment secrets.
+
+Before `:app:bundleRelease`, credential-free prerequisite jobs run
+repository/security contracts, unit tests, lint, a debug build, and the API 35
+connected instrumentation suite. Crashlytics mapping upload defaults off and can
+be enabled only by the explicit boolean input on a protected manual run. The
+workflow downloads bundletool `1.18.3` from its fixed official URL and verifies
+its pinned SHA-256 before use.
+
+`scripts/verify_aab.sh` checks the AAB signature, expected upload certificate,
+bundle structure, manifest package/version, Baseline Profile metadata, and
+embedded R8 mapping. It produces a fixed-name AAB, mapping, optional native
+symbols, JSON provenance, and `SHA256SUMS` for manual internal-track upload.
+
+### Task 9 Local Evidence
+
+| Verification | Command | Result |
+| --- | --- | --- |
+| Secret lifecycle | `bash scripts/tests/prepare_release_secrets_test.sh` | Passed for every missing variable, mode restrictions, explicit cleanup, and failure-trap cleanup using disposable credentials. |
+| Release workflow contract | `python3 scripts/tests/verify_release_pipeline_test.py` | Passed for triggers, protected environment, permissions, concurrency, exact secret names, quality ordering, pins, verification controls, retention, and no Play upload. |
+| AAB negative/positive contract | `BUNDLETOOL_FIXTURE=<verified-jar> bash scripts/tests/verify_aab_test.sh` | Passed for a signed synthetic AAB and rejected certificate, version-code, version-name, bundletool-checksum, mapping, and signed-content tampering. |
+| JVM/static quality | `./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug` | Passed: 70 JVM tests, lint, and debug APK; 60 Gradle tasks, 21 executed. |
+| Connected release gate | `ANDROID_SERIAL=emulator-5556 ./gradlew :app:connectedDebugAndroidTest` | Passed: all 29 tests on the API 35 `MathBrainer_7in` emulator. |
+| Disposable signed release | `BUNDLETOOL_FIXTURE=<verified-jar> bash scripts/tests/dry_run_signed_release_test.sh` | Passed: fresh JKS credentials and synthetic Firebase/Maps inputs produced a signed/minified AAB with mapping upload disabled; bundletool/signature/identity/profile/mapping/provenance and tamper checks passed, then all temporary credentials were removed. |
+| Real credential run | Protected GitHub environment plus Play internal testing | Pending repository owner; this task did not access real credentials, push a tag, create an environment, upload mapping, or contact Play. |
+
+### Task 9 Pending Repository-Owner Actions
+
+- Create and protect the `production-release` environment, configure required
+  reviewers/tag restrictions, and add the values in `github-secrets.md`.
+- Verify `RELEASE_CERT_SHA256` against the Play upload certificate before the
+  first run.
+- Run a packaging rehearsal with mapping upload disabled, inspect provenance,
+  then run an explicitly approved mapping upload only when Firebase delivery is
+  being verified.
+- Upload the verified AAB manually to Play internal testing and complete every
+  device/external-service check in `release-runbook.md` before Task 10 rollout.
