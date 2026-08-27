@@ -25,10 +25,19 @@ Use one of these protected entry points:
 
 - Push an exact version tag such as `v3.0.0`. Tag runs always keep
   Crashlytics mapping upload disabled.
-- Manually dispatch `Android Release Bundle` while selecting the exact
-  `v<versionName>` tag. Leave mapping upload disabled for a packaging rehearsal.
-  Set `upload_crashlytics_mapping=true` only for an approved Firebase-symbol
-  upload to the production project.
+- Manually dispatch the exact `v<versionName>` tag with GitHub CLI. The workflow
+  file must already exist on the repository default branch:
+
+```bash
+gh workflow run android-release.yml \
+  --ref v3.0.0 \
+  -f upload_crashlytics_mapping=false
+```
+
+Replace `v3.0.0` with the tag that exactly matches `versionName`. Set the input
+to `true` only for an approved Firebase-symbol upload to the production project.
+The equivalent workflow-dispatch REST request must provide the same tag as its
+`ref` and the same boolean input.
 
 Credential-free jobs run repository contracts, unit tests, lint, a debug build,
 and the API 35 connected instrumentation suite first. Only after both jobs pass
@@ -50,6 +59,7 @@ Download `verified-signed-release-aab`. It contains only publishable evidence:
 - `mapping.txt`
 - `native-debug-symbols.zip` when the Android build produced it
 - `release-provenance.json`
+- `crashlytics-mapping-upload-receipt.json` only after a requested upload completed
 - `SHA256SUMS`
 
 The verifier requires a valid JAR signature, the protected certificate
@@ -64,8 +74,11 @@ shasum -a 256 -c SHA256SUMS
 
 Read `release-provenance.json` and record its commit SHA, source ref, app
 identity, certificate fingerprint, AAB checksum, mapping checksum, bundletool
-checksum, and mapping-upload decision in the release record. Treat any mismatch
-as a rejected candidate; do not re-sign or edit the AAB.
+checksum, and mapping-upload request in the release record. Provenance records
+that upload is not completed at verification time. Only the separate receipt,
+written after the explicit Gradle upload task succeeds, records completion and
+is then included in `SHA256SUMS`. Treat any mismatch as a rejected candidate;
+do not re-sign or edit the AAB.
 
 The separate `signed-release-quality-reports` and
 `signed-release-instrumentation-reports` artifacts contain unit/lint and

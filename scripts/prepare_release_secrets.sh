@@ -9,6 +9,8 @@ readonly REQUIRED_ENV=(
     release_keyPassword
     release_storePassword
     MAPS_API_KEY_RELEASE
+    FIREBASE_PROJECT_ID
+    FIREBASE_APP_ID
 )
 
 fail() {
@@ -61,23 +63,25 @@ readonly marker_file="$output_dir/.release-secrets"
 readonly firebase_hash_file="$output_dir/app-google-services.sha256"
 
 cleanup_material() {
-    local strict="${1:-true}"
-
     if [[ ! -f "$marker_file" || -L "$marker_file" ]]; then
-        [[ "$strict" == "false" ]] && return 0
         fail "refusing cleanup because the release-secret marker is missing"
     fi
 
     local recorded_destination
     recorded_destination="$(sed -n 's/^firebase_destination=//p' "$marker_file")"
     if [[ "$recorded_destination" != "$firebase_destination" ]]; then
-        [[ "$strict" == "false" ]] && return 0
         fail "refusing cleanup because the Firebase destination does not match the marker"
     fi
 
-    if [[ -f "$firebase_destination" && -f "$firebase_hash_file" ]]; then
+    if [[ -e "$firebase_destination" ]]; then
+        [[ -f "$firebase_destination" && ! -L "$firebase_destination" ]] \
+            || fail "refusing cleanup because the Firebase destination is not a regular file"
+        [[ -f "$firebase_hash_file" && ! -L "$firebase_hash_file" ]] \
+            || fail "refusing cleanup because the Firebase hash sidecar is missing"
         local expected_hash actual_hash
         expected_hash="$(cat "$firebase_hash_file")"
+        [[ "$expected_hash" =~ ^[0-9a-f]{64}$ ]] \
+            || fail "refusing cleanup because the Firebase hash sidecar is invalid"
         actual_hash="$(python3 - "$firebase_destination" <<'PY'
 import hashlib
 import sys
@@ -87,17 +91,18 @@ with open(sys.argv[1], "rb") as source:
 PY
 )"
         if [[ "$actual_hash" != "$expected_hash" ]]; then
-            [[ "$strict" == "false" ]] && return 0
             fail "refusing cleanup because the Firebase file changed after preparation"
         fi
         rm -f -- "$firebase_destination"
+    elif [[ -e "$firebase_hash_file" ]]; then
+        fail "refusing cleanup because Firebase cleanup metadata exists without its destination file"
     fi
 
     rm -rf -- "$output_dir"
 }
 
 if [[ "$mode" == "cleanup" ]]; then
-    cleanup_material true
+    cleanup_material
     printf 'Release credentials removed.\n'
     exit 0
 fi
@@ -132,12 +137,15 @@ export RELEASE_FIREBASE_DESTINATION="$firebase_destination"
 export RELEASE_MARKER_PATH="$marker_file"
 export RELEASE_FIREBASE_HASH_PATH="$firebase_hash_file"
 export RELEASE_EXPECTED_PACKAGE="$EXPECTED_PACKAGE"
+export RELEASE_EXPECTED_FIREBASE_PROJECT_ID="$FIREBASE_PROJECT_ID"
+export RELEASE_EXPECTED_FIREBASE_APP_ID="$FIREBASE_APP_ID"
 
 python3 <<'PY'
 import base64
 import hashlib
 import json
 import os
+import re
 
 
 def decode_env(name: str) -> bytes:
@@ -196,6 +204,30 @@ packages = {
 if os.environ["RELEASE_EXPECTED_PACKAGE"] not in packages:
     raise SystemExit("ERROR: Firebase configuration does not contain the release package")
 
+expected_project_id = os.environ["RELEASE_EXPECTED_FIREBASE_PROJECT_ID"]
+expected_app_id = os.environ["RELEASE_EXPECTED_FIREBASE_APP_ID"]
+if not re.fullmatch(r"[a-z][a-z0-9-]{4,28}[a-z0-9]", expected_project_id):
+    raise SystemExit("ERROR: FIREBASE_PROJECT_ID has an unsupported format")
+if not re.fullmatch(r"1:[0-9]+:android:[0-9A-Za-z]+", expected_app_id):
+    raise SystemExit("ERROR: FIREBASE_APP_ID has an unsupported format")
+
+actual_project_id = firebase_json.get("project_info", {}).get("project_id")
+if actual_project_id != expected_project_id:
+    raise SystemExit("ERROR: Firebase project id does not match the approved production project")
+
+matching_clients = [
+    client
+    for client in firebase_json.get("client", [])
+    if client.get("client_info", {})
+    .get("android_client_info", {})
+    .get("package_name") == os.environ["RELEASE_EXPECTED_PACKAGE"]
+]
+if not any(
+    client.get("client_info", {}).get("mobilesdk_app_id") == expected_app_id
+    for client in matching_clients
+):
+    raise SystemExit("ERROR: Firebase app id does not match the approved production Android app")
+
 exclusive_write(os.environ["RELEASE_KEYSTORE_PATH"], keystore)
 exclusive_write(os.environ["RELEASE_FIREBASE_DESTINATION"], firebase)
 
@@ -217,6 +249,7 @@ marker = f"version=1\nfirebase_destination={os.environ['RELEASE_FIREBASE_DESTINA
 exclusive_write(os.environ["RELEASE_MARKER_PATH"], marker.encode("utf-8"))
 PY
 
+# shellcheck disable=SC2154 # Validated through REQUIRED_ENV before this command.
 keytool -list \
     -keystore "$RELEASE_KEYSTORE_PATH" \
     -storepass:env release_storePassword \

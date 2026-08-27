@@ -87,6 +87,7 @@ jobs:
           python3 scripts/tests/verify_github_actions_test.py
           python3 scripts/tests/verify_release_pipeline_test.py
           bash scripts/tests/prepare_release_secrets_test.sh
+          bash scripts/tests/record_crashlytics_mapping_upload_test.sh
           python3 scripts/tests/check_performance_budgets_test.py
           bash scripts/tests/verify_baseline_profile_test.sh
           bash scripts/tests/verify_benchmark_manifest_test.sh
@@ -168,6 +169,8 @@ jobs:
           release_storePassword: ${{ secrets.release_storePassword }}
           MAPS_API_KEY_RELEASE: ${{ secrets.MAPS_API_KEY_RELEASE }}
           RELEASE_CERT_SHA256: ${{ vars.RELEASE_CERT_SHA256 }}
+          FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+          FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID }}
           ENABLE_CRASHLYTICS_MAPPING_UPLOAD: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_crashlytics_mapping == true }}
           BUNDLETOOL_VERSION: 1.18.3
           BUNDLETOOL_SHA256: a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29
@@ -182,7 +185,7 @@ jobs:
           readonly verified_dir="$RUNNER_TEMP/verified-earthquake-release-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
 
           cleanup_release_secrets() {
-            if [[ -f "$secret_dir/.release-secrets" ]]; then
+            if [[ -e "$secret_dir" || -e "$firebase_file" ]]; then
               scripts/prepare_release_secrets.sh cleanup \
                 --output-dir "$secret_dir" \
                 --firebase-destination "$firebase_file"
@@ -201,18 +204,9 @@ jobs:
             --output "$bundletool" \
             "https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar"
 
-          mapping_upload=false
-          if [[ "$ENABLE_CRASHLYTICS_MAPPING_UPLOAD" == "true" ]]; then
-            mapping_upload=true
-            ./gradlew \
-              -PreleaseSecretsFile="$secret_dir/release.properties" \
-              -PcrashlyticsMappingUploadEnabled=true \
-              :app:validateStoreReleaseConfiguration
-          fi
-
           ./gradlew \
             -PreleaseSecretsFile="$secret_dir/release.properties" \
-            -PcrashlyticsMappingUploadEnabled="$mapping_upload" \
+            -PcrashlyticsMappingUploadEnabled=false \
             :app:bundleRelease
 
           native_symbols=app/build/outputs/native-debug-symbols/release/native-debug-symbols.zip
@@ -231,10 +225,26 @@ jobs:
           if [[ -s "$native_symbols" ]]; then
             verify_arguments+=(--native-symbols "$native_symbols")
           fi
-          CRASHLYTICS_MAPPING_UPLOAD_ENABLED="$mapping_upload" \
+          CRASHLYTICS_MAPPING_UPLOAD_REQUESTED="$ENABLE_CRASHLYTICS_MAPPING_UPLOAD" \
             scripts/verify_aab.sh "${verify_arguments[@]}"
 
+          if [[ "$ENABLE_CRASHLYTICS_MAPPING_UPLOAD" == "true" ]]; then
+            ./gradlew \
+              -PreleaseSecretsFile="$secret_dir/release.properties" \
+              -PcrashlyticsMappingUploadEnabled=true \
+              :app:validateStoreReleaseConfiguration \
+              :app:uploadCrashlyticsMappingFileRelease
+            scripts/record_crashlytics_mapping_upload.sh \
+              --verified-dir "$verified_dir" \
+              --uploaded-mapping app/build/outputs/mapping/release/mapping.txt \
+              --firebase-project-id "$FIREBASE_PROJECT_ID" \
+              --firebase-app-id "$FIREBASE_APP_ID" \
+              --github-run-id "$GITHUB_RUN_ID" \
+              --github-run-attempt "$GITHUB_RUN_ATTEMPT"
+          fi
+
           cleanup_release_secrets
+          [[ ! -e "$secret_dir" && ! -e "$firebase_file" ]]
           trap - EXIT HUP INT TERM
 
       - name: Upload verified signed release artifact

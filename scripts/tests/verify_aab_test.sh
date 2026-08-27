@@ -70,6 +70,14 @@ verify "$AAB" "$MAPPING" "$BUNDLETOOL_SHA256" 11 3.0.0 "$CERT_SHA256" "$TEST_ROO
 for expected in earthquake-watchdog-release.aab mapping.txt release-provenance.json SHA256SUMS; do
     [[ -s "$TEST_ROOT/valid/$expected" ]] || fail "verified output is missing $expected"
 done
+python3 - "$TEST_ROOT/valid/release-provenance.json" <<'PY'
+import json
+import sys
+
+provenance = json.load(open(sys.argv[1], encoding="utf-8"))
+state = provenance["verification"]["crashlyticsMappingUpload"]
+assert state == {"requested": False, "completedAtVerification": False}
+PY
 (
     cd "$TEST_ROOT/valid"
     shasum -a 256 -c SHA256SUMS >/dev/null

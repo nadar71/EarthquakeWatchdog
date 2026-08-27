@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github" / "workflows" / "android-release.yml"
 PREPARE = ROOT / "scripts" / "prepare_release_secrets.sh"
 VERIFY = ROOT / "scripts" / "verify_aab.sh"
+RECORD_UPLOAD = ROOT / "scripts" / "record_crashlytics_mapping_upload.sh"
 
 
 class ReleasePipelineContractTest(unittest.TestCase):
@@ -17,6 +18,7 @@ class ReleasePipelineContractTest(unittest.TestCase):
         cls.workflow = WORKFLOW.read_text(encoding="utf-8")
         cls.prepare = PREPARE.read_text(encoding="utf-8")
         cls.verify = VERIFY.read_text(encoding="utf-8")
+        cls.record_upload = RECORD_UPLOAD.read_text(encoding="utf-8")
 
     def test_release_has_only_protected_manual_and_version_tag_entrypoints(self) -> None:
         self.assertRegex(cls_text := self.workflow, r"(?m)^  push:\n    tags:\n      - ['\"]v\*['\"]$")
@@ -43,6 +45,8 @@ class ReleasePipelineContractTest(unittest.TestCase):
             "MAPS_API_KEY_RELEASE",
             "RELEASE_KEYSTORE_BASE64",
             "GOOGLE_SERVICES_JSON_BASE64",
+            "FIREBASE_PROJECT_ID",
+            "FIREBASE_APP_ID",
         ):
             self.assertIn(name, self.workflow)
             self.assertIn(name, self.prepare)
@@ -74,6 +78,31 @@ class ReleasePipelineContractTest(unittest.TestCase):
             self.workflow,
             r"(?s)upload_crashlytics_mapping:.*?type: boolean.*?default: false",
         )
+
+    def test_bundle_is_verified_before_explicit_mapping_upload(self) -> None:
+        bundle = self.workflow.index(":app:bundleRelease")
+        verify = self.workflow.index("scripts/verify_aab.sh")
+        upload = self.workflow.index(":app:uploadCrashlyticsMappingFileRelease")
+        self.assertLess(bundle, verify)
+        self.assertLess(verify, upload)
+        build_block = self.workflow[bundle - 300:verify]
+        self.assertIn("-PcrashlyticsMappingUploadEnabled=false", build_block)
+        self.assertNotIn("mapping_upload=true", build_block)
+        self.assertIn("scripts/record_crashlytics_mapping_upload.sh", self.workflow[upload:])
+        self.assertIn("crashlytics-mapping-upload-receipt.json", self.record_upload)
+
+    def test_firebase_identity_comes_from_protected_environment_variables(self) -> None:
+        self.assertIn("FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}", self.workflow)
+        self.assertIn("FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID }}", self.workflow)
+        self.assertIn('os.environ["RELEASE_EXPECTED_FIREBASE_PROJECT_ID"]', self.prepare)
+        self.assertIn('os.environ["RELEASE_EXPECTED_FIREBASE_APP_ID"]', self.prepare)
+
+    def test_mapping_upload_receipt_is_written_only_after_upload_task(self) -> None:
+        upload = self.workflow.index(":app:uploadCrashlyticsMappingFileRelease")
+        receipt = self.workflow.index("scripts/record_crashlytics_mapping_upload.sh")
+        cleanup = self.workflow.index("cleanup_release_secrets", receipt)
+        self.assertLess(upload, receipt)
+        self.assertLess(receipt, cleanup)
 
     def test_bundletool_and_remote_actions_are_immutably_pinned(self) -> None:
         self.assertIn("bundletool-all-1.18.3.jar", self.workflow)

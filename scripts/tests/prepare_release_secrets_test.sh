@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-readonly PROJECT_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+PROJECT_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+readonly PROJECT_ROOT
 readonly SCRIPT="$PROJECT_ROOT/scripts/prepare_release_secrets.sh"
-readonly TEST_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/prepare_release_secrets_test.XXXXXX")"
+TEST_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/prepare_release_secrets_test.XXXXXX")"
+readonly TEST_ROOT
 readonly KEYSTORE="$TEST_ROOT/source.keystore"
 readonly FIREBASE_SOURCE="$TEST_ROOT/google-services.json"
 readonly SECRET_MARKER="task9-secret-must-not-leak"
+readonly FIREBASE_PROJECT_ID="earthquake-task9-test"
+readonly FIREBASE_APP_ID="1:123456789:android:abcdef"
 
 cleanup_test() {
     chmod -R u+w "$TEST_ROOT" 2>/dev/null || true
@@ -70,8 +74,10 @@ cat > "$FIREBASE_SOURCE" <<'JSON'
 }
 JSON
 
-readonly KEYSTORE_BASE64="$(base64 < "$KEYSTORE" | tr -d '\r\n')"
-readonly FIREBASE_BASE64="$(base64 < "$FIREBASE_SOURCE" | tr -d '\r\n')"
+KEYSTORE_BASE64="$(base64 < "$KEYSTORE" | tr -d '\r\n')"
+readonly KEYSTORE_BASE64
+FIREBASE_BASE64="$(base64 < "$FIREBASE_SOURCE" | tr -d '\r\n')"
+readonly FIREBASE_BASE64
 readonly REQUIRED_ENV=(
     RELEASE_KEYSTORE_BASE64
     GOOGLE_SERVICES_JSON_BASE64
@@ -79,6 +85,8 @@ readonly REQUIRED_ENV=(
     release_keyPassword
     release_storePassword
     MAPS_API_KEY_RELEASE
+    FIREBASE_PROJECT_ID
+    FIREBASE_APP_ID
 )
 
 run_prepare() {
@@ -95,6 +103,8 @@ run_prepare() {
     [[ "${MISSING_ENV:-}" == "release_keyPassword" ]] || environment+=("release_keyPassword=$SECRET_MARKER")
     [[ "${MISSING_ENV:-}" == "release_storePassword" ]] || environment+=("release_storePassword=$SECRET_MARKER")
     [[ "${MISSING_ENV:-}" == "MAPS_API_KEY_RELEASE" ]] || environment+=("MAPS_API_KEY_RELEASE=maps-$SECRET_MARKER")
+    [[ "${MISSING_ENV:-}" == "FIREBASE_PROJECT_ID" ]] || environment+=("FIREBASE_PROJECT_ID=${OVERRIDE_FIREBASE_PROJECT_ID:-$FIREBASE_PROJECT_ID}")
+    [[ "${MISSING_ENV:-}" == "FIREBASE_APP_ID" ]] || environment+=("FIREBASE_APP_ID=${OVERRIDE_FIREBASE_APP_ID:-$FIREBASE_APP_ID}")
 
     "${environment[@]}" \
         "$SCRIPT" prepare \
@@ -115,6 +125,28 @@ for missing_name in "${REQUIRED_ENV[@]}"; do
     assert_no_secret_output "$log_file"
     [[ ! -e "$output_dir" ]] || fail "partial secret directory remained after missing $missing_name"
     [[ ! -e "$firebase_destination" ]] || fail "Firebase config remained after missing $missing_name"
+done
+
+for identity_name in project app; do
+    output_dir="$TEST_ROOT/wrong-$identity_name/secrets"
+    firebase_destination="$TEST_ROOT/wrong-$identity_name/app/google-services.json"
+    log_file="$TEST_ROOT/wrong-$identity_name.log"
+    mkdir -p "$(dirname "$firebase_destination")"
+
+    if [[ "$identity_name" == "project" ]]; then
+        if OVERRIDE_FIREBASE_PROJECT_ID="same-package-wrong-project" \
+            run_prepare "$output_dir" "$firebase_destination" >"$log_file" 2>&1; then
+            fail "same-package Firebase configuration from a wrong project was accepted"
+        fi
+    elif OVERRIDE_FIREBASE_APP_ID="1:123456789:android:wrongapp" \
+        run_prepare "$output_dir" "$firebase_destination" >"$log_file" 2>&1; then
+        fail "same-package Firebase configuration with a wrong app id was accepted"
+    fi
+
+    grep -Fqi "$identity_name" "$log_file" || fail "wrong Firebase $identity_name was not identified"
+    assert_no_secret_output "$log_file"
+    [[ ! -e "$output_dir" ]] || fail "partial secret directory remained after Firebase $identity_name drift"
+    [[ ! -e "$firebase_destination" ]] || fail "Firebase config remained after Firebase $identity_name drift"
 done
 
 readonly VALID_OUTPUT="$TEST_ROOT/valid/secrets"
@@ -138,6 +170,32 @@ assert_no_secret_output "$TEST_ROOT/valid.log"
     --firebase-destination "$VALID_FIREBASE"
 [[ ! -e "$VALID_OUTPUT" ]] || fail "explicit cleanup left the secret directory"
 [[ ! -e "$VALID_FIREBASE" ]] || fail "explicit cleanup left Firebase config"
+
+readonly MISSING_HASH_OUTPUT="$TEST_ROOT/missing-hash/secrets"
+readonly MISSING_HASH_FIREBASE="$TEST_ROOT/missing-hash/app/google-services.json"
+mkdir -p "$(dirname "$MISSING_HASH_FIREBASE")"
+run_prepare "$MISSING_HASH_OUTPUT" "$MISSING_HASH_FIREBASE" >/dev/null
+rm "$MISSING_HASH_OUTPUT/app-google-services.sha256"
+if "$SCRIPT" cleanup \
+    --output-dir "$MISSING_HASH_OUTPUT" \
+    --firebase-destination "$MISSING_HASH_FIREBASE" >"$TEST_ROOT/missing-hash.log" 2>&1; then
+    fail "cleanup reported success with a missing Firebase hash sidecar"
+fi
+[[ -f "$MISSING_HASH_FIREBASE" ]] || fail "failed cleanup removed an unverified Firebase file"
+[[ -d "$MISSING_HASH_OUTPUT" ]] || fail "failed cleanup removed the evidence directory"
+
+readonly MODIFIED_OUTPUT="$TEST_ROOT/modified/secrets"
+readonly MODIFIED_FIREBASE="$TEST_ROOT/modified/app/google-services.json"
+mkdir -p "$(dirname "$MODIFIED_FIREBASE")"
+run_prepare "$MODIFIED_OUTPUT" "$MODIFIED_FIREBASE" >/dev/null
+printf '\n' >> "$MODIFIED_FIREBASE"
+if "$SCRIPT" cleanup \
+    --output-dir "$MODIFIED_OUTPUT" \
+    --firebase-destination "$MODIFIED_FIREBASE" >"$TEST_ROOT/modified.log" 2>&1; then
+    fail "cleanup reported success after the Firebase file changed"
+fi
+[[ -f "$MODIFIED_FIREBASE" ]] || fail "failed cleanup removed a modified Firebase file"
+[[ -d "$MODIFIED_OUTPUT" ]] || fail "failed cleanup removed evidence for a modified Firebase file"
 
 readonly TRAP_OUTPUT="$TEST_ROOT/trap/secrets"
 readonly TRAP_FIREBASE="$TEST_ROOT/trap/app/google-services.json"

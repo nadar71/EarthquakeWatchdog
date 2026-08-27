@@ -180,11 +180,11 @@ export PROVENANCE_BUNDLETOOL_VERSION="$bundletool_version"
 export PROVENANCE_BUNDLETOOL_SHA256="$actual_bundletool_sha256"
 export PROVENANCE_COMMIT_SHA="${GITHUB_SHA:-$(git rev-parse HEAD)}"
 export PROVENANCE_SOURCE_REF="${GITHUB_REF:-local-dry-run}"
-export PROVENANCE_MAPPING_UPLOAD="${CRASHLYTICS_MAPPING_UPLOAD_ENABLED:-false}"
+export PROVENANCE_MAPPING_UPLOAD_REQUESTED="${CRASHLYTICS_MAPPING_UPLOAD_REQUESTED:-false}"
 
 [[ "$PROVENANCE_COMMIT_SHA" =~ ^[0-9a-fA-F]{40}$ ]] || fail "provenance commit SHA is invalid"
-[[ "$PROVENANCE_MAPPING_UPLOAD" == "true" || "$PROVENANCE_MAPPING_UPLOAD" == "false" ]] \
-    || fail "provenance mapping-upload value is invalid"
+[[ "$PROVENANCE_MAPPING_UPLOAD_REQUESTED" == "true" || "$PROVENANCE_MAPPING_UPLOAD_REQUESTED" == "false" ]] \
+    || fail "provenance mapping-upload request value is invalid"
 
 python3 - "$output_dir/release-provenance.json" <<'PY'
 import json
@@ -206,7 +206,10 @@ document = {
     "verification": {
         "bundletoolVersion": os.environ["PROVENANCE_BUNDLETOOL_VERSION"],
         "bundletoolSha256": os.environ["PROVENANCE_BUNDLETOOL_SHA256"],
-        "crashlyticsMappingUploadEnabled": os.environ["PROVENANCE_MAPPING_UPLOAD"] == "true",
+        "crashlyticsMappingUpload": {
+            "requested": os.environ["PROVENANCE_MAPPING_UPLOAD_REQUESTED"] == "true",
+            "completedAtVerification": False,
+        },
         "baselineProfileMetadataPresent": True,
         "embeddedMappingMatches": True,
     },

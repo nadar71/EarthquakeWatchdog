@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-readonly PROJECT_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+PROJECT_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+readonly PROJECT_ROOT
 readonly BUNDLETOOL="${BUNDLETOOL_FIXTURE:?Set BUNDLETOOL_FIXTURE to the checksum-verified bundletool JAR}"
 readonly BUNDLETOOL_VERSION="${BUNDLETOOL_VERSION:-1.18.3}"
 readonly BUNDLETOOL_SHA256="${BUNDLETOOL_SHA256:-a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29}"
-readonly TEST_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/signed_release_dry_run.XXXXXX")"
+TEST_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/signed_release_dry_run.XXXXXX")"
+readonly TEST_ROOT
 readonly SOURCE_KEYSTORE="$TEST_ROOT/disposable-source.keystore"
 readonly SOURCE_FIREBASE="$TEST_ROOT/disposable-google-services.json"
 readonly SECRET_DIR="$TEST_ROOT/prepared-secrets"
@@ -35,6 +37,8 @@ export release_keyAlias="task9-disposable-alias"
 export release_keyPassword="task9-disposable-key-password"
 export release_storePassword="task9-disposable-store-password"
 export MAPS_API_KEY_RELEASE="task9-disposable-maps-placeholder"
+export FIREBASE_PROJECT_ID="earthquake-task9-disposable"
+export FIREBASE_APP_ID="1:123456789:android:task9disposable"
 
 keytool -genkeypair \
     -alias "$release_keyAlias" \
@@ -68,8 +72,10 @@ cat > "$SOURCE_FIREBASE" <<'JSON'
 }
 JSON
 
-export RELEASE_KEYSTORE_BASE64="$(base64 < "$SOURCE_KEYSTORE" | tr -d '\r\n')"
-export GOOGLE_SERVICES_JSON_BASE64="$(base64 < "$SOURCE_FIREBASE" | tr -d '\r\n')"
+RELEASE_KEYSTORE_BASE64="$(base64 < "$SOURCE_KEYSTORE" | tr -d '\r\n')"
+export RELEASE_KEYSTORE_BASE64
+GOOGLE_SERVICES_JSON_BASE64="$(base64 < "$SOURCE_FIREBASE" | tr -d '\r\n')"
+export GOOGLE_SERVICES_JSON_BASE64
 
 "$PROJECT_ROOT/scripts/prepare_release_secrets.sh" prepare \
     --output-dir "$SECRET_DIR" \
@@ -83,7 +89,7 @@ export GOOGLE_SERVICES_JSON_BASE64="$(base64 < "$SOURCE_FIREBASE" | tr -d '\r\n'
         :app:bundleRelease
 )
 
-readonly CERT_SHA256="$(
+CERT_SHA256="$(
     keytool -exportcert -rfc \
         -alias "$release_keyAlias" \
         -keystore "$SOURCE_KEYSTORE" \
@@ -92,10 +98,11 @@ readonly CERT_SHA256="$(
         | sed 's/^[^=]*=//' \
         | tr -d ':[:space:]'
 )"
+readonly CERT_SHA256
 
 GITHUB_SHA="$(git -C "$PROJECT_ROOT" rev-parse HEAD)" \
 GITHUB_REF="local-disposable-dry-run" \
-CRASHLYTICS_MAPPING_UPLOAD_ENABLED=false \
+CRASHLYTICS_MAPPING_UPLOAD_REQUESTED=false \
     "$PROJECT_ROOT/scripts/verify_aab.sh" \
         --aab "$PROJECT_ROOT/app/build/outputs/bundle/release/app-release.aab" \
         --mapping "$PROJECT_ROOT/app/build/outputs/mapping/release/mapping.txt" \
