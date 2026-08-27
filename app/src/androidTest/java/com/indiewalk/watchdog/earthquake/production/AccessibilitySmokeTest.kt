@@ -140,6 +140,14 @@ class AccessibilitySmokeTest {
             .assertIsDisplayed()
             .assertHasClickAction()
             .assertHeightIsAtLeast(48.dp)
+        if (fontScale == 2f) {
+            composeRule.onNodeWithText(
+                composeRule.activity.getString(R.string.generic_cancel)
+            ).assertIsDisplayed()
+            composeRule.onNodeWithTag("filter-sheet-cancel")
+                .assertHeightIsAtLeast(49.dp)
+        }
+        composeRule.onNodeWithTag("filter-sheet-cancel")
             .performClick()
         composeRule.onNodeWithTag("filter-sheet-content")
             .performScrollToNode(androidx.compose.ui.test.hasTestTag("filter-sheet-confirm"))
@@ -147,6 +155,14 @@ class AccessibilitySmokeTest {
             .assertIsDisplayed()
             .assertHasClickAction()
             .assertHeightIsAtLeast(48.dp)
+        if (fontScale == 2f) {
+            composeRule.onNodeWithText(
+                composeRule.activity.getString(R.string.generic_ok)
+            ).assertIsDisplayed()
+            composeRule.onNodeWithTag("filter-sheet-confirm")
+                .assertHeightIsAtLeast(49.dp)
+        }
+        composeRule.onNodeWithTag("filter-sheet-confirm")
             .performClick()
         composeRule.runOnIdle {
             org.junit.Assert.assertEquals(1, dismisses)
