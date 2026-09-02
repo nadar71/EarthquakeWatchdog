@@ -1,6 +1,7 @@
 package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui
 
 import android.Manifest
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -165,6 +167,15 @@ fun EarthquakeMapScreen(
             }
 
             else -> {
+                var composeMap by remember { mutableStateOf(false) }
+                var mapRenderReady by remember(uiState.earthquakes) { mutableStateOf(false) }
+
+                LaunchedEffect(Unit) {
+                    // Let the loading screen render before Google Maps starts its heavier setup.
+                    withFrameNanos { }
+                    composeMap = true
+                }
+
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -175,18 +186,33 @@ fun EarthquakeMapScreen(
                             .weight(1f)
                             .fillMaxWidth()
                     ) {
-                        EarthquakeMapContent(
-                            padding = PaddingValues(),
-                            eqs = uiState.earthquakes,
-                            hasLocationPermissions = uiState.hasLocationPermission,
-                            initialLatLng = initialLatLng,
-                            mapType = mapType,
-                            recenterTarget = uiState.recenterTarget,
-                            onRecenterHandled = mapViewModel::onRecenterHandled,
-                            settings = uiState.settings,
-                            onEarthquakeSelected = mapViewModel::onEarthquakeSelected,
-                            onMapTapped = mapViewModel::onEarthquakeSelectionCleared,
-                        )
+                        if (composeMap) {
+                            EarthquakeMapContent(
+                                padding = PaddingValues(),
+                                eqs = uiState.earthquakes,
+                                hasLocationPermissions = uiState.hasLocationPermission,
+                                initialLatLng = initialLatLng,
+                                mapType = mapType,
+                                recenterTarget = uiState.recenterTarget,
+                                onRecenterHandled = mapViewModel::onRecenterHandled,
+                                settings = uiState.settings,
+                                onEarthquakeSelected = mapViewModel::onEarthquakeSelected,
+                                onMapTapped = mapViewModel::onEarthquakeSelectionCleared,
+                                onRenderReadyChanged = { mapRenderReady = it },
+                            )
+                        }
+
+                        if (!mapRenderReady) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(MaterialTheme.colorScheme.background)
+                                    .testTag("map-loading-indicator"),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
 
                         SelectedEarthquakeDetail(
                             earthquake = uiState.selectedEarthquake,

@@ -8,10 +8,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
@@ -55,6 +57,7 @@ fun EarthquakeMapContent(
     settings: AppSettings,
     onEarthquakeSelected: (EQEntity) -> Unit,
     onMapTapped: () -> Unit,
+    onRenderReadyChanged: (Boolean) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -75,6 +78,27 @@ fun EarthquakeMapContent(
     }
     var cameraInitialized by remember { mutableStateOf(false) }
     var mapLoaded by remember { mutableStateOf(false) }
+    val earthquakesWithCoordinates = remember(eqs) {
+        eqs.filter { it.latitude != null && it.longitude != null }
+    }
+    val markerProgress = remember(earthquakesWithCoordinates.size) {
+        MapMarkerRenderProgress(earthquakesWithCoordinates.size)
+    }
+    var renderedMarkerCount by remember(earthquakesWithCoordinates) { mutableStateOf(0) }
+
+    LaunchedEffect(mapLoaded, markerProgress, earthquakesWithCoordinates) {
+        if (!mapLoaded) return@LaunchedEffect
+
+        while (renderedMarkerCount < earthquakesWithCoordinates.size) {
+            withFrameNanos { }
+            renderedMarkerCount = markerProgress.nextCount(renderedMarkerCount)
+        }
+    }
+
+    val renderReady = markerProgress.isComplete(mapLoaded, renderedMarkerCount)
+    LaunchedEffect(renderReady) {
+        onRenderReadyChanged(renderReady)
+    }
 
 
 
@@ -182,21 +206,23 @@ fun EarthquakeMapContent(
         }
 
         // Add marker for each earthquake
-        eqs.forEach { eq ->
+        earthquakesWithCoordinates.take(renderedMarkerCount).forEach { eq ->
             val lat = eq.latitude
             val lng = eq.longitude
             if (lat != null && lng != null) {
-                val pos = LatLng(lat, lng)
-                val title = eq.place ?: eq.id
-                EarthquakeMarker(
-                    state = rememberMarkerState(position = pos),
-                    title = title,
-                    eq = eq,
-                    onClick = {
-                        onEarthquakeSelected(it)
-                        true
-                    }
-                )
+                key(eq.id) {
+                    val pos = LatLng(lat, lng)
+                    val title = eq.place ?: eq.id
+                    EarthquakeMarker(
+                        state = rememberMarkerState(position = pos),
+                        title = title,
+                        eq = eq,
+                        onClick = {
+                            onEarthquakeSelected(it)
+                            true
+                        }
+                    )
+                }
             }
         }
 
