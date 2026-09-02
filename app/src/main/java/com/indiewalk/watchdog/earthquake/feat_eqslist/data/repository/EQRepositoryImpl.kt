@@ -1,6 +1,5 @@
 package com.indiewalk.watchdog.earthquake.feat_eqslist.data.repository
 
-import android.util.Log
 import com.indiewalk.watchdog.earthquake.core.domain.repository.AppPreferencesRepository
 import com.indiewalk.watchdog.earthquake.core.domain.repository.FilterPreferencesRepository
 import com.indiewalk.watchdog.earthquake.core.util.FormatUtil.formatInstantToUtcString
@@ -49,7 +48,6 @@ class EQRepositoryImpl @Inject constructor(
             // minMagnitude = 3.5,
             // limit = 200
         )
-        Log.d("EQRepositoryImpl", "Fetch request params: $params")
         appPreferencesRepository.setLastRefreshTime(formatInstantToUtcString(Instant.now()))
         filterPreferencesRepository.setStartDate(formatInstantToUtcString(params.startTime))
         val feed = earthquakeApi.fetchFeed(params)

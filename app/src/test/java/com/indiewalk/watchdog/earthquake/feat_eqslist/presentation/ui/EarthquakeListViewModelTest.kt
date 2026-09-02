@@ -8,6 +8,10 @@ import com.indiewalk.watchdog.earthquake.sampleEqEntity
 import com.indiewalk.watchdog.earthquake.sampleLatLng
 import com.indiewalk.watchdog.earthquake.sampleLocationInfo
 import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticCategory
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticEvent
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticSink
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticsTestRule
 import com.indiewalk.watchdog.earthquake.core.domain.model.AppError
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.EqsSortOption
 import com.indiewalk.watchdog.earthquake.feat_eqslist.data.local.enums.MinMagnitude
@@ -26,10 +30,17 @@ import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
+import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class EarthquakeListViewModelTest {
+
+    private val diagnosticReports = mutableListOf<DiagnosticCategory>()
+
+    @get:Rule
+    internal val diagnosticsTestRule = DiagnosticsTestRule(recordingDiagnosticSink(diagnosticReports))
 
     @Test
     fun `updates filtered list when filters change`() = runViewModelTest {
@@ -100,7 +111,7 @@ class EarthquakeListViewModelTest {
 
     @Test
     fun `refresh failure exposes network error and stops refresh`() = runViewModelTest {
-        val repository = FakeEQRepository(fetchBlock = { error("boom") })
+        val repository = FakeEQRepository(fetchBlock = { throw IOException("offline") })
         val viewModel = EarthquakeListViewModel(
             repository = repository,
             appPreferencesRepository = FakeAppPreferencesRepository(),
@@ -114,6 +125,7 @@ class EarthquakeListViewModelTest {
 
         assertEquals(false, viewModel.uiState.value.isRefreshing)
         assertTrue(viewModel.uiState.value.error is AppError.Network)
+        assertTrue(diagnosticReports.isEmpty())
     }
 
     @Test
@@ -146,7 +158,17 @@ class EarthquakeListViewModelTest {
         advanceUntilIdle()
 
         assertTrue(viewModel.uiState.value.error is AppError.Storage)
+        assertEquals(listOf(DiagnosticCategory.STORAGE), diagnosticReports)
     }
+
+    private fun recordingDiagnosticSink(reports: MutableList<DiagnosticCategory>) =
+        object : DiagnosticSink {
+            override fun recordNonFatal(category: DiagnosticCategory, throwable: Throwable) {
+                reports += category
+            }
+
+            override fun breadcrumb(event: DiagnosticEvent) = Unit
+        }
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)

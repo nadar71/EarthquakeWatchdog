@@ -2,6 +2,7 @@ package com.indiewalk.watchdog.earthquake.feat_statistics.data.repository
 
 import com.google.android.gms.maps.model.LatLng
 import com.indiewalk.watchdog.earthquake.core.domain.repository.AppPreferencesRepository
+import com.indiewalk.watchdog.earthquake.core.diagnostics.StatisticsLoadFailure
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQFeatureDTO
 import com.indiewalk.watchdog.earthquake.feat_statistics.data.local.StatisticsCacheDao
 import com.indiewalk.watchdog.earthquake.feat_statistics.data.local.toCacheEntity
@@ -34,7 +35,7 @@ import kotlin.math.sqrt
 class EarthquakeStatisticsLoadException(
     message: String,
     cause: Throwable? = null
-) : Exception(message, cause)
+) : Exception(message, cause), StatisticsLoadFailure
 
 class EarthquakeStatisticsRepositoryImpl(
     private val remote: EarthquakeStatisticsRemoteDataSource,

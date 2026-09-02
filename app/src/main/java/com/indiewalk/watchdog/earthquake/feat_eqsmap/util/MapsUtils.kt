@@ -7,12 +7,13 @@ import android.location.Address
 import android.location.Geocoder
 import android.net.Uri
 import android.provider.Settings
-import android.util.Log
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
+import com.indiewalk.watchdog.earthquake.core.diagnostics.AppDiagnostics
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticCategory
 import com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings
 import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.dto.EQGeometryDTO
-import it.abenergie.customerarea.core.utility.extensions.TAG
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
 import kotlin.math.atan2
@@ -41,11 +42,10 @@ object MapsUtils {
         eqCoords: EQGeometryDTO,
         settings: AppSettings
     ): Double? {
-        // Log.d(TAG, "getEQDistanceFromUser: eqCoords: $eqCoords")
         val eqLat = eqCoords.latitude ?: return null
         val eqLng = eqCoords.longitude ?: return null
 
-        var dist =  haversineDistanceKm(
+        val dist = haversineDistanceKm(
             lat1 = if (settings.manualLocOn) settings.manualPosition.latitude
                    else settings.userPosition.latitude,
             lat2 = eqLat,
@@ -53,8 +53,6 @@ object MapsUtils {
                    else settings.userPosition.longitude,
             lng2 = eqLng
         )
-        // Log.i(TAG, "getEQDistanceFromUser: eq distance from user : $dist in km")
-
         return dist
     }
 
@@ -70,13 +68,10 @@ object MapsUtils {
     // with suspend function
     @SuppressLint("MissingPermission")
     suspend fun getLastKnownLatLng(context: Context): LatLng? {
-        return try {
+        return resolveLocationResultOrNull {
             val fused = LocationServices.getFusedLocationProviderClient(context)
-            val loc = fused.lastLocation.await() ?: return null
+            val loc = fused.lastLocation.await() ?: return@resolveLocationResultOrNull null
             LatLng(loc.latitude, loc.longitude)
-        } catch ( e: Exception) {
-            Log.e("LocationPicker", "Error fetching location: ${e.message}", e)
-            null
         }
     }
     // Get user's last location and updates creating a fused Location client provider
@@ -88,8 +83,8 @@ object MapsUtils {
             .addOnSuccessListener { location ->
                 onResult(location?.let { LatLng(it.latitude, it.longitude) })
             }
-            .addOnFailureListener { e ->
-                Log.e("LocationPicker", "Error fetching location: ${e.message}", e)
+            .addOnFailureListener { error ->
+                AppDiagnostics.recordNonFatal(DiagnosticCategory.LOCATION, error)
                 onResult(null)
             }
     }
@@ -102,8 +97,8 @@ object MapsUtils {
         return try {
             val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
             addresses?.firstOrNull() // Return 1st address found, or null if empty
-        } catch (e: Exception) {
-            Log.e("MapsUtils", "Failed to get address from LatLng", e)
+        } catch (error: Exception) {
+            AppDiagnostics.recordNonFatal(DiagnosticCategory.LOCATION, error)
             null
         }
     }
@@ -113,8 +108,18 @@ object MapsUtils {
         val geocoder = Geocoder(context, Locale.getDefault())
         val list = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
         list?.firstOrNull()?.getAddressLine(0)
-    } catch (_: Exception) {
+    } catch (error: Exception) {
+        AppDiagnostics.recordNonFatal(DiagnosticCategory.LOCATION, error)
         null
     }
 
+}
+
+internal suspend fun <T> resolveLocationResultOrNull(block: suspend () -> T): T? = try {
+    block()
+} catch (error: CancellationException) {
+    throw error
+} catch (error: Exception) {
+    AppDiagnostics.recordNonFatal(DiagnosticCategory.LOCATION, error)
+    null
 }

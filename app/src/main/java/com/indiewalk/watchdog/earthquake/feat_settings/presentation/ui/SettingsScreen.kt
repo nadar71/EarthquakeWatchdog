@@ -1,8 +1,5 @@
 package com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui
 
-import android.util.Log
-import android.widget.Toast
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,15 +9,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.android.ump.UserMessagingPlatform
 import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants.support_email
 import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
@@ -32,7 +29,7 @@ import com.indiewalk.watchdog.earthquake.core.presentation.theme.text_16
 import com.indiewalk.watchdog.earthquake.core.util.GenericUtil.openAppStore
 import com.indiewalk.watchdog.earthquake.core.util.sendEmail
 import com.indiewalk.watchdog.earthquake.feat_ads.presentation.AdMobBannerView
-import com.indiewalk.watchdog.earthquake.feat_ads.util.ConsentManager
+import com.indiewalk.watchdog.earthquake.feat_ads.presentation.LocalAdsConsentState
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.util.MapsUtils.openAppSettings
 import com.indiewalk.watchdog.earthquake.feat_settings.presentation.components.DisclaimerDialog
 import com.indiewalk.watchdog.earthquake.feat_settings.presentation.components.SettingsItem
@@ -43,12 +40,12 @@ fun SettingsScreen(
     currentDestination: AppDestination,
     onTopLevelDestinationSelected: (AppDestination) -> Unit,
     onOpenCredits: () -> Unit,
+    onOpenPrivacyPolicy: () -> Unit,
+    onManageAdPrivacy: () -> Unit,
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
-    val TAG = "SettingsScreen"
-    Log.d(TAG, "SettingsScreen on")
     val context = LocalContext.current
-    val activity = LocalActivity.current
+    val adsConsentState = LocalAdsConsentState.current
 
     var showDisclaimer by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
@@ -138,66 +135,12 @@ fun SettingsScreen(
                     )
                 }
 
-                // --- Unit System ---
-                Spacer(modifier = Modifier.height(32.dp))
-                Text(
-                    text = stringResource(R.string.settings_unit_system_title),
-                    style = text_16(MaterialTheme.colorScheme.primary, false),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-                SingleChoiceSegmentedButtonRow(
+                SettingsPreferencesContent(
+                    settings = appPrefs,
+                    onUnitSystemSelected = settingsViewModel::setUnitSystem,
+                    onThemeModeSelected = settingsViewModel::setThemeMode,
                     modifier = Modifier.fillMaxWidth()
-                ) {
-                    UnitSystem.entries.forEach { unitSystem ->
-                        SegmentedButton(
-                            selected = appPrefs.unitSystem == unitSystem,
-                            onClick = { settingsViewModel.setUnitSystem(unitSystem) },
-                            shape = SegmentedButtonDefaults.itemShape(
-                                index = unitSystem.ordinal,
-                                count = UnitSystem.entries.size
-                            )
-                        ) {
-                            Text(
-                                text = when (unitSystem) {
-                                    UnitSystem.METRIC -> stringResource(R.string.settings_unit_system_metric)
-                                    UnitSystem.IMPERIAL -> stringResource(R.string.settings_unit_system_imperial)
-                                }
-                            )
-                        }
-                    }
-                }
-
-                // --- Theme Mode Selector ---
-                Spacer(modifier = Modifier.height(32.dp))
-                Text(
-                    text = stringResource(R.string.settings_theme_mode_title),
-                    style = text_16(MaterialTheme.colorScheme.primary, false),
-                    modifier = Modifier.padding(bottom = 8.dp)
                 )
-
-                SingleChoiceSegmentedButtonRow(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    ThemeMode.entries.forEach { themeMode ->
-                        SegmentedButton(
-                            selected = appPrefs.mode == themeMode,
-                            onClick = { settingsViewModel.setThemeMode(themeMode) },
-                            shape = SegmentedButtonDefaults.itemShape(
-                                index = themeMode.ordinal,
-                                count = ThemeMode.entries.size
-                            )
-                        ) {
-                            Text(
-                                text = when (themeMode) {
-                                    ThemeMode.System -> stringResource(R.string.theme_mode_system)
-                                    ThemeMode.Light -> stringResource(R.string.theme_mode_light)
-                                    ThemeMode.Dark -> stringResource(R.string.theme_mode_dark)
-                                }
-                            )
-                        }
-                    }
-                }
 
                 // --- Credits ---
                 Spacer(modifier = Modifier.height(32.dp))
@@ -209,32 +152,27 @@ fun SettingsScreen(
                         .clickable(onClick = onOpenCredits)
                 )
 
-                // --- GDPR ---
+                // --- Privacy policy ---
                 Spacer(modifier = Modifier.height(32.dp))
                 SettingsItem(
+                    title = stringResource(id = R.string.privacy_policy_title),
+                    subtitle = stringResource(id = R.string.privacy_policy_settings_summary),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onOpenPrivacyPolicy)
+                )
+
+                // UMP requires this entry point only when a privacy-options form is available.
+                if (adsConsentState.privacyOptionsRequired) {
+                    Spacer(modifier = Modifier.height(32.dp))
+                    SettingsItem(
                     title = stringResource(id = R.string.settings_gdpr_btn_title),
                     subtitle = stringResource(id = R.string.gdpr_btn_summary),
-                    modifier = Modifier.clickable {
-                        UserMessagingPlatform.getConsentInformation(context).reset()
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.gdpr_dialog_will_show_again),
-                            Toast.LENGTH_LONG
-                        ).show()
-                        // Trigger re-consent
-                        ConsentManager.requestConsent(
-                            context = context,
-                            activity = activity,
-                            onConsentReady = { canRequestAds ->
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.gdpr_dialog_reset_done),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        )
-                    }
-                )
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = onManageAdPrivacy)
+                    )
+                }
 
                 // --- Review ---
                 Spacer(modifier = Modifier.height(32.dp))
@@ -301,6 +239,74 @@ fun SettingsScreen(
 
 
 
+
+    }
+}
+
+@Composable
+fun SettingsPreferencesContent(
+    settings: com.indiewalk.watchdog.earthquake.core.model.preferences.AppSettings,
+    onUnitSystemSelected: (UnitSystem) -> Unit,
+    onThemeModeSelected: (ThemeMode) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Spacer(modifier = Modifier.height(32.dp))
+        Text(
+            text = stringResource(R.string.settings_unit_system_title),
+            style = text_16(MaterialTheme.colorScheme.primary, false),
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            UnitSystem.entries.forEach { unitSystem ->
+                SegmentedButton(
+                    selected = settings.unitSystem == unitSystem,
+                    onClick = { onUnitSystemSelected(unitSystem) },
+                    modifier = Modifier.testTag("settings-unit-${unitSystem.name}"),
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = unitSystem.ordinal,
+                        count = UnitSystem.entries.size
+                    )
+                ) {
+                    Text(
+                        text = when (unitSystem) {
+                            UnitSystem.METRIC -> stringResource(R.string.settings_unit_system_metric)
+                            UnitSystem.IMPERIAL -> stringResource(R.string.settings_unit_system_imperial)
+                        }
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+        Text(
+            text = stringResource(R.string.settings_theme_mode_title),
+            style = text_16(MaterialTheme.colorScheme.primary, false),
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            ThemeMode.entries.forEach { themeMode ->
+                SegmentedButton(
+                    selected = settings.mode == themeMode,
+                    onClick = { onThemeModeSelected(themeMode) },
+                    modifier = Modifier.testTag("settings-theme-${themeMode.name}"),
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = themeMode.ordinal,
+                        count = ThemeMode.entries.size
+                    )
+                ) {
+                    Text(
+                        text = when (themeMode) {
+                            ThemeMode.System -> stringResource(R.string.theme_mode_system)
+                            ThemeMode.Light -> stringResource(R.string.theme_mode_light)
+                            ThemeMode.Dark -> stringResource(R.string.theme_mode_dark)
+                        }
+                    )
+                }
+            }
+        }
 
     }
 }

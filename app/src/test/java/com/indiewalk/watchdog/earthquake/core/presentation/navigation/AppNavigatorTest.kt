@@ -144,6 +144,7 @@ class AppNavigatorTest {
         assertTrue(AppDestination.Settings.isTopLevel)
         assertFalse(AppDestination.Intro.isTopLevel)
         assertFalse(AppDestination.Credits.isTopLevel)
+        assertFalse(AppDestination.PrivacyPolicy.isTopLevel)
         assertFalse(AppDestination.Details("eq-1").isTopLevel)
     }
 }

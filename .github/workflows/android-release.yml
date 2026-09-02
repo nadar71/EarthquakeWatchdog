@@ -1,0 +1,263 @@
+name: Android Release Bundle
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      upload_crashlytics_mapping:
+        description: Upload the R8 mapping to the protected Firebase project
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-release-${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  quality:
+    name: release-quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    outputs:
+      package-name: ${{ steps.identity.outputs.package-name }}
+      version-code: ${{ steps.identity.outputs.version-code }}
+      version-name: ${{ steps.identity.outputs.version-name }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Android build
+        uses: ./.github/actions/setup-android
+
+      - name: Validate source release identity
+        id: identity
+        shell: bash
+        env:
+          RELEASE_REF: ${{ github.ref }}
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          build = Path("app/build.gradle.kts").read_text(encoding="utf-8")
+
+          def exactly_one(pattern: str, label: str) -> str:
+              matches = re.findall(pattern, build)
+              if len(matches) != 1:
+                  raise SystemExit(f"Expected exactly one {label} in app/build.gradle.kts")
+              return matches[0]
+
+          package_name = exactly_one(r'applicationId\s*=\s*"([A-Za-z0-9_.]+)"', "applicationId")
+          version_code = exactly_one(r"versionCode\s*=\s*([0-9]+)", "versionCode")
+          version_name = exactly_one(r'versionName\s*=\s*"([0-9A-Za-z._+-]+)"', "versionName")
+
+          if package_name != "com.indiewalk.watchdog.earthquake":
+              raise SystemExit("Release package differs from the approved application id")
+          if not re.fullmatch(r"[1-9][0-9]*", version_code):
+              raise SystemExit("Release versionCode must be a positive integer")
+          if not re.fullmatch(r"[0-9A-Za-z][0-9A-Za-z._+-]{0,63}", version_name):
+              raise SystemExit("Release versionName contains unsupported characters")
+
+          expected_ref = f"refs/tags/v{version_name}"
+          if os.environ["RELEASE_REF"] != expected_ref:
+              raise SystemExit(
+                  f"Release runs must use the exact source version tag: {expected_ref}"
+              )
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"package-name={package_name}\n")
+              output.write(f"version-code={version_code}\n")
+              output.write(f"version-name={version_name}\n")
+          PY
+
+      - name: Run repository and release-pipeline contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/verify_repository_hygiene.sh
+          bash scripts/tests/verify_repository_hygiene_test.sh
+          python3 scripts/tests/verify_github_actions_test.py
+          python3 scripts/tests/verify_release_pipeline_test.py
+          bash scripts/tests/prepare_release_secrets_test.sh
+          bash scripts/tests/record_crashlytics_mapping_upload_test.sh
+          python3 scripts/tests/check_performance_budgets_test.py
+          bash scripts/tests/verify_baseline_profile_test.sh
+          bash scripts/tests/verify_benchmark_manifest_test.sh
+
+      - name: Run unit tests, lint, and debug build
+        run: ./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
+
+      - name: Upload release quality reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: signed-release-quality-reports
+          path: |
+            app/build/reports/tests/testDebugUnitTest/
+            app/build/test-results/testDebugUnitTest/
+            app/build/reports/lint-results-debug.*
+          if-no-files-found: warn
+          retention-days: 7
+
+  instrumentation:
+    name: release-instrumentation-api-36
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Enable Linux KVM access
+        uses: ./.github/actions/enable-kvm
+
+      - name: Set up Android build
+        uses: ./.github/actions/setup-android
+
+      - name: Run release-candidate instrumentation suite
+        uses: reactivecircus/android-emulator-runner@1dcd0090116d15e7c562f8db72807de5e036a4ed # v2.34.0
+        with:
+          api-level: 36
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          cores: 2
+          ram-size: 4096M
+          disable-animations: true
+          disable-linux-hw-accel: false
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -accel on
+          script: ./gradlew :app:connectedDebugAndroidTest
+
+      - name: Upload release instrumentation reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: signed-release-instrumentation-reports
+          path: |
+            app/build/reports/androidTests/connected/debug/
+            app/build/outputs/androidTest-results/connected/debug/
+          if-no-files-found: warn
+          retention-days: 7
+
+  release:
+    name: signed-release-aab
+    needs: [quality, instrumentation]
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    environment: production-release
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Android build
+        uses: ./.github/actions/setup-android
+
+      - name: Build and verify protected signed AAB
+        shell: bash
+        env:
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+          release_keyAlias: ${{ secrets.release_keyAlias }}
+          release_keyPassword: ${{ secrets.release_keyPassword }}
+          release_storePassword: ${{ secrets.release_storePassword }}
+          MAPS_API_KEY_RELEASE: ${{ secrets.MAPS_API_KEY_RELEASE }}
+          RELEASE_CERT_SHA256: ${{ vars.RELEASE_CERT_SHA256 }}
+          FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+          FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID }}
+          ADMOB_APP_ID_RELEASE: ${{ vars.ADMOB_APP_ID_RELEASE }}
+          ADMOB_BANNER_ID_RELEASE: ${{ vars.ADMOB_BANNER_ID_RELEASE }}
+          PRIVACY_POLICY_URL_RELEASE: ${{ vars.PRIVACY_POLICY_URL_RELEASE }}
+          ENABLE_CRASHLYTICS_MAPPING_UPLOAD: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_crashlytics_mapping == true }}
+          BUNDLETOOL_VERSION: 1.18.3
+          BUNDLETOOL_SHA256: a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29
+          EXPECTED_PACKAGE: ${{ needs.quality.outputs.package-name }}
+          EXPECTED_VERSION_CODE: ${{ needs.quality.outputs.version-code }}
+          EXPECTED_VERSION_NAME: ${{ needs.quality.outputs.version-name }}
+        run: |
+          set -euo pipefail
+          readonly secret_dir="$RUNNER_TEMP/earthquake-release-secrets-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          readonly firebase_file="$GITHUB_WORKSPACE/app/google-services.json"
+          readonly bundletool="$RUNNER_TEMP/bundletool-all-1.18.3.jar"
+          readonly verified_dir="$RUNNER_TEMP/verified-earthquake-release-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+
+          cleanup_release_secrets() {
+            if [[ -e "$secret_dir" || -e "$firebase_file" ]]; then
+              scripts/prepare_release_secrets.sh cleanup \
+                --output-dir "$secret_dir" \
+                --firebase-destination "$firebase_file"
+            fi
+          }
+          trap cleanup_release_secrets EXIT HUP INT TERM
+
+          scripts/prepare_release_secrets.sh prepare \
+            --output-dir "$secret_dir" \
+            --firebase-destination "$firebase_file"
+          unset RELEASE_KEYSTORE_BASE64 GOOGLE_SERVICES_JSON_BASE64
+          unset release_keyAlias release_keyPassword release_storePassword MAPS_API_KEY_RELEASE
+
+          curl --fail --location --proto '=https' --tlsv1.2 \
+            --retry 3 --silent --show-error \
+            --output "$bundletool" \
+            "https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar"
+
+          ./gradlew \
+            -PreleaseSecretsFile="$secret_dir/release.properties" \
+            -PcrashlyticsMappingUploadEnabled=false \
+            :app:bundleRelease
+
+          native_symbols=app/build/outputs/native-debug-symbols/release/native-debug-symbols.zip
+          verify_arguments=(
+            --aab app/build/outputs/bundle/release/app-release.aab
+            --mapping app/build/outputs/mapping/release/mapping.txt
+            --bundletool "$bundletool"
+            --bundletool-version "$BUNDLETOOL_VERSION"
+            --bundletool-sha256 "$BUNDLETOOL_SHA256"
+            --expected-package "$EXPECTED_PACKAGE"
+            --expected-version-code "$EXPECTED_VERSION_CODE"
+            --expected-version-name "$EXPECTED_VERSION_NAME"
+            --expected-cert-sha256 "$RELEASE_CERT_SHA256"
+            --expected-admob-app-id "$ADMOB_APP_ID_RELEASE"
+            --expected-admob-banner-id "$ADMOB_BANNER_ID_RELEASE"
+            --expected-privacy-policy-url "$PRIVACY_POLICY_URL_RELEASE"
+            --output-dir "$verified_dir"
+          )
+          if [[ -s "$native_symbols" ]]; then
+            verify_arguments+=(--native-symbols "$native_symbols")
+          fi
+          CRASHLYTICS_MAPPING_UPLOAD_REQUESTED="$ENABLE_CRASHLYTICS_MAPPING_UPLOAD" \
+            scripts/verify_aab.sh "${verify_arguments[@]}"
+
+          if [[ "$ENABLE_CRASHLYTICS_MAPPING_UPLOAD" == "true" ]]; then
+            ./gradlew \
+              -PreleaseSecretsFile="$secret_dir/release.properties" \
+              -PcrashlyticsMappingUploadEnabled=true \
+              :app:validateStoreReleaseConfiguration \
+              :app:uploadCrashlyticsMappingFileRelease
+            scripts/record_crashlytics_mapping_upload.sh \
+              --verified-dir "$verified_dir" \
+              --uploaded-mapping app/build/outputs/mapping/release/mapping.txt \
+              --firebase-project-id "$FIREBASE_PROJECT_ID" \
+              --firebase-app-id "$FIREBASE_APP_ID" \
+              --github-run-id "$GITHUB_RUN_ID" \
+              --github-run-attempt "$GITHUB_RUN_ATTEMPT"
+          fi
+
+          cleanup_release_secrets
+          [[ ! -e "$secret_dir" && ! -e "$firebase_file" ]]
+          trap - EXIT HUP INT TERM
+
+      - name: Upload verified signed release artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: verified-signed-release-aab
+          path: ${{ runner.temp }}/verified-earthquake-release-${{ github.run_id }}-${{ github.run_attempt }}/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14

@@ -1,6 +1,7 @@
 package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui
 
 import android.Manifest
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -34,7 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -46,6 +48,8 @@ import com.indiewalk.watchdog.earthquake.core.presentation.components.ScaffoldMo
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppDestination
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraGreen_dark
 import com.indiewalk.watchdog.earthquake.feat_ads.presentation.AdMobBannerView
+import androidx.compose.ui.platform.testTag
+import com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components.EarthquakeMapBottomInfoCard
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
@@ -101,7 +105,7 @@ fun EarthquakeMapScreen(
                         Box {
                             Icon(
                                 imageVector = Icons.Filled.Settings,
-                                contentDescription = "Map settings",
+                                contentDescription = stringResource(R.string.maps_settings_content_description),
                                 tint = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                             if (uiState.settings.manualLocOn) {
@@ -111,7 +115,7 @@ fun EarthquakeMapScreen(
                                         .align(Alignment.TopEnd)
                                         .offset(x = 2.dp, y = (-2).dp),
                                     painter = painterResource(id = R.drawable.ic_hand),
-                                    contentDescription = "Manual location on badge",
+                                    contentDescription = null,
                                     tint = extraGreen_dark
                                 )
                             }
@@ -163,6 +167,15 @@ fun EarthquakeMapScreen(
             }
 
             else -> {
+                var composeMap by remember { mutableStateOf(false) }
+                var mapRenderReady by remember(uiState.earthquakes) { mutableStateOf(false) }
+
+                LaunchedEffect(Unit) {
+                    // Let the loading screen render before Google Maps starts its heavier setup.
+                    withFrameNanos { }
+                    composeMap = true
+                }
+
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -173,29 +186,42 @@ fun EarthquakeMapScreen(
                             .weight(1f)
                             .fillMaxWidth()
                     ) {
-                        EarthquakeMapContent(
-                            padding = PaddingValues(),
-                            eqs = uiState.earthquakes,
-                            hasLocationPermissions = uiState.hasLocationPermission,
-                            initialLatLng = initialLatLng,
-                            mapType = mapType,
-                            recenterTarget = uiState.recenterTarget,
-                            onRecenterHandled = mapViewModel::onRecenterHandled,
-                            settings = uiState.settings,
-                            onEarthquakeSelected = mapViewModel::onEarthquakeSelected,
-                            onMapTapped = mapViewModel::onEarthquakeSelectionCleared,
-                        )
-
-                        uiState.selectedEarthquake?.let { selectedEarthquake ->
-                            EarthquakeMapBottomInfoCard(
-                                earthquake = selectedEarthquake,
-                                unitSystem = uiState.settings.unitSystem,
-                                modifier = Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                                onDismiss = mapViewModel::onEarthquakeSelectionCleared
+                        if (composeMap) {
+                            EarthquakeMapContent(
+                                padding = PaddingValues(),
+                                eqs = uiState.earthquakes,
+                                hasLocationPermissions = uiState.hasLocationPermission,
+                                initialLatLng = initialLatLng,
+                                mapType = mapType,
+                                recenterTarget = uiState.recenterTarget,
+                                onRecenterHandled = mapViewModel::onRecenterHandled,
+                                settings = uiState.settings,
+                                onEarthquakeSelected = mapViewModel::onEarthquakeSelected,
+                                onMapTapped = mapViewModel::onEarthquakeSelectionCleared,
+                                onRenderReadyChanged = { mapRenderReady = it },
                             )
                         }
+
+                        if (!mapRenderReady) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(MaterialTheme.colorScheme.background)
+                                    .testTag("map-loading-indicator"),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+
+                        SelectedEarthquakeDetail(
+                            earthquake = uiState.selectedEarthquake,
+                            unitSystem = uiState.settings.unitSystem,
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(horizontal = 16.dp, vertical = 16.dp),
+                            onDismiss = mapViewModel::onEarthquakeSelectionCleared
+                        )
 
                         if (showOptions) {
                             MapOptionsOverlayCard(
@@ -228,5 +254,22 @@ fun EarthquakeMapScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun SelectedEarthquakeDetail(
+    earthquake: EQEntity?,
+    unitSystem: com.indiewalk.watchdog.earthquake.core.data.local.enums.UnitSystem,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    earthquake?.let { selectedEarthquake ->
+        EarthquakeMapBottomInfoCard(
+            earthquake = selectedEarthquake,
+            unitSystem = unitSystem,
+            modifier = modifier.testTag("map-selected-earthquake-detail"),
+            onDismiss = onDismiss
+        )
     }
 }

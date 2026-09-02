@@ -1,6 +1,5 @@
 package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -55,11 +54,6 @@ fun MapOptionsOverlayCard(
     onMapTypeChange: (MapType) -> Unit,
     onDismiss: () -> Unit
 ) {
-
-    val TAG = "MapOptionsOverlayCard"
-    Log.d(TAG, "MapOptionsOverlayCard Opened")
-    Log.d(TAG, "settings manualLocOn : ${settings.manualLocOn}")
-    Log.d(TAG, "isManualPositionOn: $isManualPositionOn")
     var showLocationPicker by remember { mutableStateOf(false) }
 
 
@@ -88,10 +82,8 @@ fun MapOptionsOverlayCard(
                         onCheckedChange = { checked ->
                             onManualPositionToggle(checked)
                             if (checked) {
-                                Log.d(TAG, "MapOptionsOverlayCard: manual position toggle: $checked")
                                 showLocationPicker = true // open picker; persistence manual position happens on OK
                             } else {
-                                Log.d(TAG, "MapOptionsOverlayCard: UNCHECKED manual position toggle: $checked")
                                 // Uncheck handled in parent (restore & recenter)
                             }
                         }
@@ -220,4 +212,3 @@ private fun MapOptionsOverlayCardPreview() {
         )
     }
 }
-

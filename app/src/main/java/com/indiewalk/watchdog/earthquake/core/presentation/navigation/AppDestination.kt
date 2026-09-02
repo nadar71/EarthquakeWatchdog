@@ -1,16 +1,35 @@
 package com.indiewalk.watchdog.earthquake.core.presentation.navigation
 
-sealed interface AppDestination {
+import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
+
+@Serializable
+sealed interface AppDestination : NavKey {
+    @Serializable
     data object Intro : AppDestination
+
+    @Serializable
     data object Home : AppDestination
+
+    @Serializable
     data class Map(
         val latitude: Double? = null,
         val longitude: Double? = null
     ) : AppDestination
 
+    @Serializable
     data object Statistics : AppDestination
+
+    @Serializable
     data object Settings : AppDestination
+
+    @Serializable
     data object Credits : AppDestination
+
+    @Serializable
+    data object PrivacyPolicy : AppDestination
+
+    @Serializable
     data class Details(val id: String) : AppDestination
 }
 
@@ -22,6 +41,7 @@ val AppDestination.isTopLevel: Boolean
         AppDestination.Settings -> true
         AppDestination.Intro,
         AppDestination.Credits,
+        AppDestination.PrivacyPolicy,
         is AppDestination.Details -> false
     }
 

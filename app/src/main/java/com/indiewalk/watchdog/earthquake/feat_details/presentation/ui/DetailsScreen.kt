@@ -1,6 +1,5 @@
 package com.indiewalk.watchdog.earthquake.feat_details.presentation.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -21,8 +20,6 @@ fun DetailsScreen(
     id: String,
     onBack: () -> Unit
 ) {
-    val TAG = "DetailsScreen"
-    Log.d(TAG, "DetailsScreen on")
     ScaffoldModel(
         currentDestination = currentDestination,
         onBack = onBack,

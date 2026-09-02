@@ -1,8 +1,10 @@
 package com.indiewalk.watchdog.earthquake.core.presentation.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSerializable
+import androidx.navigation3.runtime.NavBackStack
+import kotlinx.serialization.serializer
 import kotlin.reflect.KClass
 
 class AppNavigator<T : Any>(
@@ -57,11 +59,18 @@ class AppNavigator<T : Any>(
 
 @Composable
 fun rememberAppNavigator(): AppNavigator<AppDestination> {
-    val backStack = remember { mutableStateListOf<AppDestination>(AppDestination.Intro) }
+    val backStack = rememberAppNavigationBackStack(AppDestination.Intro)
     return remember(backStack) {
         AppNavigator(
             initialBackStack = backStack,
             topLevelDestinations = appTopLevelDestinationClasses
         )
     }
+}
+
+@Composable
+private fun rememberAppNavigationBackStack(
+    vararg destinations: AppDestination
+): NavBackStack<AppDestination> = rememberSerializable(serializer = serializer()) {
+    NavBackStack(*destinations)
 }

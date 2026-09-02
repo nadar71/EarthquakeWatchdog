@@ -8,6 +8,7 @@ import com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui.MapScreen
 import com.indiewalk.watchdog.earthquake.feat_intro.presentation.IntroScreen_01
 import com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui.CreditsScreen
 import com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui.SettingsScreen
+import com.indiewalk.watchdog.earthquake.feat_settings.presentation.ui.PrivacyPolicyScreen
 import com.indiewalk.watchdog.earthquake.feat_statistics.presentation.ui.StatisticsScreen
 
 interface AppNavigationScreenFactory {
@@ -40,11 +41,19 @@ interface AppNavigationScreenFactory {
     fun Settings(
         currentDestination: AppDestination,
         onTopLevelDestinationSelected: (AppDestination) -> Unit,
-        onOpenCredits: () -> Unit
+        onOpenCredits: () -> Unit,
+        onOpenPrivacyPolicy: () -> Unit,
+        onManageAdPrivacy: () -> Unit
     )
 
     @Composable
     fun Credits(
+        currentDestination: AppDestination,
+        onBack: () -> Unit
+    )
+
+    @Composable
+    fun PrivacyPolicy(
         currentDestination: AppDestination,
         onBack: () -> Unit
     )
@@ -108,12 +117,16 @@ object DefaultAppNavigationScreenFactory : AppNavigationScreenFactory {
     override fun Settings(
         currentDestination: AppDestination,
         onTopLevelDestinationSelected: (AppDestination) -> Unit,
-        onOpenCredits: () -> Unit
+        onOpenCredits: () -> Unit,
+        onOpenPrivacyPolicy: () -> Unit,
+        onManageAdPrivacy: () -> Unit
     ) {
         SettingsScreen(
             currentDestination = currentDestination,
             onTopLevelDestinationSelected = onTopLevelDestinationSelected,
-            onOpenCredits = onOpenCredits
+            onOpenCredits = onOpenCredits,
+            onOpenPrivacyPolicy = onOpenPrivacyPolicy,
+            onManageAdPrivacy = onManageAdPrivacy
         )
     }
 
@@ -126,6 +139,11 @@ object DefaultAppNavigationScreenFactory : AppNavigationScreenFactory {
             currentDestination = currentDestination,
             onBack = onBack
         )
+    }
+
+    @Composable
+    override fun PrivacyPolicy(currentDestination: AppDestination, onBack: () -> Unit) {
+        PrivacyPolicyScreen(currentDestination = currentDestination, onBack = onBack)
     }
 
     @Composable

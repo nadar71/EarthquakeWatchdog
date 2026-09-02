@@ -4,6 +4,10 @@ import com.indiewalk.watchdog.earthquake.FakeAppPreferencesRepository
 import com.indiewalk.watchdog.earthquake.FakeLocationRepository
 import com.indiewalk.watchdog.earthquake.sampleLatLng
 import com.indiewalk.watchdog.earthquake.sampleLocationInfo
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticCategory
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticEvent
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticSink
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticsTestRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -18,10 +22,24 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class IntroViewModelTest {
+
+    private val diagnosticReports = mutableListOf<DiagnosticCategory>()
+
+    @get:Rule
+    internal val diagnosticsTestRule = DiagnosticsTestRule(
+        object : DiagnosticSink {
+            override fun recordNonFatal(category: DiagnosticCategory, throwable: Throwable) {
+                diagnosticReports += category
+            }
+
+            override fun breadcrumb(event: DiagnosticEvent) = Unit
+        }
+    )
 
     @Test
     fun `shows denied dialog when permission is rejected`() = runViewModelTest {
@@ -33,6 +51,7 @@ class IntroViewModelTest {
         viewModel.onPermissionResult(false)
 
         assertTrue(viewModel.uiState.value.showDeniedDialog)
+        assertTrue(diagnosticReports.isEmpty())
     }
 
     @Test

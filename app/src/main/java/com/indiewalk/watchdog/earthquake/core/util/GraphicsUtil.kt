@@ -3,7 +3,6 @@ package com.indiewalk.watchdog.earthquake.core.util
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
-import android.util.Log
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color

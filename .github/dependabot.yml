@@ -1,0 +1,31 @@
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 8
+    groups:
+      androidx:
+        patterns:
+          - "androidx.*"
+      firebase:
+        patterns:
+          - "com.google.firebase:*"
+          - "com.google.firebase.*"
+      google-play-services:
+        patterns:
+          - "com.google.android.gms:*"
+          - "com.google.android.ump:*"
+          - "com.google.gms.*"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      github-actions:
+        patterns:
+          - "*"

@@ -2,6 +2,9 @@ package com.indiewalk.watchdog.earthquake.feat_eqslist.presentation.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.indiewalk.watchdog.earthquake.core.diagnostics.AppDiagnostics
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticCategory
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticEvent
 import com.indiewalk.watchdog.earthquake.core.domain.model.AppError
 import com.indiewalk.watchdog.earthquake.core.domain.repository.AppPreferencesRepository
 import com.indiewalk.watchdog.earthquake.core.domain.repository.FilterPreferencesRepository
@@ -124,6 +127,7 @@ class EarthquakeListViewModel @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
+                AppDiagnostics.recordNonFatal(DiagnosticCategory.STORAGE, e)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
@@ -136,6 +140,7 @@ class EarthquakeListViewModel @Inject constructor(
     }
 
     private fun refreshEarthquakes() {
+        AppDiagnostics.breadcrumb(DiagnosticEvent.EARTHQUAKE_REFRESH_REQUESTED)
         viewModelScope.launch {
             _uiState.update { current ->
                 current.copy(
@@ -147,6 +152,7 @@ class EarthquakeListViewModel @Inject constructor(
             try {
                 repository.fetchAndSaveDefault()
             } catch (e: Exception) {
+                AppDiagnostics.recordNonFatal(DiagnosticCategory.NETWORK, e)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
@@ -166,4 +172,3 @@ class EarthquakeListViewModel @Inject constructor(
         appPreferencesRepository.setUserLocationInfo(locationRepository.getLocationInfo(userLocation))
     }
 }
-

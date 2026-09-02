@@ -14,6 +14,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.android.gms.maps.model.LatLng
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,6 +24,8 @@ class AppNavigationHostTest {
 
     @get:Rule
     val composeRule = createAndroidComposeRule<ComponentActivity>()
+
+    private lateinit var navigator: AppNavigator<AppDestination>
 
     @Test
     fun intro_continue_navigates_to_home() {
@@ -59,6 +62,20 @@ class AppNavigationHostTest {
     }
 
     @Test
+    fun selectingExistingHomeDestinationRemovesMapFromBackStack() {
+        setHostContent()
+
+        composeRule.onNodeWithTag("intro-continue").performClick()
+        composeRule.onNodeWithTag("home-open-map").performClick()
+        composeRule.onNodeWithText("map:10.0,20.0").assertExists()
+        composeRule.onNodeWithTag("map-open-home").performClick()
+
+        composeRule.runOnIdle {
+            assertEquals(listOf(AppDestination.Home), navigator.backStack)
+        }
+    }
+
+    @Test
     fun settings_open_credits_and_back_returns_to_settings() {
         setHostContent()
 
@@ -70,6 +87,20 @@ class AppNavigationHostTest {
         composeRule.onNodeWithText("credits-screen").assertExists()
 
         composeRule.onNodeWithTag("credits-back").performClick()
+
+        composeRule.onNodeWithText("settings-screen").assertExists()
+    }
+
+    @Test
+    fun settings_open_privacy_policy_and_back_returns_to_settings() {
+        setHostContent()
+
+        composeRule.onNodeWithTag("intro-continue").performClick()
+        composeRule.onNodeWithTag("home-open-settings").performClick()
+        composeRule.onNodeWithTag("settings-open-privacy-policy").performClick()
+        composeRule.onNodeWithText("privacy-policy-screen").assertExists()
+
+        composeRule.onNodeWithTag("privacy-policy-back").performClick()
 
         composeRule.onNodeWithText("settings-screen").assertExists()
     }
@@ -94,7 +125,7 @@ class AppNavigationHostTest {
 
     private fun setHostContent() {
         composeRule.setContent {
-            val navigator = remember {
+            navigator = remember {
                 AppNavigator(
                     initialBackStack = mutableStateListOf<AppDestination>(AppDestination.Intro),
                     topLevelDestinations = appTopLevelDestinationClasses
@@ -105,6 +136,36 @@ class AppNavigationHostTest {
                 screenFactory = FakeAppNavigationScreenFactory
             )
         }
+    }
+
+}
+
+@RunWith(AndroidJUnit4::class)
+class AppNavigationHostRestorationTest {
+
+    @get:Rule
+    val composeRule = createAndroidComposeRule<DebugNavigationTestActivity>()
+
+    @Test
+    fun topLevelDestinationIsRestoredAfterActivityRecreation() {
+        composeRule.onNodeWithTag("intro-continue").performClick()
+        composeRule.onNodeWithTag("home-open-settings").performClick()
+        composeRule.onNodeWithText("settings-screen").assertExists()
+
+        composeRule.activityRule.scenario.recreate()
+
+        composeRule.onNodeWithText("settings-screen").assertExists()
+    }
+
+    @Test
+    fun detailsDestinationIsRestoredAfterActivityRecreation() {
+        composeRule.onNodeWithTag("intro-continue").performClick()
+        composeRule.onNodeWithTag("home-open-details").performClick()
+        composeRule.onNodeWithText("details:eq-42").assertExists()
+
+        composeRule.activityRule.scenario.recreate()
+
+        composeRule.onNodeWithText("details:eq-42").assertExists()
     }
 }
 
@@ -201,7 +262,9 @@ private object FakeAppNavigationScreenFactory : AppNavigationScreenFactory {
     override fun Settings(
         currentDestination: AppDestination,
         onTopLevelDestinationSelected: (AppDestination) -> Unit,
-        onOpenCredits: () -> Unit
+        onOpenCredits: () -> Unit,
+        onOpenPrivacyPolicy: () -> Unit,
+        onManageAdPrivacy: () -> Unit
     ) {
         Column {
             Text("settings-screen")
@@ -210,6 +273,12 @@ private object FakeAppNavigationScreenFactory : AppNavigationScreenFactory {
                 modifier = androidx.compose.ui.Modifier.testTag("settings-open-credits")
             ) {
                 Text("credits")
+            }
+            Button(
+                onClick = onOpenPrivacyPolicy,
+                modifier = androidx.compose.ui.Modifier.testTag("settings-open-privacy-policy")
+            ) {
+                Text("privacy policy")
             }
         }
     }
@@ -224,6 +293,19 @@ private object FakeAppNavigationScreenFactory : AppNavigationScreenFactory {
             Button(
                 onClick = onBack,
                 modifier = androidx.compose.ui.Modifier.testTag("credits-back")
+            ) {
+                Text("back")
+            }
+        }
+    }
+
+    @Composable
+    override fun PrivacyPolicy(currentDestination: AppDestination, onBack: () -> Unit) {
+        Column {
+            Text("privacy-policy-screen")
+            Button(
+                onClick = onBack,
+                modifier = androidx.compose.ui.Modifier.testTag("privacy-policy-back")
             ) {
                 Text("back")
             }

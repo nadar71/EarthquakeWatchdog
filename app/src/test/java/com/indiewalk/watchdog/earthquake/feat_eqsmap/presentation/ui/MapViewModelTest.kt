@@ -9,6 +9,7 @@ import com.indiewalk.watchdog.earthquake.sampleLocationInfo
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LNG
 import com.indiewalk.watchdog.earthquake.core.data.local.enums.ThemeMode
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticsTestRule
 import com.indiewalk.watchdog.earthquake.core.domain.model.AppError
 import com.indiewalk.watchdog.earthquake.feat_eqsmap.domain.use_cases.ObserveEarthquakesUseCase
 import com.google.android.gms.maps.model.LatLng
@@ -23,10 +24,14 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MapViewModelTest {
+
+    @get:Rule
+    internal val diagnosticsTestRule = DiagnosticsTestRule()
 
     @Test
     fun `sets recenter target when manual location is confirmed`() = runViewModelTest {
@@ -130,6 +135,22 @@ class MapViewModelTest {
         advanceUntilIdle()
 
         assertTrue(viewModel.uiState.value.error is AppError.Storage)
+    }
+
+    @Test
+    fun `marker selection shows detail state and dismiss clears it`() = runViewModelTest {
+        val earthquake = sampleEqEntity()
+        val viewModel = MapViewModel(
+            observeEarthquakesUseCase = ObserveEarthquakesUseCase(FakeEQRepository(listOf(earthquake))),
+            appPreferencesRepository = FakeAppPreferencesRepository(),
+            locationRepository = FakeLocationRepository()
+        )
+
+        viewModel.onEarthquakeSelected(earthquake)
+        assertEquals(earthquake, viewModel.uiState.value.selectedEarthquake)
+
+        viewModel.onEarthquakeSelectionCleared()
+        assertEquals(null, viewModel.uiState.value.selectedEarthquake)
     }
 }
 
