@@ -132,3 +132,11 @@ app/release/baselineProfiles/0/app-release.dm
 
 # This versioned quality policy must override the developer-global XML ignore rule.
 !config/lint/lint.xml
+
+# Android source resources must override developer-global rules such as `*.xml`.
+!app/src/**/res/**/*.xml
+
+# Keep environment-specific credential resources ignored after the source exception.
+**/google_maps_api.xml
+**/admob_key.xml
+**/ads_key_ids.xml

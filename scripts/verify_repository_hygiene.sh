@@ -18,6 +18,16 @@ check_tracked_files() {
     fi
 }
 
+check_ignored_source_resources() {
+    local matches
+
+    matches=$(git ls-files --others --ignored --exclude-standard -- 'app/src/**/res/**' \
+        | grep -Ev '(^|/)(\.DS_Store|(google_maps_api|admob_key|ads_key_ids)\.xml)$' || true)
+    if [[ -n "$matches" ]]; then
+        report_failure "ignored Android source resource" "$matches"
+    fi
+}
+
 check_executable_source() {
     local matches
 
@@ -163,6 +173,7 @@ check_verbose_network_logging() {
 }
 
 check_tracked_files
+check_ignored_source_resources
 check_executable_source
 check_verbose_network_logging
 

@@ -119,4 +119,10 @@ track_file "app/schemas/com.example.Database/6.json" "{}\n"
 track_file "app/src/main/java/Fixture.kt" $'package fixture\nval safe = "schema fixture"\n'
 assert_hygiene_result "tracked Room schema" "pass"
 
+create_case
+mkdir -p "$case_directory/app/src/main/res/drawable"
+printf '*.xml\n' > "$case_directory/.gitignore"
+printf '<vector/>\n' > "$case_directory/app/src/main/res/drawable/ic_missing.xml"
+assert_hygiene_result "ignored Android source resource" "fail"
+
 printf 'All %s hygiene fixture cases passed.\n' "$tests_run"
