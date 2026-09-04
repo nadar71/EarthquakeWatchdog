@@ -83,6 +83,8 @@ class GitHubActionsContractTest(unittest.TestCase):
             "steps.api-35-avd-cache.outputs.cache-hit != 'true'",
             self.instrumentation,
         )
+        self.assertNotIn("avd-v1-", self.instrumentation)
+        self.assertIn("avd-v2-", self.instrumentation)
 
     def test_every_emulator_job_enables_linux_kvm_access(self) -> None:
         emulator_runner = "uses: reactivecircus/android-emulator-runner@"

@@ -66,6 +66,28 @@ assert_hygiene_result() {
     printf 'PASS: %s\n' "$name"
 }
 
+assert_hygiene_result_without_ripgrep() {
+    local status
+
+    if (cd "$case_directory" && PATH=/usr/bin:/bin bash scripts/verify_repository_hygiene.sh) \
+        > "$case_directory/output" 2>&1; then
+        status=0
+    else
+        status=$?
+    fi
+
+    tests_run=$((tests_run + 1))
+    if [[ "$status" -ne 0 ]]; then
+        cat "$case_directory/output" >&2
+        fail "repository hygiene should not require ripgrep"
+    fi
+    printf 'PASS: repository hygiene without ripgrep\n'
+}
+
+create_case
+track_file "app/src/main/java/Fixture.kt" $'package fixture\nval safe = "clean"\n'
+assert_hygiene_result_without_ripgrep
+
 create_case
 track_file "app/src/main/java/Fixture.java" $'package fixture;\n/* outer /* inner */ TODO("code after Java comment"); */\n'
 assert_hygiene_result "Java block comments end at first terminator" "fail"
