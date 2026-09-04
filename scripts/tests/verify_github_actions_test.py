@@ -63,12 +63,30 @@ class GitHubActionsContractTest(unittest.TestCase):
 
     def test_fast_jobs_run_required_commands_and_upload_failure_reports(self) -> None:
         self.assertIn("bash scripts/verify_repository_hygiene.sh", self.quality)
-        self.assertIn(
-            "./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug",
-            self.quality,
-        )
+        self.assertIn("name: Run unit tests", self.quality)
+        self.assertIn("./gradlew :app:testDebugUnitTest", self.quality)
+        self.assertIn("name: Run Android lint", self.quality)
+        self.assertIn("./gradlew :app:lintDebug", self.quality)
+        self.assertIn("name: Assemble debug build", self.quality)
+        self.assertIn("./gradlew :app:assembleDebug", self.quality)
         self.assertIn("if: failure()", self.quality)
         self.assertIn("actions/upload-artifact@", self.quality)
+        self.assertIn("ci-logs/", self.quality)
+
+    def test_ci_limits_gradle_and_emulator_memory(self) -> None:
+        for workflow in (self.quality, self.instrumentation):
+            self.assertIn("GRADLE_OPTS:", workflow)
+            self.assertIn("org.gradle.workers.max=2", workflow)
+            self.assertIn("-Xmx1536m", workflow)
+
+        self.assertNotIn("ram-size: 4096M", self.instrumentation)
+        self.assertIn("ram-size: 2048M", self.instrumentation)
+
+    def test_ci_always_uploads_console_logs(self) -> None:
+        self.assertIn("name: Upload quality console logs", self.quality)
+        self.assertIn("if: always()", self.quality)
+        self.assertIn("quality-ci-logs", self.quality)
+        self.assertIn("instrumentation.log", self.instrumentation)
 
     def test_instrumentation_and_compatibility_coverage_are_explicit(self) -> None:
         self.assertIn("api-level: 35", self.instrumentation)

@@ -12,6 +12,11 @@ on:
 permissions:
   contents: read
 
+env:
+  GRADLE_OPTS: >-
+    -Dorg.gradle.jvmargs=-Xmx1536m -Dfile.encoding=UTF-8
+    -Dorg.gradle.workers.max=2
+
 concurrency:
   group: android-instrumentation-${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
@@ -46,12 +51,15 @@ jobs:
           arch: x86_64
           profile: pixel_6
           cores: 2
-          ram-size: 4096M
+          ram-size: 2048M
           force-avd-creation: false
           disable-animations: true
           disable-linux-hw-accel: false
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -accel on
-          script: ./gradlew :app:connectedDebugAndroidTest
+          script: |
+            set -o pipefail
+            mkdir -p ci-logs
+            ./gradlew :app:connectedDebugAndroidTest --stacktrace 2>&1 | tee ci-logs/instrumentation.log
 
       - name: Save API 35 emulator cache
         if: github.event_name != 'pull_request' && steps.api-35-avd-cache.outputs.cache-hit != 'true'
@@ -68,6 +76,7 @@ jobs:
           path: |
             app/build/reports/androidTests/connected/debug/
             app/build/outputs/androidTest-results/connected/debug/
+            ci-logs/instrumentation.log
           if-no-files-found: warn
           retention-days: 7
 
@@ -105,12 +114,15 @@ jobs:
           arch: x86_64
           profile: pixel_6
           cores: 2
-          ram-size: 4096M
+          ram-size: 2048M
           force-avd-creation: false
           disable-animations: true
           disable-linux-hw-accel: false
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -accel on
-          script: ./gradlew :app:connectedDebugAndroidTest
+          script: |
+            set -o pipefail
+            mkdir -p ci-logs
+            ./gradlew :app:connectedDebugAndroidTest --stacktrace 2>&1 | tee ci-logs/instrumentation.log
 
       - name: Save API ${{ matrix.api-level }} emulator cache
         if: steps.compatibility-avd-cache.outputs.cache-hit != 'true'
@@ -127,6 +139,7 @@ jobs:
           path: |
             app/build/reports/androidTests/connected/debug/
             app/build/outputs/androidTest-results/connected/debug/
+            ci-logs/instrumentation.log
           if-no-files-found: warn
           retention-days: 7
 
@@ -161,7 +174,7 @@ jobs:
           arch: x86_64
           profile: pixel_6
           cores: 4
-          ram-size: 4096M
+          ram-size: 2048M
           force-avd-creation: false
           disable-animations: true
           disable-linux-hw-accel: false
