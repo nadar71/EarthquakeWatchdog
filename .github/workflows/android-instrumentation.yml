@@ -57,9 +57,11 @@ jobs:
           disable-linux-hw-accel: false
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -accel on
           script: |
+            bash <<'EOF'
             set -o pipefail
             mkdir -p ci-logs
             ./gradlew :app:connectedDebugAndroidTest --stacktrace 2>&1 | tee ci-logs/instrumentation.log
+            EOF
 
       - name: Save API 35 emulator cache
         if: github.event_name != 'pull_request' && steps.api-35-avd-cache.outputs.cache-hit != 'true'
@@ -120,9 +122,11 @@ jobs:
           disable-linux-hw-accel: false
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -accel on
           script: |
+            bash <<'EOF'
             set -o pipefail
             mkdir -p ci-logs
             ./gradlew :app:connectedDebugAndroidTest --stacktrace 2>&1 | tee ci-logs/instrumentation.log
+            EOF
 
       - name: Save API ${{ matrix.api-level }} emulator cache
         if: steps.compatibility-avd-cache.outputs.cache-hit != 'true'
@@ -180,6 +184,7 @@ jobs:
           disable-linux-hw-accel: false
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -accel on
           script: |
+            bash <<'EOF'
             set -euo pipefail
             mkdir -p benchmark-results
             ./gradlew :benchmark:connectedNonMinifiedReleaseAndroidTest \
@@ -210,6 +215,7 @@ jobs:
               --budgets config/performance-budgets.json \
               benchmark-results/startup-benchmarkData.json \
               benchmark-results/core-benchmarkData.json
+            EOF
 
       - name: Save API 35 benchmark emulator cache
         if: steps.benchmark-avd-cache.outputs.cache-hit != 'true'

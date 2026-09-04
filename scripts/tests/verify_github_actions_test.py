@@ -88,6 +88,13 @@ class GitHubActionsContractTest(unittest.TestCase):
         self.assertIn("quality-ci-logs", self.quality)
         self.assertIn("instrumentation.log", self.instrumentation)
 
+    def test_emulator_scripts_explicitly_use_bash(self) -> None:
+        self.assertEqual(self.instrumentation.count("bash <<'EOF'"), 3)
+        self.assertNotRegex(
+            self.instrumentation,
+            r"(?m)^\s{10}script: \|\n\s{12}set -",
+        )
+
     def test_instrumentation_and_compatibility_coverage_are_explicit(self) -> None:
         self.assertIn("api-level: 35", self.instrumentation)
         self.assertIn("api-level: [26, 36]", self.instrumentation)
