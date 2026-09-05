@@ -10,6 +10,7 @@ WORKFLOW = ROOT / ".github" / "workflows" / "android-release.yml"
 PREPARE = ROOT / "scripts" / "prepare_release_secrets.sh"
 VERIFY = ROOT / "scripts" / "verify_aab.sh"
 RECORD_UPLOAD = ROOT / "scripts" / "record_crashlytics_mapping_upload.sh"
+PREPARE_TEST = ROOT / "scripts" / "tests" / "prepare_release_secrets_test.sh"
 
 
 class ReleasePipelineContractTest(unittest.TestCase):
@@ -19,6 +20,17 @@ class ReleasePipelineContractTest(unittest.TestCase):
         cls.prepare = PREPARE.read_text(encoding="utf-8")
         cls.verify = VERIFY.read_text(encoding="utf-8")
         cls.record_upload = RECORD_UPLOAD.read_text(encoding="utf-8")
+        cls.prepare_test = PREPARE_TEST.read_text(encoding="utf-8")
+
+    def test_secret_permission_assertions_prefer_gnu_stat_before_bsd_stat(self) -> None:
+        mode_helper = re.search(
+            r"mode_of\(\) \{(?P<body>.*?)\n\}",
+            self.prepare_test,
+            re.DOTALL,
+        )
+        self.assertIsNotNone(mode_helper)
+        body = mode_helper.group("body")
+        self.assertLess(body.index("stat -c '%a'"), body.index("stat -f '%Lp'"))
 
     def test_release_has_only_protected_manual_and_version_tag_entrypoints(self) -> None:
         self.assertRegex(cls_text := self.workflow, r"(?m)^  push:\n    tags:\n      - ['\"]v\*['\"]$")
