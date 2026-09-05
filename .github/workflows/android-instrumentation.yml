@@ -28,7 +28,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Check out repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Enable Linux KVM access
         uses: ./.github/actions/enable-kvm
@@ -38,13 +38,13 @@ jobs:
 
       - name: Restore API 35 emulator cache
         id: api-35-avd-cache
-        uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.android/avd
           key: avd-v2-${{ runner.os }}-api-35
 
       - name: Run API 35 instrumentation suite
-        uses: reactivecircus/android-emulator-runner@1dcd0090116d15e7c562f8db72807de5e036a4ed # v2.34.0
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: 35
           target: google_apis
@@ -60,14 +60,14 @@ jobs:
 
       - name: Save API 35 emulator cache
         if: github.event_name != 'pull_request' && steps.api-35-avd-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.android/avd
           key: avd-v2-${{ runner.os }}-api-35
 
       - name: Upload API 35 instrumentation reports
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: instrumentation-api-35-reports
           path: |
@@ -88,7 +88,7 @@ jobs:
         api-level: [26, 36]
     steps:
       - name: Check out repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Enable Linux KVM access
         uses: ./.github/actions/enable-kvm
@@ -98,13 +98,13 @@ jobs:
 
       - name: Restore API ${{ matrix.api-level }} emulator cache
         id: compatibility-avd-cache
-        uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.android/avd
           key: avd-v2-${{ runner.os }}-api-${{ matrix.api-level }}
 
       - name: Run API ${{ matrix.api-level }} instrumentation suite
-        uses: reactivecircus/android-emulator-runner@1dcd0090116d15e7c562f8db72807de5e036a4ed # v2.34.0
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: ${{ matrix.api-level }}
           target: google_apis
@@ -120,14 +120,14 @@ jobs:
 
       - name: Save API ${{ matrix.api-level }} emulator cache
         if: steps.compatibility-avd-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.android/avd
           key: avd-v2-${{ runner.os }}-api-${{ matrix.api-level }}
 
       - name: Upload API ${{ matrix.api-level }} instrumentation reports
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: instrumentation-api-${{ matrix.api-level }}-reports
           path: |
@@ -145,7 +145,7 @@ jobs:
     timeout-minutes: 120
     steps:
       - name: Check out repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Enable Linux KVM access
         uses: ./.github/actions/enable-kvm
@@ -155,13 +155,13 @@ jobs:
 
       - name: Restore API 35 benchmark emulator cache
         id: benchmark-avd-cache
-        uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.android/avd
           key: benchmark-avd-v2-${{ runner.os }}-api-35
 
       - name: Run selector, profile, and Macrobenchmark monitoring
-        uses: reactivecircus/android-emulator-runner@1dcd0090116d15e7c562f8db72807de5e036a4ed # v2.34.0
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: 35
           target: google_apis
@@ -177,14 +177,14 @@ jobs:
 
       - name: Save API 35 benchmark emulator cache
         if: steps.benchmark-avd-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.android/avd
           key: benchmark-avd-v2-${{ runner.os }}-api-35
 
       - name: Upload benchmark monitoring evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: benchmark-monitoring-evidence
           path: |
