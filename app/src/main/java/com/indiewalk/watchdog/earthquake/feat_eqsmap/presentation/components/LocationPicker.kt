@@ -1,7 +1,6 @@
 package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.components
 
 import android.location.Address
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -51,9 +50,6 @@ fun LocationPicker(
     onLocationSelected: (LatLng, LocationInfo) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val TAG = "LocationPickerNoPermissionsReq"
-    Log.d(TAG, "LocationPickerNoPermissionsReq Opened")
-
     val context = LocalContext.current
 
     var isMapManualPositionSet by remember { mutableStateOf(false) }
@@ -166,7 +162,9 @@ fun LocationPicker(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.MyLocation,
-                                contentDescription = "Current Location",
+                                contentDescription = stringResource(
+                                    R.string.maps_recenter_current_location
+                                ),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }

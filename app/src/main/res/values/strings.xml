@@ -13,6 +13,7 @@
     <string name="generic_no">No</string>
     <string name="generic_ok">Ok</string>
     <string name="generic_cancel">Cancel</string>
+    <string name="navigation_back">Back</string>
     <string name="generic_save_label">Save</string>
     <string name="generic_confirm_label">Confirm</string>
     <string name="generic_continue_label">Continue</string>
@@ -83,8 +84,26 @@
 
     <!-- - - - - - - - - - - Maps - - - - - - - - - - - - - - - - - -->
     <string name="maps_title" >Earthquakes World Map</string>
+    <string name="maps_title_bottom_nav">Map</string>
+    <string name="maps_marker_selected_subtitle">Selected earthquake details</string>
+    <string name="maps_marker_magnitude_label">Magnitude</string>
+    <string name="maps_marker_magnitude_type_format">Type: %1$s</string>
+    <string name="maps_marker_date_label">Date</string>
+    <string name="maps_marker_depth_label">Depth</string>
+    <string name="maps_marker_location_label">Location</string>
+    <string name="maps_marker_distance_label">Distance</string>
+    <string name="maps_marker_magnitude_impact_unknown">Impact information unavailable</string>
+    <string name="maps_marker_magnitude_impact_micro">Micro - Usually not felt</string>
+    <string name="maps_marker_magnitude_impact_minor">Minor - Often felt, rarely causes damage</string>
+    <string name="maps_marker_magnitude_impact_light">Light - Noticeable shaking, limited damage</string>
+    <string name="maps_marker_magnitude_impact_moderate">Moderate - Felt by many, some damage possible</string>
+    <string name="maps_marker_magnitude_impact_strong">Strong - Can damage weak structures</string>
+    <string name="maps_marker_magnitude_impact_major">Major - Serious damage in affected areas</string>
+    <string name="maps_marker_magnitude_impact_great">Great - Severe, widespread damage possible</string>
     <string name="maps_my_position_label">My Position</string>
     <string name="maps_refresh_label">Refresh</string>
+    <string name="maps_settings_content_description">Map settings</string>
+    <string name="maps_recenter_current_location">Recenter on current location</string>
     <string name="maps_spinner_title">Map type</string>
     <string name="maps_manual_loc_title">In case you prefer manual localization with NO gps.</string>
     <string name="maps_manual_loc_text">In settings,  above on the right, check \'Use manual localization\'
@@ -133,9 +152,11 @@
     <string name="settings_support_btn_title">Support</string>
     <string name="settings_disclaimer_label">Disclaimer</string>
     <string name="settings_faq_btn_summary">What app can do and don\'t.</string>
-    <string name="settings_faq_text"><![CDATA[This app downloads and shows data about earthquakes (till the last 120 earthquakes happened) taken from <a href="https://earthquake.usgs.gov/fdsnws/event/1/">USGS.gov</a> online service. It is not in any way related to USGS nor it is an app from them. <br><br>It has only informative purposes, the data about earthquakes are not in real time (check <a href="https://earthquake.usgs.gov/fdsnws/event/1/">USGS.gov site</a> for details). <br><br>So it is not intended to be a real time earthquake alert app, do not use it as a life saving app. <br><br>I&apos;m not responsible for any improper use of this app.
+    <string name="settings_faq_text"><![CDATA[This app downloads and shows earthquake data from the last 30 days (up to 200 events per list refresh) from the <a href="https://earthquake.usgs.gov/fdsnws/event/1/">USGS.gov</a> online service. It is not affiliated with or published by USGS. <br><br>It has only informative purposes, the data about earthquakes are not in real time (check the <a href="https://earthquake.usgs.gov/fdsnws/event/1/">USGS.gov site</a> for details). <br><br>It is not intended to be a real-time earthquake alert app, so do not use it as a life-saving app. <br><br>I&apos;m not responsible for any improper use of this app.
 
-<br><br>In the map, it asks for user location permissions only for calculating the distance of earthquakes from the user, and the user&apos;s coordinates are stored for this purpose only. If location permissions are denied, it allows manual positioning by long-pressing on the map, without using GPS or any other localization system.
+<br><br>When permission is granted, the app uses your last-known foreground location to calculate earthquake distances, center the map, and provide nearest and nearby statistics. Coordinates and reverse-geocoded city, country, and address are stored in the app&apos;s local preferences until replaced, app storage is cleared, or the app is uninstalled. No background location is used. Maps and the device geocoding service may process the selected position to provide those features.
+
+<br><br>If location permission is denied, you can set a manual position by long-pressing on the map without using GPS. The manual coordinates and location text are stored locally and used for the same map, distance, and nearby statistics features.
 
 <br><br>If permissions are not granted and no manual localization is done, it uses the default location (Google location) and calculates earthquake distances from there.
 
@@ -144,8 +165,10 @@
 <br><br>For suggestions, info, or bug reports, please contact me at <a href="mailto:indie.walkabout.1971@gmail.com">indie.walkabout.1971@gmail.com</a>]]></string>
     <string name="settings_gdpr_btn_title">Privacy &amp; Ad Consent</string>
     <string name="gdpr_btn_summary">Manage your ad personalization consent</string>
-    <string name="gdpr_dialog_will_show_again">Consent has been reset. You\'ll be asked again.</string>
-    <string name="gdpr_dialog_reset_done">Consent choice done.</string>
+    <string name="privacy_policy_title">Privacy Policy</string>
+    <string name="privacy_policy_settings_summary">Read how the app and its service providers handle data.</string>
+    <string name="privacy_policy_open_public_title">Open the public privacy policy</string>
+    <string name="privacy_policy_body">Earthquake Watchdog is an informational app and does not provide emergency alerts. It has no user accounts and does not use background location.\n\nEarthquake data: the app downloads up to 200 events covering the last 30 days from the USGS service and stores a local database/cache so data can remain available offline. Network providers necessarily receive technical connection information such as the IP address.\n\nLocation: with foreground permission, the app reads the device\'s last-known location to calculate distances, center the map, and provide nearby statistics. A device geocoding service may convert coordinates into location text. You can instead select a manual location. Coordinates and reverse-geocoded text are stored only in local app preferences until replaced, app data is cleared, or the app is uninstalled.\n\nPreferences: filters, theme, units, intro status, refresh information, and manual-location choices are stored locally.\n\nThird-party services: Google Maps processes map requests and interactions. Google User Messaging Platform stores and updates consent choices. Google Mobile Ads may process identifiers, approximate location derived from network information, diagnostics, and ad interactions according to the consent and privacy choices available in your region. The app does not initialize or request ads unless UMP reports that ads may be requested. Release builds use Firebase Crashlytics for crash diagnostics and app/device metadata; the app does not intentionally attach earthquake searches or precise location to crash reports.\n\nControl and retention: use System settings to revoke location permission, use Privacy &amp; Ad Consent when that option is required and available, and clear app storage or uninstall to remove local data. Third-party retention is governed by each provider\'s policy.\n\nFor privacy questions contact indie.walkabout.1971@gmail.com. The public policy link below is included only when a verified HTTPS URL is configured for the build.</string>
 
     <!-- - - - - - - - - - - - - - - - - - Credits - - - - - - - - - - -  - - - - - - - - - - - - - -->
     <string name="credits_title_label">Credits</string>
@@ -179,5 +202,53 @@
     <string name="settings_max_120_equakes_value" translatable="false">120</string>-->
 
 
+
+    <!-- Statistics -->
+    <string name="statistics_title">Statistics</string>
+    <string name="statistics_scope">Global earthquakes · M%1$s+</string>
+    <string name="statistics_updated">Updated %1$s</string>
+    <string name="statistics_today">Today</string>
+    <string name="statistics_last_7_days">7 days</string>
+    <string name="statistics_last_30_days">30 days</string>
+    <string name="statistics_this_year">Year</string>
+    <string name="statistics_count_today_cd">%1$s earthquakes today</string>
+    <string name="statistics_count_week_cd">%1$s earthquakes in the last 7 days</string>
+    <string name="statistics_count_month_cd">%1$s earthquakes in the last 30 days</string>
+    <string name="statistics_count_year_cd">%1$s earthquakes this year</string>
+    <string name="statistics_count_unavailable">Unavailable</string>
+    <string name="statistics_strongest_today">Strongest today</string>
+    <string name="statistics_nearest_today">Nearest today</string>
+    <string name="statistics_depth">Depth %1$s km</string>
+    <string name="statistics_distance_km">%1$s km away</string>
+    <string name="statistics_distance_mi">%1$s mi away</string>
+    <string name="statistics_no_strongest">No qualifying earthquake today.</string>
+    <string name="statistics_no_nearest">No qualifying earthquake today.</string>
+    <string name="statistics_nearest_unavailable">Nearest earthquake is unavailable for the selected location.</string>
+    <string name="statistics_cached">Showing cached statistics.</string>
+    <string name="statistics_stale">Statistics may be out of date.</string>
+    <string name="statistics_partial">Some statistics are temporarily unavailable.</string>
+    <string name="statistics_error">Unable to load earthquake statistics.</string>
+    <string name="statistics_retry">Retry</string>
+    <string name="statistics_insights_title">Insights</string>
+    <string name="statistics_global_trend">Global activity over 30 days</string>
+    <string name="statistics_nearby_trend">Nearby activity within 1,000 km</string>
+    <string name="statistics_trend_summary">%1$s: %2$d earthquakes, peak %3$d in one day.</string>
+    <string name="statistics_magnitude_distribution">Magnitude distribution</string>
+    <string name="statistics_depth_distribution">Depth distribution</string>
+    <string name="statistics_active_regions">Most active regions</string>
+    <string name="statistics_no_regions">No named regions are available.</string>
+    <string name="statistics_insights_unavailable">Insights are temporarily unavailable.</string>
+    <string name="statistics_nearby_trend_unavailable">Nearby trend is unavailable for the selected location.</string>
+    <string name="statistics_mag_2_5_2_9">M2.5–2.9</string>
+    <string name="statistics_mag_3_0_3_9">M3.0–3.9</string>
+    <string name="statistics_mag_4_0_4_9">M4.0–4.9</string>
+    <string name="statistics_mag_5_0_5_9">M5.0–5.9</string>
+    <string name="statistics_mag_6_plus">M6.0+</string>
+    <string name="statistics_depth_shallow">Shallow · under 70 km</string>
+    <string name="statistics_depth_intermediate">Intermediate · 70–300 km</string>
+    <string name="statistics_depth_deep">Deep · over 300 km</string>
+    <string name="statistics_axis_dates_cd">Dates: %1$s</string>
+    <string name="statistics_axis_count_cd">Earthquake count: 0 to %1$d</string>
+    <string name="statistics_axis_y_title">Earthquakes</string>
 
 </resources>

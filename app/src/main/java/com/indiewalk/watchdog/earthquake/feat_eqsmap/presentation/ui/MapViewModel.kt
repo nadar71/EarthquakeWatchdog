@@ -5,6 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LAT
 import com.indiewalk.watchdog.earthquake.core.data.local.Constants.DEFAULT_LNG
+import com.indiewalk.watchdog.earthquake.core.diagnostics.AppDiagnostics
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticCategory
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticEvent
 import com.indiewalk.watchdog.earthquake.core.domain.model.AppError
 import com.indiewalk.watchdog.earthquake.core.domain.repository.AppPreferencesRepository
 import com.indiewalk.watchdog.earthquake.core.domain.repository.LocationRepository
@@ -52,12 +55,21 @@ class MapViewModel @Inject constructor(
     }
 
     fun onManualLocationConfirmed(latLng: LatLng, locationInfo: LocationInfo) {
+        AppDiagnostics.breadcrumb(DiagnosticEvent.MAP_MANUAL_LOCATION_CONFIRMED)
         viewModelScope.launch {
             appPreferencesRepository.setManualPosition(latLng)
             appPreferencesRepository.setManualLocationInfo(locationInfo)
             appPreferencesRepository.setManualLocationOn(true)
             _uiState.update { it.copy(recenterTarget = latLng) }
         }
+    }
+
+    fun onEarthquakeSelected(earthquake: com.indiewalk.watchdog.earthquake.feat_eqslist.domain.model.db.EQEntity) {
+        _uiState.update { it.copy(selectedEarthquake = earthquake) }
+    }
+
+    fun onEarthquakeSelectionCleared() {
+        _uiState.update { it.copy(selectedEarthquake = null) }
     }
 
     fun onRecenterHandled() {
@@ -85,6 +97,7 @@ class MapViewModel @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
+                AppDiagnostics.recordNonFatal(DiagnosticCategory.STORAGE, e)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
@@ -109,4 +122,3 @@ class MapViewModel @Inject constructor(
         }
     }
 }
-

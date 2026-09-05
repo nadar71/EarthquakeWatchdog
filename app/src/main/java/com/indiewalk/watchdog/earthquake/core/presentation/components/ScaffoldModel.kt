@@ -13,17 +13,20 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.compose.ui.res.stringResource
+import com.indiewalk.watchdog.earthquake.R
 import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppBottomBar
-import com.indiewalk.watchdog.earthquake.core.presentation.navigation.isRouteInHierarchy
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppDestination
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.isTopLevel
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppBottomBar
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScaffoldModel(
-    navController: NavHostController,
+    currentDestination: AppDestination,
+    onBack: (() -> Unit)? = null,
+    onTopLevelDestinationSelected: ((AppDestination) -> Unit)? = null,
     topBar: @Composable (() -> Unit)? = {},
     title: String = "",
     navigationIcon: @Composable (() -> Unit)? = {},
@@ -31,20 +34,22 @@ fun ScaffoldModel(
     colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
     content: @Composable (PaddingValues) -> Unit
 ) {
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = backStackEntry?.destination
-
-    val showBottomBar = currentDestination?.isRouteInHierarchy() ?: false
-    val canNavigateBack = !showBottomBar // simple heuristic: not top-level -> show back
+    val showBottomBar = currentDestination.isTopLevel
+    val showBackButton = !showBottomBar &&
+        currentDestination != AppDestination.Intro &&
+        onBack != null
 
     Scaffold(
         topBar = topBar ?: {
             TopAppBar(
                 title = { Text(title) },
                 navigationIcon = navigationIcon ?: {
-                    if (canNavigateBack) {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    if (showBackButton) {
+                        IconButton(onClick = { onBack?.invoke() }) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.navigation_back)
+                            )
                         }
                     }
                 },
@@ -52,6 +57,13 @@ fun ScaffoldModel(
                 colors  = colors
             )
         },
-        bottomBar = { if (showBottomBar) AppBottomBar(navController) }
+        bottomBar = {
+            if (showBottomBar && onTopLevelDestinationSelected != null) {
+                AppBottomBar(
+                    currentDestination = currentDestination,
+                    onDestinationSelected = onTopLevelDestinationSelected
+                )
+            }
+        }
     ) { padding -> content(padding) }
 }

@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "EarthquakeWatchdog"
 include(":app")
+include(":benchmark")

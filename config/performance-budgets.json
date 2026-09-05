@@ -1,0 +1,49 @@
+{
+  "minimumIterations": 10,
+  "enforcedBudgets": {
+    "StartupBenchmark#coldStartup": {
+      "timeToInitialDisplayMs.median": 840.0
+    },
+    "CoreJourneyBenchmark#listScroll": {
+      "frameDurationCpuMs.P50": 36.0,
+      "frameDurationCpuMs.P90": 53.0,
+      "frameOverrunMs.P50": 16.0,
+      "frameOverrunMs.P90": 47.0
+    },
+    "CoreJourneyBenchmark#topLevelNavigation": {
+      "frameDurationCpuMs.P50": 41.0,
+      "frameDurationCpuMs.P90": 60.0,
+      "frameOverrunMs.P50": 36.0,
+      "frameOverrunMs.P90": 59.0
+    }
+  },
+  "observations": {
+    "StartupBenchmark#coldStartup": [
+      "timeToInitialDisplayMs.maximum"
+    ],
+    "CoreJourneyBenchmark#listScroll": [
+      "frameCount.median",
+      "frameCount.maximum",
+      "frameDurationCpuMs.P95",
+      "frameDurationCpuMs.P99",
+      "frameOverrunMs.P95",
+      "frameOverrunMs.P99",
+      "memoryHeapSizeMaxKb.median",
+      "memoryHeapSizeMaxKb.maximum",
+      "memoryRssAnonMaxKb.median",
+      "memoryRssAnonMaxKb.maximum"
+    ],
+    "CoreJourneyBenchmark#topLevelNavigation": [
+      "frameCount.median",
+      "frameCount.maximum",
+      "frameDurationCpuMs.P95",
+      "frameDurationCpuMs.P99",
+      "frameOverrunMs.P95",
+      "frameOverrunMs.P99",
+      "memoryHeapSizeMaxKb.median",
+      "memoryHeapSizeMaxKb.maximum",
+      "memoryRssAnonMaxKb.median",
+      "memoryRssAnonMaxKb.maximum"
+    ]
+  }
+}

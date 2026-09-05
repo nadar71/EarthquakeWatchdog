@@ -1,6 +1,5 @@
 package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,10 +8,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
@@ -54,10 +55,10 @@ fun EarthquakeMapContent(
     recenterTarget: LatLng?,
     onRecenterHandled: () -> Unit,
     settings: AppSettings,
+    onEarthquakeSelected: (EQEntity) -> Unit,
+    onMapTapped: () -> Unit,
+    onRenderReadyChanged: (Boolean) -> Unit,
 ) {
-    val TAG = "EarthquakeMapContent"
-    Log.d(TAG, "EarthquakeMapContent Opened")
-    Log.d(TAG, "settings manualLocOn : ${settings.manualLocOn}")
     val context = LocalContext.current
 
     val showGrid by rememberSaveable { mutableStateOf(true) }
@@ -77,6 +78,27 @@ fun EarthquakeMapContent(
     }
     var cameraInitialized by remember { mutableStateOf(false) }
     var mapLoaded by remember { mutableStateOf(false) }
+    val earthquakesWithCoordinates = remember(eqs) {
+        eqs.filter { it.latitude != null && it.longitude != null }
+    }
+    val markerProgress = remember(earthquakesWithCoordinates.size) {
+        MapMarkerRenderProgress(earthquakesWithCoordinates.size)
+    }
+    var renderedMarkerCount by remember(earthquakesWithCoordinates) { mutableStateOf(0) }
+
+    LaunchedEffect(mapLoaded, markerProgress, earthquakesWithCoordinates) {
+        if (!mapLoaded) return@LaunchedEffect
+
+        while (renderedMarkerCount < earthquakesWithCoordinates.size) {
+            withFrameNanos { }
+            renderedMarkerCount = markerProgress.nextCount(renderedMarkerCount)
+        }
+    }
+
+    val renderReady = markerProgress.isComplete(mapLoaded, renderedMarkerCount)
+    LaunchedEffect(renderReady) {
+        onRenderReadyChanged(renderReady)
+    }
 
 
 
@@ -100,7 +122,6 @@ fun EarthquakeMapContent(
 
         // if manual is on, center map in manual location
         val didCenterOnManual = if (settings.manualLocOn) {
-            Log.d("EarthquakeMapContent", "Centering on manual location: ${settings.manualPosition}")
             cameraPositionState.animate(CameraUpdateFactory
                 .newLatLngZoom(settings.manualPosition, 7f))
             true
@@ -110,7 +131,6 @@ fun EarthquakeMapContent(
         if (!didCenterOnManual) {
             val didCenterOnUser = if (hasLocationPermissions) {
                 val userPosition = settings.userPosition
-                Log.d("EarthquakeMapContent", "Centering on user location: $userPosition")
                 if (userPosition.latitude != DEFAULT_LAT || userPosition.longitude != DEFAULT_LNG) {
                     cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(userPosition, 7f))
                     true
@@ -121,7 +141,6 @@ fun EarthquakeMapContent(
 
             // ...else center in bound or in default location
             if (!didCenterOnUser) {
-                Log.d("EarthquakeMapContent", "Centering on default location")
                 cameraPositionState.move(
                     CameraUpdateFactory.newLatLngZoom(LatLng(DEFAULT_LAT, DEFAULT_LNG), 7f))
             }
@@ -165,7 +184,8 @@ fun EarthquakeMapContent(
         cameraPositionState = cameraPositionState,
         properties = properties,
         uiSettings = uiSettings,
-        onMapLoaded = { mapLoaded = true }
+        onMapLoaded = { mapLoaded = true },
+        onMapClick = { onMapTapped() }
     ) {
 
         // Build a BitmapDescriptor from a vector/PNG drawable
@@ -186,31 +206,28 @@ fun EarthquakeMapContent(
         }
 
         // Add marker for each earthquake
-        eqs.forEach { eq ->
+        earthquakesWithCoordinates.take(renderedMarkerCount).forEach { eq ->
             val lat = eq.latitude
             val lng = eq.longitude
             if (lat != null && lng != null) {
-                val pos = LatLng(lat, lng)
-                val title = eq.place ?: eq.id
-                val magText = eq.mag?.let { "M %.1f".format(it) } ?: "M ?"
-                val depthText = eq.depthKm?.let { "Depth: %.0f km".format(it) } ?: ""
-                val snippet =
-                    listOf(magText, depthText).filter { it.isNotBlank() }.joinToString(" • ")
-
-
-                EarthquakeMarker(
-                    state = rememberMarkerState(position = pos),
-                    title = title,
-                    snippet = snippet,
-                    eq = eq,
-                    onClick = {true}
+                key(eq.id) {
+                    val pos = LatLng(lat, lng)
+                    val title = eq.place ?: eq.id
+                    EarthquakeMarker(
+                        state = rememberMarkerState(position = pos),
+                        title = title,
+                        eq = eq,
+                        onClick = {
+                            onEarthquakeSelected(it)
+                            true
+                        }
                     )
+                }
             }
         }
 
         // Default location marker
         if (!hasLocationPermissions && !settings.manualLocOn) {
-            Log.d("EarthquakeMapContent", "Default location on, set marker at : $DEFAULT_POSITION")
             val markerState = rememberMarkerState(position = DEFAULT_POSITION)
 
             // Update marker position when it changes
@@ -229,7 +246,6 @@ fun EarthquakeMapContent(
 
         // Manual location marker (if enabled)
         if (settings.manualLocOn) {
-            Log.d("EarthquakeMapContent", "Manual location on, set marker at : ${settings.manualPosition}")
             val markerState = rememberMarkerState(position = settings.manualPosition)
             
             // Update marker position when it changes
@@ -255,4 +271,3 @@ fun EarthquakeMapContent(
         }
     }
 }
-

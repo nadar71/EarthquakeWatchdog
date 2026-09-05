@@ -1,14 +1,19 @@
 package com.indiewalk.watchdog.earthquake.feat_eqsmap.presentation.ui
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavHostController
 import com.google.android.gms.maps.model.LatLng
+import com.indiewalk.watchdog.earthquake.core.presentation.navigation.AppDestination
 
 
 @Composable
-fun MapScreen(navController: NavHostController, initialLatLng: LatLng? = null) {
+fun MapScreen(
+    currentDestination: AppDestination,
+    onTopLevelDestinationSelected: (AppDestination) -> Unit,
+    initialLatLng: LatLng? = null
+) {
     EarthquakeMapScreen(
-        navController = navController,
+        currentDestination = currentDestination,
+        onTopLevelDestinationSelected = onTopLevelDestinationSelected,
         initialLatLng = initialLatLng,
     )
 }

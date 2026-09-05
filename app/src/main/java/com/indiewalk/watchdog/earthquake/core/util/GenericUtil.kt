@@ -10,7 +10,6 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
@@ -18,6 +17,8 @@ import androidx.compose.ui.platform.LocalUriHandler
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.indiewalk.watchdog.earthquake.R
+import com.indiewalk.watchdog.earthquake.core.diagnostics.AppDiagnostics
+import com.indiewalk.watchdog.earthquake.core.diagnostics.DiagnosticCategory
 
 import androidx.core.graphics.createBitmap
 import com.indiewalk.watchdog.earthquake.core.presentation.theme.extraDeepRed_dark
@@ -50,7 +51,6 @@ object GenericUtil {
         val marketUri_02 = Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")
 
         try {
-            Log.d("openAppStore", "store uri: $marketUri_01")
             context.startActivity(
                 Intent(
                     Intent.ACTION_VIEW,
@@ -59,15 +59,14 @@ object GenericUtil {
             )
         } catch (anfe: ActivityNotFoundException) {
             try {
-                Log.d("openAppStore", "store uri: $marketUri_02")
                 context.startActivity(
                     Intent(
                         Intent.ACTION_VIEW,
                         marketUri_02
                     )
                 )
-            } catch (e: ActivityNotFoundException){
-                Log.e("OpenAppStore", "Error opening app store", e)
+            } catch (e: ActivityNotFoundException) {
+                AppDiagnostics.recordNonFatal(DiagnosticCategory.EXTERNAL_INTENT, e)
             }
         }
     }

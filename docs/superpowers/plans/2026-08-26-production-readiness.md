@@ -1,0 +1,527 @@
+# Earthquake Watchdog Production Readiness Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Produce a repeatable, observable, secure Google Play release process that generates a verified signed AAB and promotes it through controlled rollout gates.
+
+**Architecture:** Production readiness is implemented as five sequential gates: release safety, automated quality, observability/performance, store compliance, and controlled rollout. Code changes remain inside existing Clean/MVVM boundaries; platform integrations sit behind small interfaces, while external Play/Firebase operations are captured as auditable runbook steps.
+
+**Tech Stack:** Kotlin, Jetpack Compose, Hilt, Room, DataStore, Ktor/OkHttp, Google Maps, AdMob/UMP, Firebase Crashlytics, Gradle/AGP, AndroidX Benchmark/Baseline Profiles, GitHub Actions, Google Play Console.
+
+**Spec:** `docs/superpowers/specs/2026-08-26-production-readiness-design.md`
+
+## Global Constraints
+
+- Preserve existing user-facing behavior and navigation.
+- Keep secrets, keystores, service-account files, and `google-services.json` out of Git.
+- Never record exact coordinates, resolved addresses, ad identifiers, credentials, or consent payloads in logs or Crashlytics.
+- Use test-first development for code behavior and configuration verification scripts.
+- Do not publish automatically from pull-request workflows.
+- Use the same immutable signed AAB through internal, closed, and production tracks.
+- Do not modify unrelated icon, screenshot, or Fastlane work already present in the worktree.
+
+---
+
+### Task 1: Establish a Reproducible Baseline
+
+**Files:**
+- Create: `docs/release/production-readiness-checklist.md`
+- Create: `scripts/verify_repository_hygiene.sh`
+- Modify: `.gitignore`
+- Modify: `app/src/main/java/com/indiewalk/watchdog/earthquake/feat_settings/presentation/components/DisclaimerDialog.kt`
+- Test: `scripts/verify_repository_hygiene.sh`
+
+**Interfaces:**
+- Consumes: current `develop` source and existing Gradle verification tasks.
+- Produces: `scripts/verify_repository_hygiene.sh`, a non-interactive gate used by local development and GitHub Actions.
+
+- [ ] **Step 1: Record baseline commands and expected artifacts**
+
+Add checklist entries for:
+
+```text
+./gradlew --version
+./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
+ANDROID_SERIAL=<serial> ./gradlew :app:connectedDebugAndroidTest
+./gradlew :app:bundleRelease
+```
+
+Record the expected test report, lint report, APK, and AAB paths without claiming they pass until each command has run.
+
+- [ ] **Step 2: Write the failing repository-hygiene script**
+
+Make the script fail when tracked files match secret/artifact patterns or production source contains executable `TODO(...)`, `println`, `printStackTrace`, or unapproved verbose network logging. Allow comments only through explicit, narrow exclusions.
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+git ls-files | grep -E '(\.jks$|\.keystore$|keystore\.properties$|google-services\.json$)' && exit 1 || true
+rg -n 'TODO\(|println\(|printStackTrace\(' app/src/main/java && exit 1 || true
+```
+
+- [ ] **Step 3: Run the hygiene script and verify RED**
+
+Run: `bash scripts/verify_repository_hygiene.sh`
+
+Expected: FAIL on the legacy `DisclaimerDialog` block and/or current production diagnostics.
+
+- [ ] **Step 4: Remove dead legacy code and complete ignore rules**
+
+Delete the commented legacy `DisclaimerDialog` implementation. Add ignore entries for Firebase configuration, decoded CI keystores, service-account JSON, benchmark outputs, and release artifacts while retaining Room schemas and Baseline Profile source rules.
+
+- [ ] **Step 5: Verify the baseline**
+
+Run the hygiene script, debug unit tests, lint, debug assembly, and current instrumentation suite. Record actual results and unresolved failures in the checklist.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add .gitignore scripts/verify_repository_hygiene.sh docs/release/production-readiness-checklist.md app/src/main/java/com/indiewalk/watchdog/earthquake/feat_settings/presentation/components/DisclaimerDialog.kt
+git commit -m "chore: establish production readiness baseline"
+```
+
+---
+
+### Task 2: Gate 1 Release Safety and Device Data Policies
+
+**Files:**
+- Modify: `app/build.gradle.kts`
+- Modify: `app/src/main/AndroidManifest.xml`
+- Create: `app/src/main/res/xml/backup_rules.xml`
+- Create: `app/src/main/res/xml/data_extraction_rules.xml`
+- Create: `app/src/main/res/xml/network_security_config.xml`
+- Modify: `app/proguard-rules.pro`
+- Create: `scripts/verify_release_configuration.sh`
+- Test: `scripts/verify_release_configuration.sh`
+
+**Interfaces:**
+- Consumes: `keystore.properties` locally and Gradle properties/environment material generated by CI.
+- Produces: `validateReleaseSecrets`, hardened release AAB configuration, explicit Android backup/network policy.
+
+- [ ] **Step 1: Write failing release-configuration checks**
+
+Assert that release configuration has `isMinifyEnabled = true`, `isShrinkResources = true`, non-empty signing values, a non-empty release Maps key, explicit backup/data-extraction resources, and an HTTPS-only network policy.
+
+- [ ] **Step 2: Verify RED**
+
+Run: `bash scripts/verify_release_configuration.sh`
+
+Expected: FAIL because minification/resource shrinking and explicit policies are absent.
+
+- [ ] **Step 3: Add strict secret validation**
+
+Create a Gradle `validateReleaseSecrets` task that checks these exact names before release packaging:
+
+```text
+release_keyAlias
+release_keyPassword
+release_storeFile
+release_storePassword
+MAPS_API_KEY_RELEASE
+```
+
+Keep `MAPS_API_KEY_DEBUG` separate. Make `preReleaseBuild` depend on validation, and produce an error listing missing names without printing values.
+
+- [ ] **Step 4: Enable optimized release packaging**
+
+Set release minification and resource shrinking to true. Remove blanket keep rules; add only rules proven necessary by `bundleRelease` and release smoke tests for Room, Hilt, Ktor/Gson, Maps, UMP, Ads, and Crashlytics.
+
+- [ ] **Step 5: Define backup and extraction behavior**
+
+Reference `backup_rules.xml` and `data_extraction_rules.xml` from the manifest. Exclude DataStore files containing location/preferences, Room databases and journals, caches, and Firebase/ads identifiers unless a product requirement explicitly allows restoration.
+
+- [ ] **Step 6: Restrict network and manifest surface**
+
+Set `android:usesCleartextTraffic="false"` through `network_security_config.xml`. Remove `WRITE_EXTERNAL_STORAGE`, `WAKE_LOCK`, `org.apache.http.legacy`, and manual Google Play Services metadata only after merged-manifest/dependency verification confirms they are unnecessary. Keep only the launcher activity exported.
+
+- [ ] **Step 7: Verify release artifacts**
+
+Run:
+
+```text
+bash scripts/verify_release_configuration.sh
+./gradlew :app:lintRelease :app:bundleRelease
+bundletool validate --bundle app/build/outputs/bundle/release/app-release.aab
+```
+
+Inspect the merged release manifest and R8 mapping output. Install a universal APK generated from the AAB and smoke-test app launch, database access, Maps, statistics, and ads consent.
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add app/build.gradle.kts app/src/main/AndroidManifest.xml app/src/main/res/xml app/proguard-rules.pro scripts/verify_release_configuration.sh
+git commit -m "build: harden production release configuration"
+```
+
+---
+
+### Task 3: Sanitize Diagnostics and Separate Debug Logging
+
+**Files:**
+- Modify: `app/src/main/java/com/indiewalk/watchdog/earthquake/core/di/NetworkModule.kt`
+- Modify: production files reported by `rg -n 'Log\.' app/src/main/java`
+- Create: `app/src/main/java/com/indiewalk/watchdog/earthquake/core/diagnostics/AppDiagnostics.kt`
+- Create: `app/src/debug/java/com/indiewalk/watchdog/earthquake/core/diagnostics/PlatformDiagnostics.kt`
+- Create: `app/src/release/java/com/indiewalk/watchdog/earthquake/core/diagnostics/PlatformDiagnostics.kt`
+- Test: `app/src/test/java/com/indiewalk/watchdog/earthquake/core/diagnostics/AppDiagnosticsTest.kt`
+
+**Interfaces:**
+- Produces: `AppDiagnostics.recordNonFatal(category: DiagnosticCategory, throwable: Throwable)` and `AppDiagnostics.breadcrumb(event: DiagnosticEvent)`.
+- Privacy contract: diagnostic payloads contain enum categories and sanitized operation names only.
+
+- [ ] **Step 1: Write failing sanitization tests**
+
+Test that messages containing coordinates, addresses, query parameters, API keys, or ad identifiers are rejected/redacted before reaching a diagnostic sink.
+
+- [ ] **Step 2: Verify RED**
+
+Run: `./gradlew :app:testDebugUnitTest --tests '*AppDiagnosticsTest'`
+
+Expected: FAIL because the diagnostics boundary does not exist.
+
+- [ ] **Step 3: Implement the diagnostics boundary**
+
+Define closed enums for screen/operation/error categories. Do not accept arbitrary key/value metadata in the public interface. Debug implementation may use Logcat; release implementation delegates to Crashlytics in Task 4.
+
+- [ ] **Step 4: Disable production HTTP body/request logging**
+
+Use `BuildConfig.DEBUG` or source-set injection so Ktor `Logging` is absent or `LogLevel.NONE` in release. Remove logs containing coordinates, manual location, filter state, dates, and request parameters. Retain sanitized error diagnostics only at ownership boundaries.
+
+- [ ] **Step 5: Verify diagnostics policy**
+
+Run unit tests and the hygiene script. Build both debug and release variants and inspect release bytecode/log behavior during a smoke test.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add app/src/main/java app/src/debug app/src/release app/src/test
+git commit -m "refactor: sanitize production diagnostics"
+```
+
+---
+
+### Task 4: Integrate Firebase Crashlytics Safely
+
+**Files:**
+- Modify: `build.gradle.kts`
+- Modify: `gradle/libs.versions.toml`
+- Modify: `app/build.gradle.kts`
+- Modify: `app/src/main/java/com/indiewalk/watchdog/earthquake/EarthquakeApp.kt`
+- Modify: `app/src/release/java/com/indiewalk/watchdog/earthquake/core/diagnostics/PlatformDiagnostics.kt`
+- Create: `app/src/test/java/com/indiewalk/watchdog/earthquake/core/diagnostics/CrashReportingPolicyTest.kt`
+- Create: `docs/release/crashlytics-verification.md`
+
+**Interfaces:**
+- Consumes: Firebase Gradle plugins and CI-provided `google-services.json`.
+- Produces: Crashlytics-backed release diagnostics implementing the Task 3 interface.
+
+- [ ] **Step 1: Write failing reporting-policy tests**
+
+Verify that expected `AppError.Network`, `AppError.Location`, and user-denied permission paths are not reported as crashes, while unexpected repository and ViewModel exceptions are reported once with a sanitized category.
+
+- [ ] **Step 2: Verify RED**
+
+Run the focused policy test and confirm failure due to the missing reporter/policy.
+
+- [ ] **Step 3: Add Firebase plugins and dependencies**
+
+Add Google Services and Crashlytics Gradle plugins through the version catalog, Firebase BOM, Crashlytics KTX/runtime dependency, and mapping-file upload for minified releases. Keep `google-services.json` ignored and document local/CI provisioning.
+
+- [ ] **Step 4: Implement collection policy**
+
+Disable collection for debug builds. Initialize release collection according to the approved privacy policy. Do not attach location, address, distance, consent values, or advertising IDs. Set only app version, destination, operation category, and sanitized error category.
+
+- [ ] **Step 5: Verify Firebase delivery**
+
+Build an internal release with a temporary, developer-only verification action or ADB-triggered test path. Confirm one test fatal and one non-fatal arrive in the correct Firebase project with symbols/mapping applied, then remove the trigger before commit.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add build.gradle.kts gradle/libs.versions.toml app/build.gradle.kts app/src/main app/src/release app/src/test docs/release/crashlytics-verification.md
+git commit -m "feat: add privacy-safe crash reporting"
+```
+
+---
+
+### Task 5: Close Regression, Room Migration, and Accessibility Gaps
+
+**Files:**
+- Modify: `app/src/androidTest/java/com/indiewalk/watchdog/earthquake/core/presentation/navigation/AppNavigationHostTest.kt`
+- Modify: `app/src/androidTest/java/com/indiewalk/watchdog/earthquake/feat_statistics/data/local/StatisticsMigrationTest.kt`
+- Modify: `app/src/androidTest/java/com/indiewalk/watchdog/earthquake/feat_statistics/presentation/ui/StatisticsScreenTest.kt`
+- Create: `app/src/androidTest/java/com/indiewalk/watchdog/earthquake/production/CoreJourneyTest.kt`
+- Create: `app/src/androidTest/java/com/indiewalk/watchdog/earthquake/production/AccessibilitySmokeTest.kt`
+- Create: `docs/release/device-test-matrix.md`
+
+**Interfaces:**
+- Produces: automated core-journey suite and a manual API/device matrix for external integrations.
+
+- [ ] **Step 1: Add failing core-journey assertions**
+
+Cover intro-to-home, all bottom destinations, list refresh/filter, map marker selection and detail card dismissal, statistics rendering, settings changes, details/back behavior, and process recreation where deterministic.
+
+- [ ] **Step 2: Add complete Room upgrade coverage**
+
+Use checked-in schemas to test `4 -> 5`, `5 -> 6`, and `4 -> 6`, preserving earthquake rows and producing a valid statistics cache schema. Add the prior Play schema if Play users can upgrade from a version earlier than schema 4.
+
+- [ ] **Step 3: Add accessibility smoke assertions**
+
+Verify interactive icons have meaningful semantics, critical controls meet 48dp touch targets, chart semantics remain readable, text is not clipped at 1.3x/2.0x font scale, and small-screen intro/filter layouts keep actions reachable.
+
+- [ ] **Step 4: Run RED and implement minimal fixes**
+
+Run each focused instrumentation class first. Fix only failures that violate existing behavior or accessibility requirements; do not redesign screens.
+
+- [ ] **Step 5: Execute device matrix**
+
+Run API 26, current API emulator, and physical-device checks for fresh install, Play-version upgrade, offline first/cached launch, permission paths, manual location, Maps, consent, themes, units, and process death. Record device/build/result/evidence.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add app/src/androidTest docs/release/device-test-matrix.md app/src/main
+git commit -m "test: cover production-critical journeys"
+```
+
+---
+
+### Task 6: Clean Dependencies and Enforce Static Quality
+
+**Files:**
+- Modify: `app/build.gradle.kts`
+- Modify: `gradle/libs.versions.toml`
+- Modify: `build.gradle.kts`
+- Create: `config/lint/lint.xml`
+- Create: `.github/dependabot.yml`
+- Create: `docs/release/third-party-sdk-inventory.md`
+
+**Interfaces:**
+- Produces: one canonical dependency per capability, failing release lint, automated dependency PRs, SDK/data inventory.
+
+- [ ] **Step 1: Capture dependency reports**
+
+Run `dependencyInsight` for duplicate Lifecycle, Compose tooling, Coil, Retrofit/OkHttp, Ktor, Maps KTX, Material, Multidex, and Unity Ads dependencies. Record why each retained SDK is required.
+
+- [ ] **Step 2: Remove duplicates and obsolete configuration incrementally**
+
+Delete the commented legacy Gradle block. Remove duplicate Lifecycle, Coil, Compose tooling, Material, Retrofit/OkHttp, and unused libraries only after compile/tests prove no consumer remains. Replace alpha OkHttp artifacts with stable compatible versions. Remove Unity Ads if no production code initializes or displays it.
+
+- [ ] **Step 3: Make lint a release gate**
+
+Set lint to abort on errors for CI/release, preserve justified suppressions in `lint.xml`, and fail on missing translations, exported-component mistakes, insecure network use, obsolete SDK APIs, and accessibility issues selected by the team.
+
+- [ ] **Step 4: Add dependency governance**
+
+Configure weekly Dependabot updates for Gradle and GitHub Actions with grouped AndroidX/Firebase updates. Inventory each SDK's purpose, data access, network hosts, and Play Data safety impact.
+
+- [ ] **Step 5: Verify**
+
+Run debug/release dependency reports, unit tests, lint, debug assembly, release bundle, and instrumentation tests.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add app/build.gradle.kts gradle/libs.versions.toml build.gradle.kts config/lint .github/dependabot.yml docs/release/third-party-sdk-inventory.md
+git commit -m "build: enforce dependency and lint quality"
+```
+
+---
+
+### Task 7: Add Baseline Profiles and Performance Budgets
+
+**Files:**
+- Modify: `settings.gradle.kts`
+- Modify: `build.gradle.kts`
+- Modify: `gradle/libs.versions.toml`
+- Modify: `app/build.gradle.kts`
+- Create: `benchmark/build.gradle.kts`
+- Create: `benchmark/src/main/AndroidManifest.xml`
+- Create: `benchmark/src/main/java/com/indiewalk/watchdog/earthquake/benchmark/BaselineProfileGenerator.kt`
+- Create: `benchmark/src/main/java/com/indiewalk/watchdog/earthquake/benchmark/StartupBenchmark.kt`
+- Create: `benchmark/src/main/java/com/indiewalk/watchdog/earthquake/benchmark/CoreJourneyBenchmark.kt`
+- Create: `docs/release/performance-baseline.md`
+
+**Interfaces:**
+- Produces: generated app Baseline Profile and benchmark JSON/results with documented regression thresholds.
+
+- [ ] **Step 1: Add benchmark module and failing journey selectors**
+
+Create selectors/test tags for cold start, home list, filter, map, marker detail, statistics, and settings. Run the generator before adding missing selectors and confirm the journey fails at the first unavailable contract.
+
+- [ ] **Step 2: Implement deterministic benchmark journeys**
+
+Use controlled cached data or a benchmark-only deterministic setup so performance does not depend on live USGS, Maps, ads, or location responses. Keep production behavior unchanged.
+
+- [ ] **Step 3: Generate and package the Baseline Profile**
+
+Generate profiles for startup and the five core journeys, copy generated rules into the app through the Baseline Profile Gradle plugin, and verify the release artifact includes profile metadata.
+
+- [ ] **Step 4: Establish budgets**
+
+Run at least 10 iterations on the documented reference emulator/device. Record median cold startup, time to initial display, frame duration/jank for list scroll and top-level navigation, and memory observations. Define failure as a material percentage regression from the checked baseline, with the exact percentage recorded after measurement.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add settings.gradle.kts build.gradle.kts gradle/libs.versions.toml app/build.gradle.kts benchmark app/src/main/baseline-prof.txt docs/release/performance-baseline.md
+git commit -m "perf: add baseline profiles and benchmarks"
+```
+
+---
+
+### Task 8: Create GitHub Actions Quality Gates
+
+**Files:**
+- Create: `.github/workflows/android-quality.yml`
+- Create: `.github/workflows/android-instrumentation.yml`
+- Create: `.github/actions/setup-android/action.yml`
+- Modify: `docs/release/production-readiness-checklist.md`
+
+**Interfaces:**
+- Produces: required pull-request checks `repository-hygiene`, `unit-lint-build`, and `instrumentation`.
+
+- [ ] **Step 1: Validate workflows locally before enabling triggers**
+
+Use actionlint and YAML parsing. Pin third-party actions to immutable commit SHAs, use Java 17, validate the Gradle wrapper, enable read-only default permissions, and grant only explicit artifact permissions.
+
+- [ ] **Step 2: Add fast pull-request job**
+
+Run:
+
+```text
+bash scripts/verify_repository_hygiene.sh
+./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
+```
+
+Upload test and lint reports on failure. Do not expose release secrets to forked pull requests.
+
+- [ ] **Step 3: Add emulator job**
+
+Boot a current API emulator with hardware acceleration/caching, disable animations, run `:app:connectedDebugAndroidTest`, and upload instrumentation reports. Schedule an API 26 matrix run nightly if it is too slow for every pull request.
+
+- [ ] **Step 4: Add benchmark monitoring job**
+
+Run Macrobenchmark/Baseline Profile checks on a scheduled or manually dispatched managed device. Report regressions without making unstable cloud-emulator timings a blocking PR check until the baseline proves stable.
+
+- [ ] **Step 5: Verify in a pull request**
+
+Open a test PR, intentionally fail one assertion to prove each required check blocks, restore it, and confirm all jobs pass. Enable branch protection for `develop` and release branches.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add .github docs/release/production-readiness-checklist.md
+git commit -m "ci: enforce Android production quality gates"
+```
+
+---
+
+### Task 9: Build a Signed, Approval-Gated AAB Workflow
+
+**Files:**
+- Create: `.github/workflows/android-release.yml`
+- Create: `scripts/prepare_release_secrets.sh`
+- Create: `scripts/verify_aab.sh`
+- Create: `docs/release/github-secrets.md`
+- Create: `docs/release/release-runbook.md`
+
+**Interfaces:**
+- Consumes GitHub environment secrets: base64 keystore, alias/passwords, release Maps key, Firebase config, and optional Play service account.
+- Produces: checksummed signed AAB, mapping file, native/debug symbols if present, test reports, and release manifest artifact.
+
+- [ ] **Step 1: Write failing secret-preparation tests**
+
+Run the script with each required variable absent and assert a non-zero exit without secret output. Run with disposable test secrets and verify files are permission-restricted and removed by a cleanup trap.
+
+- [ ] **Step 2: Implement protected release workflow**
+
+Trigger only through version tags and `workflow_dispatch`. Bind the job to a protected `production-release` GitHub environment requiring reviewer approval. Decode secrets into temporary runner files, run all quality gates, and invoke `bundleRelease`.
+
+- [ ] **Step 3: Verify the AAB**
+
+Use `jarsigner`, `bundletool validate`, manifest inspection, version-code/name checks, certificate fingerprint checks, and artifact checksums. Upload the AAB, R8 mapping, reports, and provenance summary with restricted retention.
+
+- [ ] **Step 4: Keep Play promotion explicit**
+
+Default workflow output is an artifact for manual internal-track upload. If Fastlane/Play Developer API upload is later enabled, restrict it to the internal track and require a separate human-approved promotion step; never publish production from a PR.
+
+- [ ] **Step 5: Dry-run with disposable credentials, then real internal release**
+
+Prove failure paths first, then generate one signed internal AAB and verify installation through Play internal testing.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add .github/workflows/android-release.yml scripts/prepare_release_secrets.sh scripts/verify_aab.sh docs/release
+git commit -m "ci: generate verified signed release bundles"
+```
+
+---
+
+### Task 10: Complete Play Compliance and Controlled Rollout
+
+**Files:**
+- Create: `docs/release/play-compliance-checklist.md`
+- Create: `docs/release/data-safety-inventory.md`
+- Create: `docs/release/rollout-record.md`
+- Create: `docs/release/incident-template.md`
+- Modify: `docs/release/release-runbook.md`
+- Modify: user-facing privacy/FAQ resources only when the inventory finds a mismatch.
+
+**Interfaces:**
+- Produces: signed-off compliance record, immutable artifact identity, rollout decisions, and hotfix/incident process.
+
+- [ ] **Step 1: Reconcile app behavior with Play declarations**
+
+Inventory location, diagnostics, ads/UMP, network calls, local retention, backups, deletion behavior, and every third-party SDK. Compare against privacy policy, Data safety, ads declaration, content rating, target audience, and store listing.
+
+- [ ] **Step 2: Verify external credentials and consent**
+
+Confirm release Maps key restrictions for package and Play App Signing SHA fingerprints. Verify production AdMob IDs in the signed manifest. Test UMP using EEA and non-EEA debug geography, consent withdrawal in Settings, and ad behavior when consent/network is unavailable.
+
+- [ ] **Step 3: Complete internal testing gate**
+
+Install through Play internal testing and execute the complete device matrix, Crashlytics delivery check, AAB certificate/version verification, fresh install, and upgrade from the current public version.
+
+- [ ] **Step 4: Complete closed testing gate**
+
+Use representative testers/devices, record defects and crash-free/ANR metrics, and require zero open release blockers before production approval.
+
+- [ ] **Step 5: Execute staged production rollout**
+
+Promote the same artifact through 5%, 20%, 50%, and 100%. At each stage record start/end time, version, population, crash-free users, ANR/crash rates, support signals, Maps/network health, consent health, and approver.
+
+- [ ] **Step 6: Apply stop and rollback criteria**
+
+Halt rollout for data loss, broken core journeys, broad Maps/network failure, incorrect consent, Play threshold violations, or material regression from the stable version. Preserve diagnostics and ship a higher-version-code hotfix rather than attempting to replace the published artifact.
+
+- [ ] **Step 7: Close the readiness initiative**
+
+Run all automated gates from a clean checkout, attach CI links and Play evidence to `rollout-record.md`, confirm 100% rollout without a stop condition, and mark the production-readiness checklist complete.
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add docs/release app/src/main/res
+git commit -m "docs: define production release operations"
+```
+
+---
+
+## Final Verification
+
+From a clean checkout of the release-candidate commit:
+
+```text
+bash scripts/verify_repository_hygiene.sh
+bash scripts/verify_release_configuration.sh
+./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
+ANDROID_SERIAL=<serial> ./gradlew :app:connectedDebugAndroidTest
+./gradlew :benchmark:connectedCheck
+./gradlew :app:lintRelease :app:bundleRelease
+bundletool validate --bundle app/build/outputs/bundle/release/app-release.aab
+```
+
+Completion requires all commands to exit successfully, a signed artifact produced by the protected GitHub environment, successful internal/closed testing, verified Crashlytics and performance evidence, completed Play compliance records, and a 100% staged rollout without a stop condition.

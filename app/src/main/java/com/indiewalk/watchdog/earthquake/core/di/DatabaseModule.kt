@@ -36,4 +36,9 @@ object DatabaseModule {
     fun provideFeedWriterDao(earthquakeDatabase: EarthquakeDatabase) =
         earthquakeDatabase.feedWriterDao()
 
+    @Provides
+    @Singleton
+    fun provideStatisticsCacheDao(earthquakeDatabase: EarthquakeDatabase) =
+        earthquakeDatabase.statisticsCacheDao()
+
 }

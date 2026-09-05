@@ -1,0 +1,1 @@
+Version 3.0.0 refreshes the earthquake list, map, filters, statistics, and settings experience, with additional stability improvements.

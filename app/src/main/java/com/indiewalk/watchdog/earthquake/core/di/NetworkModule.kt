@@ -1,5 +1,6 @@
 package com.indiewalk.watchdog.earthquake.core.di
 
+import com.indiewalk.watchdog.earthquake.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,8 +35,10 @@ object NetworkModule {
             connectTimeoutMillis = 15_000
             socketTimeoutMillis = 30_000
         }
-        install(Logging) {
-            level = LogLevel.INFO
+        if (BuildConfig.DEBUG) {
+            install(Logging) {
+                level = LogLevel.INFO
+            }
         }
     }
 }
