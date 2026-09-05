@@ -56,12 +56,7 @@ jobs:
           disable-animations: true
           disable-linux-hw-accel: false
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -accel on
-          script: |
-            bash <<'EOF'
-            set -o pipefail
-            mkdir -p ci-logs
-            ./gradlew :app:connectedDebugAndroidTest --stacktrace 2>&1 | tee ci-logs/instrumentation.log
-            EOF
+          script: bash scripts/run_instrumentation_ci.sh
 
       - name: Save API 35 emulator cache
         if: github.event_name != 'pull_request' && steps.api-35-avd-cache.outputs.cache-hit != 'true'
@@ -121,12 +116,7 @@ jobs:
           disable-animations: true
           disable-linux-hw-accel: false
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -accel on
-          script: |
-            bash <<'EOF'
-            set -o pipefail
-            mkdir -p ci-logs
-            ./gradlew :app:connectedDebugAndroidTest --stacktrace 2>&1 | tee ci-logs/instrumentation.log
-            EOF
+          script: bash scripts/run_instrumentation_ci.sh
 
       - name: Save API ${{ matrix.api-level }} emulator cache
         if: steps.compatibility-avd-cache.outputs.cache-hit != 'true'
@@ -183,39 +173,7 @@ jobs:
           disable-animations: true
           disable-linux-hw-accel: false
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -accel on
-          script: |
-            bash <<'EOF'
-            set -euo pipefail
-            mkdir -p benchmark-results
-            ./gradlew :benchmark:connectedNonMinifiedReleaseAndroidTest \
-              -Pandroid.testInstrumentationRunnerArguments.class=com.indiewalk.watchdog.earthquake.benchmark.BenchmarkSelectorContractTest
-            ./gradlew :app:generateBaselineProfile
-            bash scripts/verify_baseline_profile.sh \
-              app/src/release/generated/baselineProfiles/baseline-prof.txt
-
-            ./gradlew :benchmark:clean
-            ./gradlew :benchmark:connectedNonMinifiedReleaseAndroidTest \
-              -Pandroid.testInstrumentationRunnerArguments.class=com.indiewalk.watchdog.earthquake.benchmark.StartupBenchmark \
-              -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=Macrobenchmark \
-              -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.suppressErrors=EMULATOR
-            startup_result="$(find benchmark/build/outputs -type f -name '*benchmarkData.json' -print -quit)"
-            test -n "$startup_result"
-            cp "$startup_result" benchmark-results/startup-benchmarkData.json
-
-            ./gradlew :benchmark:clean
-            ./gradlew :benchmark:connectedNonMinifiedReleaseAndroidTest \
-              -Pandroid.testInstrumentationRunnerArguments.class=com.indiewalk.watchdog.earthquake.benchmark.CoreJourneyBenchmark \
-              -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=Macrobenchmark \
-              -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.suppressErrors=EMULATOR
-            core_result="$(find benchmark/build/outputs -type f -name '*benchmarkData.json' -print -quit)"
-            test -n "$core_result"
-            cp "$core_result" benchmark-results/core-benchmarkData.json
-
-            scripts/check_performance_budgets.py \
-              --budgets config/performance-budgets.json \
-              benchmark-results/startup-benchmarkData.json \
-              benchmark-results/core-benchmarkData.json
-            EOF
+          script: bash scripts/run_benchmark_monitoring_ci.sh
 
       - name: Save API 35 benchmark emulator cache
         if: steps.benchmark-avd-cache.outputs.cache-hit != 'true'

@@ -10,6 +10,8 @@ QUALITY = ROOT / ".github" / "workflows" / "android-quality.yml"
 INSTRUMENTATION = ROOT / ".github" / "workflows" / "android-instrumentation.yml"
 SETUP = ROOT / ".github" / "actions" / "setup-android" / "action.yml"
 ENABLE_KVM = ROOT / ".github" / "actions" / "enable-kvm" / "action.yml"
+INSTRUMENTATION_SCRIPT = ROOT / "scripts" / "run_instrumentation_ci.sh"
+BENCHMARK_SCRIPT = ROOT / "scripts" / "run_benchmark_monitoring_ci.sh"
 
 
 class GitHubActionsContractTest(unittest.TestCase):
@@ -20,6 +22,16 @@ class GitHubActionsContractTest(unittest.TestCase):
         cls.setup = SETUP.read_text(encoding="utf-8")
         cls.enable_kvm = (
             ENABLE_KVM.read_text(encoding="utf-8") if ENABLE_KVM.exists() else ""
+        )
+        cls.instrumentation_script = (
+            INSTRUMENTATION_SCRIPT.read_text(encoding="utf-8")
+            if INSTRUMENTATION_SCRIPT.exists()
+            else ""
+        )
+        cls.benchmark_script = (
+            BENCHMARK_SCRIPT.read_text(encoding="utf-8")
+            if BENCHMARK_SCRIPT.exists()
+            else ""
         )
         cls.all_configuration = "\n".join(
             (cls.quality, cls.instrumentation, cls.setup, cls.enable_kvm)
@@ -89,17 +101,25 @@ class GitHubActionsContractTest(unittest.TestCase):
         self.assertIn("instrumentation.log", self.instrumentation)
 
     def test_emulator_scripts_explicitly_use_bash(self) -> None:
-        self.assertEqual(self.instrumentation.count("bash <<'EOF'"), 3)
-        self.assertNotRegex(
-            self.instrumentation,
-            r"(?m)^\s{10}script: \|\n\s{12}set -",
+        self.assertEqual(
+            self.instrumentation.count(
+                "script: bash scripts/run_instrumentation_ci.sh"
+            ),
+            2,
         )
+        self.assertIn(
+            "script: bash scripts/run_benchmark_monitoring_ci.sh",
+            self.instrumentation,
+        )
+        for script in (self.instrumentation_script, self.benchmark_script):
+            self.assertTrue(script.startswith("#!/usr/bin/env bash\n"))
+            self.assertIn("set -euo pipefail", script)
 
     def test_instrumentation_and_compatibility_coverage_are_explicit(self) -> None:
         self.assertIn("api-level: 35", self.instrumentation)
         self.assertIn("api-level: [26, 36]", self.instrumentation)
         self.assertIn("disable-animations: true", self.instrumentation)
-        self.assertIn(":app:connectedDebugAndroidTest", self.instrumentation)
+        self.assertIn(":app:connectedDebugAndroidTest", self.instrumentation_script)
         self.assertIn("schedule:", self.instrumentation)
         self.assertIn("workflow_dispatch:", self.instrumentation)
         self.assertIn("actions/cache/restore@", self.instrumentation)
@@ -155,11 +175,11 @@ class GitHubActionsContractTest(unittest.TestCase):
             self.instrumentation,
             r"(?s)benchmark-monitoring:.*?continue-on-error: true",
         )
-        self.assertIn("BenchmarkSelectorContractTest", self.instrumentation)
-        self.assertIn(":app:generateBaselineProfile", self.instrumentation)
-        self.assertIn("StartupBenchmark", self.instrumentation)
-        self.assertIn("CoreJourneyBenchmark", self.instrumentation)
-        self.assertIn("scripts/check_performance_budgets.py", self.instrumentation)
+        self.assertIn("BenchmarkSelectorContractTest", self.benchmark_script)
+        self.assertIn(":app:generateBaselineProfile", self.benchmark_script)
+        self.assertIn("StartupBenchmark", self.benchmark_script)
+        self.assertIn("CoreJourneyBenchmark", self.benchmark_script)
+        self.assertIn("scripts/check_performance_budgets.py", self.benchmark_script)
 
     def test_pull_request_workflows_do_not_reference_secrets(self) -> None:
         self.assertNotIn("pull_request_target:", self.all_configuration)
