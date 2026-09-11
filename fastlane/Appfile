@@ -1,0 +1,2 @@
+package_name("com.indiewalk.watchdog.earthquake")
+json_key_file(ENV.fetch("GOOGLE_PLAY_JSON_KEY"))
