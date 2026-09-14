@@ -30,7 +30,7 @@ jobs:
       version-name: ${{ steps.identity.outputs.version-name }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Android build
         uses: ./.github/actions/setup-android
@@ -97,7 +97,7 @@ jobs:
 
       - name: Upload release quality reports
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: signed-release-quality-reports
           path: |
@@ -113,7 +113,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Check out repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Enable Linux KVM access
         uses: ./.github/actions/enable-kvm
@@ -122,7 +122,7 @@ jobs:
         uses: ./.github/actions/setup-android
 
       - name: Run release-candidate instrumentation suite
-        uses: reactivecircus/android-emulator-runner@1dcd0090116d15e7c562f8db72807de5e036a4ed # v2.34.0
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: 36
           target: google_apis
@@ -137,7 +137,7 @@ jobs:
 
       - name: Upload release instrumentation reports
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: signed-release-instrumentation-reports
           path: |
@@ -154,7 +154,7 @@ jobs:
     environment: production-release
     steps:
       - name: Check out repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Android build
         uses: ./.github/actions/setup-android
@@ -254,7 +254,7 @@ jobs:
           trap - EXIT HUP INT TERM
 
       - name: Upload verified signed release artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: verified-signed-release-aab
           path: ${{ runner.temp }}/verified-earthquake-release-${{ github.run_id }}-${{ github.run_attempt }}/
