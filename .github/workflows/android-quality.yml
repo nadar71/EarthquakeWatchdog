@@ -10,6 +10,11 @@ on:
 permissions:
   contents: read
 
+env:
+  GRADLE_OPTS: >-
+    -Dorg.gradle.jvmargs=-Xmx1536m -Dfile.encoding=UTF-8
+    -Dorg.gradle.workers.max=2
+
 concurrency:
   group: android-quality-${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
@@ -40,8 +45,24 @@ jobs:
       - name: Set up Android build
         uses: ./.github/actions/setup-android
 
-      - name: Run unit tests, lint, and debug build
-        run: ./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
+      - name: Run unit tests
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p ci-logs
+          ./gradlew :app:testDebugUnitTest --stacktrace 2>&1 | tee ci-logs/unit-tests.log
+
+      - name: Run Android lint
+        shell: bash
+        run: |
+          set -o pipefail
+          ./gradlew :app:lintDebug --stacktrace 2>&1 | tee ci-logs/lint.log
+
+      - name: Assemble debug build
+        shell: bash
+        run: |
+          set -o pipefail
+          ./gradlew :app:assembleDebug --stacktrace 2>&1 | tee ci-logs/assemble-debug.log
 
       - name: Upload unit and lint reports on failure
         if: failure()
@@ -52,5 +73,14 @@ jobs:
             app/build/reports/tests/testDebugUnitTest/
             app/build/test-results/testDebugUnitTest/
             app/build/reports/lint-results-debug.*
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload quality console logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: quality-ci-logs
+          path: ci-logs/
           if-no-files-found: warn
           retention-days: 7

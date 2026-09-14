@@ -139,8 +139,8 @@ android {
         applicationId = "com.indiewalk.watchdog.earthquake"
         minSdk = 26
         targetSdk = 36
-        versionCode = 11
-        versionName = "3.0.0"
+        versionCode = 12
+        versionName = "3.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["MAPS_API_KEY"] = ""

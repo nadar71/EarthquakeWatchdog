@@ -41,7 +41,7 @@ assert_no_secret_output() {
 }
 
 mode_of() {
-    stat -f '%Lp' "$1" 2>/dev/null || stat -c '%a' "$1"
+    stat -c '%a' "$1" 2>/dev/null || stat -f '%Lp' "$1"
 }
 
 [[ -x "$SCRIPT" ]] || fail "secret preparation script is missing or not executable"

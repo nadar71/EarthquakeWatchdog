@@ -10,6 +10,8 @@ QUALITY = ROOT / ".github" / "workflows" / "android-quality.yml"
 INSTRUMENTATION = ROOT / ".github" / "workflows" / "android-instrumentation.yml"
 SETUP = ROOT / ".github" / "actions" / "setup-android" / "action.yml"
 ENABLE_KVM = ROOT / ".github" / "actions" / "enable-kvm" / "action.yml"
+INSTRUMENTATION_SCRIPT = ROOT / "scripts" / "run_instrumentation_ci.sh"
+BENCHMARK_SCRIPT = ROOT / "scripts" / "run_benchmark_monitoring_ci.sh"
 
 
 class GitHubActionsContractTest(unittest.TestCase):
@@ -20,6 +22,16 @@ class GitHubActionsContractTest(unittest.TestCase):
         cls.setup = SETUP.read_text(encoding="utf-8")
         cls.enable_kvm = (
             ENABLE_KVM.read_text(encoding="utf-8") if ENABLE_KVM.exists() else ""
+        )
+        cls.instrumentation_script = (
+            INSTRUMENTATION_SCRIPT.read_text(encoding="utf-8")
+            if INSTRUMENTATION_SCRIPT.exists()
+            else ""
+        )
+        cls.benchmark_script = (
+            BENCHMARK_SCRIPT.read_text(encoding="utf-8")
+            if BENCHMARK_SCRIPT.exists()
+            else ""
         )
         cls.all_configuration = "\n".join(
             (cls.quality, cls.instrumentation, cls.setup, cls.enable_kvm)
@@ -63,18 +75,51 @@ class GitHubActionsContractTest(unittest.TestCase):
 
     def test_fast_jobs_run_required_commands_and_upload_failure_reports(self) -> None:
         self.assertIn("bash scripts/verify_repository_hygiene.sh", self.quality)
-        self.assertIn(
-            "./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug",
-            self.quality,
-        )
+        self.assertIn("name: Run unit tests", self.quality)
+        self.assertIn("./gradlew :app:testDebugUnitTest", self.quality)
+        self.assertIn("name: Run Android lint", self.quality)
+        self.assertIn("./gradlew :app:lintDebug", self.quality)
+        self.assertIn("name: Assemble debug build", self.quality)
+        self.assertIn("./gradlew :app:assembleDebug", self.quality)
         self.assertIn("if: failure()", self.quality)
         self.assertIn("actions/upload-artifact@", self.quality)
+        self.assertIn("ci-logs/", self.quality)
+
+    def test_ci_limits_gradle_and_emulator_memory(self) -> None:
+        for workflow in (self.quality, self.instrumentation):
+            self.assertIn("GRADLE_OPTS:", workflow)
+            self.assertIn("org.gradle.workers.max=2", workflow)
+            self.assertIn("-Xmx1536m", workflow)
+
+        self.assertNotIn("ram-size: 4096M", self.instrumentation)
+        self.assertIn("ram-size: 2048M", self.instrumentation)
+
+    def test_ci_always_uploads_console_logs(self) -> None:
+        self.assertIn("name: Upload quality console logs", self.quality)
+        self.assertIn("if: always()", self.quality)
+        self.assertIn("quality-ci-logs", self.quality)
+        self.assertIn("instrumentation.log", self.instrumentation)
+
+    def test_emulator_scripts_explicitly_use_bash(self) -> None:
+        self.assertEqual(
+            self.instrumentation.count(
+                "script: bash scripts/run_instrumentation_ci.sh"
+            ),
+            2,
+        )
+        self.assertIn(
+            "script: bash scripts/run_benchmark_monitoring_ci.sh",
+            self.instrumentation,
+        )
+        for script in (self.instrumentation_script, self.benchmark_script):
+            self.assertTrue(script.startswith("#!/usr/bin/env bash\n"))
+            self.assertIn("set -euo pipefail", script)
 
     def test_instrumentation_and_compatibility_coverage_are_explicit(self) -> None:
         self.assertIn("api-level: 35", self.instrumentation)
         self.assertIn("api-level: [26, 36]", self.instrumentation)
         self.assertIn("disable-animations: true", self.instrumentation)
-        self.assertIn(":app:connectedDebugAndroidTest", self.instrumentation)
+        self.assertIn(":app:connectedDebugAndroidTest", self.instrumentation_script)
         self.assertIn("schedule:", self.instrumentation)
         self.assertIn("workflow_dispatch:", self.instrumentation)
         self.assertIn("actions/cache/restore@", self.instrumentation)
@@ -83,6 +128,8 @@ class GitHubActionsContractTest(unittest.TestCase):
             "steps.api-35-avd-cache.outputs.cache-hit != 'true'",
             self.instrumentation,
         )
+        self.assertNotIn("avd-v1-", self.instrumentation)
+        self.assertIn("avd-v2-", self.instrumentation)
 
     def test_every_emulator_job_enables_linux_kvm_access(self) -> None:
         emulator_runner = "uses: reactivecircus/android-emulator-runner@"
@@ -128,11 +175,11 @@ class GitHubActionsContractTest(unittest.TestCase):
             self.instrumentation,
             r"(?s)benchmark-monitoring:.*?continue-on-error: true",
         )
-        self.assertIn("BenchmarkSelectorContractTest", self.instrumentation)
-        self.assertIn(":app:generateBaselineProfile", self.instrumentation)
-        self.assertIn("StartupBenchmark", self.instrumentation)
-        self.assertIn("CoreJourneyBenchmark", self.instrumentation)
-        self.assertIn("scripts/check_performance_budgets.py", self.instrumentation)
+        self.assertIn("BenchmarkSelectorContractTest", self.benchmark_script)
+        self.assertIn(":app:generateBaselineProfile", self.benchmark_script)
+        self.assertIn("StartupBenchmark", self.benchmark_script)
+        self.assertIn("CoreJourneyBenchmark", self.benchmark_script)
+        self.assertIn("scripts/check_performance_budgets.py", self.benchmark_script)
 
     def test_pull_request_workflows_do_not_reference_secrets(self) -> None:
         self.assertNotIn("pull_request_target:", self.all_configuration)

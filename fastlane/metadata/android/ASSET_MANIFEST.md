@@ -22,4 +22,9 @@ The `it-IT` package contains the same eight-feature sequence captured with the I
 
 The preceding icon and screenshot set is archived under `en-US/images/previous/`.
 
-Tablet, Chromebook, Wear OS, Android TV, and automotive screenshots are not included because the repository contains no verified captures for those device types.
+The 7-inch and 10-inch tablet packages contain the same eight-feature sequence captured
+from the responsive tablet layout at 1080 x 1920. Promotional videos are generated from
+the verified localized screenshots with `scripts/generate_play_store_videos.sh`.
+
+Chromebook, Wear OS, Android TV, and automotive screenshots are not included because the
+repository contains no verified captures for those device types.

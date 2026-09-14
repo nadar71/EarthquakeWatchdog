@@ -1,0 +1,25 @@
+default_platform(:android)
+
+platform :android do
+  desc "Validate localized Google Play listing assets without publishing"
+  lane :validate_store_listing do
+    upload_to_play_store(
+      metadata_path: "fastlane/metadata/android",
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_changelogs: true,
+      validate_only: true
+    )
+  end
+
+  desc "Upload localized Google Play listing text, icon, graphics, and screenshots"
+  lane :upload_store_listing do
+    upload_to_play_store(
+      metadata_path: "fastlane/metadata/android",
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_changelogs: true,
+      sync_image_upload: true
+    )
+  end
+end

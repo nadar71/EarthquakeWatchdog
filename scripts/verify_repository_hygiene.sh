@@ -18,11 +18,21 @@ check_tracked_files() {
     fi
 }
 
+check_ignored_source_resources() {
+    local matches
+
+    matches=$(git ls-files --others --ignored --exclude-standard -- 'app/src/**/res/**' \
+        | grep -Ev '(^|/)(\.DS_Store|(google_maps_api|admob_key|ads_key_ids)\.xml)$' || true)
+    if [[ -n "$matches" ]]; then
+        report_failure "ignored Android source resource" "$matches"
+    fi
+}
+
 check_executable_source() {
     local matches
 
     # Strip comments and quoted literals before checking executable Kotlin/Java calls.
-    matches=$(rg --files -g '*.kt' -g '*.java' "$SOURCE_DIRECTORY" \
+    matches=$(find "$SOURCE_DIRECTORY" -type f \( -name '*.kt' -o -name '*.java' \) -print \
         | while IFS= read -r file; do
             LC_ALL=C perl -e '
                 $source = do { local $/; <> };
@@ -154,13 +164,16 @@ check_verbose_network_logging() {
     local matches
 
     # Existing INFO-level diagnostics are intentionally deferred to Task 3.
-    matches=$(rg -n --glob '*.kt' --glob '*.java' 'LogLevel\.(ALL|BODY|HEADERS)|HttpLoggingInterceptor\.Level\.(BODY|HEADERS)' "$SOURCE_DIRECTORY" || true)
+    matches=$(grep -Enr --include='*.kt' --include='*.java' \
+        'LogLevel\.(ALL|BODY|HEADERS)|HttpLoggingInterceptor\.Level\.(BODY|HEADERS)' \
+        "$SOURCE_DIRECTORY" || true)
     if [[ -n "$matches" ]]; then
         report_failure "unapproved verbose network logging" "$matches"
     fi
 }
 
 check_tracked_files
+check_ignored_source_resources
 check_executable_source
 check_verbose_network_logging
 
